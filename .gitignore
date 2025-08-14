@@ -78,3 +78,13 @@ crashlytics-build.properties
 Assets/google-services.json
 Assets/google-services.json.meta
 /Assets/StreamingAssets
+
+
+# Firebase: 에디터용 데스크톱 셋업 파일 무시
+Assets/StreamingAssets/google-services-desktop.json
+Assets/StreamingAssets/google-services-desktop.json.meta
+
+# Addressables 빌드 산출물 
+Library/com.unity.addressables/
+Assets/StreamingAssets/com.unity.addressables/**
+ServerData/**
