@@ -16,6 +16,17 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    public static void CreateInstance()
+    {
+        if (_instance == null)
+        {
+            T prefab = Resources.Load<T>($"SingleTons/{typeof(T).Name}");
+            _instance = Instantiate(prefab);
+            DontDestroyOnLoad(_instance.gameObject);
+        }
+    }
+
+
     protected void SingletonInit()
     {
         if (_instance != null && _instance != this)
