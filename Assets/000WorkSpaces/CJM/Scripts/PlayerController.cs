@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerView view;
     private Vector3 dir;
     private Rigidbody rb;
-
+    
     private void Awake()
     {
         rb ??= GetComponent<Rigidbody>();
@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
         if (dir.sqrMagnitude > 1f) dir.Normalize();   // 대각선 속도 보정
 
         // 입력 없으면 정지
-        if (dir.sqrMagnitude < 0.0001f) dir = Vector3.zero;
+        if (dir.sqrMagnitude < 0.01f) dir = Vector3.zero;
 
         if (view != null)
         {
