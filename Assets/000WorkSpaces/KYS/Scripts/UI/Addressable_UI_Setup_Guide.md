@@ -71,7 +71,7 @@ AddressableGroups/
 - `UI_Popup`: 팝업 관련 UI들
 - `UI_Loading`: 로딩 관련 UI들
 
-## 4. UIManager_Addressable 설정
+## 4. UIManager 설정
 
 ### 4.1 Addressable 참조 설정
 ```csharp
@@ -96,19 +96,19 @@ AddressableGroups/
 ### 5.1 UI 로드
 ```csharp
 // 개별 UI 로드
-BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
+BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
 
 // 라벨로 일괄 로드
-List<BaseUI> hudUIs = await UIManager_Addressable.Instance.LoadUIsByLabelAsync<BaseUI>("UI_HUD");
+List<BaseUI> hudUIs = await UIManager.Instance.LoadUIsByLabelAsync<BaseUI>("UI_HUD");
 ```
 
 ### 5.2 UI 표시
 ```csharp
 // 패널 열기 (Stack 관리)
-UIManager_Addressable.Instance.OpenPanel(mainMenu);
+UIManager.Instance.OpenPanel(mainMenu);
 
 // 팝업 열기 (Stack 관리)
-UIManager_Addressable.Instance.OpenPopup(confirmDialog);
+UIManager.Instance.OpenPopup(confirmDialog);
 
 // 직접 표시
 hudUI.Show();
@@ -117,10 +117,10 @@ hudUI.Show();
 ### 5.3 UI 해제
 ```csharp
 // 개별 UI 해제
-UIManager_Addressable.Instance.ReleaseUI("UI/Panel/MainMenu");
+UIManager.Instance.ReleaseUI("UI/Panel/MainMenu");
 
 // 모든 UI 해제
-UIManager_Addressable.Instance.ReleaseAllAddressables();
+UIManager.Instance.ReleaseAllAddressables();
 ```
 
 ## 6. Addressable 키 명명 규칙
@@ -142,22 +142,22 @@ UI/{LayerType}/{UIName}
 ### 7.1 미리 로드
 ```csharp
 // 자주 사용하는 UI 미리 로드
-await UIManager_Addressable.Instance.PreloadUIAsync<BaseUI>("UI/Panel/MainMenu");
+await UIManager.Instance.PreloadUIAsync<BaseUI>("UI/Panel/MainMenu");
 ```
 
 ### 7.2 라벨 기반 일괄 로드
 ```csharp
 // 특정 카테고리의 모든 UI 로드
-List<BaseUI> panelUIs = await UIManager_Addressable.Instance.LoadUIsByLabelAsync<BaseUI>("UI_Panel");
+List<BaseUI> panelUIs = await UIManager.Instance.LoadUIsByLabelAsync<BaseUI>("UI_Panel");
 ```
 
 ### 7.3 메모리 관리
 ```csharp
 // 사용하지 않는 UI 해제
-UIManager_Addressable.Instance.ReleaseUI("UI/Panel/OldPanel");
+UIManager.Instance.ReleaseUI("UI/Panel/OldPanel");
 
 // 씬 전환 시 모든 UI 해제
-UIManager_Addressable.Instance.ReleaseAllAddressables();
+UIManager.Instance.ReleaseAllAddressables();
 ```
 
 ## 8. 디버깅 및 모니터링
@@ -165,7 +165,7 @@ UIManager_Addressable.Instance.ReleaseAllAddressables();
 ### 8.1 Canvas 정보 확인
 ```csharp
 // 특정 레이어의 Canvas 정보
-Canvas hudCanvas = UIManager_Addressable.Instance.GetCanvasByLayer(UILayerType.HUD);
+Canvas hudCanvas = UIManager.Instance.GetCanvasByLayer(UILayerType.HUD);
 
 // 모든 Canvas 정보 출력
 PrintAllCanvasInfo();
@@ -174,7 +174,7 @@ PrintAllCanvasInfo();
 ### 8.2 레이어별 UI 확인
 ```csharp
 // 특정 레이어의 모든 UI
-List<BaseUI> hudUIs = UIManager_Addressable.Instance.GetUIsByLayer(UILayerType.HUD);
+List<BaseUI> hudUIs = UIManager.Instance.GetUIsByLayer(UILayerType.HUD);
 
 // 모든 레이어의 UI 정보 출력
 PrintAllLayerUIs();
@@ -182,7 +182,7 @@ PrintAllLayerUIs();
 
 ## 9. 마이그레이션 가이드
 
-### 9.1 기존 UIManager에서 UIManager_Addressable로 전환
+### 9.1 기존 UIManagerOld에서 UIManager로 전환
 
 1. **기존 프리팹을 Addressable로 변환**
    - 프리팹을 Addressable Groups에 추가
@@ -191,15 +191,15 @@ PrintAllLayerUIs();
 2. **코드 수정**
    ```csharp
    // 기존
-   UIManager.Instance.ShowPopUp<MainMenu>();
+   UIManagerOld.Instance.ShowPopUp<MainMenu>();
    
    // 새로운 방식
-   BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
-   UIManager_Addressable.Instance.OpenPanel(mainMenu);
+   BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
+   UIManager.Instance.OpenPanel(mainMenu);
    ```
 
 3. **점진적 전환**
-   - 기존 UIManager와 UIManager_Addressable을 병행 사용
+   - 기존 UIManagerOld와 UIManager를 병행 사용
    - UI별로 하나씩 전환
 
 ## 10. 주의사항

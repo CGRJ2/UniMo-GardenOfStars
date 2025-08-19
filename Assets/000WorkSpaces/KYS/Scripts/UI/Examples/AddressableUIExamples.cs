@@ -49,14 +49,14 @@ namespace KYS.UI.Examples
             Debug.Log("[AddressableUIExamples] UI 미리 로드 시작");
             
             // HUD UI 미리 로드
-            await UIManager_Addressable.Instance.PreloadUIAsync<BaseUI>(hudPanelKey);
+            await UIManager.Instance.PreloadUIAsync<BaseUI>(hudPanelKey);
             
             // 패널 UI들 미리 로드
-            await UIManager_Addressable.Instance.PreloadUIAsync<BaseUI>(mainMenuKey);
-            await UIManager_Addressable.Instance.PreloadUIAsync<BaseUI>(settingsKey);
+            await UIManager.Instance.PreloadUIAsync<BaseUI>(mainMenuKey);
+            await UIManager.Instance.PreloadUIAsync<BaseUI>(settingsKey);
             
             // 팝업 UI들 미리 로드
-            await UIManager_Addressable.Instance.PreloadUIAsync<BaseUI>(confirmPopupKey);
+            await UIManager.Instance.PreloadUIAsync<BaseUI>(confirmPopupKey);
             
             Debug.Log("[AddressableUIExamples] UI 미리 로드 완료");
         }
@@ -73,7 +73,7 @@ namespace KYS.UI.Examples
                 Debug.Log("[AddressableUIExamples] HUD UI 로드 시작 (문자열 키)");
                 
                 // HUD UI 로드
-                BaseUI hudUI = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(hudPanelKey);
+                BaseUI hudUI = await UIManager.Instance.LoadUIAsync<BaseUI>(hudPanelKey);
                 
                 if (hudUI != null)
                 {
@@ -108,7 +108,7 @@ namespace KYS.UI.Examples
                 }
                 
                 // HUD UI 로드 (AssetReference 사용)
-                BaseUI hudUI = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(hudPanelReference);
+                BaseUI hudUI = await UIManager.Instance.LoadUIAsync<BaseUI>(hudPanelReference);
                 
                 if (hudUI != null)
                 {
@@ -137,7 +137,7 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] HUD UI 라벨 로드 시작");
                 
-                List<BaseUI> hudUIs = await UIManager_Addressable.Instance.LoadUIsByLabelAsync<BaseUI>(hudLabel);
+                List<BaseUI> hudUIs = await UIManager.Instance.LoadUIsByLabelAsync<BaseUI>(hudLabel);
                 
                 foreach (BaseUI hudUI in hudUIs)
                 {
@@ -166,12 +166,12 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 메인 메뉴 로드 시작");
                 
-                BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(mainMenuKey);
+                BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>(mainMenuKey);
                 
                 if (mainMenu != null)
                 {
                     loadedUIs[mainMenuKey] = mainMenu;
-                    UIManager_Addressable.Instance.OpenPanel(mainMenu);
+                    UIManager.Instance.OpenPanel(mainMenu);
                     Debug.Log("[AddressableUIExamples] 메인 메뉴 열기 완료");
                 }
                 else
@@ -194,12 +194,12 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 설정 패널 로드 시작");
                 
-                BaseUI settings = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(settingsKey);
+                BaseUI settings = await UIManager.Instance.LoadUIAsync<BaseUI>(settingsKey);
                 
                 if (settings != null)
                 {
                     loadedUIs[settingsKey] = settings;
-                    UIManager_Addressable.Instance.OpenPanel(settings);
+                    UIManager.Instance.OpenPanel(settings);
                     Debug.Log("[AddressableUIExamples] 설정 패널 열기 완료");
                 }
                 else
@@ -222,7 +222,7 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 패널 UI 라벨 로드 시작");
                 
-                List<BaseUI> panelUIs = await UIManager_Addressable.Instance.LoadUIsByLabelAsync<BaseUI>(panelLabel);
+                List<BaseUI> panelUIs = await UIManager.Instance.LoadUIsByLabelAsync<BaseUI>(panelLabel);
                 
                 foreach (BaseUI panelUI in panelUIs)
                 {
@@ -252,12 +252,12 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 확인 팝업 로드 시작");
                 
-                BaseUI confirmPopup = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(confirmPopupKey);
+                BaseUI confirmPopup = await UIManager.Instance.LoadUIAsync<BaseUI>(confirmPopupKey);
                 
                 if (confirmPopup != null)
                 {
                     loadedUIs[confirmPopupKey] = confirmPopup;
-                    UIManager_Addressable.Instance.OpenPopup(confirmPopup);
+                    UIManager.Instance.OpenPopup(confirmPopup);
                     Debug.Log("[AddressableUIExamples] 확인 팝업 표시 완료");
                 }
                 else
@@ -280,7 +280,7 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 팝업 UI 라벨 로드 시작");
                 
-                List<BaseUI> popupUIs = await UIManager_Addressable.Instance.LoadUIsByLabelAsync<BaseUI>(popupLabel);
+                List<BaseUI> popupUIs = await UIManager.Instance.LoadUIsByLabelAsync<BaseUI>(popupLabel);
                 
                 foreach (BaseUI popupUI in popupUIs)
                 {
@@ -310,7 +310,7 @@ namespace KYS.UI.Examples
             {
                 Debug.Log("[AddressableUIExamples] 로딩 화면 로드 시작");
                 
-                BaseUI loadingUI = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(loadingKey);
+                BaseUI loadingUI = await UIManager.Instance.LoadUIAsync<BaseUI>(loadingKey);
                 
                 if (loadingUI != null)
                 {
@@ -340,7 +340,7 @@ namespace KYS.UI.Examples
         {
             if (loadedUIs.ContainsKey(key))
             {
-                UIManager_Addressable.Instance.ReleaseUI(key);
+                UIManager.Instance.ReleaseUI(key);
                 loadedUIs.Remove(key);
                 Debug.Log($"[AddressableUIExamples] UI 해제 완료: {key}");
             }
@@ -355,7 +355,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void ReleaseAllUIs()
         {
-            UIManager_Addressable.Instance.ReleaseAllAddressables();
+            UIManager.Instance.ReleaseAllAddressables();
             loadedUIs.Clear();
             Debug.Log("[AddressableUIExamples] 모든 UI 해제 완료");
         }
@@ -365,7 +365,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void ClosePanel()
         {
-            UIManager_Addressable.Instance.ClosePanel();
+            UIManager.Instance.ClosePanel();
         }
         
         /// <summary>
@@ -373,7 +373,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void ClosePopup()
         {
-            UIManager_Addressable.Instance.ClosePopup();
+            UIManager.Instance.ClosePopup();
         }
         
         /// <summary>
@@ -381,7 +381,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void CloseAllPanels()
         {
-            UIManager_Addressable.Instance.CloseAllPanels();
+            UIManager.Instance.CloseAllPanels();
         }
         
         /// <summary>
@@ -389,7 +389,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void CloseAllPopups()
         {
-            UIManager_Addressable.Instance.CloseAllPopups();
+            UIManager.Instance.CloseAllPopups();
         }
         
         #endregion
@@ -401,7 +401,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void PrintCanvasInfo(UILayerType layerType)
         {
-            Canvas canvas = UIManager_Addressable.Instance.GetCanvasByLayer(layerType);
+            Canvas canvas = UIManager.Instance.GetCanvasByLayer(layerType);
             
             if (canvas != null)
             {
@@ -437,7 +437,7 @@ namespace KYS.UI.Examples
         /// </summary>
         public void PrintUIsByLayer(UILayerType layerType)
         {
-            List<BaseUI> uis = UIManager_Addressable.Instance.GetUIsByLayer(layerType);
+            List<BaseUI> uis = UIManager.Instance.GetUIsByLayer(layerType);
             
             Debug.Log($"[AddressableUIExamples] {layerType} 레이어의 UI들 ({uis.Count}개):");
             

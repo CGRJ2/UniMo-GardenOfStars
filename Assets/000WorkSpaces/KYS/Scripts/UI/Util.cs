@@ -6,7 +6,7 @@ namespace KYS
 {
     public static class Util
     {
-        public static bool escPressed { get; private set; } = false;
+        public static bool escPressed { get; set; } = false;
         public static T GetOrAddComponent<T>(this GameObject go) where T : Component
         {
             T comp = go.GetComponent<T>();

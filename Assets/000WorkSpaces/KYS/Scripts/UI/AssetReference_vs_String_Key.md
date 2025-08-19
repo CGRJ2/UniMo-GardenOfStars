@@ -64,7 +64,7 @@ public async void LoadUI(string uiKey)
 }
 ```
 
-## 4. UIManager_Addressable에서의 사용
+## 4. UIManager에서의 사용
 
 ### 4.1 Canvas 참조 (AssetReference 권장)
 ```csharp
@@ -78,10 +78,10 @@ public async void LoadUI(string uiKey)
 ### 4.2 UI 로드 (두 방식 모두 지원)
 ```csharp
 // 문자열 키 사용
-BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
+BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
 
 // AssetReference 사용
-BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(mainMenuReference);
+BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>(mainMenuReference);
 ```
 
 ## 5. 권장 사용 패턴
@@ -105,7 +105,7 @@ BaseUI mainMenu = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(mainM
 public async void LoadDynamicUI(string uiType, string uiName)
 {
     string key = $"UI/{uiType}/{uiName}";
-    BaseUI ui = await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(key);
+    BaseUI ui = await UIManager.Instance.LoadUIAsync<BaseUI>(key);
 }
 ```
 
@@ -123,14 +123,14 @@ public class UILoader : MonoBehaviour
     // 고정 UI 로드
     public async Task<BaseUI> LoadMainMenu()
     {
-        return await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(mainMenuReference);
+        return await UIManager.Instance.LoadUIAsync<BaseUI>(mainMenuReference);
     }
     
     // 동적 UI 로드
     public async Task<BaseUI> LoadDynamicUI(string uiName)
     {
         string key = $"{dynamicUIPrefix}{uiName}";
-        return await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(key);
+        return await UIManager.Instance.LoadUIAsync<BaseUI>(key);
     }
 }
 ```
@@ -154,14 +154,14 @@ public class UILoader : MonoBehaviour
 // 기존 (문자열 키)
 public async Task<BaseUI> LoadUI(string key)
 {
-    return await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(key);
+    return await UIManager.Instance.LoadUIAsync<BaseUI>(key);
 }
 
 // 개선 (AssetReference)
 [SerializeField] private AssetReferenceGameObject uiReference;
 public async Task<BaseUI> LoadUI()
 {
-    return await UIManager_Addressable.Instance.LoadUIAsync<BaseUI>(uiReference);
+    return await UIManager.Instance.LoadUIAsync<BaseUI>(uiReference);
 }
 ```
 
