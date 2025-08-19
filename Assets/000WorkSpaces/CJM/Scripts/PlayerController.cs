@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -9,9 +10,7 @@ public class PlayerController : MonoBehaviour
     public PlayerView view;
     private Vector3 dir;
     private Rigidbody rb;
-
-    public int TempStackorder = 0;
-
+    public Stack<IngrediantSO> ingrediantStack = new ();
 
     private void Awake()
     {

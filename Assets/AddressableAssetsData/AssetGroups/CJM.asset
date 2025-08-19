@@ -10,28 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: TestGroup
+  m_Name: CJM
   m_EditorClassIdentifier: 
-  m_GroupName: TestGroup
+  m_GroupName: CJM
   m_Data:
     m_SerializedData: []
-  m_GUID: e3939c642cf86df409fca4a1f975b896
+  m_GUID: 1dc0def9623a8b74fb80d480ed0f6168
   m_SerializeEntries:
-  - m_GUID: 3c1d8c2bdb9e5c342b7dfcc07709c076
-    m_Address: Assets/Imports/Imports_Unimo_GardenOfStars/03HwigAssets/TestSFX.mp3
+  - m_GUID: 62b554e4ab084ea4ab4a1b4c22edac97
+    m_Address: CSVTest
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - Test
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7e55903f48c918e49b9c274a14b0969b
-    m_Address: Assets/000WorkSpaces/CJM/Scripts/TestPrefab.prefab
+  - m_GUID: 6ad5c92997cff8a4985b4b3a9ee8f883
+    m_Address: IngredA
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - default
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 02054808b9ac6a14cbf69aece9cbaab0, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: e73798f5443872d4a86fcceb33903e26, type: 2}
-    - {fileID: 11400000, guid: 84245812a4ee9374e955dca34718bab1, type: 2}
+    - {fileID: 11400000, guid: 202d0800d8189a94aae526765c6a7f35, type: 2}
+    - {fileID: 11400000, guid: 37a5f54b3748b4647a86561f62b2ec54, type: 2}
