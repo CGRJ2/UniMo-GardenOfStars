@@ -73,10 +73,12 @@ public class ProductGenerater : MonoBehaviour
         }
     }
 
-    public void SetProduct(IngrediantSO ingrediantSO)
+    public void Init(IngrediantSO ingrediantData, float cultivateTime)
     {
-        this.ingrediantSO = ingrediantSO;
-        _Pool = Manager.pool.GetPoolBundle(ingrediantSO.InstancePrefab).instancePool;
+        this.ingrediantSO = ingrediantData;
+        this.cultivatingTime = cultivateTime;
+
+        _Pool = Manager.pool.GetPoolBundle(ingrediantData.InstancePrefab).instancePool;
 
         // 생산 루틴 가동(임시)
         if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
