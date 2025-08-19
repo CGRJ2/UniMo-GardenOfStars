@@ -1,150 +1,394 @@
 # SafeArea 설정 가이드
 
-## 1. 개요
+## 📋 개요
 
-SafeArea는 모바일 기기에서 노치, 홈 인디케이터, 상태바 등으로 인해 UI가 가려지지 않도록 안전한 영역을 제공합니다.
+SafeArea는 모바일 디바이스에서 노치, 홈 인디케이터, 상태바 등 시스템 UI와 겹치지 않는 안전한 영역을 정의합니다. 이 가이드는 Unity에서 SafeArea를 구현하고 관리하는 방법을 설명합니다.
 
-## 2. SafeArea 시스템 구성
+## 🎯 주요 기능
 
-### 2.1 SafeAreaManager
-- 전체 SafeArea 계산 및 관리
-- 모든 Canvas에 SafeArea 적용
-- 디버그 정보 제공
+- **자동 SafeArea 계산**: 디바이스별 안전 영역 자동 감지
+- **UI 자동 조정**: 모든 UI 요소를 안전 영역에 맞게 자동 조정
+- **디버그 모드**: 개발 중 SafeArea 시각화
+- **플랫폼별 최적화**: iOS, Android 각각에 최적화된 처리
 
-### 2.2 SafeAreaPanel
-- 개별 Canvas의 SafeArea 패널
-- 자동으로 자식 UI 요소들을 SafeArea에 맞게 조정
-- 런타임에 동적으로 크기 조정
+## 🏗️ 시스템 구조
 
-## 3. 설정 방법
-
-### 3.1 SafeAreaManager 설정
+### 1. SafeAreaManager
 ```csharp
-// UIManager에서 자동으로 SafeArea 적용
+public class SafeAreaManager : MonoBehaviour
+{
+    [Header("SafeArea Settings")]
+    [SerializeField] private bool enableSafeArea = true;
+    [SerializeField] private Color debugColor = new Color(1, 0, 0, 0.3f);
+    [SerializeField] private bool showDebugArea = false;
+    
+    // SafeArea 정보
+    public static Rect SafeArea { get; private set; }
+    public static Vector2 ScreenSize { get; private set; }
+}
+```
+
+### 2. SafeAreaPanel
+```csharp
+public class SafeAreaPanel : MonoBehaviour
+{
+    [SerializeField] private RectTransform panelRectTransform;
+    
+    // SafeArea에 맞게 패널 크기 조정
+    public void ApplySafeArea(Rect safeArea, Vector2 screenSize);
+}
+```
+
+### 3. UIManager 통합
+```csharp
+// UIManager에서 SafeArea 자동 적용
 private void ApplySafeAreaToCanvases()
 {
-    var safeAreaManager = FindObjectOfType<SafeAreaManager>();
-    if (safeAreaManager != null)
+    if (SafeAreaManager.Instance != null && SafeAreaManager.Instance.EnableSafeArea)
     {
-        if (hudCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(hudCanvas);
-        if (panelCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(panelCanvas);
-        if (popupCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(popupCanvas);
-        if (loadingCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(loadingCanvas);
+        // 모든 Canvas에 SafeArea 적용
     }
 }
 ```
 
-### 3.2 Canvas 프리팹 설정
-각 Canvas 프리팹에 SafeAreaPanel을 최상위 자식으로 추가:
+## ⚙️ 설정 방법
+
+### 1. SafeAreaManager 설정
+
+1. **씬에 SafeAreaManager 추가**
+   - 빈 GameObject 생성
+   - SafeAreaManager 컴포넌트 추가
+   - DontDestroyOnLoad 설정
+
+2. **Inspector 설정**
+   ```csharp
+   [Header("SafeArea Settings")]
+   [SerializeField] private bool enableSafeArea = true;
+   [SerializeField] private Color debugColor = new Color(1, 0, 0, 0.3f);
+   [SerializeField] private bool showDebugArea = false;
+   ```
+
+### 2. Canvas 프리팹 설정
+
+각 Canvas 프리팹에 SafeAreaPanel 자동 추가:
 
 ```
-Canvas (HUDCanvas, PanelCanvas, PopupCanvas, LoadingCanvas)
-└── SafeAreaPanel
-    └── UI Elements...
+Canvas (Canvas)
+├── SafeAreaPanel (RectTransform)
+│   └── Content (RectTransform)
+│       └── UI Elements...
+└── Background (RectTransform) - Optional
 ```
 
-### 3.3 SafeAreaPanel 컴포넌트 설정
+**SafeAreaPanel 설정:**
+- **Anchor**: Stretch-Stretch (전체 화면)
+- **Pivot**: (0.5, 0.5)
+- **Size**: Canvas 크기에 맞춤
+
+### 3. UIManager 설정
+
 ```csharp
 [Header("SafeArea Settings")]
-[SerializeField] private bool autoResizeChildren = true;
-[SerializeField] private bool maintainAspectRatio = true;
-```
-
-## 4. 사용 예시
-
-### 4.1 UIManager에서 자동 적용
-```csharp
-// UIManager의 InitializeAddressableCanvases에서 자동 호출
-ApplySafeAreaToCanvases();
-```
-
-### 4.2 수동 적용
-```csharp
-// 특정 Canvas에 SafeArea 적용
-SafeAreaManager safeAreaManager = FindObjectOfType<SafeAreaManager>();
-if (safeAreaManager != null)
-{
-    safeAreaManager.ApplySafeAreaToCanvas(myCanvas);
-}
-```
-
-### 4.3 SafeArea 정보 확인
-```csharp
-SafeAreaManager safeAreaManager = FindObjectOfType<SafeAreaManager>();
-if (safeAreaManager != null)
-{
-    Rect safeArea = safeAreaManager.GetSafeArea();
-    (Vector2 min, Vector2 max) anchors = safeAreaManager.GetSafeAreaAnchors();
-    
-    Debug.Log($"SafeArea: {safeArea}");
-    Debug.Log($"Anchors: Min={anchors.min}, Max={anchors.max}");
-}
-```
-
-## 5. 디버깅
-
-### 5.1 SafeArea 정보 출력
-```csharp
-[ContextMenu("Print SafeArea Info")]
-public void PrintSafeAreaInfo()
-{
-    Debug.Log($"Screen Size: {Screen.width} x {Screen.height}");
-    Debug.Log($"SafeArea: {Screen.safeArea}");
-    Debug.Log($"SafeArea Anchors: Min={anchorMin}, Max={anchorMax}");
-}
-```
-
-### 5.2 디버그 시각화
-```csharp
-[SerializeField] private bool showDebugArea = false;
+[SerializeField] private bool enableSafeArea = true;
 [SerializeField] private Color debugColor = new Color(1, 0, 0, 0.3f);
+[SerializeField] private bool showDebugArea = false;
 ```
 
-## 6. 주의사항
+## 📱 플랫폼별 SafeArea
 
-### 6.1 Canvas 설정
-- Canvas의 Render Mode가 Screen Space - Overlay여야 함
-- Canvas Scaler 설정 확인
+### 1. iOS SafeArea
 
-### 6.2 UI 요소 배치
-- SafeAreaPanel 내부의 UI 요소들은 자동으로 SafeArea에 맞춰짐
-- SetActive(false) 상태에서도 크기 조정이 적용됨
+**iPhone X 이상:**
+- 상단: 노치 영역 제외
+- 하단: 홈 인디케이터 영역 제외
+- 좌우: 일반적으로 전체 사용 가능
 
-### 6.3 성능 고려사항
-- SafeArea 계산은 화면 회전 시에만 수행
-- 자식 UI 요소들의 크기 조정은 필요시에만 수행
+**iPhone SE, 8 등:**
+- 상단: 상태바 영역 제외
+- 하단: 전체 사용 가능
 
-## 7. 마이그레이션
+### 2. Android SafeArea
 
-### 7.1 기존 UI에서 SafeArea 적용
-1. Canvas에 SafeAreaPanel 추가
-2. 기존 UI 요소들을 SafeAreaPanel 하위로 이동
-3. SafeAreaPanel의 autoResizeChildren 활성화
+**노치 디바이스:**
+- 상단: 상태바 + 노치 영역 제외
+- 하단: 네비게이션 바 영역 제외
 
-### 7.2 UIManager와 통합
+**일반 디바이스:**
+- 상단: 상태바 영역 제외
+- 하단: 전체 사용 가능
+
+## 🔧 구현 세부사항
+
+### 1. SafeArea 계산
+
 ```csharp
-// UIManager에서 자동으로 모든 Canvas에 SafeArea 적용
-private void ApplySafeAreaToCanvases()
+private void UpdateSafeArea()
 {
-    try
+    SafeArea = Screen.safeArea;
+    ScreenSize = new Vector2(Screen.width, Screen.height);
+    
+    // 디버그 정보 출력
+    if (showDebugArea)
     {
-        var safeAreaManager = FindObjectOfType<SafeAreaManager>();
-        if (safeAreaManager != null)
+        Debug.Log($"SafeArea: {SafeArea}, ScreenSize: {ScreenSize}");
+    }
+}
+```
+
+### 2. UI 조정 로직
+
+```csharp
+public void ApplySafeArea(Rect safeArea, Vector2 screenSize)
+{
+    if (panelRectTransform == null) return;
+    
+    // SafeArea를 0-1 범위로 정규화
+    Vector2 anchorMin = safeArea.position;
+    Vector2 anchorMax = safeArea.position + safeArea.size;
+    
+    anchorMin.x /= screenSize.x;
+    anchorMin.y /= screenSize.y;
+    anchorMax.x /= screenSize.x;
+    anchorMax.y /= screenSize.y;
+    
+    // RectTransform 설정
+    panelRectTransform.anchorMin = anchorMin;
+    panelRectTransform.anchorMax = anchorMax;
+    panelRectTransform.offsetMin = Vector2.zero;
+    panelRectTransform.offsetMax = Vector2.zero;
+}
+```
+
+### 3. 자동 적용 시스템
+
+```csharp
+// UIManager에서 Canvas 생성 시 자동 적용
+private void ApplySafeAreaToCanvas(Canvas canvas)
+{
+    if (!enableSafeArea) return;
+    
+    SafeAreaPanel safeAreaPanel = canvas.GetComponentInChildren<SafeAreaPanel>();
+    if (safeAreaPanel != null)
+    {
+        safeAreaPanel.ApplySafeArea(SafeAreaManager.SafeArea, SafeAreaManager.ScreenSize);
+    }
+}
+```
+
+## 📖 사용법
+
+### 1. 기본 사용
+
+```csharp
+// SafeArea 정보 가져오기
+Rect safeArea = SafeAreaManager.SafeArea;
+Vector2 screenSize = SafeAreaManager.ScreenSize;
+
+// SafeArea 활성화/비활성화
+SafeAreaManager.Instance.EnableSafeArea = true;
+
+// 디버그 모드 활성화
+SafeAreaManager.Instance.ShowDebugArea = true;
+```
+
+### 2. 수동 SafeArea 적용
+
+```csharp
+// 특정 UI에 SafeArea 수동 적용
+public class CustomUI : MonoBehaviour
+{
+    [SerializeField] private RectTransform contentRect;
+    
+    private void Start()
+    {
+        ApplySafeArea();
+    }
+    
+    private void ApplySafeArea()
+    {
+        if (SafeAreaManager.Instance != null)
         {
-            if (hudCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(hudCanvas);
-            if (panelCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(panelCanvas);
-            if (popupCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(popupCanvas);
-            if (loadingCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(loadingCanvas);
-            Debug.Log("[UIManager] SafeArea 적용 완료");
+            SafeAreaPanel safeAreaPanel = GetComponent<SafeAreaPanel>();
+            if (safeAreaPanel != null)
+            {
+                safeAreaPanel.ApplySafeArea(
+                    SafeAreaManager.SafeArea, 
+                    SafeAreaManager.ScreenSize
+                );
+            }
         }
     }
-    catch (System.Exception e)
+}
+```
+
+### 3. SafeArea 변경 감지
+
+```csharp
+// 화면 회전 등으로 SafeArea 변경 시 자동 업데이트
+private void OnRectTransformDimensionsChange()
+{
+    if (SafeAreaManager.Instance != null)
     {
-        Debug.LogWarning($"[UIManager] SafeArea 적용 중 오류: {e.Message}");
+        ApplySafeArea();
     }
 }
 ```
 
-## 8. 결론
+## 🎨 디버그 및 테스트
 
-SafeArea 시스템을 통해 다양한 모바일 기기에서 일관된 UI 경험을 제공할 수 있습니다. UIManager와 통합하여 자동으로 모든 Canvas에 SafeArea가 적용되도록 구성되어 있습니다.
+### 1. 디버그 모드
+
+```csharp
+// SafeArea 시각화
+[SerializeField] private bool showDebugArea = false;
+[SerializeField] private Color debugColor = new Color(1, 0, 0, 0.3f);
+
+private void OnGUI()
+{
+    if (showDebugArea)
+    {
+        // SafeArea 영역을 빨간색으로 표시
+        GUI.color = debugColor;
+        GUI.Box(SafeArea, "");
+        GUI.color = Color.white;
+    }
+}
+```
+
+### 2. Unity 에디터 테스트
+
+**Game View 설정:**
+1. **Game View**에서 **Resolution** 설정
+2. **iPhone X** 또는 **Android 노치** 해상도 선택
+3. **SafeArea** 확인
+
+**Simulator 설정:**
+```csharp
+#if UNITY_EDITOR
+[Header("Editor Testing")]
+[SerializeField] private bool simulateNotch = false;
+[SerializeField] private Rect simulatedSafeArea = new Rect(0, 100, 375, 812);
+#endif
+```
+
+### 3. 실제 디바이스 테스트
+
+**iOS:**
+- iPhone X 이상 디바이스에서 테스트
+- 다양한 방향(세로/가로) 테스트
+- 앱 전환 시 SafeArea 변화 확인
+
+**Android:**
+- 노치가 있는 디바이스에서 테스트
+- 다양한 해상도에서 테스트
+- 시스템 UI 숨김/표시 테스트
+
+## 🛠️ 문제 해결
+
+### 1. 일반적인 문제들
+
+**SafeArea가 적용되지 않음:**
+```
+[SafeAreaManager] SafeArea 적용 실패
+```
+- **해결**: SafeAreaManager가 씬에 있는지 확인
+- **해결**: Canvas에 SafeAreaPanel이 있는지 확인
+
+**UI가 잘림:**
+- **해결**: SafeAreaPanel의 Content 영역 확인
+- **해결**: UI 요소의 Anchor 설정 확인
+
+**디버그 모드가 작동하지 않음:**
+- **해결**: showDebugArea가 true인지 확인
+- **해결**: OnGUI 메서드가 호출되는지 확인
+
+### 2. 플랫폼별 문제
+
+**iOS에서 SafeArea가 잘못 계산됨:**
+```csharp
+// iOS 전용 SafeArea 계산
+#if UNITY_IOS
+private Rect GetIOSSafeArea()
+{
+    Rect safeArea = Screen.safeArea;
+    
+    // iPhone X 이상 노치 처리
+    if (Screen.height >= 812) // iPhone X, XS, XR, 11, 12, 13
+    {
+        // 추가 노치 보정
+    }
+    
+    return safeArea;
+}
+#endif
+```
+
+**Android에서 상태바 영역 문제:**
+```csharp
+// Android 전용 SafeArea 계산
+#if UNITY_ANDROID
+private Rect GetAndroidSafeArea()
+{
+    Rect safeArea = Screen.safeArea;
+    
+    // Android 상태바 높이 보정
+    int statusBarHeight = GetStatusBarHeight();
+    safeArea.y += statusBarHeight;
+    safeArea.height -= statusBarHeight;
+    
+    return safeArea;
+}
+#endif
+```
+
+### 3. 성능 최적화
+
+**SafeArea 계산 최적화:**
+```csharp
+// 변경이 있을 때만 계산
+private Rect lastSafeArea;
+private Vector2 lastScreenSize;
+
+private void UpdateSafeArea()
+{
+    if (Screen.safeArea != lastSafeArea || 
+        new Vector2(Screen.width, Screen.height) != lastScreenSize)
+    {
+        // SafeArea 변경 시에만 업데이트
+        ApplySafeArea();
+        
+        lastSafeArea = Screen.safeArea;
+        lastScreenSize = new Vector2(Screen.width, Screen.height);
+    }
+}
+```
+
+## 📚 추가 리소스
+
+- [Unity SafeArea 공식 문서](https://docs.unity3d.com/ScriptReference/Screen-safeArea.html)
+- [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
+- [Android Notch Guidelines](https://developer.android.com/guide/topics/display-cutout)
+
+## 🎯 모범 사례
+
+### 1. UI 설계 원칙
+- **중앙 정렬**: 중요한 UI는 화면 중앙에 배치
+- **여백 확보**: SafeArea 경계에서 충분한 여백 확보
+- **반응형 디자인**: 다양한 해상도에 대응
+
+### 2. 코드 구조
+- **자동화**: 가능한 한 자동으로 SafeArea 적용
+- **확장성**: 새로운 디바이스에 쉽게 대응
+- **디버깅**: 개발 중 SafeArea 시각화 지원
+
+### 3. 테스트 전략
+- **다양한 디바이스**: 노치가 있는/없는 디바이스 모두 테스트
+- **다양한 방향**: 세로/가로 모드 모두 테스트
+- **시스템 UI**: 상태바, 네비게이션 바 변화 테스트
+
+---
+
+**버전**: 2.0  
+**최종 업데이트**: 2024년  
+**Unity 버전**: 2022.3 LTS 이상  
+**지원 플랫폼**: iOS, Android
