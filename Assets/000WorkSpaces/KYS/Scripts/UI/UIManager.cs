@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System.Reflection;
@@ -15,7 +15,7 @@ using DG.Tweening;
 namespace KYS
 {
     /// <summary>
-    /// Addressable ?? ??? UI ???
+    /// Addressable 기반 완전한 UI 관리자
     /// </summary>
     public class UIManager : Singleton<UIManager>
     {
@@ -26,29 +26,29 @@ namespace KYS
         [SerializeField] private AssetReferenceGameObject loadingCanvasReference;
         
         [Header("Addressable UI Settings")]
-        [SerializeField] private string uiPrefabLabel = "UI";
-        [SerializeField] private string hudPrefabLabel = "UI_HUD";
-        [SerializeField] private string panelPrefabLabel = "UI_Panel";
-        [SerializeField] private string popupPrefabLabel = "UI_Popup";
+        //[SerializeField] private string uiPrefabLabel = "UI";
+        //[SerializeField] private string hudPrefabLabel = "UI_HUD";
+        //[SerializeField] private string panelPrefabLabel = "UI_Panel";
+        //[SerializeField] private string popupPrefabLabel = "UI_Popup";
         
-        // Canvas ????
+        // Canvas 참조들
         private Canvas hudCanvas;
         private Canvas panelCanvas;
         private Canvas popupCanvas;
         private Canvas loadingCanvas;
         
-        // Layer? UI ??
+        // Layer별 UI 관리
         private Dictionary<UILayerType, List<BaseUI>> layerUIs = new Dictionary<UILayerType, List<BaseUI>>();
         
-        // Stack ?? UI ??
+        // Stack 기반 UI 관리
         private Stack<BaseUI> panelStack = new Stack<BaseUI>();
         private Stack<BaseUI> popupStack = new Stack<BaseUI>();
         
-        // Addressable ?? ??
+        // Addressable 핸들 관리
         private Dictionary<string, AsyncOperationHandle> addressableHandles = new Dictionary<string, AsyncOperationHandle>();
         private Dictionary<string, GameObject> instantiatedUIs = new Dictionary<string, GameObject>();
         
-        // UI ?? ??
+        // UI 상태 관리
         public static int selectIndexUI { get; set; } = 0;
         public static bool canClosePopUp = true;
         bool canClose => (panelStack.Count > 0 || popupStack.Count > 0) && 
@@ -80,15 +80,15 @@ namespace KYS
         }
 
         /// <summary>
-        /// Addressable Canvas ???
+        /// Addressable Canvas 초기화
         /// </summary>
         private async System.Threading.Tasks.Task InitializeAddressableCanvases()
         {
             try
             {
-                Debug.Log("[UIManager] Addressable Canvas ??? ??");
+                Debug.Log("[UIManager] Addressable Canvas 초기화 시작");
                 
-                // HUD Canvas ??
+                // HUD Canvas 로드
                 if (hudCanvasReference != null && hudCanvasReference.RuntimeKeyIsValid())
                 {
                     var hudHandle = hudCanvasReference.InstantiateAsync();
@@ -98,7 +98,7 @@ namespace KYS
                     DontDestroyOnLoad(hudHandle.Result);
                 }
                 
-                // Panel Canvas ??
+                // Panel Canvas 로드
                 if (panelCanvasReference != null && panelCanvasReference.RuntimeKeyIsValid())
                 {
                     var panelHandle = panelCanvasReference.InstantiateAsync();
@@ -108,7 +108,7 @@ namespace KYS
                     DontDestroyOnLoad(panelHandle.Result);
                 }
                 
-                // Popup Canvas ??
+                // Popup Canvas 로드
                 if (popupCanvasReference != null && popupCanvasReference.RuntimeKeyIsValid())
                 {
                     var popupHandle = popupCanvasReference.InstantiateAsync();
@@ -118,7 +118,7 @@ namespace KYS
                     DontDestroyOnLoad(popupHandle.Result);
                 }
                 
-                // Loading Canvas ??
+                // Loading Canvas 로드
                 if (loadingCanvasReference != null && loadingCanvasReference.RuntimeKeyIsValid())
                 {
                     var loadingHandle = loadingCanvasReference.InstantiateAsync();
@@ -129,43 +129,28 @@ namespace KYS
                 }
                 
                 ApplySafeAreaToCanvases();
-                Debug.Log("[UIManager] Addressable Canvas ??? ??");
+                Debug.Log("[UIManager] Addressable Canvas 초기화 완료");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] Canvas ??? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] Canvas 초기화 중 오류: {e.Message}");
             }
         }
 
-        /// <summary>
-        /// SafeArea? ?? Canvas? ??
-        /// </summary>
         private void ApplySafeAreaToCanvases()
         {
-            try
+            var safeAreaManager = FindObjectOfType<SafeAreaManager>();
+            if (safeAreaManager != null)
             {
-                var safeAreaManager = FindObjectOfType<SafeAreaManager>();
-                if (safeAreaManager != null)
-                {
-                    if (hudCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(hudCanvas);
-                    if (panelCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(panelCanvas);
-                    if (popupCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(popupCanvas);
-                    if (loadingCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(loadingCanvas);
-                    Debug.Log("[UIManager] SafeArea ?? ??");
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning($"[UIManager] SafeArea ?? ? ??: {e.Message}");
+                if (hudCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(hudCanvas);
+                if (panelCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(panelCanvas);
+                if (popupCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(popupCanvas);
+                if (loadingCanvas != null) safeAreaManager.ApplySafeAreaToCanvas(loadingCanvas);
             }
         }
 
-        /// <summary>
-        /// Layer? UI ???
-        /// </summary>
         private void InitializeLayerUIs()
         {
-            layerUIs.Clear();
             foreach (UILayerType layerType in System.Enum.GetValues(typeof(UILayerType)))
             {
                 layerUIs[layerType] = new List<BaseUI>();
@@ -177,74 +162,88 @@ namespace KYS
         #region Addressable UI Loading
 
         /// <summary>
-        /// ??? ?? UI ??
+        /// 문자열 키로 UI 로드
         /// </summary>
         public async System.Threading.Tasks.Task<T> LoadUIAsync<T>(string addressableKey, Transform parent = null) where T : BaseUI
         {
             try
             {
-                if (string.IsNullOrEmpty(addressableKey))
-                {
-                    Debug.LogError("[UIManager] Addressable ?? null??? ??????.");
-                    return null;
-                }
-
-                // ?? ??? UI? ??? ??
+                Debug.Log($"[UIManager] UI 로드 시작: {addressableKey}");
+                
+                // 이미 로드된 UI가 있는지 확인
                 if (instantiatedUIs.ContainsKey(addressableKey))
                 {
                     GameObject existingUI = instantiatedUIs[addressableKey];
                     if (existingUI != null)
                     {
-                        return existingUI.GetComponent<T>();
+                        T existingComponent = existingUI.GetComponent<T>();
+                        if (existingComponent != null)
+                        {
+                            Debug.Log($"[UIManager] 기존 UI 반환: {addressableKey}");
+                            return existingComponent;
+                        }
                     }
                 }
-
-                // UI ??
-                var handle = Addressables.InstantiateAsync(addressableKey);
+                
+                // Addressable에서 프리팹 로드
+                var handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
                 await handle.Task;
-
-                if (handle.Status == AsyncOperationStatus.Succeeded)
+                
+                if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    GameObject uiObject = handle.Result;
-                    T uiComponent = uiObject.GetComponent<T>();
-
-                    if (uiComponent == null)
-                    {
-                        Debug.LogError($"[UIManager] {addressableKey}?? {typeof(T).Name} ????? ?? ? ????.");
-                        Addressables.ReleaseInstance(handle);
-                        return null;
-                    }
-
-                    // ?? ??
-                    Transform targetParent = parent ?? GetCanvasForUI<T>();
-                    if (targetParent != null)
-                    {
-                        uiObject.transform.SetParent(targetParent, false);
-                    }
-
-                    // ??? ??
-                    addressableHandles[addressableKey] = handle;
-                    instantiatedUIs[addressableKey] = uiObject;
-                    RegisterUI(uiComponent);
-
-                    Debug.Log($"[UIManager] UI ?? ??: {addressableKey}");
-                    return uiComponent;
-                }
-                else
-                {
-                    Debug.LogError($"[UIManager] UI ?? ??: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 로드 실패: {addressableKey}");
+                    Addressables.Release(handle);
                     return null;
                 }
+                
+                // 부모 Transform 결정
+                Transform targetParent = parent ?? GetCanvasForUI<T>();
+                if (targetParent == null)
+                {
+                    Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {addressableKey}");
+                    Addressables.Release(handle);
+                    return null;
+                }
+                
+                // UI 인스턴스 생성
+                var instanceHandle = Addressables.InstantiateAsync(handle.Result, targetParent);
+                await instanceHandle.Task;
+                
+                if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {addressableKey}");
+                    Addressables.Release(handle);
+                    return null;
+                }
+                
+                GameObject uiInstance = instanceHandle.Result;
+                T uiComponent = uiInstance.GetComponent<T>();
+                
+                if (uiComponent == null)
+                {
+                    Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {addressableKey}");
+                    Addressables.ReleaseInstance(uiInstance);
+                    Addressables.Release(handle);
+                    return null;
+                }
+                
+                // 관리에 추가
+                instantiatedUIs[addressableKey] = uiInstance;
+                addressableHandles[addressableKey] = handle;
+                RegisterUI(uiComponent);
+                
+                Debug.Log($"[UIManager] UI 로드 완료: {addressableKey}");
+                return uiComponent;
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] UI ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] UI 로드 중 오류: {addressableKey}, {e.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// AssetReference? UI ??
+        /// AssetReference로 UI 로드
         /// </summary>
         public async System.Threading.Tasks.Task<T> LoadUIAsync<T>(AssetReferenceGameObject assetReference, Transform parent = null) where T : BaseUI
         {
@@ -252,121 +251,140 @@ namespace KYS
             {
                 if (assetReference == null || !assetReference.RuntimeKeyIsValid())
                 {
-                    Debug.LogError("[UIManager] ???? ?? AssetReference???.");
+                    Debug.LogError("[UIManager] 유효하지 않은 AssetReference입니다.");
                     return null;
                 }
-
+                
                 string key = assetReference.RuntimeKey.ToString();
-
-                // ?? ??? UI? ??? ??
+                Debug.Log($"[UIManager] AssetReference로 UI 로드 시작: {key}");
+                
+                // 이미 로드된 UI가 있는지 확인
                 if (instantiatedUIs.ContainsKey(key))
                 {
                     GameObject existingUI = instantiatedUIs[key];
                     if (existingUI != null)
                     {
-                        return existingUI.GetComponent<T>();
+                        T existingComponent = existingUI.GetComponent<T>();
+                        if (existingComponent != null)
+                        {
+                            Debug.Log($"[UIManager] 기존 UI 반환: {key}");
+                            return existingComponent;
+                        }
                     }
                 }
-
-                // UI ??
-                var handle = assetReference.InstantiateAsync();
-                await handle.Task;
-
-                if (handle.Status == AsyncOperationStatus.Succeeded)
+                
+                // 부모 Transform 결정
+                Transform targetParent = parent ?? GetCanvasForUI<T>();
+                if (targetParent == null)
                 {
-                    GameObject uiObject = handle.Result;
-                    T uiComponent = uiObject.GetComponent<T>();
-
-                    if (uiComponent == null)
-                    {
-                        Debug.LogError($"[UIManager] {key}?? {typeof(T).Name} ????? ?? ? ????.");
-                        Addressables.ReleaseInstance(handle);
-                        return null;
-                    }
-
-                    // ?? ??
-                    Transform targetParent = parent ?? GetCanvasForUI<T>();
-                    if (targetParent != null)
-                    {
-                        uiObject.transform.SetParent(targetParent, false);
-                    }
-
-                    // ??? ??
-                    addressableHandles[key] = handle;
-                    instantiatedUIs[key] = uiObject;
-                    RegisterUI(uiComponent);
-
-                    Debug.Log($"[UIManager] UI ?? ??: {key}");
-                    return uiComponent;
-                }
-                else
-                {
-                    Debug.LogError($"[UIManager] UI ?? ??: {key}");
+                    Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {key}");
                     return null;
                 }
+                
+                // UI 인스턴스 생성
+                var instanceHandle = assetReference.InstantiateAsync(targetParent);
+                await instanceHandle.Task;
+                
+                if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {key}");
+                    return null;
+                }
+                
+                GameObject uiInstance = instanceHandle.Result;
+                T uiComponent = uiInstance.GetComponent<T>();
+                
+                if (uiComponent == null)
+                {
+                    Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {key}");
+                    Addressables.ReleaseInstance(uiInstance);
+                    return null;
+                }
+                
+                // 관리에 추가
+                instantiatedUIs[key] = uiInstance;
+                RegisterUI(uiComponent);
+                
+                Debug.Log($"[UIManager] UI 로드 완료: {key}");
+                return uiComponent;
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] UI ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] UI 로드 중 오류: {e.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// ??? UI? ?? ??
+        /// 라벨로 UI들 일괄 로드
         /// </summary>
         public async System.Threading.Tasks.Task<List<T>> LoadUIsByLabelAsync<T>(string label) where T : BaseUI
         {
             try
             {
-                var loadHandle = Addressables.LoadAssetsAsync<GameObject>(label, null);
-                await loadHandle.Task;
-
-                List<T> loadedUIs = new List<T>();
-
-                foreach (var asset in loadHandle.Result)
+                Debug.Log($"[UIManager] 라벨로 UI 로드 시작: {label}");
+                
+                var handle = Addressables.LoadResourceLocationsAsync(label);
+                await handle.Task;
+                
+                if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    T uiComponent = await LoadUIAsync<T>(asset.name);
-                    if (uiComponent != null)
+                    Debug.LogError($"[UIManager] 라벨 로드 실패: {label}");
+                    Addressables.Release(handle);
+                    return new List<T>();
+                }
+                
+                List<T> loadedUIs = new List<T>();
+                
+                foreach (var location in handle.Result)
+                {
+                    if (location.PrimaryKey.Contains("UI/"))
                     {
-                        loadedUIs.Add(uiComponent);
+                        T ui = await LoadUIAsync<T>(location.PrimaryKey);
+                        if (ui != null)
+                        {
+                            loadedUIs.Add(ui);
+                        }
                     }
                 }
-
-                Addressables.Release(loadHandle);
-                Debug.Log($"[UIManager] ?? '{label}'? {loadedUIs.Count}?? UI ?? ??");
+                
+                Addressables.Release(handle);
+                Debug.Log($"[UIManager] 라벨 로드 완료: {label}, {loadedUIs.Count}개");
                 return loadedUIs;
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] ?? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] 라벨 로드 중 오류: {label}, {e.Message}");
                 return new List<T>();
             }
         }
 
         /// <summary>
-        /// UI ?? ?? (??)
+        /// UI 미리 로드
         /// </summary>
         public async System.Threading.Tasks.Task PreloadUIAsync<T>(string addressableKey) where T : BaseUI
         {
             try
             {
-                if (instantiatedUIs.ContainsKey(addressableKey))
+                Debug.Log($"[UIManager] UI 미리 로드 시작: {addressableKey}");
+                
+                var handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
+                await handle.Task;
+                
+                if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Debug.Log($"[UIManager] ?? ??? UI: {addressableKey}");
-                    return;
+                    addressableHandles[addressableKey] = handle;
+                    Debug.Log($"[UIManager] UI 미리 로드 완료: {addressableKey}");
                 }
-
-                T uiComponent = await LoadUIAsync<T>(addressableKey);
-                if (uiComponent != null)
+                else
                 {
-                    uiComponent.Hide(); // ??? ??? ??
-                    Debug.Log($"[UIManager] UI ?? ?? ??: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 미리 로드 실패: {addressableKey}");
+                    Addressables.Release(handle);
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] UI ?? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] UI 미리 로드 중 오류: {addressableKey}, {e.Message}");
             }
         }
 
@@ -375,81 +393,77 @@ namespace KYS
         #region Addressable Resource Management
 
         /// <summary>
-        /// ?? UI ??
+        /// 특정 UI 해제
         /// </summary>
         public void ReleaseUI(string addressableKey)
         {
             try
             {
-                if (addressableHandles.ContainsKey(addressableKey))
-                {
-                    var handle = addressableHandles[addressableKey];
-                    Addressables.ReleaseInstance(handle);
-                    addressableHandles.Remove(addressableKey);
-                }
-
                 if (instantiatedUIs.ContainsKey(addressableKey))
                 {
-                    GameObject uiObject = instantiatedUIs[addressableKey];
-                    if (uiObject != null)
+                    GameObject uiInstance = instantiatedUIs[addressableKey];
+                    if (uiInstance != null)
                     {
-                        BaseUI uiComponent = uiObject.GetComponent<BaseUI>();
+                        BaseUI uiComponent = uiInstance.GetComponent<BaseUI>();
                         if (uiComponent != null)
                         {
                             UnregisterUI(uiComponent);
                         }
-                        DestroyImmediate(uiObject);
+                        Addressables.ReleaseInstance(uiInstance);
                     }
                     instantiatedUIs.Remove(addressableKey);
                 }
-
-                Debug.Log($"[UIManager] UI ?? ??: {addressableKey}");
+                
+                if (addressableHandles.ContainsKey(addressableKey))
+                {
+                    Addressables.Release(addressableHandles[addressableKey]);
+                    addressableHandles.Remove(addressableKey);
+                }
+                
+                Debug.Log($"[UIManager] UI 해제 완료: {addressableKey}");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] UI ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] UI 해제 중 오류: {addressableKey}, {e.Message}");
             }
         }
 
         /// <summary>
-        /// ?? Addressable ??? ??
+        /// 모든 Addressable 리소스 해제
         /// </summary>
         public void ReleaseAllAddressables()
         {
             try
             {
-                Debug.Log("[UIManager] ?? Addressable ??? ?? ??");
-
-                // ?? ?? ??
-                foreach (var handle in addressableHandles.Values)
+                Debug.Log("[UIManager] 모든 Addressable 리소스 해제 시작");
+                
+                // 인스턴스 해제
+                foreach (var kvp in instantiatedUIs)
                 {
-                    if (handle.IsValid())
+                    if (kvp.Value != null)
                     {
-                        Addressables.ReleaseInstance(handle);
-                    }
-                }
-                addressableHandles.Clear();
-
-                // ?? ???? ??
-                foreach (var uiObject in instantiatedUIs.Values)
-                {
-                    if (uiObject != null)
-                    {
-                        BaseUI uiComponent = uiObject.GetComponent<BaseUI>();
+                        BaseUI uiComponent = kvp.Value.GetComponent<BaseUI>();
                         if (uiComponent != null)
                         {
                             UnregisterUI(uiComponent);
                         }
-                        DestroyImmediate(uiObject);
+                        Addressables.ReleaseInstance(kvp.Value);
                     }
                 }
                 instantiatedUIs.Clear();
-
-                Debug.Log("[UIManager] ?? Addressable ??? ?? ??");
+                
+                // 핸들 해제
+                foreach (var handle in addressableHandles.Values)
+                {
+                    Addressables.Release(handle);
+                }
+                addressableHandles.Clear();
+                
+                Debug.Log("[UIManager] 모든 Addressable 리소스 해제 완료");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] ??? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] Addressable 리소스 해제 중 오류: {e.Message}");
             }
         }
 
@@ -457,17 +471,20 @@ namespace KYS
 
         #region Canvas Management
 
-        /// <summary>
-        /// UI ??? ?? ??? Canvas ??
-        /// </summary>
         private Transform GetCanvasForUI<T>() where T : BaseUI
         {
-            // ?? ???? ???? LayerType ??
-            GameObject tempObject = new GameObject("Temp");
-            T tempComponent = tempObject.AddComponent<T>();
-            UILayerType layerType = tempComponent.LayerType;
-            DestroyImmediate(tempObject);
-
+            // T 타입의 기본 레이어 타입을 추정
+            UILayerType layerType = UILayerType.Panel; // 기본값
+            
+            // 타입 이름으로 레이어 추정
+            string typeName = typeof(T).Name.ToLower();
+            if (typeName.Contains("hud"))
+                layerType = UILayerType.HUD;
+            else if (typeName.Contains("popup"))
+                layerType = UILayerType.Popup;
+            else if (typeName.Contains("loading"))
+                layerType = UILayerType.Loading;
+            
             switch (layerType)
             {
                 case UILayerType.HUD:
@@ -484,7 +501,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ???? Canvas ??
+        /// 레이어별 Canvas 가져오기
         /// </summary>
         public Canvas GetCanvasByLayer(UILayerType layerType)
         {
@@ -508,42 +525,42 @@ namespace KYS
         #region UI Registration
 
         /// <summary>
-        /// UI ??
+        /// UI 등록
         /// </summary>
         public void RegisterUI(BaseUI ui)
         {
             if (ui == null) return;
-
+            
             UILayerType layerType = ui.LayerType;
             if (!layerUIs.ContainsKey(layerType))
             {
                 layerUIs[layerType] = new List<BaseUI>();
             }
-
+            
             if (!layerUIs[layerType].Contains(ui))
             {
                 layerUIs[layerType].Add(ui);
-                Debug.Log($"[UIManager] UI ??: {ui.name} -> {layerType}");
+                Debug.Log($"[UIManager] UI 등록: {ui.name} -> {layerType}");
             }
         }
 
         /// <summary>
-        /// UI ?? ??
+        /// UI 등록 해제
         /// </summary>
         public void UnregisterUI(BaseUI ui)
         {
             if (ui == null) return;
-
+            
             UILayerType layerType = ui.LayerType;
             if (layerUIs.ContainsKey(layerType))
             {
                 layerUIs[layerType].Remove(ui);
-                Debug.Log($"[UIManager] UI ?? ??: {ui.name} -> {layerType}");
+                Debug.Log($"[UIManager] UI 등록 해제: {ui.name} -> {layerType}");
             }
         }
 
         /// <summary>
-        /// ???? UI ?? ??
+        /// 레이어별 UI 목록 가져오기
         /// </summary>
         public List<BaseUI> GetUIsByLayer(UILayerType layerType)
         {
@@ -559,13 +576,13 @@ namespace KYS
         #region Panel Management
 
         /// <summary>
-        /// ?? ??
+        /// 패널 열기
         /// </summary>
         public void OpenPanel(BaseUI panel)
         {
             if (panel == null) return;
 
-            // ?? ?? ??? (??)
+            // 이전 패널 처리 (숨김)
             if (panelStack.Count > 0)
             {
                 BaseUI previousPanel = panelStack.Peek();
@@ -575,15 +592,15 @@ namespace KYS
                 }
             }
 
-            // ? ??? ??? ??
+            // 새 패널을 스택에 추가
             panelStack.Push(panel);
             panel.Show();
 
-            Debug.Log($"[UIManager] ?? ??: {panel.name}");
+            Debug.Log($"[UIManager] 패널 열기: {panel.name}");
         }
 
         /// <summary>
-        /// ?? ??
+        /// 패널 닫기
         /// </summary>
         public void ClosePanel()
         {
@@ -593,10 +610,10 @@ namespace KYS
             if (currentPanel != null)
             {
                 currentPanel.Hide();
-                Debug.Log($"[UIManager] ?? ??: {currentPanel.name}");
+                Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name}");
             }
 
-            // ?? ?? ?? ???
+            // 이전 패널 다시 표시
             if (panelStack.Count > 0)
             {
                 BaseUI previousPanel = panelStack.Peek();
@@ -612,13 +629,13 @@ namespace KYS
         #region Popup Management
 
         /// <summary>
-        /// ?? ??
+        /// 팝업 열기
         /// </summary>
         public void OpenPopup(BaseUI popup)
         {
             if (popup == null) return;
 
-            // ?? ?? ??? (??)
+            // 이전 팝업 처리 (숨김)
             if (popupStack.Count > 0)
             {
                 BaseUI previousPopup = popupStack.Peek();
@@ -628,15 +645,15 @@ namespace KYS
                 }
             }
 
-            // ? ??? ??? ??
+            // 새 팝업을 스택에 추가
             popupStack.Push(popup);
             popup.Show();
 
-            Debug.Log($"[UIManager] ?? ??: {popup.name}");
+            Debug.Log($"[UIManager] 팝업 열기: {popup.name}");
         }
 
         /// <summary>
-        /// ?? ??
+        /// 팝업 닫기
         /// </summary>
         public void ClosePopup()
         {
@@ -646,10 +663,10 @@ namespace KYS
             if (currentPopup != null)
             {
                 currentPopup.Hide();
-                Debug.Log($"[UIManager] ?? ??: {currentPopup.name}");
+                Debug.Log($"[UIManager] 팝업 닫기: {currentPopup.name}");
             }
 
-            // ?? ?? ?? ???
+            // 이전 팝업 다시 표시
             if (popupStack.Count > 0)
             {
                 BaseUI previousPopup = popupStack.Peek();
@@ -665,7 +682,7 @@ namespace KYS
         #region PopUp Methods (Backward Compatibility)
 
         /// <summary>
-        /// ??? ?? UI ?? (?? ???? ?? ??)
+        /// 제네릭 팝업 UI 표시 (기존 호환성을 위한 래퍼)
         /// </summary>
         public T ShowPopUp<T>() where T : BaseUI
         {
@@ -675,7 +692,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ??? ?? UI ?? (??? ??)
+        /// 제네릭 팝업 UI 표시 (비동기 버전)
         /// </summary>
         public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
@@ -685,9 +702,9 @@ namespace KYS
         private System.Collections.IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
-            Debug.Log($"[UIManager] Addressable?? {prefabName} ?? ?? ??");
+            Debug.Log($"[UIManager] Addressable에서 {prefabName} 팝업 로드 시작");
             
-            // Addressable?? ?? ?? ??
+            // Addressable에서 팝업 로드 시도
             string addressableKey = $"UI/Popup/{prefabName}";
             
             AsyncOperationHandle<GameObject> handle = default;
@@ -699,16 +716,16 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] {prefabName} ?? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] {prefabName} 팝업 로드 중 오류: {e.Message}");
                 onComplete?.Invoke(null);
                 yield break;
             }
             
             yield return handle;
             
-            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+            if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError($"[UIManager] Addressable?? {prefabName} ??? ?? ? ????: {addressableKey}");
+                Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -720,7 +737,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] {prefabName} ?? ???? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] {prefabName} 팝업 인스턴스 생성 중 오류: {e.Message}");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -730,7 +747,7 @@ namespace KYS
             
             if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError($"[UIManager] {prefabName} ?? ???? ?? ??");
+                Debug.LogError($"[UIManager] {prefabName} 팝업 인스턴스 생성 실패");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -739,7 +756,7 @@ namespace KYS
             T popupInstance = instanceHandle.Result.GetComponent<T>();
             if (popupInstance == null)
             {
-                Debug.LogError($"[UIManager] {prefabName} ????? ?? ? ????.");
+                Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                 Addressables.ReleaseInstance(instanceHandle.Result);
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
@@ -748,15 +765,15 @@ namespace KYS
             
             OpenPopup(popupInstance);
             onComplete?.Invoke(popupInstance);
-            Debug.Log($"[UIManager] {prefabName} ?? ?? ??");
+            Debug.Log($"[UIManager] {prefabName} 팝업 표시 완료");
             
             Addressables.Release(handle);
         }
 
         /// <summary>
-        /// ?? ?? ?? (?? ???)
+        /// 확인 팝업 표시 (기존 호환성)
         /// </summary>
-        public CheckPopUp ShowConfirmPopUp(string message, string confirmText = "??", string cancelText = "??",
+        public CheckPopUp ShowConfirmPopUp(string message, string confirmText = "확인", string cancelText = "취소",
                                           System.Action confirmCallback = null, System.Action cancelCallback = null)
         {
             CheckPopUp result = null;
@@ -765,17 +782,17 @@ namespace KYS
         }
 
         /// <summary>
-        /// ?? ?? ?? (?? ??)
+        /// 간단한 확인 팝업 표시 (기존 호환성)
         /// </summary>
         public CheckPopUp ShowConfirmPopUp(string message, System.Action confirmCallback)
         {
-            return ShowConfirmPopUp(message, "??", "??", confirmCallback, null);
+            return ShowConfirmPopUp(message, "확인", "취소", confirmCallback, null);
         }
 
         /// <summary>
-        /// ?? ?? ?? (??? ??)
+        /// 확인 팝업 표시 (비동기 버전)
         /// </summary>
-        public void ShowConfirmPopUpAsync(string message, string confirmText = "??", string cancelText = "??",
+        public void ShowConfirmPopUpAsync(string message, string confirmText = "확인", string cancelText = "취소",
                                          System.Action confirmCallback = null, System.Action cancelCallback = null,
                                          System.Action<CheckPopUp> onComplete = null)
         {
@@ -783,39 +800,39 @@ namespace KYS
         }
 
         /// <summary>
-        /// ?? ?? ?? (?? ??? ??)
+        /// 간단한 확인 팝업 표시 (비동기 버전)
         /// </summary>
         public void ShowConfirmPopUpAsync(string message, System.Action confirmCallback, System.Action<CheckPopUp> onComplete = null)
         {
-            ShowConfirmPopUpAsync(message, "??", "??", confirmCallback, null, onComplete);
+            ShowConfirmPopUpAsync(message, "확인", "취소", confirmCallback, null, onComplete);
         }
 
         private System.Collections.IEnumerator ShowConfirmPopUpAsyncCoroutine(string message, string confirmText, string cancelText,
                                                                              System.Action confirmCallback, System.Action cancelCallback,
                                                                              System.Action<CheckPopUp> onComplete)
         {
-            Debug.Log("[UIManager] ?? ?? ?? ??");
+            Debug.Log("[UIManager] 확인 팝업 로드 시작");
             
             AsyncOperationHandle<GameObject> handle = default;
             AsyncOperationHandle<GameObject> instanceHandle = default;
             
             try
             {
-                // CheckPopUp ??? ??
+                // CheckPopUp 프리팹 로드
                 handle = Addressables.LoadAssetAsync<GameObject>("UI/Popup/CheckPopUp");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] ?? ?? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] CheckPopUp 로드 중 오류: {e.Message}");
                 onComplete?.Invoke(null);
                 yield break;
             }
             
             yield return handle;
             
-            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+            if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError("[UIManager] Addressable?? CheckPopUp? ?? ? ????.");
+                Debug.LogError("[UIManager] CheckPopUp 로드 실패");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -827,7 +844,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] ?? ?? ???? ?? ? ??: {e.Message}");
+                Debug.LogError($"[UIManager] CheckPopUp 인스턴스 생성 중 오류: {e.Message}");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -837,7 +854,7 @@ namespace KYS
             
             if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError("[UIManager] ?? ?? ???? ?? ??");
+                Debug.LogError("[UIManager] CheckPopUp 인스턴스 생성 실패");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -846,14 +863,14 @@ namespace KYS
             CheckPopUp popupInstance = instanceHandle.Result.GetComponent<CheckPopUp>();
             if (popupInstance == null)
             {
-                Debug.LogError("[UIManager] CheckPopUp ????? ?? ? ????.");
+                Debug.LogError("[UIManager] CheckPopUp 컴포넌트를 찾을 수 없습니다.");
                 Addressables.ReleaseInstance(instanceHandle.Result);
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
             }
             
-            // ?? ??
+            // 팝업 설정
             popupInstance.SetMessage(message);
             popupInstance.SetConfirmText(confirmText);
             popupInstance.SetCancelText(cancelText);
@@ -865,7 +882,7 @@ namespace KYS
             
             OpenPopup(popupInstance);
             onComplete?.Invoke(popupInstance);
-            Debug.Log("[UIManager] ?? ?? ?? ??");
+            Debug.Log("[UIManager] 확인 팝업 표시 완료");
             
             Addressables.Release(handle);
         }
@@ -875,7 +892,7 @@ namespace KYS
         #region Input Handling
 
         /// <summary>
-        /// ESC ? ??
+        /// ESC 키 처리
         /// </summary>
         private void LateUpdate()
         {
@@ -902,7 +919,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ?? UI? ?? ? ??? ??
+        /// 현재 UI가 닫을 수 없는지 확인
         /// </summary>
         private bool IsCurrentUINonClosable()
         {
@@ -926,13 +943,13 @@ namespace KYS
         #region Scene Management
 
         /// <summary>
-        /// ? ?? ? ??
+        /// 씬 로드 시 처리
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Debug.Log($"[UIManager] ? ???: {scene.name}");
+            Debug.Log($"[UIManager] 씬 로드됨: {scene.name}");
             
-            // ? ?? ? ?? UI ??
+            // 씬 전환 시 모든 UI 정리
             CleanAllUI();
         }
 
@@ -941,7 +958,7 @@ namespace KYS
         #region Utility Methods
 
         /// <summary>
-        /// ?? ?? ??
+        /// 모든 패널 닫기
         /// </summary>
         public void CloseAllPanels()
         {
@@ -952,7 +969,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ?? ?? ??
+        /// 모든 팝업 닫기
         /// </summary>
         public void CloseAllPopups()
         {
@@ -963,16 +980,16 @@ namespace KYS
         }
 
         /// <summary>
-        /// ?? UI ??
+        /// 모든 UI 정리
         /// </summary>
         public void CleanAllUI()
         {
-            Debug.Log("[UIManager] ?? UI ?? ??");
+            Debug.Log("[UIManager] 모든 UI 정리 시작");
             
             CloseAllPanels();
             CloseAllPopups();
             
-            Debug.Log("[UIManager] ?? UI? ???????.");
+            Debug.Log("[UIManager] 모든 UI가 정리되었습니다.");
         }
 
         #endregion

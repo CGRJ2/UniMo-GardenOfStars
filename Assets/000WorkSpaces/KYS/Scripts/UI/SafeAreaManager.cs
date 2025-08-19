@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic; // Added for Dictionary
 
@@ -227,7 +227,7 @@ namespace KYS.UI
     {
         [Header("SafeArea Settings")]
         [SerializeField] private bool autoResizeChildren = true;
-        [SerializeField] private bool maintainAspectRatio = true;
+        //[SerializeField] private bool maintainAspectRatio = true;
         
         private RectTransform rectTransform;
         

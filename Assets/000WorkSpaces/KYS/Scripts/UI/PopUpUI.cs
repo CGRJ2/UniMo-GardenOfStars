@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace KYS
 {
     public class PopUpUI : MonoBehaviour
     {
-        // TODO: ÆË¾÷ µÇ¸é ÆË¾÷ ÆÇ³Ú ¹üÀ§ ¹Ù±ùÀ» 1. Å¬¸¯ÇÏÁö ¸øÇÏ°Ô ¸·°Å³ª, 2. Å¬¸¯ ½Ã ÆË¾÷ ÀÌÀüÀ¸·Î µ¹¾Æ°¡°Ô ÇÑ´Ù.
+        // TODO: ï¿½Ë¾ï¿½ ï¿½Ç¸ï¿½ ï¿½Ë¾ï¿½ ï¿½Ç³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ï¿½ï¿½ 1. Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Å³ï¿½, 2. Å¬ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½.
         private Stack<BaseUI> stack = new Stack<BaseUI>();
         public static bool IsPopUpActive { get; private set; } = false;
 
@@ -20,61 +20,61 @@ namespace KYS
         }
         public void PushUIStack(BaseUI ui)
         {
-            //Debug.Log($"[PopUpUI] PushUIStack È£Ãâ: {ui?.name}, ÇöÀç ½ºÅÃ °³¼ö: {stack.Count}");
+            //Debug.Log($"[PopUpUI] PushUIStack È£ï¿½ï¿½: {ui?.name}, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {stack.Count}");
 
             IsPopUpActive = true;
             if (stack.Count > 0)
             {
                 BaseUI top = stack.Peek();
-                Debug.Log($"[PopUpUI] ±âÁ¸ ÃÖ»óÀ§ ÆË¾÷ ºñÈ°¼ºÈ­: {top?.name}");
+                Debug.Log($"[PopUpUI] ï¿½ï¿½ï¿½ï¿½ ï¿½Ö»ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­: {top?.name}");
                 top.gameObject.SetActive(false);
             }
 
             stack.Push(ui);
-            //Debug.Log($"[PopUpUI] ÆË¾÷ ½ºÅÃ¿¡ Ãß°¡µÊ: {ui?.name}, ÇöÀç ½ºÅÃ °³¼ö: {stack.Count}");
+            //Debug.Log($"[PopUpUI] ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ß°ï¿½ï¿½ï¿½: {ui?.name}, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {stack.Count}");
 
 
         }
 
         public void PopUIStack()
         {
-            Debug.Log($"[PopUpUI] PopUIStack È£Ãâ - ÇöÀç ½ºÅÃ °³¼ö: {stack.Count}");
+            Debug.Log($"[PopUpUI] PopUIStack È£ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {stack.Count}");
 
             if (stack.Count == 1)
             {
                 IsPopUpActive = false;
-                Debug.Log("[PopUpUI] ¸¶Áö¸· ÆË¾÷ÀÌ¹Ç·Î IsPopUpActive = false");
+                Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ï¿½Ì¹Ç·ï¿½ IsPopUpActive = false");
             }
             if (stack.Count <= 0)
             {
                 IsPopUpActive = false;
-                Debug.Log("[PopUpUI] ½ºÅÃÀÌ ºñ¾îÀÖÀ½");
+                Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
                 return;
             }
 
             BaseUI popupToDestroy = stack.Peek();
             string popupName = popupToDestroy != null ? popupToDestroy.name : "Unknown";
-            Debug.Log($"[PopUpUI] ÆË¾÷ ÆÄ±« ¿¹Á¤: {popupName}");
+            Debug.Log($"[PopUpUI] ï¿½Ë¾ï¿½ ï¿½Ä±ï¿½ ï¿½ï¿½ï¿½ï¿½: {popupName}");
 
-            DestroyImmediate(stack.Pop().gameObject);  // Destroy ´ë½Å DestroyImmediate »ç¿ë
-            Debug.Log($"[PopUpUI] ÆË¾÷ ÆÄ±« ¿Ï·á: {popupName}");
+            DestroyImmediate(stack.Pop().gameObject);  // Destroy ï¿½ï¿½ï¿½ DestroyImmediate ï¿½ï¿½ï¿½
+            Debug.Log($"[PopUpUI] ï¿½Ë¾ï¿½ ï¿½Ä±ï¿½ ï¿½Ï·ï¿½: {popupName}");
 
             if (stack.Count > 0)
             {
                 BaseUI top = stack.Peek();
                 if (top != null && top.gameObject != null)
                 {
-                    Debug.Log($"[PopUpUI] ÀÌÀü ÆË¾÷ È°¼ºÈ­: {top.name}");
+                    Debug.Log($"[PopUpUI] ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ È°ï¿½ï¿½È­: {top.name}");
                     top.gameObject.SetActive(true);
                 }
                 else
                 {
-                    Debug.LogWarning("[PopUpUI] ÀÌÀü ÆË¾÷ÀÌ nullÀÌ°Å³ª ÆÄ±«µÊ");
+                    Debug.LogWarning("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ï¿½ï¿½ nullï¿½Ì°Å³ï¿½ ï¿½Ä±ï¿½ï¿½ï¿½");
                 }
             }
             else
             {
-                Debug.Log("[PopUpUI] ½ºÅÃÀÌ ºñ¾îÀÖÀ¸¹Ç·Î Blocker ºñÈ°¼ºÈ­");
+                Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ Blocker ï¿½ï¿½È°ï¿½ï¿½È­");
                 if (blocker != null)
                 {
                     blocker.SetActive(false);
@@ -86,50 +86,50 @@ namespace KYS
             return stack.Count;
         }
 
-        // °­Á¦·Î ¸ðµç ÆË¾÷ Á¤¸® (¾À ÀüÈ¯ ½Ã »ç¿ë)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ ï¿½ï¿½ï¿½)
         public void ForceCleanAll()
         {
-            Debug.Log($"[PopUpUI] °­Á¦ Á¤¸® ½ÃÀÛ - ÇöÀç ÆË¾÷ °³¼ö: {stack.Count}");
+            Debug.Log($"[PopUpUI] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½: {stack.Count}");
 
-            // ¸ðµç ÆË¾÷À» Áï½Ã ÆÄ±«
+            // ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ä±ï¿½
             while (stack.Count > 0)
             {
                 BaseUI popup = stack.Pop();
                 if (popup != null && popup.gameObject != null)
                 {
-                    Debug.Log($"[PopUpUI] ÆË¾÷ ÆÄ±«: {popup.name}");
+                    Debug.Log($"[PopUpUI] ï¿½Ë¾ï¿½ ï¿½Ä±ï¿½: {popup.name}");
                     DestroyImmediate(popup.gameObject);
                 }
             }
 
-            // ½ºÅÃÀ» ¿ÏÀüÈ÷ ºñ¿ì°í »óÅÂ ÃÊ±âÈ­
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
             stack.Clear();
             IsPopUpActive = false;
 
-            // ºí·ÎÄ¿ ºñÈ°¼ºÈ­ (NetworkSceneÀÌ ¾Æ´Ñ °æ¿ì)
+            // ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½È°ï¿½ï¿½È­ (NetworkSceneï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½)
             if (blocker != null)
             {
-                // NetworkScene¿¡¼­´Â ºí·ÎÄ¿¸¦ À¯Áö (RoomPopUpÀÌ Ç¥½ÃµÉ ¿¹Á¤)
+                // NetworkSceneï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (RoomPopUpï¿½ï¿½ Ç¥ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½)
                 if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "NetworkScene")
                 {
                     blocker.SetActive(false);
-                    Debug.Log("[PopUpUI] ºí·ÎÄ¿ ºñÈ°¼ºÈ­ ¿Ï·á");
+                    Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½Ï·ï¿½");
                 }
                 else
                 {
-                    Debug.Log("[PopUpUI] NetworkScene¿¡¼­´Â ºí·ÎÄ¿ À¯Áö");
+                    Debug.Log("[PopUpUI] NetworkSceneï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½ï¿½ï¿½");
                 }
             }
 
-            Debug.Log("[PopUpUI] °­Á¦ Á¤¸® ¿Ï·á");
+            Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
         }
 
         /// <summary>
-        /// ·Îµù ºí·ÎÄ¿¸¦ Ç¥½ÃÇÕ´Ï´Ù (°ÔÀÓ ½ÃÀÛ ½Ã »ç¿ë)
+        /// ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Õ´Ï´ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½)
         /// </summary>
         public void ShowLoadingBlocker()
         {
-            Debug.Log("[PopUpUI] ·Îµù ºí·ÎÄ¿ Ç¥½Ã");
+            Debug.Log("[PopUpUI] ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ Ç¥ï¿½ï¿½");
             if (blocker != null)
             {
                 blocker.SetActive(true);
@@ -138,26 +138,26 @@ namespace KYS
         }
 
         /// <summary>
-        /// ·Îµù ºí·ÎÄ¿¸¦ ¼û±é´Ï´Ù (°ÔÀÓ ¾À ·Îµå ¿Ï·á ½Ã »ç¿ë)
+        /// ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½)
         /// </summary>
         public void HideLoadingBlocker()
         {
-            Debug.Log("[PopUpUI] ·Îµù ºí·ÎÄ¿ ¼û±è");
+            Debug.Log("[PopUpUI] ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½ï¿½ï¿½");
             if (blocker != null)
             {
                 blocker.SetActive(false);
-                Debug.Log("[PopUpUI] ·Îµù ºí·ÎÄ¿ ºñÈ°¼ºÈ­ ¿Ï·á");
+                Debug.Log("[PopUpUI] ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½Ï·ï¿½");
             }
             else
             {
-                Debug.LogWarning("[PopUpUI] blocker°¡ nullÀÔ´Ï´Ù");
+                Debug.LogWarning("[PopUpUI] blockerï¿½ï¿½ nullï¿½Ô´Ï´ï¿½");
             }
 
-            // ½ºÅÃÀÌ ºñ¾îÀÖÀ¸¸é IsPopUpActiveµµ false·Î ¼³Á¤
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IsPopUpActiveï¿½ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (stack.Count == 0)
             {
                 IsPopUpActive = false;
-                Debug.Log("[PopUpUI] ½ºÅÃÀÌ ºñ¾îÀÖ¾î IsPopUpActive = false·Î ¼³Á¤");
+                Debug.Log("[PopUpUI] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ IsPopUpActive = falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             }
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace KYS
             number = -1;
             if (string.IsNullOrEmpty(input))
             {
-                Debug.LogWarning("ÀÔ·ÂÀÌ ¾ø½À´Ï´Ù");
+                Debug.LogWarning("ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
                 return false;
             }
 
@@ -30,7 +30,7 @@ namespace KYS
             while (i >= 0 && char.IsDigit(input[i])) i--;
             if (i == input.Length - 1)
             {
-                Debug.LogWarning("ÀÔ·Â¿¡ ¼ýÀÚ°¡ ¾ø½À´Ï´Ù");
+                Debug.LogWarning("ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
                 return false;
             }
             return int.TryParse(input[(i + 1)..], out number);

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using System.Reflection;
@@ -15,13 +15,13 @@ using DG.Tweening;
 namespace KYS
 {
     /// <summary>
-    /// °³¼±µÈ UI °ü¸®ÀÚ - ·¹ÀÌ¾îº° °ü¸® ¹× Stack ±â¹Ý UI °ü¸® Áö¿ø
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Ì¾îº° ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Stack ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public class UIManagerOld : Singleton<UIManagerOld>
     {
         [Header("UI Canvas Settings")]
         [SerializeField] private GameObject popUpCanvasPrefab; // AddressableAssetReference popUpCanvasReference;
-        [SerializeField] private string uiPrefabLabel = "UI"; // Addressables ¶óº§ (ÇâÈÄ »ç¿ë ¿¹Á¤)
+        //[SerializeField] private string uiPrefabLabel = "UI"; // Addressables ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         
         [Header("UI Layer Settings")]
         [SerializeField] private Canvas hudCanvas;
@@ -32,17 +32,17 @@ namespace KYS
         // UI Components
         private PopUpUI popUp;
         
-        // Layerº° UI °ü¸®
+        // Layerï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½
         private Dictionary<UILayerType, List<BaseUI>> layerUIs = new Dictionary<UILayerType, List<BaseUI>>();
         
-        // Stack ±â¹Ý UI °ü¸® (ÆÐ³Î & ÆË¾÷)
+        // Stack ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ (ï¿½Ð³ï¿½ & ï¿½Ë¾ï¿½)
         private Stack<BaseUI> panelStack = new Stack<BaseUI>();
         private Stack<BaseUI> popupStack = new Stack<BaseUI>();
         
-        // ±âÁ¸ ¸ÞÀÎ ÆÐ³Î °ü¸® (ÇÏÀ§ È£È¯¼º)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½)
         private Dictionary<string, GameObject> mainPanels = new Dictionary<string, GameObject>();
         
-        // UI »óÅÂ °ü¸®
+        // UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         public static int selectIndexUI { get; set; } = 0;
         public static bool canClosePopUp = true;
         bool canClose => (PopUpUI.IsPopUpActive || panelStack.Count > 0 || popupStack.Count > 0) && 
@@ -59,7 +59,7 @@ namespace KYS
                     popUp = FindObjectOfType<PopUpUI>();
                     if (popUp != null) return popUp;
 
-                    // ÀÏ¹Ý ÇÁ¸®ÆÕ¿¡¼­ ÆË¾÷ Äµ¹ö½º ·Îµå
+                    // ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ Äµï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
                     LoadPopUpCanvas();
                 }
                 return popUp;
@@ -72,7 +72,7 @@ namespace KYS
             {
                 if (popUpCanvasPrefab == null)
                 {
-                    Debug.LogError("[UIManager] PopUp Canvas PrefabÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+                    Debug.LogError("[UIManager] PopUp Canvas Prefabï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
                     return;
                 }
 
@@ -81,17 +81,17 @@ namespace KYS
                 
                 if (popUp == null)
                 {
-                    Debug.LogError("[UIManager] PopUp Canvas ÇÁ¸®ÆÕ¿¡ PopUpUI ÄÄÆ÷³ÍÆ®°¡ ¾ø½À´Ï´Ù");
+                    Debug.LogError("[UIManager] PopUp Canvas ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ PopUpUI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
                     Destroy(go);
                     return;
                 }
 
                 DontDestroyOnLoad(go);
-                Debug.Log("[UIManager] PopUp Canvas ·Îµå ¿Ï·á");
+                Debug.Log("[UIManager] PopUp Canvas ï¿½Îµï¿½ ï¿½Ï·ï¿½");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[UIManager] PopUp Canvas ·Îµå Áß ¿À·ù ¹ß»ý: {e.Message}");
+                Debug.LogError($"[UIManager] PopUp Canvas ï¿½Îµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½: {e.Message}");
             }
         }
 
@@ -123,7 +123,7 @@ namespace KYS
         #region Layer Management
 
         /// <summary>
-        /// Æ¯Á¤ ·¹ÀÌ¾î¿¡ UI µî·Ï
+        /// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾î¿¡ UI ï¿½ï¿½ï¿½
         /// </summary>
         public void RegisterUI(BaseUI ui)
         {
@@ -138,12 +138,12 @@ namespace KYS
             if (!layerUIs[layerType].Contains(ui))
             {
                 layerUIs[layerType].Add(ui);
-                Debug.Log($"[UIManager] UI µî·Ï: {ui.name} -> {layerType}");
+                Debug.Log($"[UIManager] UI ï¿½ï¿½ï¿½: {ui.name} -> {layerType}");
             }
         }
 
         /// <summary>
-        /// Æ¯Á¤ ·¹ÀÌ¾î¿¡¼­ UI Á¦°Å
+        /// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾î¿¡ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void UnregisterUI(BaseUI ui)
         {
@@ -153,12 +153,12 @@ namespace KYS
             if (layerUIs.ContainsKey(layerType))
             {
                 layerUIs[layerType].Remove(ui);
-                Debug.Log($"[UIManager] UI Á¦°Å: {ui.name} -> {layerType}");
+                Debug.Log($"[UIManager] UI ï¿½ï¿½ï¿½ï¿½: {ui.name} -> {layerType}");
             }
         }
 
         /// <summary>
-        /// Æ¯Á¤ ·¹ÀÌ¾îÀÇ ¸ðµç UI °¡Á®¿À±â
+        /// Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public List<BaseUI> GetUIsByLayer(UILayerType layerType)
         {
@@ -174,13 +174,13 @@ namespace KYS
         #region Stack Management
 
                 /// <summary>
-        /// ÆÐ³Î ¿­±â (Stack¿¡ Ãß°¡)
+        /// ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ (Stackï¿½ï¿½ ï¿½ß°ï¿½)
         /// </summary>
         public void OpenPanel(BaseUI panel)
         {
             if (panel == null) return;
 
-            // ÀÌÀü ÆÐ³Î Ã³¸®
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ Ã³ï¿½ï¿½
             if (panelStack.Count > 0)
             {
                 BaseUI topPanel = panelStack.Peek();
@@ -193,18 +193,18 @@ namespace KYS
                 {
                     topPanel.gameObject.SetActive(false);
                 }
-                // µÑ ´Ù false¸é ÀÌÀü UI´Â ±×´ë·Î À¯Áö
+                // ï¿½ï¿½ ï¿½ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
 
-            // »õ ÆÐ³Î Ãß°¡
+            // ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ß°ï¿½
             panelStack.Push(panel);
             panel.Show();
 
-            Debug.Log($"[UIManager] ÆÐ³Î ¿­±â: {panel.name}, ½ºÅÃ Å©±â: {panelStack.Count}");
+            Debug.Log($"[UIManager] ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½: {panel.name}, ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½: {panelStack.Count}");
         }
 
                 /// <summary>
-        /// ÆÐ³Î ´Ý±â (Stack¿¡¼­ Á¦°Å)
+        /// ï¿½Ð³ï¿½ ï¿½Ý±ï¿½ (Stackï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         /// </summary>
         public void ClosePanel()
         {
@@ -213,35 +213,35 @@ namespace KYS
             BaseUI panel = panelStack.Pop();
             panel.Hide();
 
-            // ÀÌÀü ÆÐ³Î º¹¿ø
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (panelStack.Count > 0)
             {
                 BaseUI previousPanel = panelStack.Peek();
                 
-                // ÀÌÀü ÆÐ³ÎÀÌ ºñÈ°¼ºÈ­µÇ¾î ÀÖ¾ú´Ù¸é ´Ù½Ã È°¼ºÈ­
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½ ï¿½Ù½ï¿½ È°ï¿½ï¿½È­
                 if (!previousPanel.gameObject.activeInHierarchy)
                 {
                     previousPanel.gameObject.SetActive(true);
                 }
                 
-                // ÀÌÀü ÆÐ³ÎÀÌ ¼û°ÜÁ® ÀÖ¾ú´Ù¸é ´Ù½Ã Ç¥½Ã
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½ ï¿½Ù½ï¿½ Ç¥ï¿½ï¿½
                 if (!previousPanel.IsActive)
                 {
                     previousPanel.Show();
                 }
             }
 
-            Debug.Log($"[UIManager] ÆÐ³Î ´Ý±â: {panel.name}, ½ºÅÃ Å©±â: {panelStack.Count}");
+            Debug.Log($"[UIManager] ï¿½Ð³ï¿½ ï¿½Ý±ï¿½: {panel.name}, ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½: {panelStack.Count}");
         }
 
                 /// <summary>
-        /// ÆË¾÷ ¿­±â (Stack¿¡ Ãß°¡)
+        /// ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ (Stackï¿½ï¿½ ï¿½ß°ï¿½)
         /// </summary>
         public void OpenPopup(BaseUI popup)
         {
             if (popup == null) return;
 
-            // ÀÌÀü ÆË¾÷ Ã³¸®
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ Ã³ï¿½ï¿½
             if (popupStack.Count > 0)
             {
                 BaseUI topPopup = popupStack.Peek();
@@ -254,18 +254,18 @@ namespace KYS
                 {
                     topPopup.gameObject.SetActive(false);
                 }
-                // µÑ ´Ù false¸é ÀÌÀü UI´Â ±×´ë·Î À¯Áö
+                // ï¿½ï¿½ ï¿½ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
 
-            // »õ ÆË¾÷ Ãß°¡
+            // ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ß°ï¿½
             popupStack.Push(popup);
             popup.Show();
 
-            Debug.Log($"[UIManager] ÆË¾÷ ¿­±â: {popup.name}, ½ºÅÃ Å©±â: {popupStack.Count}");
+            Debug.Log($"[UIManager] ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½: {popup.name}, ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½: {popupStack.Count}");
         }
 
                 /// <summary>
-        /// ÆË¾÷ ´Ý±â (Stack¿¡¼­ Á¦°Å)
+        /// ï¿½Ë¾ï¿½ ï¿½Ý±ï¿½ (Stackï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         /// </summary>
         public void ClosePopup()
         {
@@ -274,25 +274,25 @@ namespace KYS
             BaseUI popup = popupStack.Pop();
             popup.Hide();
 
-            // ÀÌÀü ÆË¾÷ º¹¿ø
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (popupStack.Count > 0)
             {
                 BaseUI previousPopup = popupStack.Peek();
                 
-                // ÀÌÀü ÆË¾÷ÀÌ ºñÈ°¼ºÈ­µÇ¾î ÀÖ¾ú´Ù¸é ´Ù½Ã È°¼ºÈ­
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½ ï¿½Ù½ï¿½ È°ï¿½ï¿½È­
                 if (!previousPopup.gameObject.activeInHierarchy)
                 {
                     previousPopup.gameObject.SetActive(true);
                 }
                 
-                // ÀÌÀü ÆË¾÷ÀÌ ¼û°ÜÁ® ÀÖ¾ú´Ù¸é ´Ù½Ã Ç¥½Ã
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½ ï¿½Ù½ï¿½ Ç¥ï¿½ï¿½
                 if (!previousPopup.IsActive)
                 {
                     previousPopup.Show();
                 }
             }
 
-            Debug.Log($"[UIManager] ÆË¾÷ ´Ý±â: {popup.name}, ½ºÅÃ Å©±â: {popupStack.Count}");
+            Debug.Log($"[UIManager] ï¿½Ë¾ï¿½ ï¿½Ý±ï¿½: {popup.name}, ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½: {popupStack.Count}");
         }
 
         #endregion
@@ -300,20 +300,20 @@ namespace KYS
         #region Group Management
 
         /// <summary>
-        /// HUD ±×·ì ±âº» »óÅÂ·Î ¼³Á¤
+        /// HUD ï¿½×·ï¿½ ï¿½âº» ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void SetHUDToDefault()
         {
             var hudUIs = GetUIsByLayer(UILayerType.HUD);
             foreach (var ui in hudUIs)
             {
-                // HUD´Â ±âº» Á¤º¸¸¸ Ç¥½ÃÇÏµµ·Ï ¼³Á¤
+                // HUDï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 ui.Show();
             }
         }
 
         /// <summary>
-        /// ÆÐ³Î ±×·ìÀÇ ¸ðµç È°¼ºÈ­µÈ UI ´Ý±â
+        /// ï¿½Ð³ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½ï¿½ UI ï¿½Ý±ï¿½
         /// </summary>
         public void CloseAllPanels()
         {
@@ -324,7 +324,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ÆË¾÷ ±×·ìÀÇ ¸ðµç È°¼ºÈ­µÈ UI ´Ý±â
+        /// ï¿½Ë¾ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½ï¿½ UI ï¿½Ý±ï¿½
         /// </summary>
         public void CloseAllPopups()
         {
@@ -335,7 +335,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// Æ¯Á¤ ±×·ìÀÇ ¸ðµç UI ´Ý±â
+        /// Æ¯ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ UI ï¿½Ý±ï¿½
         /// </summary>
         public void CloseAllUIsByGroup(UIPanelGroup group)
         {
@@ -354,7 +354,7 @@ namespace KYS
         #region Generic UI Management
 
         /// <summary>
-        /// Á¦³×¸¯ ÆË¾÷ UI Ç¥½Ã (ºñµ¿±â ¹öÀü - Resources Æú´õ¿¡¼­ ·Îµå)
+        /// ï¿½ï¿½ï¿½×¸ï¿½ ï¿½Ë¾ï¿½ UI Ç¥ï¿½ï¿½ (ï¿½ñµ¿±ï¿½ ï¿½ï¿½ï¿½ï¿½ - Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½)
         /// </summary>
         public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
@@ -364,45 +364,45 @@ namespace KYS
         private System.Collections.IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
-            Debug.Log($"[UIManager] Resources¿¡¼­ {prefabName} ÇÁ¸®ÆÕ ·Îµå ½ÃÀÛ");
+            Debug.Log($"[UIManager] Resourcesï¿½ï¿½ï¿½ï¿½ {prefabName} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½");
             
-            // Resources Æú´õ¿¡¼­ ÇÁ¸®ÆÕ ·Îµå
+            // Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
             GameObject prefab = Resources.Load<GameObject>($"UI/Popup/{prefabName}");
             
             if (prefab == null)
             {
-                // ´Ù¸¥ °æ·Î¿¡¼­µµ ½Ãµµ
+                // ï¿½Ù¸ï¿½ ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
                 prefab = Resources.Load<GameObject>($"UI/{prefabName}");
             }
             
             if (prefab == null)
             {
-                Debug.LogError($"[UIManager] Resources¿¡¼­ {prefabName} ÇÁ¸®ÆÕÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] Resourcesï¿½ï¿½ï¿½ï¿½ {prefabName} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 onComplete?.Invoke(null);
                 yield break;
             }
             
-            // ÆË¾÷ ÀÎ½ºÅÏ½º »ý¼º
+            // ï¿½Ë¾ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½
             GameObject popupInstance = Instantiate(prefab, popupCanvas.transform);
             T popupUI = popupInstance.GetComponent<T>();
             
             if (popupUI == null)
             {
-                Debug.LogError($"[UIManager] {prefabName}¿¡ {typeof(T).Name} ÄÄÆ÷³ÍÆ®°¡ ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] {prefabName}ï¿½ï¿½ {typeof(T).Name} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 Destroy(popupInstance);
                 onComplete?.Invoke(null);
                 yield break;
             }
             
-            // ÆË¾÷ ½ºÅÃ¿¡ Ãß°¡
+            // ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ß°ï¿½
             OpenPopup(popupUI);
             
-            Debug.Log($"[UIManager] {prefabName} ÆË¾÷ »ý¼º ¿Ï·á");
+            Debug.Log($"[UIManager] {prefabName} ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
             onComplete?.Invoke(popupUI);
         }
 
         /// <summary>
-        /// Á¦³×¸¯ ÆË¾÷ UI Ç¥½Ã (µ¿±â ¹öÀü - ·¹ÀÌºí »ç¿ë) (Resources Æú´õ¿¡¼­ ·Îµå)
+        /// ï¿½ï¿½ï¿½×¸ï¿½ ï¿½Ë¾ï¿½ UI Ç¥ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½) (Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½)
         /// </summary>
         public void ShowPopUpByLabel<T>(string label, System.Action<T> onComplete = null) where T : BaseUI
         {
@@ -411,19 +411,19 @@ namespace KYS
 
         private System.Collections.IEnumerator ShowPopUpByLabelCoroutine<T>(string label, System.Action<T> onComplete) where T : BaseUI
         {
-            Debug.Log($"[UIManager] Resources¿¡¼­ {label} ¶óº§·Î {typeof(T).Name} ÇÁ¸®ÆÕ ·Îµå ½ÃÀÛ");
+            Debug.Log($"[UIManager] Resourcesï¿½ï¿½ï¿½ï¿½ {label} ï¿½óº§·ï¿½ {typeof(T).Name} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½");
             
-            // Resources Æú´õ¿¡¼­ ÇØ´ç ¶óº§ÀÇ ¸ðµç ÇÁ¸®ÆÕ ·Îµå
+            // Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
             GameObject[] prefabs = Resources.LoadAll<GameObject>($"UI/{label}");
             
             if (prefabs == null || prefabs.Length == 0)
             {
-                Debug.LogError($"[UIManager] Resources¿¡¼­ {label} ¶óº§ÀÇ ÇÁ¸®ÆÕÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] Resourcesï¿½ï¿½ï¿½ï¿½ {label} ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 onComplete?.Invoke(null);
                 yield break;
             }
             
-            // T Å¸ÀÔÀÇ ÇÁ¸®ÆÕ Ã£±â
+            // T Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
             GameObject targetPrefab = null;
             foreach (GameObject prefab in prefabs)
             {
@@ -436,65 +436,65 @@ namespace KYS
             
             if (targetPrefab == null)
             {
-                Debug.LogError($"[UIManager] {label} ¶óº§¿¡¼­ {typeof(T).Name} Å¸ÀÔÀÇ ÇÁ¸®ÆÕÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] {label} ï¿½óº§¿ï¿½ï¿½ï¿½ {typeof(T).Name} Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 onComplete?.Invoke(null);
                 yield break;
             }
             
-            // ÆË¾÷ ÀÎ½ºÅÏ½º »ý¼º
+            // ï¿½Ë¾ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½
             GameObject popupInstance = Instantiate(targetPrefab, popupCanvas.transform);
             T popupUI = popupInstance.GetComponent<T>();
             
-            // ÆË¾÷ ½ºÅÃ¿¡ Ãß°¡
+            // ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ß°ï¿½
             OpenPopup(popupUI);
             
-            Debug.Log($"[UIManager] {label} ¶óº§·Î {typeof(T).Name} ÆË¾÷ »ý¼º ¿Ï·á");
+            Debug.Log($"[UIManager] {label} ï¿½óº§·ï¿½ {typeof(T).Name} ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
             onComplete?.Invoke(popupUI);
         }
 
         /// <summary>
-        /// Á¦³×¸¯ ÆË¾÷ UI Ç¥½Ã (±âÁ¸ È£È¯¼ºÀ» À§ÇÑ ·¡ÆÛ - Resources Æú´õ¿¡¼­ ·Îµå)
+        /// ï¿½ï¿½ï¿½×¸ï¿½ ï¿½Ë¾ï¿½ UI Ç¥ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½)
         /// </summary>
         public T ShowPopUp<T>() where T : BaseUI
         {
             T result = null;
             string prefabName = typeof(T).Name;
             
-            // Resources Æú´õ¿¡¼­ ÇÁ¸®ÆÕ ·Îµå
+            // Resources ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
             GameObject prefab = Resources.Load<GameObject>($"UI/Popup/{prefabName}");
             
             if (prefab == null)
             {
-                // ´Ù¸¥ °æ·Î¿¡¼­µµ ½Ãµµ
+                // ï¿½Ù¸ï¿½ ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
                 prefab = Resources.Load<GameObject>($"UI/{prefabName}");
             }
             
             if (prefab == null)
             {
-                Debug.LogError($"[UIManager] Resources¿¡¼­ {prefabName} ÇÁ¸®ÆÕÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] Resourcesï¿½ï¿½ï¿½ï¿½ {prefabName} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 return null;
             }
             
-            // ÆË¾÷ ÀÎ½ºÅÏ½º »ý¼º
+            // ï¿½Ë¾ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½
             GameObject popupInstance = Instantiate(prefab, popupCanvas.transform);
             result = popupInstance.GetComponent<T>();
             
             if (result == null)
             {
-                Debug.LogError($"[UIManager] {prefabName}¿¡ {typeof(T).Name} ÄÄÆ÷³ÍÆ®°¡ ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[UIManager] {prefabName}ï¿½ï¿½ {typeof(T).Name} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                 Destroy(popupInstance);
                 return null;
             }
             
-            // ÆË¾÷ ½ºÅÃ¿¡ Ãß°¡
+            // ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ß°ï¿½
             OpenPopup(result);
             
-            Debug.Log($"[UIManager] {prefabName} ÆË¾÷ »ý¼º ¿Ï·á (µ¿±â)");
+            Debug.Log($"[UIManager] {prefabName} ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ (ï¿½ï¿½ï¿½ï¿½)");
             return result;
         }
 
         /// <summary>
-        /// ÆË¾÷ ´Ý±â
+        /// ï¿½Ë¾ï¿½ ï¿½Ý±ï¿½
         /// </summary>
         public void ClosePopUp()
         {
@@ -509,7 +509,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ¸ðµç ÆË¾÷ Á¤¸®
+        /// ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void CleanPopUp()
         {
@@ -525,11 +525,11 @@ namespace KYS
         }
 
         /// <summary>
-        /// ¸ðµç UI Á¤¸®
+        /// ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void CleanAllUI()
         {
-            Debug.Log("[UIManager] CleanAllUI ½ÃÀÛ");
+            Debug.Log("[UIManager] CleanAllUI ï¿½ï¿½ï¿½ï¿½");
             
             CloseAllPanels();
             CloseAllPopups();
@@ -540,7 +540,7 @@ namespace KYS
             }
             
             mainPanels.Clear();
-            Debug.Log("[UIManager] ¸ðµç UI°¡ Á¤¸®µÇ¾ú½À´Ï´Ù.");
+            Debug.Log("[UIManager] ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
 
         #endregion
@@ -549,20 +549,20 @@ namespace KYS
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Debug.Log($"[UIManager] ¾À ·Îµå: {scene.name}");
+            Debug.Log($"[UIManager] ï¿½ï¿½ ï¿½Îµï¿½: {scene.name}");
             
-            // ¾À ÀüÈ¯ ½Ã ¸ðµç UI Á¤¸®
+            // ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½
             if (PopUp != null)
             {
                 PopUp.ForceCleanAll();
             }
             
-            // Stack ÃÊ±âÈ­
+            // Stack ï¿½Ê±ï¿½È­
             panelStack.Clear();
             popupStack.Clear();
             mainPanels.Clear();
             
-            // °ÔÀÓ ¾ÀÀ¸·Î ÀüÈ¯µÇ´Â °æ¿ì ·Îµù ºí·ÎÄ¿ ¼û±â±â
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½Ä¿ ï¿½ï¿½ï¿½ï¿½ï¿½
             if (scene.name.Contains("Game") || scene.name.Contains("Arena") || 
                 scene.name.Contains("Jump") || scene.name.Contains("Racing") ||
                 scene.name.Contains("Tile") || scene.name.Contains("Rope") ||
@@ -585,11 +585,11 @@ namespace KYS
             {
                 if (IsCurrentUINonClosable())
                 {
-                    Debug.Log("[UIManager] ÀÌ UI´Â ESC·Î ´ÝÀ» ¼ö ¾ø½À´Ï´Ù.");
+                    Debug.Log("[UIManager] ï¿½ï¿½ UIï¿½ï¿½ ESCï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                     return;
                 }
 
-                // ¿ì¼±¼øÀ§: ÆË¾÷ > ÆÐ³Î > ±âÁ¸ ÆË¾÷
+                // ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½: ï¿½Ë¾ï¿½ > ï¿½Ð³ï¿½ > ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½
                 if (popupStack.Count > 0)
                 {
                     ClosePopup();
@@ -600,7 +600,7 @@ namespace KYS
                 }
                 else
                 {
-                    ClosePopUp(); // ±âÁ¸ ÆË¾÷ ½Ã½ºÅÛ
+                    ClosePopUp(); // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½Ã½ï¿½ï¿½ï¿½
                 }
                 
                 Util.ConsumeESC();
@@ -610,7 +610,7 @@ namespace KYS
 
         private bool IsCurrentUINonClosable()
         {
-            // ÆË¾÷ ½ºÅÃ È®ÀÎ
+            // ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (popupStack.Count > 0)
             {
                 BaseUI topPopup = popupStack.Peek();
@@ -618,7 +618,7 @@ namespace KYS
                     return true;
             }
             
-            // ÆÐ³Î ½ºÅÃ È®ÀÎ
+            // ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (panelStack.Count > 0)
             {
                 BaseUI topPanel = panelStack.Peek();
@@ -631,20 +631,20 @@ namespace KYS
 
         #endregion
 
-        #region Legacy Support (ÇÏÀ§ È£È¯¼º)
+        #region Legacy Support (ï¿½ï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½)
 
-        // ±âÁ¸ ¸ÞÀÎ ÆÐ³Î µî·Ï
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½
         public void RegisterMainPanel(string panelName, GameObject panel)
         {
             if (string.IsNullOrEmpty(panelName) || panel == null)
             {
-                Debug.LogError("[UIManager] ÆÐ³Î ÀÌ¸§ÀÌ³ª GameObject°¡ nullÀÔ´Ï´Ù.");
+                Debug.LogError("[UIManager] ï¿½Ð³ï¿½ ï¿½Ì¸ï¿½ï¿½Ì³ï¿½ GameObjectï¿½ï¿½ nullï¿½Ô´Ï´ï¿½.");
                 return;
             }
 
             if (mainPanels.ContainsKey(panelName))
             {
-                Debug.LogWarning($"[UIManager] ÀÌ¹Ì µî·ÏµÈ ¸ÞÀÎ ÆÐ³Î: {panelName}");
+                Debug.LogWarning($"[UIManager] ï¿½Ì¹ï¿½ ï¿½ï¿½Ïµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½: {panelName}");
                 mainPanels[panelName] = panel;
             }
             else
@@ -653,21 +653,21 @@ namespace KYS
             }
         }
 
-        // ±âÁ¸ ¸ÞÀÎ ÆÐ³Î Á¦°Å
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½
         public void UnregisterMainPanel(string panelName)
         {
             if (mainPanels.Remove(panelName))
             {
-                Debug.Log($"[UIManager] ¸ÞÀÎ ÆÐ³Î Á¦°Å: {panelName}");
+                Debug.Log($"[UIManager] ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½: {panelName}");
             }
         }
 
-        // ±âÁ¸ ¸ÞÀÎ ÆÐ³Î °¡Á®¿À±â
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         public GameObject GetMainPanel(string panelName)
         {
             if (string.IsNullOrEmpty(panelName))
             {
-                Debug.LogError("[UIManager] ÆÐ³Î ÀÌ¸§ÀÌ nullÀÔ´Ï´Ù.");
+                Debug.LogError("[UIManager] ï¿½Ð³ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ nullï¿½Ô´Ï´ï¿½.");
                 return null;
             }
 
@@ -675,11 +675,11 @@ namespace KYS
             {
                 return panel;
             }
-            Debug.LogWarning($"[UIManager] µî·ÏµÇÁö ¾ÊÀº ¸ÞÀÎ ÆÐ³Î: {panelName}");
+            Debug.LogWarning($"[UIManager] ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½: {panelName}");
             return null;
         }
 
-        // ¸ðµç ¸ÞÀÎ ÆÐ³Î °¡Á®¿À±â
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         public Dictionary<string, GameObject> GetAllMainPanels()
         {
             return new Dictionary<string, GameObject>(mainPanels);
@@ -689,8 +689,8 @@ namespace KYS
 
         #region Confirmation Popup
 
-        // È®ÀÎ ÆË¾÷ Ç¥½Ã (ºñµ¿±â)
-        public void ShowConfirmPopUpAsync(string message, string confirmText = "È®ÀÎ", string cancelText = "Ãë¼Ò",
+        // È®ï¿½ï¿½ ï¿½Ë¾ï¿½ Ç¥ï¿½ï¿½ (ï¿½ñµ¿±ï¿½)
+        public void ShowConfirmPopUpAsync(string message, string confirmText = "È®ï¿½ï¿½", string cancelText = "ï¿½ï¿½ï¿½",
                                                System.Action confirmCallback = null, System.Action cancelCallback = null,
                                                System.Action<CheckPopUp> onComplete = null)
         {
@@ -703,14 +703,14 @@ namespace KYS
             });
         }
 
-        // °£´ÜÇÑ È®ÀÎ ÆË¾÷ (ºñµ¿±â)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ë¾ï¿½ (ï¿½ñµ¿±ï¿½)
         public void ShowConfirmPopUpAsync(string message, System.Action confirmCallback, System.Action<CheckPopUp> onComplete = null)
         {
-            ShowConfirmPopUpAsync(message, "È®ÀÎ", "Ãë¼Ò", confirmCallback, null, onComplete);
+            ShowConfirmPopUpAsync(message, "È®ï¿½ï¿½", "ï¿½ï¿½ï¿½", confirmCallback, null, onComplete);
         }
 
-        // È®ÀÎ ÆË¾÷ Ç¥½Ã (±âÁ¸ È£È¯¼ºÀ» À§ÇÑ ·¡ÆÛ)
-        public CheckPopUp ShowConfirmPopUp(string message, string confirmText = "È®ÀÎ", string cancelText = "Ãë¼Ò",
+        // È®ï¿½ï¿½ ï¿½Ë¾ï¿½ Ç¥ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+        public CheckPopUp ShowConfirmPopUp(string message, string confirmText = "È®ï¿½ï¿½", string cancelText = "ï¿½ï¿½ï¿½",
                                           System.Action confirmCallback = null, System.Action cancelCallback = null)
         {
             CheckPopUp result = null;
@@ -718,24 +718,24 @@ namespace KYS
             return result;
         }
 
-        // °£´ÜÇÑ È®ÀÎ ÆË¾÷ (±âÁ¸ È£È¯¼ºÀ» À§ÇÑ ·¡ÆÛ)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ë¾ï¿½ (ï¿½ï¿½ï¿½ï¿½ È£È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         public CheckPopUp ShowConfirmPopUp(string message, System.Action confirmCallback)
         {
-            return ShowConfirmPopUp(message, "È®ÀÎ", "Ãë¼Ò", confirmCallback, null);
+            return ShowConfirmPopUp(message, "È®ï¿½ï¿½", "ï¿½ï¿½ï¿½", confirmCallback, null);
         }
 
         #endregion
 
         #region Utility Methods
 
-        // Æ¯Á¤ Å¸ÀÔÀÇ È°¼º ÆË¾÷ Ã£±â
+        // Æ¯ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ ï¿½Ë¾ï¿½ Ã£ï¿½ï¿½
         public T FindActivePopUp<T>() where T : BaseUI
         {
             if (PopUp == null) return null;
             return PopUp.GetComponentInChildren<T>();
         }
 
-        // Æ¯Á¤ ÆË¾÷ ¾÷µ¥ÀÌÆ®
+        // Æ¯ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         public void UpdatePopUp<T>() where T : BaseUI
         {
             T popUp = FindActivePopUp<T>();
@@ -750,27 +750,27 @@ namespace KYS
         }
 
         /// <summary>
-        /// ¾îµå·¹¼­ºí¿¡¼­ UI ÇÁ¸®ÆÕ ¹Ì¸® ·Îµå (ÀÓ½Ã)
+        /// ï¿½ï¿½å·¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Îµï¿½ (ï¿½Ó½ï¿½)
         /// </summary>
         public void PreloadUIPrefabs(string label, System.Action onComplete = null)
         {
-            Debug.LogWarning($"[UIManager] {label} ¶óº§ - Addressables ¼³Á¤ÀÌ ¿Ï·áµÇÁö ¾Ê¾Æ ¹Ì¸® ·Îµå¸¦ °Ç³Ê¶Ý´Ï´Ù.");
+            Debug.LogWarning($"[UIManager] {label} ï¿½ï¿½ - Addressables ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ ï¿½Ì¸ï¿½ ï¿½Îµå¸¦ ï¿½Ç³Ê¶Ý´Ï´ï¿½.");
             onComplete?.Invoke();
         }
 
         /// <summary>
-        /// Æ¯Á¤ UI ÇÁ¸®ÆÕ ¹Ì¸® ·Îµå (ÀÓ½Ã)
+        /// Æ¯ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Îµï¿½ (ï¿½Ó½ï¿½)
         /// </summary>
         public void PreloadUIPrefab<T>(System.Action onComplete = null) where T : BaseUI
         {
-            Debug.LogWarning($"[UIManager] {typeof(T).Name} - Addressables ¼³Á¤ÀÌ ¿Ï·áµÇÁö ¾Ê¾Æ ¹Ì¸® ·Îµå¸¦ °Ç³Ê¶Ý´Ï´Ù.");
+            Debug.LogWarning($"[UIManager] {typeof(T).Name} - Addressables ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ ï¿½Ì¸ï¿½ ï¿½Îµå¸¦ ï¿½Ç³Ê¶Ý´Ï´ï¿½.");
             onComplete?.Invoke();
         }
 
-        // °ÔÀÓ ¾À ·Îµå ½ÃÀÛ
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½
         public void StartGameSceneLoad(string sceneName, int selectedGameIndex)
         {
-            Debug.Log($"[UIManager] StartGameSceneLoad È£Ãâ - Scene: {sceneName}, GameIndex: {selectedGameIndex}");
+            Debug.Log($"[UIManager] StartGameSceneLoad È£ï¿½ï¿½ - Scene: {sceneName}, GameIndex: {selectedGameIndex}");
         }
 
         #endregion
