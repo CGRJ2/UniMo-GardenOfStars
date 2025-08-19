@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,7 +12,7 @@ using DG.Tweening;
 namespace KYS
 {
     /// <summary>
-    /// MVP ÆĞÅÏÀ» Áö¿øÇÏ´Â ±âº» UI Å¬·¡½º
+    /// MVP íŒ¨í„´ì„ ì§€ì›í•˜ëŠ” ê¸°ë³¸ UI í´ë˜ìŠ¤
     /// </summary>
     public class BaseUI : MonoBehaviour, IUIView
     {
@@ -35,8 +35,8 @@ namespace KYS
         [SerializeField] protected bool canCloseWithESC = true;
         [SerializeField] protected bool canCloseWithBackdrop = true;
         [SerializeField] protected bool destroyOnClose = false;
-        [SerializeField] protected bool hidePreviousUI = true; // ÀÌÀü UI ¼û±è ¿©ºÎ
-        [SerializeField] protected bool disablePreviousUI = false; // ÀÌÀü UI ºñÈ°¼ºÈ­ ¿©ºÎ
+        [SerializeField] protected bool hidePreviousUI = true; // ì´ì „ UI ìˆ¨ê¹€ ì—¬ë¶€
+        [SerializeField] protected bool disablePreviousUI = false; // ì´ì „ UI ë¹„í™œì„±í™” ì—¬ë¶€
         
         [Header("Audio Settings")]
         [SerializeField] protected string defaultClickSound = "SFX_ButtonClick";
@@ -162,10 +162,10 @@ namespace KYS
             canvasGroup.DOFade(1f, animationDuration).SetEase(showEase);
             rectTransform.DOScale(originalScale, animationDuration).SetEase(showEase);
 #else
-            // DoTweenÀÌ ¾øÀ» ¶§´Â Áï½Ã Ç¥½Ã
+            // DoTweenì´ ì—†ì„ ë•ŒëŠ” ì¦‰ì‹œ í‘œì‹œ
             canvasGroup.alpha = 1f;
             rectTransform.localScale = originalScale;
-            Debug.LogWarning("[BaseUI] DoTweenÀÌ ¼³Ä¡µÇÁö ¾Ê¾Æ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ºñÈ°¼ºÈ­µÇ¾ú½À´Ï´Ù.");
+            Debug.LogWarning("[BaseUI] DoTweenì´ ì„¤ì¹˜ë˜ì§€ ì•Šì•„ ì• ë‹ˆë©”ì´ì…˜ì´ ë¹„í™œì„±í™”ë˜ì—ˆìŠµë‹ˆë‹¤.");
 #endif
         }
 
@@ -177,11 +177,11 @@ namespace KYS
             rectTransform.DOScale(Vector3.zero, animationDuration).SetEase(hideEase)
                 .OnComplete(() => onComplete?.Invoke());
 #else
-            // DoTweenÀÌ ¾øÀ» ¶§´Â Áï½Ã ¼û±è
+            // DoTweenì´ ì—†ì„ ë•ŒëŠ” ì¦‰ì‹œ ìˆ¨ê¹€
             canvasGroup.alpha = 0f;
             rectTransform.localScale = Vector3.zero;
             onComplete?.Invoke();
-            Debug.LogWarning("[BaseUI] DoTweenÀÌ ¼³Ä¡µÇÁö ¾Ê¾Æ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ºñÈ°¼ºÈ­µÇ¾ú½À´Ï´Ù.");
+            Debug.LogWarning("[BaseUI] DoTweenì´ ì„¤ì¹˜ë˜ì§€ ì•Šì•„ ì• ë‹ˆë©”ì´ì…˜ì´ ë¹„í™œì„±í™”ë˜ì—ˆìŠµë‹ˆë‹¤.");
 #endif
         }
 
@@ -257,33 +257,33 @@ namespace KYS
         #region Component Access Methods
 
         /// <summary>
-        /// UI °ÔÀÓ¿ÀºêÁ§Æ® °¡Á®¿À±â (Ä³½ÃµÈ °á°ú ¹İÈ¯)
+        /// UI ê²Œì„ì˜¤ë¸Œì íŠ¸ ê°€ì ¸ì˜¤ê¸° (ìºì‹œëœ ê²°ê³¼ ë°˜í™˜)
         /// </summary>
         public GameObject GetUI(in string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                Debug.LogError("[BaseUI] UI ÀÌ¸§ÀÌ nullÀÌ°Å³ª ºñ¾îÀÖ½À´Ï´Ù.");
+                Debug.LogError("[BaseUI] UI ì´ë¦„ì´ nullì´ê±°ë‚˜ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.");
                 return null;
             }
 
             if (goDict == null)
             {
-                Debug.LogError("[BaseUI] goDict°¡ nullÀÔ´Ï´Ù. Awake()°¡ È£ÃâµÇ¾ú´ÂÁö È®ÀÎÇÏ¼¼¿ä.");
+                Debug.LogError("[BaseUI] goDictê°€ nullì…ë‹ˆë‹¤. Awake()ê°€ í˜¸ì¶œë˜ì—ˆëŠ”ì§€ í™•ì¸í•˜ì„¸ìš”.");
                 return null;
             }
 
-            // Ä³½Ã¿¡¼­ ¸ÕÀú °Ë»ö
+            // ìºì‹œì—ì„œ ë¨¼ì € ê²€ìƒ‰
             if (goDict.TryGetValue(name, out GameObject gameObject) && gameObject != null)
             {
                 return gameObject;
             }
 
-            // Ä³½Ã¿¡ ¾ø°Å³ª nullÀÎ °æ¿ì ´Ù½Ã °Ë»ö
+            // ìºì‹œì— ì—†ê±°ë‚˜ nullì¸ ê²½ìš° ë‹¤ì‹œ ê²€ìƒ‰
             gameObject = GameObject.Find($"{name}");
             if (gameObject == null)
             {
-                // ÇÏÀ§ ¿ÀºêÁ§Æ®¿¡¼­ °Ë»ö
+                // í•˜ìœ„ ì˜¤ë¸Œì íŠ¸ì—ì„œ ê²€ìƒ‰
                 Transform[] allChildren = GetComponentsInChildren<Transform>(true);
                 foreach (Transform child in allChildren)
                 {
@@ -297,88 +297,88 @@ namespace KYS
 
             if (gameObject == null)
             {
-                Debug.LogError($"[BaseUI] UI °ÔÀÓ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù: {name}");
+                Debug.LogError($"[BaseUI] UI ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: {name}");
                 return null;
             }
 
-            // Ä³½Ã¿¡ Ãß°¡/¾÷µ¥ÀÌÆ®
+            // ìºì‹œì— ì¶”ê°€/ì—…ë°ì´íŠ¸
             goDict[name] = gameObject;
             return gameObject;
         }
 
         /// <summary>
-        /// UI °ÔÀÓ¿ÀºêÁ§Æ®¸¦ µñ¼Å³Ê¸®¿¡ Ãß°¡
+        /// UI ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ë”•ì…”ë„ˆë¦¬ì— ì¶”ê°€
         /// </summary>
         public GameObject AddUIToDictionary(GameObject go)
         {
             if (go == null)
             {
-                Debug.LogError("[BaseUI] Ãß°¡ÇÒ GameObject°¡ nullÀÔ´Ï´Ù.");
+                Debug.LogError("[BaseUI] ì¶”ê°€í•  GameObjectê°€ nullì…ë‹ˆë‹¤.");
                 return null;
             }
 
             if (goDict == null)
             {
-                Debug.LogError("[BaseUI] UI µñ¼Å³Ê¸®°¡ nullÀÔ´Ï´Ù. Awake()°¡ È£ÃâµÇ¾ú´ÂÁö È®ÀÎÇÏ¼¼¿ä.");
+                Debug.LogError("[BaseUI] UI ë”•ì…”ë„ˆë¦¬ê°€ nullì…ë‹ˆë‹¤. Awake()ê°€ í˜¸ì¶œë˜ì—ˆëŠ”ì§€ í™•ì¸í•˜ì„¸ìš”.");
                 return null;
             }
 
             if (!goDict.TryAdd(go.name, go))
             {
-                Debug.LogWarning($"[BaseUI] ÀÌ¹Ì UI°¡ µñ¼Å³Ê¸®¿¡ ÀÖ½À´Ï´Ù: {go.name}");
-                goDict[go.name] = go; // ±âÁ¸ ÂüÁ¶ ¾÷µ¥ÀÌÆ®
+                Debug.LogWarning($"[BaseUI] ì´ë¯¸ UIê°€ ë”•ì…”ë„ˆë¦¬ì— ìˆìŠµë‹ˆë‹¤: {go.name}");
+                goDict[go.name] = go; // ê¸°ì¡´ ì°¸ì¡° ì—…ë°ì´íŠ¸
             }
 
             return go;
         }
 
         /// <summary>
-        /// µñ¼Å³Ê¸®¿¡¼­ UI Á¦°Å
+        /// ë”•ì…”ë„ˆë¦¬ì—ì„œ UI ì œê±°
         /// </summary>
         public GameObject DeleteFromDictionary(in string name)
         {
             if (goDict == null)
             {
-                Debug.LogError("[BaseUI] UI µñ¼Å³Ê¸®°¡ nullÀÔ´Ï´Ù.");
+                Debug.LogError("[BaseUI] UI ë”•ì…”ë„ˆë¦¬ê°€ nullì…ë‹ˆë‹¤.");
                 return null;
             }
 
             if (goDict.Remove(name, out GameObject outObject))
             {
-                Debug.Log($"[BaseUI] µñ¼Å³Ê¸®¿¡¼­ Á¦°ÅµÊ: {name}");
+                Debug.Log($"[BaseUI] ë”•ì…”ë„ˆë¦¬ì—ì„œ ì œê±°ë¨: {name}");
                 return outObject;
             }
 
-            Debug.LogWarning($"[BaseUI] µñ¼Å³Ê¸®¿¡¼­ Ã£À» ¼ö ¾øÀ½: {name}");
+            Debug.LogWarning($"[BaseUI] ë”•ì…”ë„ˆë¦¬ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ìŒ: {name}");
             return null;
         }
 
         /// <summary>
-        /// ÄÄÆ÷³ÍÆ® Å¸ÀÔÀ¸·Î UI ¿ä¼Ò °¡Á®¿À±â (Ä³½ÃµÈ °á°ú ¹İÈ¯)
+        /// ì»´í¬ë„ŒíŠ¸ íƒ€ì…ìœ¼ë¡œ UI ìš”ì†Œ ê°€ì ¸ì˜¤ê¸° (ìºì‹œëœ ê²°ê³¼ ë°˜í™˜)
         /// </summary>
         public T GetUI<T>(in string name) where T : Component
         {
             if (string.IsNullOrEmpty(name))
             {
-                Debug.LogError("[BaseUI] UI ÀÌ¸§ÀÌ nullÀÌ°Å³ª ºñ¾îÀÖ½À´Ï´Ù.");
+                Debug.LogError("[BaseUI] UI ì´ë¦„ì´ nullì´ê±°ë‚˜ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.");
                 return null;
             }
 
             if (compDict == null)
             {
-                Debug.LogError("[BaseUI] compDict°¡ nullÀÔ´Ï´Ù. Awake()°¡ È£ÃâµÇ¾ú´ÂÁö È®ÀÎÇÏ¼¼¿ä.");
+                Debug.LogError("[BaseUI] compDictê°€ nullì…ë‹ˆë‹¤. Awake()ê°€ í˜¸ì¶œë˜ì—ˆëŠ”ì§€ í™•ì¸í•˜ì„¸ìš”.");
                 return null;
             }
 
             string key = $"{name}_{typeof(T).Name}";
             
-            // Ä³½Ã¿¡¼­ ¸ÕÀú °Ë»ö
+            // ìºì‹œì—ì„œ ë¨¼ì € ê²€ìƒ‰
             if (compDict.TryGetValue(key, out Component comp) && comp != null)
             {
                 return comp as T;
             }
 
-            // Ä³½Ã¿¡ ¾ø°Å³ª nullÀÎ °æ¿ì ´Ù½Ã °Ë»ö
+            // ìºì‹œì— ì—†ê±°ë‚˜ nullì¸ ê²½ìš° ë‹¤ì‹œ ê²€ìƒ‰
             GameObject go = GetUI(name);
             if (go == null)
             {
@@ -388,17 +388,17 @@ namespace KYS
             comp = go.GetComponent<T>();
             if (comp == null)
             {
-                Debug.LogError($"[BaseUI] {name}¿¡¼­ {typeof(T).Name} ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError($"[BaseUI] {name}ì—ì„œ {typeof(T).Name} ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
                 return null;
             }
 
-            // Ä³½Ã¿¡ Ãß°¡
+            // ìºì‹œì— ì¶”ê°€
             compDict[key] = comp;
             return comp as T;
         }
 
         /// <summary>
-        /// UI ¿ä¼Ò Á¸Àç ¿©ºÎ È®ÀÎ
+        /// UI ìš”ì†Œ ì¡´ì¬ ì—¬ë¶€ í™•ì¸
         /// </summary>
         public bool HasUI(in string name)
         {
@@ -407,7 +407,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// Æ¯Á¤ Å¸ÀÔÀÇ ÄÄÆ÷³ÍÆ® Á¸Àç ¿©ºÎ È®ÀÎ
+        /// íŠ¹ì • íƒ€ì…ì˜ ì»´í¬ë„ŒíŠ¸ ì¡´ì¬ ì—¬ë¶€ í™•ì¸
         /// </summary>
         public bool HasUI<T>(in string name) where T : Component
         {
@@ -417,7 +417,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// ¸ğµç Ä³½ÃµÈ UI ¿ä¼Ò ÀÌ¸§ °¡Á®¿À±â
+        /// ëª¨ë“  ìºì‹œëœ UI ìš”ì†Œ ì´ë¦„ ê°€ì ¸ì˜¤ê¸°
         /// </summary>
         public string[] GetAllUINames()
         {
@@ -428,11 +428,11 @@ namespace KYS
         }
 
         /// <summary>
-        /// Ä³½Ã ÃÊ±âÈ­ (UI ±¸Á¶ º¯°æ ½Ã È£Ãâ)
+        /// ìºì‹œ ì´ˆê¸°í™” (UI êµ¬ì¡° ë³€ê²½ ì‹œ í˜¸ì¶œ)
         /// </summary>
         public void RefreshCache()
         {
-            Debug.Log("[BaseUI] UI Ä³½Ã¸¦ »õ·Î°íÄ§ÇÕ´Ï´Ù.");
+            Debug.Log("[BaseUI] UI ìºì‹œë¥¼ ìƒˆë¡œê³ ì¹¨í•©ë‹ˆë‹¤.");
             InitializeComponentCache();
         }
 
@@ -445,7 +445,7 @@ namespace KYS
             GameObject go = GetUI(name);
             if (go == null)
             {
-                Debug.LogError($"UI¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù: {name}");
+                Debug.LogError($"UIë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: {name}");
                 return null;
             }
 
@@ -474,7 +474,7 @@ namespace KYS
         #region Localization Methods
 
         /// <summary>
-        /// ´ÙÁß¾ğ¾î ÅØ½ºÆ® °¡Á®¿À±â
+        /// ë‹¤ì¤‘ì–¸ì–´ í…ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸°
         /// </summary>
         protected string GetLocalizedText(string key)
         {
@@ -486,7 +486,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// Æ¯Á¤ ¾ğ¾îÀÇ ÅØ½ºÆ® °¡Á®¿À±â
+        /// íŠ¹ì • ì–¸ì–´ì˜ í…ìŠ¤íŠ¸ ê°€ì ¸ì˜¤ê¸°
         /// </summary>
         protected string GetLocalizedText(string key, SystemLanguage language)
         {
@@ -551,5 +551,193 @@ namespace KYS
         }
 
         #endregion
+
+        #region Touch Gesture Methods
+
+        /// <summary>
+        /// ë¡±í”„ë ˆìŠ¤ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetLongPressEvent(string name, System.Action<PointerEventData> onLongPress = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onLongPress != null)
+            {
+                handler.LongPress += onLongPress;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// ë”ë¸”íƒ­ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetDoubleTapEvent(string name, System.Action<PointerEventData> onDoubleTap = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onDoubleTap != null)
+            {
+                handler.DoubleTap += onDoubleTap;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// ìŠ¤ì™€ì´í”„ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetSwipeEvent(string name, System.Action<Vector2> onSwipe = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onSwipe != null)
+            {
+                handler.Swipe += onSwipe;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í•€ì¹˜ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetPinchEvent(string name, System.Action<float> onPinch = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onPinch != null)
+            {
+                handler.Pinch += onPinch;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í„°ì¹˜ ì‹œì‘ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetTouchStartEvent(string name, System.Action<PointerEventData> onTouchStart = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onTouchStart != null)
+            {
+                handler.TouchStart += onTouchStart;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í„°ì¹˜ ì¢…ë£Œ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetTouchEndEvent(string name, System.Action<PointerEventData> onTouchEnd = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onTouchEnd != null)
+            {
+                handler.TouchEnd += onTouchEnd;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í„°ì¹˜ ì´ë™ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê°€ì ¸ì˜¤ê¸°
+        /// </summary>
+        public PointerHandler GetTouchMoveEvent(string name, System.Action<Vector2> onTouchMove = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null && onTouchMove != null)
+            {
+                handler.TouchMove += onTouchMove;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// ë³µí•© í„°ì¹˜ ì´ë²¤íŠ¸ ì„¤ì • (í´ë¦­ + ë¡±í”„ë ˆìŠ¤ + ë”ë¸”íƒ­)
+        /// </summary>
+        public PointerHandler GetAdvancedTouchEvent(string name, 
+            System.Action<PointerEventData> onClick = null,
+            System.Action<PointerEventData> onLongPress = null,
+            System.Action<PointerEventData> onDoubleTap = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                if (onClick != null) handler.Click += onClick;
+                if (onLongPress != null) handler.LongPress += onLongPress;
+                if (onDoubleTap != null) handler.DoubleTap += onDoubleTap;
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// ë°©í–¥ë³„ ìŠ¤ì™€ì´í”„ ì´ë²¤íŠ¸ ì„¤ì •
+        /// </summary>
+        public PointerHandler GetDirectionalSwipeEvent(string name,
+            System.Action onSwipeUp = null,
+            System.Action onSwipeDown = null,
+            System.Action onSwipeLeft = null,
+            System.Action onSwipeRight = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                handler.Swipe += (swipeVector) =>
+                {
+                    if (handler.IsSwipeDirection(swipeVector, Vector2.up) && onSwipeUp != null)
+                        onSwipeUp();
+                    else if (handler.IsSwipeDirection(swipeVector, Vector2.down) && onSwipeDown != null)
+                        onSwipeDown();
+                    else if (handler.IsSwipeDirection(swipeVector, Vector2.left) && onSwipeLeft != null)
+                        onSwipeLeft();
+                    else if (handler.IsSwipeDirection(swipeVector, Vector2.right) && onSwipeRight != null)
+                        onSwipeRight();
+                };
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í„°ì¹˜ í”¼ë“œë°±ì´ í¬í•¨ëœ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
+        /// </summary>
+        public PointerHandler GetTouchFeedbackEvent(string name, 
+            System.Action<PointerEventData> onClick = null,
+            bool enableHaptic = true)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                handler.Click += (data) =>
+                {
+                    // í„°ì¹˜ í”¼ë“œë°± íš¨ê³¼
+                    if (enableHaptic)
+                    {
+                        // HapticFeedback.PlayLightImpact(); // í•˜ë“œì›¨ì–´ ì§„ë™
+                    }
+                    
+                    // ì‹œê°ì  í”¼ë“œë°±
+                    StartCoroutine(TouchFeedbackCoroutine(handler.gameObject));
+                    
+                    onClick?.Invoke(data);
+                };
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// í„°ì¹˜ í”¼ë“œë°± ì½”ë£¨í‹´
+        /// </summary>
+        private System.Collections.IEnumerator TouchFeedbackCoroutine(GameObject target)
+        {
+            if (target == null) yield break;
+
+            // ì›ë˜ ìŠ¤ì¼€ì¼ ì €ì¥
+            Vector3 originalScale = target.transform.localScale;
+            
+            // í„°ì¹˜ íš¨ê³¼ (ìŠ¤ì¼€ì¼ ì¶•ì†Œ)
+            target.transform.localScale = originalScale * 0.95f;
+            
+            yield return new WaitForSeconds(0.1f);
+            
+            // ì›ë˜ ìŠ¤ì¼€ì¼ë¡œ ë³µì›
+            target.transform.localScale = originalScale;
+        }
+
+        #endregion
+
+
     }
 }
