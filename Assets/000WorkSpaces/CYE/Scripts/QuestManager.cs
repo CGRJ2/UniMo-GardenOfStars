@@ -7,7 +7,11 @@ public class QuestManager : Singleton<QuestManager>
 {
     // 배열 형태와 현재 index를 지정하도록
     private LinkedList<Quest> _questList;
+    // 현재
     private LinkedListNode<Quest> _currentQuest;
+
+    // 목표치
+
     private void Awake()
     {
         base.SingletonInit();
