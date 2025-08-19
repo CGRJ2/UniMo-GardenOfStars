@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -5,10 +6,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera cam;   // 비워두면 자동으로 main 사용
     [SerializeField] private Joystick joy;
     [SerializeField] private float speed;
-    [SerializeField] private PlayerView view;
+    public Transform prodsAttachPoint;
+    public PlayerView view;
     private Vector3 dir;
     private Rigidbody rb;
-    
+    public Stack<IngrediantSO> ingrediantStack = new ();
+
     private void Awake()
     {
         rb ??= GetComponent<Rigidbody>();
