@@ -2,17 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class QuestData : MonoBehaviour
+namespace GameQuest
 {
-    // Start is called before the first frame update
-    void Start()
+    public enum QuestType
     {
-        
+        Main, Sub
     }
 
-    // Update is called once per frame
-    void Update()
+    public class QuestDataSO : ScriptableObject
     {
-        
+        #region 
+        private int _id;
+        public int Id { get { return _id; } }
+        private QuestType _questType;
+        public QuestType QuestType { get { return _questType; } }
+        private Dictionary<string, int> _questContents;
+        public Dictionary<string, int> QuestContents { get { return _questContents; } }
+        private string _description;
+        public string Description { get { return _description; } }
+        #endregion
+
+        #region 
+        public virtual void Init(string rawData)
+        {
+            // rawdata를 SO의 데이터 구조 형식으로 변환하여 저장
+        }
+        public virtual void Synchronize()
+        { 
+            
+        }
+        #endregion
     }
 }
