@@ -256,63 +256,184 @@ namespace KYS
 
         #region Component Access Methods
 
+        /// <summary>
+        /// UI 게임오브젝트 가져오기 (캐시된 결과 반환)
+        /// </summary>
         public GameObject GetUI(in string name)
         {
-            if (goDict == null)
+            if (string.IsNullOrEmpty(name))
             {
-                Debug.Log("goDict가 null입니다");
+                Debug.LogError("[BaseUI] UI 이름이 null이거나 비어있습니다.");
                 return null;
             }
-            goDict.TryGetValue(name, out GameObject gameObject);
+
+            if (goDict == null)
+            {
+                Debug.LogError("[BaseUI] goDict가 null입니다. Awake()가 호출되었는지 확인하세요.");
+                return null;
+            }
+
+            // 캐시에서 먼저 검색
+            if (goDict.TryGetValue(name, out GameObject gameObject) && gameObject != null)
+            {
+                return gameObject;
+            }
+
+            // 캐시에 없거나 null인 경우 다시 검색
+            gameObject = GameObject.Find($"{name}");
             if (gameObject == null)
             {
-                gameObject = GameObject.Find($"{name}");
-                if (gameObject == null)
+                // 하위 오브젝트에서 검색
+                Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+                foreach (Transform child in allChildren)
                 {
-                    Debug.LogError($"해당 UI 게임오브젝트를 찾을 수 없습니다: {name}");
+                    if (child.name == name)
+                    {
+                        gameObject = child.gameObject;
+                        break;
+                    }
                 }
-                goDict.TryAdd(name, gameObject);
             }
+
+            if (gameObject == null)
+            {
+                Debug.LogError($"[BaseUI] UI 게임오브젝트를 찾을 수 없습니다: {name}");
+                return null;
+            }
+
+            // 캐시에 추가/업데이트
+            goDict[name] = gameObject;
             return gameObject;
         }
 
+        /// <summary>
+        /// UI 게임오브젝트를 딕셔너리에 추가
+        /// </summary>
         public GameObject AddUIToDictionary(GameObject go)
         {
-            if (goDict == null)
+            if (go == null)
             {
-                Debug.Log("UI 딕셔너리가 null입니다");
+                Debug.LogError("[BaseUI] 추가할 GameObject가 null입니다.");
                 return null;
             }
+
+            if (goDict == null)
+            {
+                Debug.LogError("[BaseUI] UI 딕셔너리가 null입니다. Awake()가 호출되었는지 확인하세요.");
+                return null;
+            }
+
             if (!goDict.TryAdd(go.name, go))
             {
-                Debug.Log($"이미 UI가 딕셔너리에 있습니다.:{go.name}");
+                Debug.LogWarning($"[BaseUI] 이미 UI가 딕셔너리에 있습니다: {go.name}");
+                goDict[go.name] = go; // 기존 참조 업데이트
             }
 
             return go;
         }
 
-        public GameObject DeleteFromDictionary(in string name, in GameObject go)
+        /// <summary>
+        /// 딕셔너리에서 UI 제거
+        /// </summary>
+        public GameObject DeleteFromDictionary(in string name)
         {
-            goDict.Remove<string, GameObject>(name, out GameObject outObject);
-            return outObject;
+            if (goDict == null)
+            {
+                Debug.LogError("[BaseUI] UI 딕셔너리가 null입니다.");
+                return null;
+            }
+
+            if (goDict.Remove(name, out GameObject outObject))
+            {
+                Debug.Log($"[BaseUI] 딕셔너리에서 제거됨: {name}");
+                return outObject;
+            }
+
+            Debug.LogWarning($"[BaseUI] 딕셔너리에서 찾을 수 없음: {name}");
+            return null;
         }
 
+        /// <summary>
+        /// 컴포넌트 타입으로 UI 요소 가져오기 (캐시된 결과 반환)
+        /// </summary>
         public T GetUI<T>(in string name) where T : Component
         {
-            compDict.TryGetValue(name, out Component comp);
-            if (comp != null)
+            if (string.IsNullOrEmpty(name))
+            {
+                Debug.LogError("[BaseUI] UI 이름이 null이거나 비어있습니다.");
+                return null;
+            }
+
+            if (compDict == null)
+            {
+                Debug.LogError("[BaseUI] compDict가 null입니다. Awake()가 호출되었는지 확인하세요.");
+                return null;
+            }
+
+            string key = $"{name}_{typeof(T).Name}";
+            
+            // 캐시에서 먼저 검색
+            if (compDict.TryGetValue(key, out Component comp) && comp != null)
             {
                 return comp as T;
             }
+
+            // 캐시에 없거나 null인 경우 다시 검색
             GameObject go = GetUI(name);
             if (go == null)
             {
                 return null;
             }
+
             comp = go.GetComponent<T>();
-            if (comp == null) return null;
-            compDict.TryAdd($"{name}_{typeof(T).Name}", comp);
+            if (comp == null)
+            {
+                Debug.LogError($"[BaseUI] {name}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
+                return null;
+            }
+
+            // 캐시에 추가
+            compDict[key] = comp;
             return comp as T;
+        }
+
+        /// <summary>
+        /// UI 요소 존재 여부 확인
+        /// </summary>
+        public bool HasUI(in string name)
+        {
+            if (goDict == null) return false;
+            return goDict.ContainsKey(name) && goDict[name] != null;
+        }
+
+        /// <summary>
+        /// 특정 타입의 컴포넌트 존재 여부 확인
+        /// </summary>
+        public bool HasUI<T>(in string name) where T : Component
+        {
+            if (compDict == null) return false;
+            string key = $"{name}_{typeof(T).Name}";
+            return compDict.ContainsKey(key) && compDict[key] != null;
+        }
+
+        /// <summary>
+        /// 모든 캐시된 UI 요소 이름 가져오기
+        /// </summary>
+        public string[] GetAllUINames()
+        {
+            if (goDict == null) return new string[0];
+            string[] names = new string[goDict.Count];
+            goDict.Keys.CopyTo(names, 0);
+            return names;
+        }
+
+        /// <summary>
+        /// 캐시 초기화 (UI 구조 변경 시 호출)
+        /// </summary>
+        public void RefreshCache()
+        {
+            Debug.Log("[BaseUI] UI 캐시를 새로고침합니다.");
+            InitializeComponentCache();
         }
 
         #endregion
