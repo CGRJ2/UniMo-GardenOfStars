@@ -5,7 +5,10 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Camera cam;   // 비워두면 자동으로 main 사용
     [SerializeField] private Joystick joy;
-    [SerializeField] private float speed;
+
+    [Header("Test용")]
+    [SerializeField] private PlayerManager _playerManager;
+
     public Transform prodsAttachPoint;
     public PlayerView view;
     private Vector3 dir;
@@ -20,7 +23,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = dir * speed;
+        rb.velocity = dir * _playerManager.Data.MoveSpeed;
     }
 
     private void Update()
