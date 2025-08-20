@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     public PlayerView view;
     private Vector3 dir;
     private Rigidbody rb;
-    public Stack<IngrediantSO> ingrediantStack = new ();
+    public Stack<IngrediantInstance> ingrediantStack = new ();
 
     private void Awake()
     {
