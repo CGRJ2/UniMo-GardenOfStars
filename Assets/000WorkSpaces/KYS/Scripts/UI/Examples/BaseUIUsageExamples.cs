@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.MVP;
 
-namespace KYS.UI.Examples
+
+namespace KYS
 {
     /// <summary>
     /// BaseUI의 string 기반 UI 요소 검색 방식을 사용하는 예시

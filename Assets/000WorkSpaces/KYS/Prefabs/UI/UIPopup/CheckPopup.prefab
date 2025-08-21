@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 6165170342688360613}
   - component: {fileID: 8560199497756082051}
   - component: {fileID: 8337931521305220601}
+  - component: {fileID: 8475093435904875545}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ConfirmButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +37,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -88.6, y: -80.1}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6165170342688360613
@@ -121,6 +122,37 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8475093435904875545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4668765813708582051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c635fe5b157e9442a5070419f968db0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerType: 2
+  panelGroup: 4
+  useAnimation: 1
+  animationDuration: 0.3
+  showEase: OutBack
+  hideEase: InBack
+  canCloseWithESC: 1
+  canCloseWithBackdrop: 1
+  destroyOnClose: 0
+  hidePreviousUI: 1
+  disablePreviousUI: 0
+  defaultClickSound: SFX_ButtonClick
+  defaultBackSound: SFX_ButtonClickBack
+  enableSFX: 1
+  messageText: {fileID: 5959800411796131031}
+  confirmText: {fileID: 6514549727330634144}
+  cancelText: {fileID: 9195618501566683812}
+  confirmButton: {fileID: 8337931521305220601}
+  cancelButton: {fileID: 8657686693786520844}
 --- !u!1 &5367403502700491820
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +166,7 @@ GameObject:
   - component: {fileID: 1443053387002039992}
   - component: {fileID: 8657686693786520844}
   m_Layer: 5
-  m_Name: Button
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -157,7 +189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 87, y: -79.5}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1540300994328149507
@@ -254,7 +286,7 @@ GameObject:
   - component: {fileID: 6873531637850529921}
   - component: {fileID: 9195618501566683812}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: CancelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -387,9 +419,9 @@ GameObject:
   - component: {fileID: 4452040172267365125}
   - component: {fileID: 5040517950033960219}
   - component: {fileID: 6657749973574094609}
-  - component: {fileID: 7668832176981311892}
+  - component: {fileID: 3602218950556188865}
   m_Layer: 5
-  m_Name: MessagePopup
+  m_Name: CheckPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -455,7 +487,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7668832176981311892
+--- !u!114 &3602218950556188865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -464,10 +496,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6982989053937160634}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72fbba600252ec14e9e6955896435d62, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c635fe5b157e9442a5070419f968db0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerType: 2
+  layerType: 1
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
@@ -481,11 +513,11 @@ MonoBehaviour:
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
   enableSFX: 1
-  titleText: {fileID: 0}
-  descriptionText: {fileID: 0}
-  interactButton: {fileID: 0}
-  closeButton: {fileID: 0}
-  itemIcon: {fileID: 0}
+  messageText: {fileID: 5959800411796131031}
+  confirmText: {fileID: 6514549727330634144}
+  cancelText: {fileID: 9195618501566683812}
+  confirmButton: {fileID: 0}
+  cancelButton: {fileID: 0}
 --- !u!1 &8181920889320225383
 GameObject:
   m_ObjectHideFlags: 0
@@ -498,7 +530,7 @@ GameObject:
   - component: {fileID: 337192057459762195}
   - component: {fileID: 6514549727330634144}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ConfrimText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

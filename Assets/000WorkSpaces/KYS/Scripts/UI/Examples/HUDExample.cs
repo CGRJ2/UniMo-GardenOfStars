@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.MVP;
 
-namespace KYS.UI.Examples
+
+namespace KYS
 {
     /// <summary>
     /// HUD 레이어 예시 - 재화 표시, 기본 UI 패널 및 버튼들
@@ -96,8 +95,8 @@ namespace KYS.UI.Examples
         private void OnMenuButtonClicked()
         {
             Debug.Log("[HUDExample] 메뉴 버튼 클릭");
-            // 메뉴 패널 열기
-            UIManager.Instance.ShowPopUp<MenuPanel>();
+            // 메뉴 팝업 열기
+            UIManager.Instance.ShowPopUp<MenuPopUp>();
         }
         
         private void OnInventoryButtonClicked()

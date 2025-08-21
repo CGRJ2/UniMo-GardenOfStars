@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.MVP;
+
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
-namespace KYS.UI.Examples
+namespace KYS
 {
     /// <summary>
     /// Addressable 기반 UI 관리 시스템 사용 예시
@@ -14,11 +13,11 @@ namespace KYS.UI.Examples
     public class AddressableUIExamples : MonoBehaviour
     {
         [Header("Addressable Keys (문자열)")]
-        [SerializeField] private string hudPanelKey = "UI/HUD/StatusPanel";
-        [SerializeField] private string mainMenuKey = "UI/Panel/MainMenu";
-        [SerializeField] private string settingsKey = "UI/Panel/Settings";
-        [SerializeField] private string confirmPopupKey = "UI/Popup/ConfirmDialog";
-        [SerializeField] private string loadingKey = "UI/Loading/LoadingScreen";
+        [SerializeField] private string hudPanelKey = "KYS/StatusPanel";
+        [SerializeField] private string mainMenuKey = "KYS/MainMenu";
+        [SerializeField] private string settingsKey = "KYS/Settings";
+        [SerializeField] private string confirmPopupKey = "KYS/ConfirmDialog";
+        [SerializeField] private string loadingKey = "KYS/LoadingScreen";
         
         [Header("AssetReference (타입 안전)")]
         [SerializeField] private AssetReferenceGameObject hudPanelReference;
@@ -28,9 +27,9 @@ namespace KYS.UI.Examples
         [SerializeField] private AssetReferenceGameObject loadingReference;
         
         [Header("Labels")]
-        [SerializeField] private string hudLabel = "UI_HUD";
-        [SerializeField] private string panelLabel = "UI_Panel";
-        [SerializeField] private string popupLabel = "UI_Popup";
+        [SerializeField] private string hudLabel = "KYS_HUD";
+        [SerializeField] private string panelLabel = "KYS_Panel";
+        [SerializeField] private string popupLabel = "KYS_Popup";
         
         // 로드된 UI 인스턴스들
         private Dictionary<string, BaseUI> loadedUIs = new Dictionary<string, BaseUI>();

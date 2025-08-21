@@ -1,7 +1,7 @@
 using UnityEngine;
-using KYS.UI.MVP;
 
-namespace KYS.UI.MVP
+
+namespace KYS
 {
     /// <summary>
     /// MVP 패턴의 기본 Presenter 클래스

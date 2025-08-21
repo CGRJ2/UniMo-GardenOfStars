@@ -1,4 +1,4 @@
-namespace KYS.UI
+namespace KYS
 {
     /// <summary>
     /// UI 레이어 타입 정의

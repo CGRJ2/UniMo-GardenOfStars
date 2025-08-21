@@ -1,20 +1,20 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
-using KYS.UI.Localization;
+using TMPro;
 
-namespace KYS.UI.Localization
+
+namespace KYS
 {
     /// <summary>
-    /// 다중언어 지원 텍스트 컴포넌트 (MVP Model 연동)
+    /// 다국어 텍스트 컴포넌트 (LocalizationManager 싱글톤 사용)
     /// </summary>
     public class LocalizedText : MonoBehaviour
     {
         [Header("Localization Settings")]
-        [SerializeField] private string localizationKey;
+        [SerializeField] private string localizationKey = "";
         [SerializeField] private bool updateOnLanguageChange = true;
-        [SerializeField] private LanguageModel languageModel; // 직접 참조 가능
         
+        // UI 컴포넌트들
         private TextMeshProUGUI tmpText;
         private Text legacyText;
         private TMP_InputField tmpInputField;
@@ -22,41 +22,76 @@ namespace KYS.UI.Localization
         
         private void Awake()
         {
-            // 텍스트 컴포넌트 찾기
+            // UI 컴포넌트 찾기
             tmpText = GetComponent<TextMeshProUGUI>();
-            legacyText = GetComponent<Text>();
-            tmpInputField = GetComponent<TMP_InputField>();
-            legacyInputField = GetComponent<InputField>();
-            
-            // LanguageModel 찾기
-            if (languageModel == null)
+            if (tmpText == null)
             {
-                languageModel = FindObjectOfType<LanguageModel>();
+                legacyText = GetComponent<Text>();
+            }
+            
+            tmpInputField = GetComponent<TMP_InputField>();
+            if (tmpInputField == null)
+            {
+                legacyInputField = GetComponent<InputField>();
             }
         }
         
         private void Start()
         {
-            // 언어 변경 이벤트 구독
-            if (updateOnLanguageChange && languageModel != null)
+            // LocalizationManager 초기화 대기
+            if (LocalizationManager.Instance != null && LocalizationManager.Instance.IsInitialized)
             {
-                languageModel.OnLanguageChanged += OnLanguageChanged;
+                InitializeLocalizedText();
             }
-            
-            UpdateText();
+            else
+            {
+                // 초기화가 완료되지 않은 경우 대기
+                StartCoroutine(WaitForInitialization());
+            }
         }
         
         private void OnDestroy()
         {
             // 이벤트 구독 해제
-            if (languageModel != null)
+            if (LocalizationManager.Instance != null)
             {
-                languageModel.OnLanguageChanged -= OnLanguageChanged;
+                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
             }
         }
         
         /// <summary>
-        /// 언어 변경 시 호출
+        /// LocalizationManager 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForInitialization()
+        {
+            while (LocalizationManager.Instance == null || !LocalizationManager.Instance.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            InitializeLocalizedText();
+        }
+        
+        /// <summary>
+        /// LocalizedText 초기화
+        /// </summary>
+        private void InitializeLocalizedText()
+        {
+            Debug.Log($"[LocalizedText] 초기화 시작 - 키: {localizationKey}, 게임오브젝트: {gameObject.name}");
+            
+            // 초기 텍스트 설정
+            UpdateText();
+            
+            // 언어 변경 이벤트 구독
+            if (updateOnLanguageChange && LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+                Debug.Log($"[LocalizedText] 언어 변경 이벤트 구독 완료 - 키: {localizationKey}");
+            }
+        }
+        
+        /// <summary>
+        /// 언어 변경 이벤트 핸들러
         /// </summary>
         private void OnLanguageChanged(SystemLanguage language)
         {
@@ -69,9 +104,13 @@ namespace KYS.UI.Localization
         public void UpdateText()
         {
             if (string.IsNullOrEmpty(localizationKey))
+            {
+                Debug.LogWarning($"[LocalizedText] localizationKey가 비어있음 - 게임오브젝트: {gameObject.name}");
                 return;
+            }
             
             string translatedText = GetTranslatedText();
+            Debug.Log($"[LocalizedText] 텍스트 업데이트 - 키: {localizationKey}, 번역: {translatedText}, 게임오브젝트: {gameObject.name}");
             
             // TextMeshProUGUI
             if (tmpText != null)
@@ -103,19 +142,21 @@ namespace KYS.UI.Localization
         /// </summary>
         private string GetTranslatedText()
         {
-            // 새로운 LanguageModel 사용
-            if (languageModel != null)
+            if (LocalizationManager.Instance == null)
             {
-                return languageModel.GetText(localizationKey);
+                Debug.LogWarning($"[LocalizedText] LocalizationManager.Instance가 null - 키: {localizationKey}");
+                return localizationKey;
             }
             
-            // 기존 LocalizationManager 사용 (하위 호환성)
-            if (LocalizationManager.Instance != null)
+            if (!LocalizationManager.Instance.IsInitialized)
             {
-                return LocalizationManager.Instance.GetText(localizationKey);
+                Debug.LogWarning($"[LocalizedText] LocalizationManager가 초기화되지 않음 - 키: {localizationKey}");
+                return localizationKey;
             }
             
-            return localizationKey;
+            string result = LocalizationManager.Instance.GetText(localizationKey);
+            Debug.Log($"[LocalizedText] 번역 결과 - 키: {localizationKey}, 결과: {result}");
+            return result;
         }
         
         /// <summary>
@@ -145,20 +186,36 @@ namespace KYS.UI.Localization
         }
         
         /// <summary>
-        /// LanguageModel 설정
+        /// 언어 변경 이벤트 구독 설정
         /// </summary>
-        public void SetLanguageModel(LanguageModel model)
+        public void SetUpdateOnLanguageChange(bool update)
         {
-            if (languageModel != null)
+            if (updateOnLanguageChange == update)
+                return;
+                
+            updateOnLanguageChange = update;
+            
+            if (LocalizationManager.Instance != null)
             {
-                languageModel.OnLanguageChanged -= OnLanguageChanged;
+                if (update)
+                {
+                    LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+                }
+                else
+                {
+                    LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+                }
             }
-            
-            languageModel = model;
-            
-            if (languageModel != null && updateOnLanguageChange)
+        }
+        
+        /// <summary>
+        /// Inspector에서 키 변경 시 자동 업데이트
+        /// </summary>
+        private void OnValidate()
+        {
+            if (Application.isPlaying)
             {
-                languageModel.OnLanguageChanged += OnLanguageChanged;
+                UpdateText();
             }
         }
     }

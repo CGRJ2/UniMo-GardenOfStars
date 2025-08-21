@@ -1,4 +1,4 @@
-namespace KYS.UI
+namespace KYS
 {
     /// <summary>
     /// 패널 그룹 내 하위 그룹 분류

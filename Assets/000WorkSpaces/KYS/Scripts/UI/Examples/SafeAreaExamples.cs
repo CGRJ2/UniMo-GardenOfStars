@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using KYS.UI;
 
-namespace KYS.UI.Examples
+
+namespace KYS
 {
     /// <summary>
     /// SafeArea 사용 예시

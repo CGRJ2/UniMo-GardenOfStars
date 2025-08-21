@@ -1,99 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.MVP;
 
-namespace KYS.UI.Examples
+
+namespace KYS
 {
-    /// <summary>
-    /// 메뉴 패널 예시 (패널 그룹)
-    /// </summary>
-    public class MenuPanel : BaseUI
-    {
-        [Header("Menu Elements")]
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button settingsButton;
-        [SerializeField] private Button exitButton;
-        [SerializeField] private Button closeButton;
-        
-        protected override void Awake()
-        {
-            base.Awake();
-            layerType = UILayerType.Panel;
-            panelGroup = UIPanelGroup.Other;
-            hidePreviousUI = true; // 이전 UI 숨김
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음
-        }
-        
-        public override void Initialize()
-        {
-            base.Initialize();
-            
-            // 이벤트 설정
-            if (resumeButton != null)
-            {
-                GetEventWithSFX("ResumeButton").Click += (data) => OnResumeClicked();
-            }
-            
-            if (settingsButton != null)
-            {
-                GetEventWithSFX("SettingsButton").Click += (data) => OnSettingsClicked();
-            }
-            
-            if (exitButton != null)
-            {
-                GetEventWithSFX("ExitButton").Click += (data) => OnExitClicked();
-            }
-            
-            if (closeButton != null)
-            {
-                GetBackEvent("CloseButton").Click += (data) => OnCloseClicked();
-            }
-            
-            // UIManager에 등록
-            UIManager.Instance.RegisterUI(this);
-        }
-        
-        public override void Cleanup()
-        {
-            base.Cleanup();
-            UIManager.Instance.UnregisterUI(this);
-        }
-        
-        #region Event Handlers
-        
-        private void OnResumeClicked()
-        {
-            Debug.Log("[MenuPanel] 게임 재개");
-            Hide();
-        }
-        
-        private void OnSettingsClicked()
-        {
-            Debug.Log("[MenuPanel] 설정 패널 열기");
-            UIManager.Instance.ShowPopUp<SettingsPanel>();
-        }
-        
-        private void OnExitClicked()
-        {
-            Debug.Log("[MenuPanel] 게임 종료 확인");
-            UIManager.Instance.ShowConfirmPopUp("게임을 종료하시겠습니까?", () => {
-                Application.Quit();
-            });
-        }
-        
-        private void OnCloseClicked()
-        {
-            Debug.Log("[MenuPanel] 메뉴 닫기");
-            Hide();
-        }
-        
-        #endregion
-    }
+
     
     /// <summary>
-    /// 설정 패널 예시 (패널 그룹)
+    /// 설정 패널 예시 (패널 그룹) - Localization 적용
     /// </summary>
     public class SettingsPanel : BaseUI
     {
@@ -103,6 +18,14 @@ namespace KYS.UI.Examples
         [SerializeField] private Toggle fullscreenToggle;
         [SerializeField] private Button applyButton;
         [SerializeField] private Button closeButton;
+        
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText titleText;
+        [SerializeField] private LocalizedText bgmLabelText;
+        [SerializeField] private LocalizedText sfxLabelText;
+        [SerializeField] private LocalizedText fullscreenLabelText;
+        [SerializeField] private LocalizedText applyButtonText;
+        [SerializeField] private LocalizedText closeButtonText;
         
         protected override void Awake()
         {
@@ -116,6 +39,16 @@ namespace KYS.UI.Examples
         public override void Initialize()
         {
             base.Initialize();
+            
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
+            {
+                SetupLocalizedTexts();
+            }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
             
             // 초기 설정 로드
             LoadSettings();
@@ -138,6 +71,81 @@ namespace KYS.UI.Examples
         {
             base.Cleanup();
             UIManager.Instance.UnregisterUI(this);
+        }
+        
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            // LocalizedText 컴포넌트가 있는 경우 자동으로 처리됨
+            // 없으면 수동으로 설정
+            if (titleText == null)
+            {
+                var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
+                if (titleComponent != null)
+                {
+                    titleComponent.text = GetLocalizedText("settings_title");
+                }
+            }
+            
+            if (bgmLabelText == null)
+            {
+                var bgmLabelComponent = GetUI<TextMeshProUGUI>("BGMLabel");
+                if (bgmLabelComponent != null)
+                {
+                    bgmLabelComponent.text = GetLocalizedText("settings_bgm");
+                }
+            }
+            
+            if (sfxLabelText == null)
+            {
+                var sfxLabelComponent = GetUI<TextMeshProUGUI>("SFXLabel");
+                if (sfxLabelComponent != null)
+                {
+                    sfxLabelComponent.text = GetLocalizedText("settings_sfx");
+                }
+            }
+            
+            if (fullscreenLabelText == null)
+            {
+                var fullscreenLabelComponent = GetUI<TextMeshProUGUI>("FullscreenLabel");
+                if (fullscreenLabelComponent != null)
+                {
+                    fullscreenLabelComponent.text = GetLocalizedText("settings_fullscreen");
+                }
+            }
+            
+            if (applyButtonText == null && applyButton != null)
+            {
+                var textComponent = applyButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_apply");
+                }
+            }
+            
+            if (closeButtonText == null && closeButton != null)
+            {
+                var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_close");
+                }
+            }
         }
         
         private void LoadSettings()
@@ -198,28 +206,44 @@ namespace KYS.UI.Examples
     }
     
     /// <summary>
-    /// 인벤토리 패널 예시 (패널 그룹)
+    /// 인벤토리 패널 예시 (패널 그룹) - Localization 적용
     /// </summary>
     public class InventoryPanel : BaseUI
     {
         [Header("Inventory Elements")]
-        [SerializeField] private Transform itemContainer;
         [SerializeField] private GameObject itemSlotPrefab;
         [SerializeField] private Button closeButton;
         [SerializeField] private TextMeshProUGUI itemCountText;
+        
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText titleText;
+        [SerializeField] private LocalizedText emptyText;
+        [SerializeField] private LocalizedText closeButtonText;
+        
+        private int itemCount = 0;
         
         protected override void Awake()
         {
             base.Awake();
             layerType = UILayerType.Panel;
-            panelGroup = UIPanelGroup.Shop; // 인벤토리는 상점 그룹에 포함
-            hidePreviousUI = true; // 이전 UI 숨김
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음
+            panelGroup = UIPanelGroup.Shop;
+            hidePreviousUI = true;
+            disablePreviousUI = false;
         }
         
         public override void Initialize()
         {
             base.Initialize();
+            
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
+            {
+                SetupLocalizedTexts();
+            }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
             
             if (closeButton != null)
             {
@@ -236,12 +260,60 @@ namespace KYS.UI.Examples
             UIManager.Instance.UnregisterUI(this);
         }
         
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            // LocalizedText 컴포넌트가 있는 경우 자동으로 처리됨
+            if (titleText == null)
+            {
+                var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
+                if (titleComponent != null)
+                {
+                    titleComponent.text = GetLocalizedText("inventory_title");
+                }
+            }
+            
+            if (emptyText == null)
+            {
+                var emptyComponent = GetUI<TextMeshProUGUI>("EmptyText");
+                if (emptyComponent != null)
+                {
+                    emptyComponent.text = GetLocalizedText("inventory_empty");
+                }
+            }
+            
+            if (closeButtonText == null && closeButton != null)
+            {
+                var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_close");
+                }
+            }
+        }
+        
         private void RefreshInventory()
         {
-            // 인벤토리 아이템 표시 로직
+            // 아이템 개수 업데이트 (Localization 적용)
             if (itemCountText != null)
             {
-                itemCountText.text = "아이템 개수: 0";
+                string localizedText = GetLocalizedText("inventory_item_count");
+                itemCountText.text = string.Format(localizedText, itemCount);
             }
         }
         
@@ -253,7 +325,7 @@ namespace KYS.UI.Examples
     }
     
     /// <summary>
-    /// 게임 종료 확인 패널 예시 (게임 종료 그룹)
+    /// 게임 종료 확인 패널 예시 (패널 그룹) - Localization 적용
     /// </summary>
     public class GameExitConfirmPanel : BaseUI
     {
@@ -262,19 +334,32 @@ namespace KYS.UI.Examples
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
         
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText confirmButtonText;
+        [SerializeField] private LocalizedText cancelButtonText;
+        
         protected override void Awake()
         {
             base.Awake();
             layerType = UILayerType.Panel;
             panelGroup = UIPanelGroup.GameExit;
-            canCloseWithESC = true;
-            hidePreviousUI = true; // 이전 UI 숨김
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음
+            hidePreviousUI = true;
+            disablePreviousUI = false;
         }
         
         public override void Initialize()
         {
             base.Initialize();
+            
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
+            {
+                SetupLocalizedTexts();
+            }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
             
             if (confirmButton != null)
             {
@@ -295,6 +380,43 @@ namespace KYS.UI.Examples
             UIManager.Instance.UnregisterUI(this);
         }
         
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            if (confirmButtonText == null && confirmButton != null)
+            {
+                var textComponent = confirmButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_confirm");
+                }
+            }
+            
+            if (cancelButtonText == null && cancelButton != null)
+            {
+                var textComponent = cancelButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_cancel");
+                }
+            }
+        }
+        
         public void SetMessage(string message)
         {
             if (messageText != null)
@@ -302,6 +424,8 @@ namespace KYS.UI.Examples
                 messageText.text = message;
             }
         }
+        
+        #region Event Handlers
         
         private void OnConfirmClicked()
         {
@@ -314,5 +438,7 @@ namespace KYS.UI.Examples
             Debug.Log("[GameExitConfirmPanel] 게임 종료 취소");
             Hide();
         }
+        
+        #endregion
     }
 }

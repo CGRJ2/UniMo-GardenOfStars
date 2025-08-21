@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.Localization;
 
-namespace KYS.UI.Localization
+
+namespace KYS
 {
     /// <summary>
-    /// 언어 설정 패널 (MVP View)
+    /// 언어 설정 패널 (LocalizationManager 싱글톤 사용)
     /// </summary>
     public class LanguageSettingsPanel : BaseUI
     {
@@ -19,8 +18,7 @@ namespace KYS.UI.Localization
         [SerializeField] private LocalizedText applyButtonText;
         [SerializeField] private LocalizedText closeButtonText;
         
-        // MVP Components
-        private new LanguageSettingsPresenter presenter;
+        private SystemLanguage selectedLanguage;
         
         protected override void Awake()
         {
@@ -29,120 +27,123 @@ namespace KYS.UI.Localization
             panelGroup = UIPanelGroup.Settings;
         }
         
-        protected override void SetupMVP()
-        {
-            base.SetupMVP();
-            
-            // Presenter 설정
-            presenter = GetComponent<LanguageSettingsPresenter>();
-            if (presenter == null)
-            {
-                presenter = gameObject.AddComponent<LanguageSettingsPresenter>();
-            }
-            
-            SetPresenter(presenter);
-        }
-        
         public override void Initialize()
         {
             base.Initialize();
             
-            SetupButtons();
-            
-            UIManager.Instance.RegisterUI(this);
+            // LocalizationManager 초기화 대기
+            if (LocalizationManager.Instance != null && LocalizationManager.Instance.IsInitialized)
+            {
+                InitializeLanguageSettings();
+            }
+            else
+            {
+                // 초기화가 완료되지 않은 경우 대기
+                StartCoroutine(WaitForInitialization());
+            }
         }
         
         public override void Cleanup()
         {
             base.Cleanup();
-            UIManager.Instance.UnregisterUI(this);
+            
+            // 이벤트 구독 해제
+            if (languageDropdown != null)
+            {
+                languageDropdown.onValueChanged.RemoveAllListeners();
+            }
         }
         
         /// <summary>
-        /// 언어 드롭다운 설정 (Presenter에서 호출)
+        /// LocalizationManager 초기화 대기
         /// </summary>
-        public void SetupLanguageDropdown(SystemLanguage[] supportedLanguages, int currentIndex)
+        private System.Collections.IEnumerator WaitForInitialization()
         {
-            if (languageDropdown == null) return;
-            
-            // 드롭다운 초기화
-            languageDropdown.ClearOptions();
-            
-            // 드롭다운 옵션 추가
-            for (int i = 0; i < supportedLanguages.Length; i++)
+            while (LocalizationManager.Instance == null || !LocalizationManager.Instance.IsInitialized)
             {
-                string languageName = GetLanguageDisplayName(supportedLanguages[i]);
+                yield return null;
+            }
+            
+            InitializeLanguageSettings();
+        }
+        
+        /// <summary>
+        /// 언어 설정 초기화
+        /// </summary>
+        private void InitializeLanguageSettings()
+        {
+            SetupLanguageDropdown();
+            SetupButtons();
+        }
+        
+        /// <summary>
+        /// 언어 드롭다운 설정
+        /// </summary>
+        public void SetupLanguageDropdown()
+        {
+            if (languageDropdown == null || LocalizationManager.Instance == null)
+                return;
+            
+            // 활성 언어 목록 가져오기
+            SystemLanguage[] activeLanguages = LocalizationManager.Instance.ActiveLanguages;
+            
+            // 드롭다운 옵션 설정
+            languageDropdown.ClearOptions();
+            for (int i = 0; i < activeLanguages.Length; i++)
+            {
+                string languageName = LocalizationManager.Instance.GetLanguageName(activeLanguages[i]);
                 languageDropdown.options.Add(new TMP_Dropdown.OptionData(languageName));
             }
             
             // 현재 언어 선택
-            if (currentIndex >= 0 && currentIndex < supportedLanguages.Length)
-            {
-                languageDropdown.value = currentIndex;
-            }
+            int currentIndex = LocalizationManager.Instance.GetCurrentLanguageIndex();
+            languageDropdown.value = currentIndex;
+            selectedLanguage = LocalizationManager.Instance.CurrentLanguage;
             
-            // 드롭다운 이벤트 설정
-            languageDropdown.onValueChanged.RemoveAllListeners();
+            // 이벤트 구독
             languageDropdown.onValueChanged.AddListener(OnLanguageDropdownChanged);
         }
         
         private void SetupButtons()
         {
-            if (applyButton != null)
-            {
-                GetEventWithSFX("ApplyButton").Click += (data) => OnApplyClicked();
-            }
+            // 적용 버튼
+            GetEvent("ApplyButton").Click += (data) => OnApplyClicked();
             
-            if (closeButton != null)
-            {
-                GetBackEvent("CloseButton").Click += (data) => OnCloseClicked();
-            }
+            // 닫기 버튼
+            GetEvent("CloseButton").Click += (data) => OnCloseClicked();
         }
         
         private void OnLanguageDropdownChanged(int index)
         {
-            // Presenter에 위임
-            presenter?.OnLanguageDropdownChanged(index);
+            if (LocalizationManager.Instance != null)
+            {
+                selectedLanguage = LocalizationManager.Instance.GetLanguageByIndex(index);
+            }
         }
         
         private void OnApplyClicked()
         {
-            // Presenter에 위임
-            presenter?.OnApplyLanguage();
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.SetLanguage(selectedLanguage);
+            }
+            Hide();
         }
         
         private void OnCloseClicked()
         {
-            // Presenter에 위임
-            presenter?.OnClose();
+            Hide();
         }
         
         /// <summary>
-        /// 언어 표시 이름 가져오기
-        /// </summary>
-        private string GetLanguageDisplayName(SystemLanguage language)
-        {
-            switch (language)
-            {
-                case SystemLanguage.Korean:
-                    return "한국어";
-                case SystemLanguage.English:
-                    return "English";
-                case SystemLanguage.Japanese:
-                    return "日本語";
-                case SystemLanguage.Chinese:
-                    return "中文";
-                default:
-                    return language.ToString();
-            }
-        }
-        
-        /// <summary>
-        /// 언어 설정 패널 표시
+        /// 언어 설정 패널 표시 (정적 메서드)
         /// </summary>
         public static void ShowLanguageSettings()
         {
-            UIManager.Instance.ShowPopUp<LanguageSettingsPanel>();
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowPopUp<LanguageSettingsPanel>();
+            }
         }
     }
 }

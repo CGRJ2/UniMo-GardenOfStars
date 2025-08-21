@@ -1,4 +1,4 @@
-namespace KYS.UI.MVP
+namespace KYS
 {
     /// <summary>
     /// MVP 패턴의 Model 인터페이스

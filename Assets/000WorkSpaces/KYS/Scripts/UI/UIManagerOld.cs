@@ -6,8 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
-using KYS.UI;
-using KYS.UI.MVP;
+
 #if DOTWEEN_AVAILABLE
 using DG.Tweening;
 #endif

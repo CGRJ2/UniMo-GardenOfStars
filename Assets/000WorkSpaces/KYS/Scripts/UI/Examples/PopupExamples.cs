@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using KYS.UI;
-using KYS.UI.MVP;
 
-namespace KYS.UI.Examples
+
+namespace KYS
 {
     /// <summary>
-    /// 상호작용 팝업 예시 (팝업 UI 그룹)
+    /// 상호작용 팝업 예시 (팝업 UI 그룹) - Localization 적용
     /// </summary>
     public class InteractionPopup : BaseUI
     {
@@ -17,6 +16,10 @@ namespace KYS.UI.Examples
         [SerializeField] private Button interactButton;
         [SerializeField] private Button closeButton;
         [SerializeField] private Image itemIcon;
+        
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText interactButtonText;
+        [SerializeField] private LocalizedText closeButtonText;
         
         protected override void Awake()
         {
@@ -31,6 +34,16 @@ namespace KYS.UI.Examples
         public override void Initialize()
         {
             base.Initialize();
+            
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
+            {
+                SetupLocalizedTexts();
+            }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
             
             if (interactButton != null)
             {
@@ -49,6 +62,43 @@ namespace KYS.UI.Examples
         {
             base.Cleanup();
             UIManager.Instance.UnregisterUI(this);
+        }
+        
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            if (interactButtonText == null && interactButton != null)
+            {
+                var textComponent = interactButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_confirm");
+                }
+            }
+            
+            if (closeButtonText == null && closeButton != null)
+            {
+                var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_close");
+                }
+            }
         }
         
         public void SetInteractionData(string title, string description, Sprite icon = null)
@@ -93,7 +143,7 @@ namespace KYS.UI.Examples
     }
     
     /// <summary>
-    /// 정보 표시 팝업 예시 (팝업 UI 그룹)
+    /// 정보 표시 팝업 예시 (팝업 UI 그룹) - Localization 적용
     /// </summary>
     public class InfoPopup : BaseUI
     {
@@ -103,19 +153,33 @@ namespace KYS.UI.Examples
         [SerializeField] private Button okButton;
         [SerializeField] private Button closeButton;
         
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText okButtonText;
+        [SerializeField] private LocalizedText closeButtonText;
+        
         protected override void Awake()
         {
             base.Awake();
             layerType = UILayerType.Popup;
             canCloseWithESC = true;
             canCloseWithBackdrop = true;
-            hidePreviousUI = false; // 이전 UI 숨기지 않음
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음
+            hidePreviousUI = false;
+            disablePreviousUI = false;
         }
         
         public override void Initialize()
         {
             base.Initialize();
+            
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
+            {
+                SetupLocalizedTexts();
+            }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
             
             if (okButton != null)
             {
@@ -134,6 +198,43 @@ namespace KYS.UI.Examples
         {
             base.Cleanup();
             UIManager.Instance.UnregisterUI(this);
+        }
+        
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
+            {
+                yield return null;
+            }
+            
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            if (okButtonText == null && okButton != null)
+            {
+                var textComponent = okButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_confirm");
+                }
+            }
+            
+            if (closeButtonText == null && closeButton != null)
+            {
+                var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = GetLocalizedText("ui_close");
+                }
+            }
         }
         
         public void SetInfo(string title, string content)
@@ -167,7 +268,7 @@ namespace KYS.UI.Examples
     }
     
     /// <summary>
-    /// 로딩 팝업 예시 (로딩 UI 그룹)
+    /// 로딩 팝업 예시 (로딩 UI 그룹) - Localization 적용
     /// </summary>
     public class LoadingPopup : BaseUI
     {
@@ -176,23 +277,35 @@ namespace KYS.UI.Examples
         [SerializeField] private Slider progressSlider;
         [SerializeField] private Image loadingIcon;
         
+        [Header("Localized Text Components")]
+        [SerializeField] private LocalizedText defaultLoadingText;
+        
         protected override void Awake()
         {
             base.Awake();
             layerType = UILayerType.Loading;
-            canCloseWithESC = false;
+            canCloseWithESC = false; // 로딩 중에는 ESC로 닫을 수 없음
             canCloseWithBackdrop = false;
+            hidePreviousUI = false;
+            disablePreviousUI = false;
         }
         
         public override void Initialize()
         {
             base.Initialize();
             
-            // 로딩 아이콘 회전 애니메이션 (DOTween이 없는 경우 코루틴 사용)
-            if (loadingIcon != null)
+            // Localization 초기화 대기
+            if (Manager.localization != null && Manager.localization.IsInitialized)
             {
-                StartCoroutine(RotateLoadingIcon());
+                SetupLocalizedTexts();
             }
+            else
+            {
+                StartCoroutine(WaitForLocalization());
+            }
+            
+            // 로딩 아이콘 회전 시작
+            StartCoroutine(RotateLoadingIcon());
             
             UIManager.Instance.RegisterUI(this);
         }
@@ -200,14 +313,31 @@ namespace KYS.UI.Examples
         public override void Cleanup()
         {
             base.Cleanup();
-            
-            // 애니메이션 정리
-            if (loadingIcon != null)
+            UIManager.Instance.UnregisterUI(this);
+        }
+        
+        /// <summary>
+        /// Localization 초기화 대기
+        /// </summary>
+        private System.Collections.IEnumerator WaitForLocalization()
+        {
+            while (Manager.localization == null || !Manager.localization.IsInitialized)
             {
-                StopAllCoroutines();
+                yield return null;
             }
             
-            UIManager.Instance.UnregisterUI(this);
+            SetupLocalizedTexts();
+        }
+        
+        /// <summary>
+        /// Localized 텍스트 설정
+        /// </summary>
+        private void SetupLocalizedTexts()
+        {
+            if (defaultLoadingText == null && loadingText != null)
+            {
+                loadingText.text = GetLocalizedText("loading_text");
+            }
         }
         
         public void SetLoadingText(string text)
@@ -236,19 +366,18 @@ namespace KYS.UI.Examples
         
         private System.Collections.IEnumerator RotateLoadingIcon()
         {
-            while (true)
+            if (loadingIcon == null) yield break;
+            
+            while (gameObject.activeInHierarchy)
             {
-                if (loadingIcon != null)
-                {
-                    loadingIcon.transform.Rotate(0, 0, -360f * Time.deltaTime);
-                }
+                loadingIcon.transform.Rotate(0, 0, -90f * Time.deltaTime);
                 yield return null;
             }
         }
     }
     
     /// <summary>
-    /// 툴팁 팝업 예시 (팝업 UI 그룹)
+    /// 툴팁 팝업 예시 (팝업 UI 그룹) - Localization 적용
     /// </summary>
     public class TooltipPopup : BaseUI
     {
@@ -262,9 +391,8 @@ namespace KYS.UI.Examples
             layerType = UILayerType.Popup;
             canCloseWithESC = false;
             canCloseWithBackdrop = false;
-            useAnimation = false; // 툴팁은 애니메이션 없이 즉시 표시
-            hidePreviousUI = false; // 이전 UI 숨기지 않음
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음
+            hidePreviousUI = false;
+            disablePreviousUI = false;
         }
         
         public override void Initialize()
@@ -286,18 +414,12 @@ namespace KYS.UI.Examples
                 tooltipText.text = text;
             }
             
-            // 월드 좌표를 스크린 좌표로 변환
-            Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
-            
-            // UI 좌표로 변환
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                tooltipRect.parent as RectTransform,
-                screenPosition,
-                null,
-                out Vector2 localPoint
-            );
-            
-            tooltipRect.anchoredPosition = localPoint;
+            if (tooltipRect != null)
+            {
+                // 월드 좌표를 스크린 좌표로 변환
+                Vector2 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
+                tooltipRect.position = screenPosition;
+            }
         }
         
         public void SetTooltip(string text, Vector2 screenPosition)
@@ -307,15 +429,10 @@ namespace KYS.UI.Examples
                 tooltipText.text = text;
             }
             
-            // 스크린 좌표를 UI 좌표로 변환
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                tooltipRect.parent as RectTransform,
-                screenPosition,
-                null,
-                out Vector2 localPoint
-            );
-            
-            tooltipRect.anchoredPosition = localPoint;
+            if (tooltipRect != null)
+            {
+                tooltipRect.position = screenPosition;
+            }
         }
     }
 }

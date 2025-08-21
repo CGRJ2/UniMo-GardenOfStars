@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace KYS.UI.MVP
+namespace KYS
 {
     /// <summary>
     /// MVP 패턴의 View 인터페이스
