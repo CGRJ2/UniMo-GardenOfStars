@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,19 +6,19 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
 
-    private List<WorkerController> _workers;
+    private List<WorkerRuntimeData> _workers;
 
     private void SearchWorkStation()
     {
-        // TODO : °Ç¹° Á¤º¸¿Í ¿¬°ü Áö¾î¼­ ÀÏÇÒ °ø°£ Ã£´Â ·ÎÁ÷ ÀÛ¼º.
+        // TODO : ê±´ë¬¼ ì •ë³´ì™€ ì—°ê´€ ì§€ì–´ì„œ ì¼í•  ê³µê°„ ì°¾ëŠ” ë¡œì§ ì‘ì„±.
     }
 
-    private void AssignWorker(InteractableBase workStation)
+    public void AssignWorker(InteractableBase workStation)
     {
         float minDistance = float.MaxValue;
-        WorkerController resultWorker = null;
+        WorkerRuntimeData resultWorker = null;
 
-        foreach(WorkerController worker in _workers)
+        foreach(WorkerRuntimeData worker in _workers)
         {
             float distance = Vector3.Distance(worker.transform.position, workStation.transform.position);
 
@@ -37,7 +37,7 @@ public class WorkerManager : MonoBehaviour
 
     public void AddWorker(WorkerData data)
     {
-        WorkerController worker = Instantiate(_workerPrefab).GetComponent<WorkerController>();
+        WorkerRuntimeData worker = Instantiate(_workerPrefab).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerData(data);
         _workers.Add(worker);
