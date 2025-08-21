@@ -283,5 +283,131 @@ namespace KYS
                 Debug.LogError("[UIInitializer] UIManager가 null입니다.");
             }
         }
+
+        [ContextMenu("테스트 - HUD 생성")]
+        public async void TestCreateHUD()
+        {
+            Debug.Log("[UIInitializer] === HUD 생성 테스트 ===");
+            
+            if (UIManager.Instance != null)
+            {
+                // HUD Canvas 상태 확인
+                Debug.Log($"[UIInitializer] HUD Canvas 상태: {(UIManager.Instance.HUDCanvas != null ? "로드됨" : "null")}");
+                if (UIManager.Instance.HUDCanvas != null)
+                {
+                    Debug.Log($"[UIInitializer] HUD Canvas 이름: {UIManager.Instance.HUDCanvas.name}");
+                    Debug.Log($"[UIInitializer] HUD Canvas 자식 수: {UIManager.Instance.HUDCanvas.transform.childCount}");
+                }
+                
+                try
+                {
+                    // 다양한 Addressable 키 시도
+                    string[] possibleKeys = {
+                        "KYS/HUDAllPanel",
+                        "KYS/UIHUD/HUDAllPanel",
+                        "KYS/Prefabs/UI/UIHUD/HUDAllPanel",
+                        "HUDAllPanel",
+                        "UI/HUDAllPanel"
+                    };
+                    
+                    HUDAllPanel hud = null;
+                    string successfulKey = null;
+                    
+                    foreach (string key in possibleKeys)
+                    {
+                        Debug.Log($"[UIInitializer] 키 '{key}'로 HUD 생성 시도...");
+                        hud = await UIManager.Instance.CreateHUDAsync<HUDAllPanel>(key);
+                        if (hud != null)
+                        {
+                            successfulKey = key;
+                            Debug.Log($"[UIInitializer] 성공한 키: {key}");
+                            break;
+                        }
+                    }
+                    
+                    if (hud != null)
+                    {
+                        Debug.Log($"[UIInitializer] HUD 생성 성공: {hud.name} (키: {successfulKey})");
+                        
+                        // HUD 표시
+                        UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+                    }
+                    else
+                    {
+                        Debug.LogError("[UIInitializer] 모든 키로 HUD 생성 실패");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"[UIInitializer] HUD 생성 중 오류: {e.Message}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[UIInitializer] UIManager가 null입니다.");
+            }
+        }
+
+        [ContextMenu("테스트 - HUD 숨기기")]
+        public void TestHideHUD()
+        {
+            Debug.Log("[UIInitializer] === HUD 숨기기 테스트 ===");
+            
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.HideHUDUI<HUDAllPanel>();
+                Debug.Log("[UIInitializer] HUD 숨김 완료");
+            }
+            else
+            {
+                Debug.LogWarning("[UIInitializer] UIManager가 null입니다.");
+            }
+        }
+
+        [ContextMenu("테스트 - 모든 HUD 표시")]
+        public void TestShowAllHUD()
+        {
+            Debug.Log("[UIInitializer] === 모든 HUD 표시 테스트 ===");
+            
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowAllHUDElements();
+                Debug.Log("[UIInitializer] 모든 HUD 표시 완료");
+            }
+            else
+            {
+                Debug.LogWarning("[UIInitializer] UIManager가 null입니다.");
+            }
+        }
+
+        [ContextMenu("테스트 - HUD Canvas 상태 확인")]
+        public void TestHUDCanvasStatus()
+        {
+            Debug.Log("[UIInitializer] === HUD Canvas 상태 확인 ===");
+            
+            if (UIManager.Instance != null)
+            {
+                Debug.Log($"[UIInitializer] UIManager 초기화 상태: {UIManager.Instance.AreCanvasesInitialized}");
+                Debug.Log($"[UIInitializer] HUD Canvas: {(UIManager.Instance.HUDCanvas != null ? "로드됨" : "null")}");
+                
+                if (UIManager.Instance.HUDCanvas != null)
+                {
+                    Debug.Log($"[UIInitializer] HUD Canvas 이름: {UIManager.Instance.HUDCanvas.name}");
+                    Debug.Log($"[UIInitializer] HUD Canvas 활성화: {UIManager.Instance.HUDCanvas.gameObject.activeInHierarchy}");
+                    Debug.Log($"[UIInitializer] HUD Canvas 자식 수: {UIManager.Instance.HUDCanvas.transform.childCount}");
+                    
+                    // HUD Canvas의 모든 자식들 확인
+                    for (int i = 0; i < UIManager.Instance.HUDCanvas.transform.childCount; i++)
+                    {
+                        Transform child = UIManager.Instance.HUDCanvas.transform.GetChild(i);
+                        Debug.Log($"[UIInitializer] HUD 자식 {i}: {child.name} (활성화: {child.gameObject.activeInHierarchy})");
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[UIInitializer] UIManager가 null입니다.");
+            }
+        }
     }
 }

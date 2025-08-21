@@ -177,6 +177,31 @@ namespace KYS
             SetupUIElements();
             Debug.Log("[BaseUIUsageExamples] UI 캐시 새로고침 완료");
         }
+
+        // 새로운 사운드 시스템 사용 예제
+        private void SetupSoundExamples()
+        {
+            // 기본 클릭 사운드 (BaseUI의 defaultClickSound 사용)
+            GetEventWithSFX("BasicButton").Click += (data) => Debug.Log("기본 클릭 사운드");
+            
+            // 커스텀 클릭 사운드
+            GetEventWithSFX("CustomButton", "SFX_CustomClick").Click += (data) => Debug.Log("커스텀 클릭 사운드");
+            
+            // 기본 뒤로가기 사운드 (BaseUI의 defaultBackSound 사용)
+            GetBackEvent("BackButton").Click += (data) => Debug.Log("기본 뒤로가기 사운드");
+            
+            // 커스텀 뒤로가기 사운드
+            GetBackEvent("CustomBackButton", "SFX_CustomBack").Click += (data) => Debug.Log("커스텀 뒤로가기 사운드");
+            
+            // 호버 사운드
+            GetHoverEvent("HoverButton").Enter += (data) => Debug.Log("호버 사운드");
+            
+            // 에러 사운드
+            GetErrorEvent("ErrorButton").Click += (data) => Debug.Log("에러 사운드");
+            
+            // 성공 사운드
+            GetSuccessEvent("SuccessButton").Click += (data) => Debug.Log("성공 사운드");
+        }
     }
     
     /// <summary>

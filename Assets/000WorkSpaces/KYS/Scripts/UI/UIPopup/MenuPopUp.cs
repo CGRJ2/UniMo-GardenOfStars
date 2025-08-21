@@ -5,6 +5,9 @@ using TMPro;
 
 namespace KYS
 {
+    /// <summary>
+    /// MenuPopUp의 View 클래스 - UI 표시와 사용자 입력만 담당
+    /// </summary>
     public class MenuPopUp : BaseUI
     {
         [Header("UI Elements")]
@@ -19,12 +22,42 @@ namespace KYS
         [SerializeField] private LocalizedText exitButtonText;
         [SerializeField] private LocalizedText closeButtonText;
 
-
+        // 이벤트 - Presenter가 구독
+        public System.Action<PointerEventData> OnStartButtonClicked;
+        public System.Action<PointerEventData> OnSettingsButtonClicked;
+        public System.Action<PointerEventData> OnExitButtonClicked;
+        public System.Action<PointerEventData> OnCloseButtonClicked;
 
         protected override void Awake()
         {
             base.Awake();
-            layerType = UILayerType.Popup; // Popup으로 변경
+            layerType = UILayerType.Popup;
+        }
+
+        protected override void SetupMVP()
+        {
+            base.SetupMVP();
+            
+            // MVP 컴포넌트들을 자동으로 찾아서 설정
+            // Presenter 찾기
+            MenuPopUpPresenter presenter = GetComponent<MenuPopUpPresenter>();
+            if (presenter == null)
+            {
+                presenter = gameObject.AddComponent<MenuPopUpPresenter>();
+                Debug.Log("[MenuPopUp] MenuPopUpPresenter 컴포넌트를 자동으로 추가했습니다.");
+            }
+            SetPresenter(presenter);
+            
+            // Model 찾기
+            MenuPopUpModel model = GetComponent<MenuPopUpModel>();
+            if (model == null)
+            {
+                model = gameObject.AddComponent<MenuPopUpModel>();
+                Debug.Log("[MenuPopUp] MenuPopUpModel 컴포넌트를 자동으로 추가했습니다.");
+            }
+            SetModel(model);
+            
+            Debug.Log("[MenuPopUp] MVP 컴포넌트 설정 완료");
         }
 
         protected override string[] GetAutoLocalizeKeys()
@@ -43,7 +76,6 @@ namespace KYS
             base.Initialize();
             SetupButtons();
             SetupAutoLocalization();
-            SetupBackdrop();
         }
 
         public override void Cleanup()
@@ -53,70 +85,80 @@ namespace KYS
 
         private void SetupButtons()
         {
+            // 버튼 이벤트를 Presenter로 전달
+            GetEventWithSFX("StartButton").Click += (data) => OnStartButtonClicked?.Invoke(data);
+            GetEventWithSFX("SettingsButton").Click += (data) => OnSettingsButtonClicked?.Invoke(data);
+            GetEventWithSFX("ExitButton").Click += (data) => OnExitButtonClicked?.Invoke(data);
+            GetBackEvent("CloseButton").Click += (data) => OnCloseButtonClicked?.Invoke(data);
+        }
+
+        #region Public Methods (Presenter가 호출)
+
+        /// <summary>
+        /// 시작 버튼 상호작용 가능 여부 설정
+        /// </summary>
+        public void SetStartButtonInteractable(bool interactable)
+        {
             if (startButton != null)
-                GetEventWithSFX("StartButton", "SFX_ButtonClick").Click += OnStartClicked;
-            
+            {
+                startButton.interactable = interactable;
+            }
+        }
+
+        /// <summary>
+        /// 설정 버튼 상호작용 가능 여부 설정
+        /// </summary>
+        public void SetSettingsButtonInteractable(bool interactable)
+        {
             if (settingsButton != null)
-                GetEventWithSFX("SettingsButton", "SFX_ButtonClick").Click += OnSettingsClicked;
-            
+            {
+                settingsButton.interactable = interactable;
+            }
+        }
+
+        /// <summary>
+        /// 종료 버튼 상호작용 가능 여부 설정
+        /// </summary>
+        public void SetExitButtonInteractable(bool interactable)
+        {
             if (exitButton != null)
-                GetEventWithSFX("ExitButton", "SFX_ButtonClick").Click += OnExitClicked;
+            {
+                exitButton.interactable = interactable;
+            }
+        }
+
+        /// <summary>
+        /// 버튼 텍스트 업데이트
+        /// </summary>
+        public void UpdateButtonTexts(string startText = null, string settingsText = null, string exitText = null)
+        {
+            if (startText != null && startButtonText != null)
+            {
+                startButtonText.SetText(startText);
+            }
             
-            if (closeButton != null)
-                GetBackEvent("CloseButton", "SFX_ButtonClickBack").Click += OnCloseClicked;
-        }
-
-        private void OnStartClicked(PointerEventData data)
-        {
-            Debug.Log("[MenuPopUp] 시작 버튼 클릭");
-            UIManager.Instance.ClosePopup();
-        }
-
-        private void OnSettingsClicked(PointerEventData data)
-        {
-            Debug.Log("[MenuPopUp] 설정 버튼 클릭");
-            UIManager.Instance.ShowPopUpAsync<CheckPopUp>();
-        }
-
-        private void OnExitClicked(PointerEventData data)
-        {
-            Debug.Log("[MenuPopUp] 종료 버튼 클릭");
-            UIManager.Instance.ClosePopup();
-        }
-
-        private void OnCloseClicked(PointerEventData data)
-        {
-            Debug.Log("[MenuPopUp] 닫기 버튼 클릭");
-            UIManager.Instance.ClosePopup();
-        }
-
-        private void SetupBackdrop()
-        {
-            // PopupCanvas에서 Backdrop 찾기
-            Canvas popupCanvas = UIManager.Instance?.PopupCanvas;
-            if (popupCanvas == null)
+            if (settingsText != null && settingsButtonText != null)
             {
-                Debug.LogWarning("[MenuPopUp] PopupCanvas를 찾을 수 없습니다.");
-                return;
+                settingsButtonText.SetText(settingsText);
             }
-
-            BackdropUI backdrop = popupCanvas.GetComponentInChildren<BackdropUI>();
-            if (backdrop != null)
+            
+            if (exitText != null && exitButtonText != null)
             {
-                // Backdrop 클릭 시 Popup 닫기
-                backdrop.OnBackdropClicked += () =>
-                {
-                    Debug.Log("[MenuPopUp] Backdrop 클릭으로 Popup 닫기");
-                    UIManager.Instance.ClosePopup();
-                };
-                
-                Debug.Log("[MenuPopUp] Backdrop 설정 완료");
-            }
-            else
-            {
-                Debug.LogWarning("[MenuPopUp] Backdrop를 찾을 수 없습니다.");
+                exitButtonText.SetText(exitText);
             }
         }
+
+        /// <summary>
+        /// UI 상태 업데이트
+        /// </summary>
+        public void UpdateUIState(bool canStart, bool canSettings, bool canExit)
+        {
+            SetStartButtonInteractable(canStart);
+            SetSettingsButtonInteractable(canSettings);
+            SetExitButtonInteractable(canExit);
+        }
+
+        #endregion
 
         public static void ShowMenuPopUp()
         {

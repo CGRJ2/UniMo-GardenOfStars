@@ -108,6 +108,9 @@ namespace KYS
                     hudCanvas.sortingOrder = 0; // 가장 뒤에 렌더링
                     addressableHandles["HUDCanvas"] = hudHandle;
                     DontDestroyOnLoad(hudHandle.Result);
+                    
+                    // HUD Canvas의 모든 UI 요소들을 숨김 상태로 초기화
+                    HideAllHUDElements();
                 }
                 
                 // Panel Canvas 로드
@@ -144,12 +147,86 @@ namespace KYS
                 }
                 
                 ApplySafeAreaToCanvases();
+                
+                // HUD 요소들 초기 생성 및 숨김
+                await InitializeHUDElements();
+                
                 Debug.Log("[UIManager] Addressable Canvas 초기화 완료");
             }
             catch (System.Exception e)
             {
                 Debug.LogError($"[UIManager] Canvas 초기화 중 오류: {e.Message}");
             }
+        }
+
+        /// <summary>
+        /// HUD 요소들을 초기에 생성하고 SafeAreaPanel 아래에 배치한 후 숨김
+        /// </summary>
+        private async System.Threading.Tasks.Task InitializeHUDElements()
+        {
+            if (hudCanvas == null) return;
+
+            try
+            {
+                Debug.Log("[UIManager] HUD 요소들 초기화 시작");
+                
+                // HUD 요소들을 미리 생성할 Addressable 키들
+                string[] hudKeys = {
+                    "KYS/HUDAllPanel",
+                    // 추가 HUD 키들을 여기에 추가
+                };
+
+                foreach (string key in hudKeys)
+                {
+                    try
+                    {
+                        // HUD 생성
+                        var hud = await CreateHUDAsync<BaseUI>(key);
+                        if (hud != null)
+                        {
+                            // SafeAreaPanel 아래에 배치
+                            Transform safeAreaParent = GetSafeAreaParentForHUD();
+                            if (safeAreaParent != null)
+                            {
+                                hud.transform.SetParent(safeAreaParent, false);
+                                Debug.Log($"[UIManager] HUD {hud.name}을 SafeAreaPanel 아래에 배치");
+                            }
+                            
+                            // 생성 후 즉시 숨김
+                            hud.gameObject.SetActive(false);
+                            Debug.Log($"[UIManager] HUD {hud.name} 생성 완료 및 숨김");
+                        }
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning($"[UIManager] HUD {key} 생성 실패: {e.Message}");
+                    }
+                }
+                
+                Debug.Log("[UIManager] HUD 요소들 초기화 완료");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[UIManager] HUD 요소들 초기화 중 오류: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// HUD를 위한 SafeArea 부모 Transform 반환
+        /// </summary>
+        private Transform GetSafeAreaParentForHUD()
+        {
+            if (hudCanvas == null) return null;
+            
+            // HUD Canvas에 SafeAreaPanel이 있는지 확인
+            SafeAreaPanel safeAreaPanel = hudCanvas.GetComponentInChildren<SafeAreaPanel>();
+            if (safeAreaPanel != null)
+            {
+                return safeAreaPanel.transform;
+            }
+            
+            // SafeAreaPanel이 없으면 HUD Canvas를 직접 반환
+            return hudCanvas.transform;
         }
 
         private void ApplySafeAreaToCanvases()
@@ -575,7 +652,8 @@ namespace KYS
                         }
                         else
                         {
-                            Debug.LogError($"[UIManager] ❌ SafeAreaPanel 생성 실패: {targetCanvas.name}");
+                            Debug.LogWarning($"[UIManager] SafeAreaPanel 생성 실패, Canvas를 직접 사용: {targetCanvas.name}");
+                            return targetTransform;
                         }
                     }
                 }
@@ -1042,7 +1120,17 @@ namespace KYS
                                          System.Action confirmCallback = null, System.Action cancelCallback = null,
                                          System.Action<CheckPopUp> onComplete = null)
         {
-            StartCoroutine(ShowConfirmPopUpAsyncCoroutine(message, confirmText, cancelText, confirmCallback, cancelCallback, onComplete));
+            ShowPopUpAsync<CheckPopUp>((popup) => {
+                if (popup != null)
+                {
+                    popup.SetMessage(message);
+                    popup.SetConfirmText(confirmText);
+                    popup.SetCancelText(cancelText);
+                    popup.SetConfirmCallback(confirmCallback);
+                    popup.SetCancelCallback(cancelCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
         }
 
         /// <summary>
@@ -1051,81 +1139,6 @@ namespace KYS
         public void ShowConfirmPopUpAsync(string message, System.Action confirmCallback, System.Action<CheckPopUp> onComplete = null)
         {
             ShowConfirmPopUpAsync(message, "확인", "취소", confirmCallback, null, onComplete);
-        }
-
-        private System.Collections.IEnumerator ShowConfirmPopUpAsyncCoroutine(string message, string confirmText, string cancelText,
-                                                                             System.Action confirmCallback, System.Action cancelCallback,
-                                                                             System.Action<CheckPopUp> onComplete)
-        {
-            Debug.Log("[UIManager] 확인 팝업 로드 시작");
-            
-            AsyncOperationHandle<GameObject> handle = default;
-            
-            // CheckPopUp 프리팹 로드 (KYS 그룹 사용)
-            handle = Addressables.LoadAssetAsync<GameObject>("KYS/UIPopup/CheckPopUp");
-            yield return handle;
-            
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                Debug.LogError("[UIManager] CheckPopUp 로드 실패");
-                Addressables.Release(handle);
-                onComplete?.Invoke(null);
-                yield break;
-            }
-            
-            // 명시적으로 GameObject로 캐스팅하여 인스턴스 생성
-            GameObject prefabAsset = handle.Result as GameObject;
-            if (prefabAsset == null)
-            {
-                Debug.LogError("[UIManager] CheckPopUp 프리팹을 GameObject로 캐스팅할 수 없습니다.");
-                Addressables.Release(handle);
-                onComplete?.Invoke(null);
-                yield break;
-            }
-            
-            Debug.Log($"[UIManager] CheckPopUp 프리팹 캐스팅 성공: {prefabAsset.name}");
-            
-            // CheckPopUp은 팝업이므로 popupCanvas 사용
-            Transform targetCanvas = popupCanvas?.transform;
-            if (targetCanvas == null)
-            {
-                Debug.LogError("[UIManager] popupCanvas가 null입니다. CheckPopUp을 생성할 수 없습니다.");
-                Addressables.Release(handle);
-                onComplete?.Invoke(null);
-                yield break;
-            }
-            
-            Debug.Log($"[UIManager] CheckPopUp이 {targetCanvas.name}에 생성됩니다.");
-            
-            // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
-            Debug.Log($"[UIManager] CheckPopUp 인스턴스 생성 시작... (Canvas: {targetCanvas.name})");
-            GameObject uiInstance = Instantiate(prefabAsset, targetCanvas);
-            
-            CheckPopUp popupInstance = uiInstance.GetComponent<CheckPopUp>();
-            if (popupInstance == null)
-            {
-                Debug.LogError("[UIManager] CheckPopUp 컴포넌트를 찾을 수 없습니다.");
-                Destroy(uiInstance);
-                Addressables.Release(handle);
-                onComplete?.Invoke(null);
-                yield break;
-            }
-            
-            // 팝업 설정
-            popupInstance.SetMessage(message);
-            popupInstance.SetConfirmText(confirmText);
-            popupInstance.SetCancelText(cancelText);
-            
-            if (confirmCallback != null)
-                popupInstance.OnConfirmClicked += confirmCallback;
-            if (cancelCallback != null)
-                popupInstance.OnCancelClicked += cancelCallback;
-            
-            OpenPopup(popupInstance);
-            onComplete?.Invoke(popupInstance);
-            Debug.Log("[UIManager] 확인 팝업 표시 완료");
-            
-            Addressables.Release(handle);
         }
 
         #endregion
@@ -1348,6 +1361,225 @@ namespace KYS
                 canvasGroup.blocksRaycasts = true;
                 
                 Debug.Log($"[UIManager] Canvas 터치 복원: {canvas.name}");
+            }
+        }
+
+        /// <summary>
+        /// HUD 프리팹을 로드하고 생성
+        /// </summary>
+        public async System.Threading.Tasks.Task<T> CreateHUDAsync<T>(string addressableKey) where T : BaseUI
+        {
+            if (hudCanvas == null)
+            {
+                Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
+                return null;
+            }
+
+            try
+            {
+                // HUD 프리팹 로드
+                var handle = Addressables.InstantiateAsync(addressableKey, hudCanvas.transform);
+                await handle.Task;
+                
+                GameObject hudObject = handle.Result;
+                T hudComponent = hudObject.GetComponent<T>();
+                
+                if (hudComponent == null)
+                {
+                    Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다: {addressableKey}");
+                    Addressables.Release(handle);
+                    return null;
+                }
+
+                // HUD 초기화
+                hudComponent.Initialize();
+                
+                // Addressable 핸들 저장
+                addressableHandles[addressableKey] = handle;
+                instantiatedUIs[addressableKey] = hudObject;
+                
+                Debug.Log($"[UIManager] HUD 생성 완료: {typeof(T).Name} from {addressableKey}");
+                return hudComponent;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// HUD 프리팹을 로드하고 생성 (AssetReference 사용)
+        /// </summary>
+        public async System.Threading.Tasks.Task<T> CreateHUDAsync<T>(AssetReferenceGameObject assetReference) where T : BaseUI
+        {
+            if (hudCanvas == null)
+            {
+                Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
+                return null;
+            }
+
+            try
+            {
+                // HUD 프리팹 로드
+                var handle = assetReference.InstantiateAsync(hudCanvas.transform);
+                await handle.Task;
+                
+                GameObject hudObject = handle.Result;
+                T hudComponent = hudObject.GetComponent<T>();
+                
+                if (hudComponent == null)
+                {
+                    Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다.");
+                    Addressables.Release(handle);
+                    return null;
+                }
+
+                // HUD 초기화
+                hudComponent.Initialize();
+                
+                // Addressable 핸들 저장
+                string key = assetReference.RuntimeKey.ToString();
+                addressableHandles[key] = handle;
+                instantiatedUIs[key] = hudObject;
+                
+                Debug.Log($"[UIManager] HUD 생성 완료: {typeof(T).Name}");
+                return hudComponent;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// HUD Canvas의 모든 UI 요소들을 숨김 상태로 초기화
+        /// </summary>
+        private void HideAllHUDElements()
+        {
+            if (hudCanvas == null) return;
+
+            // HUD Canvas의 모든 BaseUI 컴포넌트들을 찾아서 숨김
+            BaseUI[] hudUIs = hudCanvas.GetComponentsInChildren<BaseUI>(true);
+            foreach (var hudUI in hudUIs)
+            {
+                if (hudUI != null && hudUI.LayerType == UILayerType.HUD)
+                {
+                    hudUI.gameObject.SetActive(false);
+                    Debug.Log($"[UIManager] HUD UI 숨김: {hudUI.name}");
+                }
+            }
+
+            // 일반적인 UI 요소들도 숨김 (BaseUI를 상속받지 않은 경우)
+            CanvasGroup[] canvasGroups = hudCanvas.GetComponentsInChildren<CanvasGroup>(true);
+            foreach (var canvasGroup in canvasGroups)
+            {
+                if (canvasGroup != null && canvasGroup.gameObject != hudCanvas.gameObject)
+                {
+                    canvasGroup.gameObject.SetActive(false);
+                    Debug.Log($"[UIManager] HUD 요소 숨김: {canvasGroup.name}");
+                }
+            }
+
+            Debug.Log($"[UIManager] HUD Canvas 초기화 완료 - 모든 HUD 요소가 숨김 상태로 설정됨");
+        }
+
+        /// <summary>
+        /// HUD Canvas의 모든 UI 요소들을 표시
+        /// </summary>
+        public void ShowAllHUDElements()
+        {
+            if (hudCanvas == null) return;
+
+            // HUD Canvas의 모든 BaseUI 컴포넌트들을 찾아서 표시
+            BaseUI[] hudUIs = hudCanvas.GetComponentsInChildren<BaseUI>(true);
+            foreach (var hudUI in hudUIs)
+            {
+                if (hudUI != null && hudUI.LayerType == UILayerType.HUD)
+                {
+                    hudUI.gameObject.SetActive(true);
+                    Debug.Log($"[UIManager] HUD UI 표시: {hudUI.name}");
+                }
+            }
+
+            // 일반적인 UI 요소들도 표시 (BaseUI를 상속받지 않은 경우)
+            CanvasGroup[] canvasGroups = hudCanvas.GetComponentsInChildren<CanvasGroup>(true);
+            foreach (var canvasGroup in canvasGroups)
+            {
+                if (canvasGroup != null && canvasGroup.gameObject != hudCanvas.gameObject)
+                {
+                    canvasGroup.gameObject.SetActive(true);
+                    Debug.Log($"[UIManager] HUD 요소 표시: {canvasGroup.name}");
+                }
+            }
+
+            Debug.Log($"[UIManager] HUD Canvas 표시 완료 - 모든 HUD 요소가 표시됨");
+        }
+
+        /// <summary>
+        /// 특정 HUD UI만 표시
+        /// </summary>
+        public void ShowHUDUI<T>() where T : BaseUI
+        {
+            if (hudCanvas == null) return;
+
+            // SafeAreaPanel 아래에서 HUD UI 찾기
+            Transform safeAreaParent = GetSafeAreaParentForHUD();
+            T hudUI = null;
+            
+            if (safeAreaParent != null)
+            {
+                hudUI = safeAreaParent.GetComponentInChildren<T>(true);
+            }
+            
+            // SafeAreaPanel에서 찾지 못한 경우 전체 HUD Canvas에서 검색
+            if (hudUI == null)
+            {
+                hudUI = hudCanvas.GetComponentInChildren<T>(true);
+            }
+
+            if (hudUI != null)
+            {
+                hudUI.gameObject.SetActive(true);
+                Debug.Log($"[UIManager] HUD UI 표시: {hudUI.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
+            }
+        }
+
+        /// <summary>
+        /// 특정 HUD UI만 숨김
+        /// </summary>
+        public void HideHUDUI<T>() where T : BaseUI
+        {
+            if (hudCanvas == null) return;
+
+            // SafeAreaPanel 아래에서 HUD UI 찾기
+            Transform safeAreaParent = GetSafeAreaParentForHUD();
+            T hudUI = null;
+            
+            if (safeAreaParent != null)
+            {
+                hudUI = safeAreaParent.GetComponentInChildren<T>(true);
+            }
+            
+            // SafeAreaPanel에서 찾지 못한 경우 전체 HUD Canvas에서 검색
+            if (hudUI == null)
+            {
+                hudUI = hudCanvas.GetComponentInChildren<T>(true);
+            }
+
+            if (hudUI != null)
+            {
+                hudUI.gameObject.SetActive(false);
+                Debug.Log($"[UIManager] HUD UI 숨김: {hudUI.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
             }
         }
 

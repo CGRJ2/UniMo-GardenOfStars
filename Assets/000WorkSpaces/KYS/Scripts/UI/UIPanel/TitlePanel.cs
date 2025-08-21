@@ -64,27 +64,8 @@ namespace KYS
 
         private void SetupButtons()
         {
-            if (buttonsSetup)
-            {
-                Debug.Log("[TitlePanel] SetupButtons 이미 완료됨, 중복 설정 방지");
-                return;
-            }
-
-            Debug.Log("[TitlePanel] SetupButtons 시작");
-
-            if (confirmButton != null)
-            {
-                GetEventWithSFX("ConfirmButton", "SFX_ButtonClick").Click += OnConfirmClicked;
-                Debug.Log("[TitlePanel] Confirm 버튼 이벤트 설정 완료");
-            }
-
-            if (closeButton != null)
-            {
-                GetBackEvent("CancelButton", "SFX_ButtonClickBack").Click += OnCloseClicked;
-                Debug.Log("[TitlePanel] Cancel 버튼 이벤트 설정 완료");
-            }
-
-            buttonsSetup = true;
+            GetEventWithSFX("ConfirmButton").Click += OnConfirmClicked;
+            GetBackEvent("CancelButton").Click += OnCancelClicked;
         }
 
         private void OnConfirmClicked(PointerEventData data)
@@ -94,9 +75,15 @@ namespace KYS
            
         }
 
-        private void OnCloseClicked(PointerEventData data)
+        private void OnCancelClicked(PointerEventData data)
         {
             Debug.Log("[TitlePanel] Cancel 버튼 클릭");
+            UIManager.Instance.ClosePanel();
+        }
+
+        private void OnCloseClicked(PointerEventData data)
+        {
+            Debug.Log("[TitlePanel] Close 버튼 클릭");
             UIManager.Instance.ClosePanel();
         }
         

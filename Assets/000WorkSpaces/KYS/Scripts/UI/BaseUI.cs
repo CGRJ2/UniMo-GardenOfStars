@@ -43,9 +43,14 @@ namespace KYS
         // Backdrop Prefab Reference는 UIManager에서 관리
         
         [Header("Audio Settings")]
+        [SerializeField] protected bool enableSFX = true;
         [SerializeField] protected string defaultClickSound = "SFX_ButtonClick";
         [SerializeField] protected string defaultBackSound = "SFX_ButtonClickBack";
-        [SerializeField] protected bool enableSFX = true;
+        [SerializeField] protected string defaultHoverSound = "SFX_ButtonHover";
+        [SerializeField] protected string defaultErrorSound = "SFX_Error";
+        [SerializeField] protected string defaultSuccessSound = "SFX_Success";
+        [SerializeField] protected string defaultOpenSound = "SFX_UI_Open";
+        [SerializeField] protected string defaultCloseSound = "SFX_UI_Close";
 
         // MVP Components
         protected IUIPresenter presenter;
@@ -90,9 +95,16 @@ namespace KYS
         protected virtual void OnDestroy()
         {
             // 언어 변경 이벤트 구독 해제
-            if (Manager.localization != null)
+            try
             {
-                Manager.localization.OnLanguageChanged -= OnLanguageChanged;
+                if (Manager.localization != null && Manager.localization.gameObject != null)
+                {
+                    Manager.localization.OnLanguageChanged -= OnLanguageChanged;
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[BaseUI] OnDestroy에서 LocalizationManager 이벤트 구독 해제 중 오류: {e.Message}");
             }
             
             presenter?.Cleanup();
@@ -126,6 +138,9 @@ namespace KYS
             // 애니메이션 재생
             PlayShowAnimation();
             
+            // UI 열기 사운드 재생
+            PlayOpenSound();
+            
             // 이벤트 호출
             OnShow();
             
@@ -135,6 +150,9 @@ namespace KYS
         public virtual void Hide()
         {
             if (!IsActive) return;
+            
+            // UI 닫기 사운드 재생
+            PlayCloseSound();
             
             if (useAnimation)
             {
@@ -846,7 +864,73 @@ namespace KYS
             //}
         }
 
-        public PointerHandler GetEventWithSFX(in string name, string clickSound = null)
+        protected void PlayHoverSound(string soundName = null)
+        {
+            if (!enableSFX) return;
+
+            string soundToPlay = soundName ?? defaultHoverSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
+        }
+
+        protected void PlayErrorSound(string soundName = null)
+        {
+            if (!enableSFX) return;
+
+            string soundToPlay = soundName ?? defaultErrorSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
+        }
+
+        protected void PlaySuccessSound(string soundName = null)
+        {
+            if (!enableSFX) return;
+
+            string soundToPlay = soundName ?? defaultSuccessSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
+        }
+
+        protected void PlayOpenSound(string soundName = null)
+        {
+            if (!enableSFX) return;
+
+            string soundToPlay = soundName ?? defaultOpenSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
+        }
+
+        protected void PlayCloseSound(string soundName = null)
+        {
+            if (!enableSFX) return;
+
+            string soundToPlay = soundName ?? defaultCloseSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
+        }
+
+        /// <summary>
+        /// 기본 클릭 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetEventWithSFX(in string name)
+        {
+            return GetEventWithSFX(name, defaultClickSound);
+        }
+
+        /// <summary>
+        /// 커스텀 클릭 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetEventWithSFX(in string name, string clickSound)
         {
             PointerHandler handler = GetEvent(name);
             if (handler != null)
@@ -863,12 +947,62 @@ namespace KYS
             return handler;
         }
 
-        public PointerHandler GetBackEvent(in string name, string backSound = null)
+        /// <summary>
+        /// 기본 뒤로가기 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetBackEvent(in string name)
+        {
+            return GetBackEvent(name, defaultBackSound);
+        }
+
+        /// <summary>
+        /// 커스텀 뒤로가기 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetBackEvent(in string name, string backSound)
         {
             PointerHandler handler = GetEvent(name);
             if (handler != null)
             {
                 handler.Click += (data) => PlayBackSound(backSound);
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// 호버 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetHoverEvent(in string name, string hoverSound = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                handler.Enter += (data) => PlayHoverSound(hoverSound);
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// 에러 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetErrorEvent(in string name, string errorSound = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                handler.Click += (data) => PlayErrorSound(errorSound);
+            }
+            return handler;
+        }
+
+        /// <summary>
+        /// 성공 사운드가 포함된 이벤트 핸들러
+        /// </summary>
+        public PointerHandler GetSuccessEvent(in string name, string successSound = null)
+        {
+            PointerHandler handler = GetEvent(name);
+            if (handler != null)
+            {
+                handler.Click += (data) => PlaySuccessSound(successSound);
             }
             return handler;
         }

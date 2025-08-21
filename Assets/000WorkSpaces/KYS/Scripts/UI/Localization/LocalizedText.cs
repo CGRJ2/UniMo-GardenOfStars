@@ -53,9 +53,16 @@ namespace KYS
         private void OnDestroy()
         {
             // 이벤트 구독 해제
-            if (LocalizationManager.Instance != null)
+            try
             {
-                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+                if (LocalizationManager.Instance != null && LocalizationManager.Instance.gameObject != null)
+                {
+                    LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[LocalizedText] OnDestroy에서 LocalizationManager 이벤트 구독 해제 중 오류: {e.Message}");
             }
         }
         
@@ -166,6 +173,36 @@ namespace KYS
         {
             localizationKey = key;
             UpdateText();
+        }
+        
+        /// <summary>
+        /// 직접 텍스트 설정 (로컬라이제이션 키 무시)
+        /// </summary>
+        public void SetText(string text)
+        {
+            // TextMeshProUGUI
+            if (tmpText != null)
+            {
+                tmpText.text = text;
+            }
+            
+            // Legacy Text
+            if (legacyText != null)
+            {
+                legacyText.text = text;
+            }
+            
+            // TMP_InputField
+            if (tmpInputField != null)
+            {
+                tmpInputField.text = text;
+            }
+            
+            // Legacy InputField
+            if (legacyInputField != null)
+            {
+                legacyInputField.text = text;
+            }
         }
         
         /// <summary>

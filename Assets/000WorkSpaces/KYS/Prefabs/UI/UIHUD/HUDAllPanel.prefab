@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4965592713363336062}
   - component: {fileID: 5659528083271968792}
   - component: {fileID: 7602326789512438906}
+  - component: {fileID: 2042898479978361429}
   m_Layer: 5
   m_Name: HUDAllPanel
   m_TagString: Untagged
@@ -79,6 +80,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2042898479978361429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75315257805588926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6d67ae76dd3c3b4896e8069f61a88f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerType: 1
+  panelGroup: 4
+  useAnimation: 1
+  animationDuration: 0.3
+  showEase: OutBack
+  hideEase: InBack
+  canCloseWithESC: 0
+  canCloseWithBackdrop: 0
+  hidePreviousUI: 1
+  disablePreviousUI: 0
+  createBackdropForPopup: 0
+  enableSFX: 1
+  defaultClickSound: SFX_ButtonClick
+  defaultBackSound: SFX_ButtonClickBack
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
+  moneyText: {fileID: 0}
+  levelText: {fileID: 0}
+  menuButton: {fileID: 0}
+  inventoryButton: {fileID: 0}
 --- !u!1 &323171530212188592
 GameObject:
   m_ObjectHideFlags: 0
