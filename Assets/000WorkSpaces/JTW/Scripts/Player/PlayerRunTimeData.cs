@@ -4,5 +4,7 @@ using UnityEngine;
 
 public class PlayerRunTimeData : MonoBehaviour
 {
-    
+    public Vector3 Direction;
+
+    public Stack<IngrediantInstance> IngrediantStack = new();
 }

@@ -1,29 +1,34 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Camera cam;   // ºñ¿öµÎ¸é ÀÚµ¿À¸·Î main »ç¿ë
-    [SerializeField] private Joystick joy;
+    [SerializeField] private Camera _cam;   // ë¹„ì›Œë‘ë©´ ìë™ìœ¼ë¡œ main ì‚¬ìš©
+    [SerializeField] private Joystick _joy;
 
-    [Header("Test¿ë")]
+    [Header("Testìš©")]
     [SerializeField] private PlayerManager _playerManager;
 
+    private PlayerRunTimeData _data;
+    public PlayerRunTimeData Data => _data;
+
+    // í˜¸í™˜ì„±ì„ ìœ„í•´ ì¼ë‹¨ í”„ë¡œí¼í‹°ë¡œ ë‚¨ê²¨ë‘ .
+    public Stack<IngrediantInstance> ingrediantStack => _data.IngrediantStack;
     public Transform prodsAttachPoint;
-    public PlayerView view;
-    private Vector3 dir;
-    private Rigidbody rb;
-    public Stack<IngrediantInstance> ingrediantStack = new ();
+
+    private Rigidbody _rb;
 
     private void Awake()
     {
-        rb ??= GetComponent<Rigidbody>();
-        if (cam == null) cam = Camera.main;
+        _rb ??= GetComponent<Rigidbody>();
+        if (_cam == null) _cam = Camera.main;
+        _data = GetComponent<PlayerRunTimeData>();
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = dir * _playerManager.Data.MoveSpeed;
+        _rb.velocity = _data.Direction * _playerManager.Data.MoveSpeed;
     }
 
     private void Update()
@@ -31,34 +36,28 @@ public class PlayerController : MonoBehaviour
         float x = 0;
         float z = 0;
 
-        // Á¶ÀÌ½ºÆ½ÀÌ ¿ì¼±¼øÀ§ ÀÔ·Â °¨Áö
-        if (joy.Horizontal != 0) 
-            x = joy.Horizontal;
+        // ì¡°ì´ìŠ¤í‹±ì´ ìš°ì„ ìˆœìœ„ ì…ë ¥ ê°ì§€
+        if (_joy.Horizontal != 0) 
+            x = _joy.Horizontal;
         else if (Input.GetAxis("Horizontal") != 0)
             x = Input.GetAxis("Horizontal");
 
-        if (joy.Vertical != 0)
-            z = joy.Vertical;
+        if (_joy.Vertical != 0)
+            z = _joy.Vertical;
         else if (Input.GetAxis("Vertical") != 0)
             z = Input.GetAxis("Vertical");
 
 
-        // Ä«¸Ş¶ó ±âÁØÀÇ ¿ì/¾Õ º¤ÅÍ¸¦ XZ Æò¸é¿¡ Åõ¿µ
-        Vector3 camForward = Vector3.ProjectOnPlane(cam.transform.forward, Vector3.up).normalized;
-        Vector3 camRight = Vector3.ProjectOnPlane(cam.transform.right, Vector3.up).normalized;
+        // ì¹´ë©”ë¼ ê¸°ì¤€ì˜ ìš°/ì• ë²¡í„°ë¥¼ XZ í‰ë©´ì— íˆ¬ì˜
+        Vector3 camForward = Vector3.ProjectOnPlane(_cam.transform.forward, Vector3.up).normalized;
+        Vector3 camRight = Vector3.ProjectOnPlane(_cam.transform.right, Vector3.up).normalized;
 
-        // ÀÔ·ÂÀ» Ä«¸Ş¶ó ±âÁØÀ¸·Î º¯È¯
-        dir = (camRight * x + camForward * z);
-        if (dir.sqrMagnitude > 1f) dir.Normalize();   // ´ë°¢¼± ¼Óµµ º¸Á¤
+        // ì…ë ¥ì„ ì¹´ë©”ë¼ ê¸°ì¤€ìœ¼ë¡œ ë³€í™˜
+        _data.Direction = (camRight * x + camForward * z);
+        if (_data.Direction.sqrMagnitude > 1f) _data.Direction.Normalize();   // ëŒ€ê°ì„  ì†ë„ ë³´ì •
 
-        // ÀÔ·Â ¾øÀ¸¸é Á¤Áö
-        if (dir.sqrMagnitude < 0.01f) dir = Vector3.zero;
-
-        if (view != null)
-        {
-            // ¿òÁ÷ÀÏ ¶§¸¸ ºÎµå·´°Ô È¸Àü½ÃÅ°°í, Á¤Áö ½Ã¿¡´Â ¸¶Áö¸· ¹Ù¶óº¸´ø ¹æÇâ À¯Áö
-            view.SetForwardToMoveDir(dir, Time.deltaTime);
-        }
+        // ì…ë ¥ ì—†ìœ¼ë©´ ì •ì§€
+        if (_data.Direction.sqrMagnitude < 0.01f) _data.Direction = Vector3.zero;
     }
 
 

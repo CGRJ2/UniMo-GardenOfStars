@@ -1,27 +1,41 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
-    [Header("¹æÇâ ÀüÈ¯ ½Ã ¾Æ¹ÙÅ¸ È¸Àü ¼Óµµ(µµ/ÃÊ)")]
-    [SerializeField] private float turnSpeed = 720f;
+    [SerializeField] private GameObject _avatar;
 
-    // ¾Ö´Ï¸ŞÀÌÅÍ Ãß°¡
+    [Header("ë°©í–¥ ì „í™˜ ì‹œ ì•„ë°”íƒ€ íšŒì „ ì†ë„(ë„/ì´ˆ)")]
+    [SerializeField] private float _turnSpeed = 720f;
 
-    private Vector3 lastForward = Vector3.forward;
+    private PlayerRunTimeData _data;
+
+    // ì• ë‹ˆë©”ì´í„° ì¶”ê°€
+
+    private Vector3 _lastForward = Vector3.forward;
+
+    private void Awake()
+    {
+        _data = GetComponent<PlayerRunTimeData>();
+    }
+
+    private void Update()
+    {
+        SetForwardToMoveDir(_data.Direction, Time.deltaTime);
+    }
 
     public void SetForwardToMoveDir(Vector3 worldMoveDir, float deltaTime)
     {
-        // XZ Æò¸é¸¸ »ç¿ë
+        // XZ í‰ë©´ë§Œ ì‚¬ìš©
         worldMoveDir.y = 0f;
 
-        Vector3 aimDir = worldMoveDir.sqrMagnitude < 0.0001f ? lastForward : worldMoveDir.normalized;
+        Vector3 aimDir = worldMoveDir.sqrMagnitude < 0.0001f ? _lastForward : worldMoveDir.normalized;
 
-        if (worldMoveDir.sqrMagnitude >= 0.0001f) lastForward = aimDir;
+        if (worldMoveDir.sqrMagnitude >= 0.0001f) _lastForward = aimDir;
 
         Quaternion target = Quaternion.LookRotation(aimDir, Vector3.up);
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, target, turnSpeed * deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, target, _turnSpeed * deltaTime);
     }
 }
