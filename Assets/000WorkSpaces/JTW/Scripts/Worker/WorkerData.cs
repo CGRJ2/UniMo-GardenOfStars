@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class WorkerData
 {
+    public int Id;
+    public int Rank;
+
     public float MoveSpeed;
-    public int MaxCarry;
+    public float MoveSpeedLv;
+
+    public int MaxCapacity;
+    public int MaxCapacityLv;
+
     public float ProductionSpeed;
+
     public float StunTime;
     public float StunChance;
 }
