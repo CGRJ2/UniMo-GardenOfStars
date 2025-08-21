@@ -6,8 +6,8 @@ public class Interactable_Ingrediant : InteractableBase
 {
     IngrediantInstance ingrediantInstance;
 
-    bool isInteracted = false;
-    bool isAttached = false;
+    public bool isInteracted = false;
+    //bool isAttached = false;
 
 
     public void SetInstance(IngrediantInstance instance)
@@ -15,42 +15,43 @@ public class Interactable_Ingrediant : InteractableBase
         ingrediantInstance = instance;
     }
 
-    
-    public override void ImediateInteract()
+    public void PickUpProds()
     {
-        base.ImediateInteract();
+        // 일꾼일 경우에도 추가해야함
 
-        // 1회 상호작용 후 막기
-        if (isInteracted) return;
-        isInteracted = true;
+        // 들고 있는 재료와 다른 재료는 줍지 않게 만들기 ---------------------------------
+        /*IngrediantInstance instanceProd;
+        if (pc.ingrediantStack.TryPeek(out instanceProd))
+        {
+            if (instanceProd.Data != ingrediantInstance.Data) return;
+        }*/
+        //---------------------------------------------------------------
 
-        Debug.Log($"재료 인스턴스({ingrediantInstance?.ingrediantSO?.Name}): 즉발형 상호작용 실행");
-
-        // 플레이어 위치로 설정
-        ingrediantInstance.owner = pc.gameObject;
+        ingrediantInstance.owner = pc.gameObject; 
         ingrediantInstance.AttachToTarget(pc.prodsAttachPoint, pc.ingrediantStack.Count);
+        //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
         pc.ingrediantStack.Push(ingrediantInstance);
     }
-
-    public override void ActivePopUpInteract()
+    
+    public override void EnterInteract_Player()
     {
-        base.ActivePopUpInteract();
-        
+        base.EnterInteract_Player();
+
         // 1회 상호작용 후 막기
         if (isInteracted) return;
         isInteracted = true;
 
-        //Debug.Log($"재료 인스턴스({ingrediantInstance.ingrediantSO.Name}): 팝업형 상호작용 활성화");
+        PickUpProds();
     }
 
-    public override void DeactivePopUpInteract()
+
+    public override void DeactiveInteract_Player()
     {
-        base.DeactivePopUpInteract();
+        base.DeactiveInteract_Player();
 
         // 1회 상호작용 후 막기
         if (isInteracted) return;
         isInteracted = true;
 
-        //Debug.Log($"재료 인스턴스({ingrediantInstance.ingrediantSO.Name}): 팝업형 상호작용 비활성화");
     }
 }

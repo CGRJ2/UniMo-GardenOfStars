@@ -84,7 +84,7 @@ MonoBehaviour:
   <ingrediantSO>k__BackingField: {fileID: 11400000, guid: 0a4a0adf52060b246b3f5d31a395afee, type: 2}
   count: 1
   absorbAcceleration: 30
-  stackOffset: {x: 0, y: 1, z: 0}
+  stackOffset: {x: 0, y: 0.5, z: 0}
   owner: {fileID: 0}
 --- !u!1 &6084644355586242127
 GameObject:
@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 3898786260778907774}
   - component: {fileID: 4844592508943882974}
   - component: {fileID: 8449522949236727556}
-  - component: {fileID: 5655980546545512428}
   m_Layer: 0
   m_Name: View
   m_TagString: Untagged
@@ -114,8 +113,8 @@ Transform:
   m_GameObject: {fileID: 6084644355586242127}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4409289306217830146}
@@ -148,7 +147,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f8daf74151c785f449ff2cabe181c0a9, type: 2}
+  - {fileID: 2100000, guid: c569c280f0eb52a49a7b2a6b8b0cbcf8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -170,24 +169,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5655980546545512428
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6084644355586242127}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}

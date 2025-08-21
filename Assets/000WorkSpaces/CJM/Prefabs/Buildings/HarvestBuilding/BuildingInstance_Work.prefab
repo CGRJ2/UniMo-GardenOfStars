@@ -24,13 +24,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45143249900784201}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 338763460754311474}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &429457603062109043
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,8 +223,12 @@ MonoBehaviour:
   interactPopUI: {fileID: 8817856506370985237}
   buildingData: {fileID: 0}
   insertableProdData: {fileID: 11400000, guid: 17e0f491cb945ea4db0960e9161682e5, type: 2}
+  maxStackableCount: 10
   resultProdData: {fileID: 11400000, guid: 00b1e1a83d78ea64fa4159227f1b7fca, type: 2}
   attachPoint: {fileID: 5430793922066665192}
+  insertDelayTime: 0.1
+  taskTime: 3
+  progressedTime: 0
   insertArea: {fileID: 3309636777576410186}
   workArea: {fileID: 1767416883427801298}
 --- !u!1 &5051637644880339798

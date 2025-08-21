@@ -5,7 +5,7 @@ using UnityEngine.Timeline;
 
 public class IngrediantInstance : PooledObject
 {
-    [field: SerializeField] public IngrediantSO ingrediantSO { get; private set; }
+    [field: SerializeField] public IngrediantSO Data { get; private set; }
     public int count;
     Interactable_Ingrediant interactable;
     [SerializeField] float absorbAcceleration = 3f;
@@ -54,11 +54,12 @@ public class IngrediantInstance : PooledObject
         owner = null;
 
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
+        interactable.isInteracted = false;
     }
 
     public void SetIngrediantSO(IngrediantSO ingrediantSO)
     {
-        this.ingrediantSO = ingrediantSO;
+        this.Data = ingrediantSO;
     }
 
     public void AttachToTarget(Transform parent, int stackCount = 0)

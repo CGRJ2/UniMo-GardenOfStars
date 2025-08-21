@@ -2,10 +2,11 @@ using UnityEngine;
 
 public class InteractableBase : MonoBehaviour
 {
-    protected PlayerController pc;
+    protected PlayerController pc;  // 현재 상호작용 주체를 Player로만 해놨는데. 플레이어와 일꾼 모두 주체가 될 수 있도록 수정 필요
+
     [Header("기본 상호작용 팝업(없다면 공란으로 유지)")]
     [SerializeField] Canvas interactPopUI;
-    bool isActive;
+    bool isInteractedd;
 
     public void InitPopUI()
     {
@@ -16,78 +17,90 @@ public class InteractableBase : MonoBehaviour
         }
     }
 
-    public virtual void ImediateInteract()
+    // 상호작용 범위 진입
+    public virtual void EnterInteract_Player()
     {
-        // 즉시 실행 상호작용
+        isInteractedd = true;
+
         if (interactPopUI != null)
             interactPopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
     }
-
-    public virtual void ActivePopUpInteract()
+    public virtual void EnterInteract_WorkerAI()
     {
-        // [패널을 활성화] 혹은 [버튼을 활성화]
+        isInteractedd = true;
     }
 
-    public virtual void DeactivePopUpInteract()
+
+
+    // 상호작용 범위에서 나감
+    public virtual void DeactiveInteract_Player()
     {
-        // [패널을 활성화] 혹은 [버튼을 활성화] 했던 것 비활성화
+        isInteractedd = false;
+
         if (interactPopUI != null)
             interactPopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
     }
-
-    // 플레이어가 도중에 사라지거나, 
-    public virtual void OnDisableActions()
+    public virtual void DeactiveInteract_WorkerAI()
     {
-        if (isActive)
+        isInteractedd = false;
+    }
+
+    public virtual void OnDisableAdditionalActions()
+    {
+        if (isInteractedd)
         {
-            DeactivePopUpInteract();
-            isActive = false;
+            DeactiveInteract_Player();
+            DeactiveInteract_WorkerAI();
         }
     }
 
     public void OnDisable()
     {
-        OnDisableActions();
+        OnDisableAdditionalActions();
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        // 플레이어 상호작용
         if (other.GetComponent<PlayerController>() != null)
         {
-            pc = other.GetComponent<PlayerController>();
+            // 먼저 상호작용 진행중인 객체가 있으면 무시 (플레이어는 한명이라 상관없을듯함)
+            pc ??= other.GetComponent<PlayerController>();
 
-            // 플레이어가 들어온걸 확인 하면 활성화
-            isActive = true;
-
-            ImediateInteract(); // 즉발 상호작용 실행
-
-            // 팝업 활성화 <= 나중에 별도로 즉발 상호작용에서 활성화되는 버튼을 눌렀을 때, 그 버튼의 onClick에 할당
-            // 해당 버튼은 이 객체가 Canvas를 보유하고 그 캔버스를 활성화 하는 식으로 진행?
-            ActivePopUpInteract(); 
+            EnterInteract_Player(); // 플레이어 진입 상호작용 실행
         }
+
+        // 일꾼 상호작용
     }
 
     private void OnTriggerStay(Collider other)
     {
+        // 플레이어 상호작용(우선순위)
         if (other.GetComponent<PlayerController>() != null)
         {
-            // 플레이어가 들어와 있으면
-            if (isActive)
+            // 다른 객체와 상호작용 진행 중일 때, 새로운 객체가 상호작용 범위 안에 들어와 대기중인 상황에 대한 예외처리
+            if (!isInteractedd)  // 다른 객체의 상호작용이 끝날 때,
             {
-                pc ??= other.GetComponent<PlayerController>();
+                if (pc == null)
+                {
+                    pc ??= other.GetComponent<PlayerController>();
+                }
             }
         }
+
+        // 일꾼 상호작용
     }
 
     private void OnTriggerExit(Collider other)
     {
+        // 플레이어 상호작용
         if (other.GetComponent<PlayerController>() != null)
         {
-            // 플레이어가 영역 밖으로 나갔다면 비활성화
-            isActive = false;
             pc = null;
 
-            DeactivePopUpInteract(); // 팝업 비활성화
+            DeactiveInteract_Player(); // 팝업 비활성화
         }
+
+        // 일꾼 상호작용
     }
 }
