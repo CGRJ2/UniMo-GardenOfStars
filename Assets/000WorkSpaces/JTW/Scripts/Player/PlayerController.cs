@@ -7,9 +7,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera _cam;   // 비워두면 자동으로 main 사용
     [SerializeField] private Joystick _joy;
 
-    [Header("Test용")]
-    [SerializeField] private PlayerManager _playerManager;
-
     private PlayerRunTimeData _data;
     public PlayerRunTimeData Data => _data;
 
@@ -28,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb.velocity = _data.Direction * _playerManager.Data.MoveSpeed;
+        _rb.velocity = _data.Direction * Manager.player.Data.MoveSpeed;
     }
 
     private void Update()

@@ -5,12 +5,13 @@ public static class Manager
 {
     public static GameManager game => GameManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
-
+    public static PlayerManager player => PlayerManager.Instance;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
     {
         GameManager.CreateInstance();
         PoolManager.CreateInstance();
+        PlayerManager.CreateInstance();
     }
 }
