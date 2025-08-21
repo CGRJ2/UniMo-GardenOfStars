@@ -37,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -88.6, y: -80.1}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -190, y: -209}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6165170342688360613
 CanvasRenderer:
@@ -142,12 +142,14 @@ MonoBehaviour:
   hideEase: InBack
   canCloseWithESC: 1
   canCloseWithBackdrop: 1
-  destroyOnClose: 0
   hidePreviousUI: 1
   disablePreviousUI: 0
+  createBackdropForPopup: 1
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
   enableSFX: 1
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
   messageText: {fileID: 5959800411796131031}
   confirmText: {fileID: 6514549727330634144}
   cancelText: {fileID: 9195618501566683812}
@@ -189,8 +191,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 87, y: -79.5}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 193, y: -200}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1540300994328149507
 CanvasRenderer:
@@ -285,6 +287,7 @@ GameObject:
   - component: {fileID: 72777769237667391}
   - component: {fileID: 6873531637850529921}
   - component: {fileID: 9195618501566683812}
+  - component: {fileID: 4603962698122142827}
   m_Layer: 5
   m_Name: CancelText
   m_TagString: Untagged
@@ -366,8 +369,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 90
+  m_fontSizeBase: 90
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -408,6 +411,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4603962698122142827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6190777258411544726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: 
+  updateOnLanguageChange: 1
 --- !u!1 &6982989053937160634
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,7 +438,7 @@ GameObject:
   - component: {fileID: 6657749973574094609}
   - component: {fileID: 3602218950556188865}
   m_Layer: 5
-  m_Name: CheckPopup
+  m_Name: CheckPopUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -447,7 +464,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 400}
+  m_SizeDelta: {x: 800, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5040517950033960219
 CanvasRenderer:
@@ -499,7 +516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c635fe5b157e9442a5070419f968db0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layerType: 1
+  layerType: 2
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
@@ -507,17 +524,19 @@ MonoBehaviour:
   hideEase: InBack
   canCloseWithESC: 1
   canCloseWithBackdrop: 1
-  destroyOnClose: 0
-  hidePreviousUI: 1
+  hidePreviousUI: 0
   disablePreviousUI: 0
+  createBackdropForPopup: 1
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
-  enableSFX: 1
+  enableSFX: 0
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
   messageText: {fileID: 5959800411796131031}
   confirmText: {fileID: 6514549727330634144}
   cancelText: {fileID: 9195618501566683812}
-  confirmButton: {fileID: 0}
-  cancelButton: {fileID: 0}
+  confirmButton: {fileID: 8337931521305220601}
+  cancelButton: {fileID: 8657686693786520844}
 --- !u!1 &8181920889320225383
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,6 +548,7 @@ GameObject:
   - component: {fileID: 4428251734411695351}
   - component: {fileID: 337192057459762195}
   - component: {fileID: 6514549727330634144}
+  - component: {fileID: 2479518792397208273}
   m_Layer: 5
   m_Name: ConfrimText
   m_TagString: Untagged
@@ -610,8 +630,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 90
+  m_fontSizeBase: 90
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -652,6 +672,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2479518792397208273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181920889320225383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: 
+  updateOnLanguageChange: 1
 --- !u!1 &8883559669689114052
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,6 +697,7 @@ GameObject:
   - component: {fileID: 2341041133836543771}
   - component: {fileID: 4351104041575800871}
   - component: {fileID: 5959800411796131031}
+  - component: {fileID: 2100952959438738234}
   m_Layer: 5
   m_Name: TEST
   m_TagString: Untagged
@@ -786,3 +821,17 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2100952959438738234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883559669689114052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: 
+  updateOnLanguageChange: 1

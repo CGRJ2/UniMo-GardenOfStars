@@ -11,11 +11,9 @@ namespace KYS
     {
         [Header("Backdrop Settings")]
         [SerializeField] private bool enableBackdropClick = true;
-        [SerializeField] private bool closePopupOnBackdropClick = true;
         [SerializeField] private Color backdropColor = new Color(0, 0, 0, 0.5f);
         
         private Image backdropImage;
-        private BaseUI parentPopup;
         
         public System.Action OnBackdropClicked;
 
@@ -31,8 +29,6 @@ namespace KYS
             backdropImage.color = backdropColor;
             backdropImage.raycastTarget = true;
             
-            // 부모 Popup 찾기
-            parentPopup = GetComponentInParent<BaseUI>();
         }
 
         private void Start()
@@ -47,12 +43,6 @@ namespace KYS
             
             Debug.Log("[BackdropUI] Backdrop 클릭됨");
             OnBackdropClicked?.Invoke();
-            
-            if (closePopupOnBackdropClick && parentPopup != null)
-            {
-                Debug.Log("[BackdropUI] Popup 닫기");
-                parentPopup.Hide();
-            }
         }
 
         /// <summary>
@@ -77,14 +67,6 @@ namespace KYS
             {
                 backdropImage.raycastTarget = clickable;
             }
-        }
-
-        /// <summary>
-        /// Backdrop 클릭 시 Popup 닫기 활성화/비활성화
-        /// </summary>
-        public void SetCloseOnBackdropClick(bool closeOnClick)
-        {
-            closePopupOnBackdropClick = closeOnClick;
         }
     }
 }

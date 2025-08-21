@@ -75,7 +75,7 @@ namespace KYS
         private void OnSettingsClicked(PointerEventData data)
         {
             Debug.Log("[MenuPopUp] 설정 버튼 클릭");
-            UIManager.Instance.ClosePopup();
+            UIManager.Instance.ShowPopUpAsync<CheckPopUp>();
         }
 
         private void OnExitClicked(PointerEventData data)

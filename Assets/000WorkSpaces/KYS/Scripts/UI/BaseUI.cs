@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 #if DOTWEEN_AVAILABLE
 using DG.Tweening;
@@ -37,6 +39,9 @@ namespace KYS
         [SerializeField] protected bool disablePreviousUI = false; // 이전 UI 비활성화 여부 (CanvasGroup.interactable = false)
         [SerializeField] protected bool createBackdropForPopup = true; // Popup일 때 Backdrop 자동 생성
         
+        [Header("Backdrop Settings")]
+        // Backdrop Prefab Reference는 UIManager에서 관리
+        
         [Header("Audio Settings")]
         [SerializeField] protected string defaultClickSound = "SFX_ButtonClick";
         [SerializeField] protected string defaultBackSound = "SFX_ButtonClickBack";
@@ -51,6 +56,9 @@ namespace KYS
         protected RectTransform rectTransform;
         protected Vector3 originalScale;
         protected Vector3 originalPosition;
+        
+        // Backdrop Management
+        protected BackdropUI ownBackdrop; // 각 Popup의 고유 Backdrop
         
         // Component Cache
         private Dictionary<string, GameObject> goDict;
@@ -243,30 +251,100 @@ namespace KYS
         }
 
         /// <summary>
-        /// Popup용 Backdrop 생성 (전체 화면)
+        /// Popup용 Backdrop 생성 (PopupCanvas에 생성하고 Popup을 Backdrop의 자식으로 설정)
         /// </summary>
-        protected virtual void CreateBackdrop()
+        protected virtual async void CreateBackdrop()
         {
             Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
             
-            // PopupCanvas에 Backdrop가 있는지 확인
-            Canvas popupCanvas = UIManager.Instance?.PopupCanvas;
+            // 이미 Backdrop가 있는지 확인
+            if (ownBackdrop != null)
+            {
+                Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재합니다.");
+                return;
+            }
+
+            // PopupCanvas 가져오기
+            Canvas popupCanvas = UIManager.Instance?.GetCanvasByLayer(UILayerType.Popup);
             if (popupCanvas == null)
             {
                 Debug.LogError("[BaseUI] PopupCanvas를 찾을 수 없습니다.");
                 return;
             }
 
-            Debug.Log($"[BaseUI] PopupCanvas 발견: {popupCanvas.name}");
-
-            // 이미 Backdrop가 있는지 확인
-            Transform existingBackdrop = popupCanvas.transform.Find("Backdrop");
-            if (existingBackdrop != null)
+            // UIManager에서 Backdrop Prefab Reference 가져오기
+            AssetReferenceGameObject backdropPrefabRef = UIManager.Instance?.BackdropPrefabReference;
+            if (backdropPrefabRef == null || !backdropPrefabRef.RuntimeKeyIsValid())
             {
-                Debug.Log("[BaseUI] PopupCanvas에 이미 Backdrop가 존재합니다.");
+                Debug.LogWarning("[BaseUI] Backdrop Prefab Reference가 설정되지 않았거나 유효하지 않습니다. 기본 방식으로 생성합니다.");
+                CreateBackdropFallback(popupCanvas);
                 return;
             }
 
+            try
+            {
+                // Backdrop Prefab을 Addressables로 로드 및 인스턴스 생성 (PopupCanvas의 자식으로)
+                AsyncOperationHandle<GameObject> handle = backdropPrefabRef.InstantiateAsync(popupCanvas.transform);
+                await handle.Task;
+
+                if (handle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"[BaseUI] Backdrop Prefab 로드 및 인스턴스 생성 실패: {handle.OperationException?.Message}");
+                    CreateBackdropFallback(popupCanvas);
+                    return;
+                }
+
+                GameObject backdropGO = handle.Result;
+                backdropGO.name = "Backdrop"; // 일관된 이름 보장
+                
+                Debug.Log($"[BaseUI] Backdrop Prefab 인스턴스 생성 완료: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
+                
+                // RectTransform 설정 (전체 화면)
+                RectTransform backdropRect = backdropGO.GetComponent<RectTransform>();
+                if (backdropRect != null)
+                {
+                    backdropRect.anchorMin = Vector2.zero;
+                    backdropRect.anchorMax = Vector2.one;
+                    backdropRect.offsetMin = Vector2.zero;
+                    backdropRect.offsetMax = Vector2.zero;
+                    backdropRect.localScale = Vector3.one;
+                    
+                    Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
+                }
+                
+                // BackdropUI 컴포넌트 확인 및 저장
+                ownBackdrop = backdropGO.GetComponent<BackdropUI>();
+                if (ownBackdrop == null)
+                {
+                    Debug.LogWarning("[BaseUI] Backdrop Prefab에 BackdropUI 컴포넌트가 없습니다. 추가합니다.");
+                    ownBackdrop = backdropGO.AddComponent<BackdropUI>();
+                }
+                
+                // Popup을 Backdrop의 자식으로 이동
+                transform.SetParent(backdropGO.transform);
+                
+                // Backdrop를 PopupCanvas의 최상위로 이동 (하이어라키 순서 조정)
+                backdropGO.transform.SetAsLastSibling();
+                
+                // Backdrop 클릭 이벤트 설정
+                SetupBackdropClickEvent();
+                
+                Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[BaseUI] Backdrop Prefab 생성 중 오류 발생: {e.Message}");
+                CreateBackdropFallback(popupCanvas);
+            }
+        }
+
+        /// <summary>
+        /// Backdrop Prefab 로드 실패 시 사용하는 기본 생성 방식
+        /// </summary>
+        private void CreateBackdropFallback(Canvas popupCanvas)
+        {
+            Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
+            
             // Backdrop GameObject 생성 (PopupCanvas의 자식으로)
             GameObject backdropGO = new GameObject("Backdrop");
             backdropGO.transform.SetParent(popupCanvas.transform);
@@ -283,13 +361,53 @@ namespace KYS
             
             Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
             
-            // BackdropUI 컴포넌트 추가
-            BackdropUI backdropUI = backdropGO.AddComponent<BackdropUI>();
+            // BackdropUI 컴포넌트 추가 및 저장
+            ownBackdrop = backdropGO.AddComponent<BackdropUI>();
             
-            // Backdrop를 PopupCanvas의 최하단에 배치 (Popup 뒤에 위치)
-            backdropGO.transform.SetAsFirstSibling();
+            // Popup을 Backdrop의 자식으로 이동
+            transform.SetParent(backdropGO.transform);
             
-            Debug.Log($"[BaseUI] PopupCanvas에 전체 화면 Backdrop 생성 완료 - 위치: {backdropGO.transform.GetSiblingIndex()}");
+            // Backdrop를 PopupCanvas의 최상위로 이동 (하이어라키 순서 조정)
+            backdropGO.transform.SetAsLastSibling();
+            
+            // Backdrop 클릭 이벤트 설정
+            SetupBackdropClickEvent();
+            
+            Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+        }
+
+        /// <summary>
+        /// Backdrop 클릭 이벤트 설정
+        /// </summary>
+        protected virtual void SetupBackdropClickEvent()
+        {
+            if (ownBackdrop == null) return;
+            
+            // Backdrop 클릭 가능 여부 설정
+            ownBackdrop.SetBackdropClickable(canCloseWithBackdrop);
+            
+            if (canCloseWithBackdrop)
+            {
+                ownBackdrop.OnBackdropClicked += () =>
+                {
+                    Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
+                    UIManager.Instance?.ClosePopup();
+                };
+                
+                Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 이벤트 설정 완료");
+            }
+            else
+            {
+                Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
+            }
+        }
+
+        /// <summary>
+        /// Popup의 Backdrop 인스턴스 반환
+        /// </summary>
+        public BackdropUI GetOwnBackdrop()
+        {
+            return ownBackdrop;
         }
 
         #endregion

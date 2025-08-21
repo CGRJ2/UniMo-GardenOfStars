@@ -27,6 +27,9 @@ namespace KYS
         [Header("UI Management")]
         [SerializeField] public SafeAreaManager safeAreaManager;
         
+        [Header("Backdrop Settings")]
+        [SerializeField] private AssetReferenceGameObject backdropPrefabReference; // Backdrop Prefab Reference
+        
         [Header("Addressable UI Settings")]
         //[SerializeField] private string uiPrefabLabel = "UI";
         //[SerializeField] private string hudPrefabLabel = "UI_HUD";
@@ -62,6 +65,7 @@ namespace KYS
         public Canvas PanelCanvas => panelCanvas;
         public Canvas PopupCanvas => popupCanvas;
         public Canvas LoadingCanvas => loadingCanvas;
+        public AssetReferenceGameObject BackdropPrefabReference => backdropPrefabReference;
         
         /// <summary>
         /// Canvas들이 모두 초기화되었는지 확인
@@ -768,14 +772,30 @@ namespace KYS
 
             Debug.Log($"[UIManager] Popup 열기: {popup.name}");
 
-            // 이전 Popup이 있다면 비활성화
+            // 이전 Popup 처리
             if (popupStack.Count > 0)
             {
                 BaseUI previousPopup = popupStack.Peek();
                 if (previousPopup != null && previousPopup != popup)
                 {
-                    Debug.Log($"[UIManager] 이전 Popup 비활성화: {previousPopup.name}");
-                    previousPopup.gameObject.SetActive(false);
+                    if (popup.HidePreviousUI)
+                    {
+                        // 이전 UI를 완전히 숨김 (SetActive(false))
+                        previousPopup.gameObject.SetActive(false);
+                        Debug.Log($"[UIManager] 이전 Popup 숨김: {previousPopup.name}");
+                    }
+                    else if (popup.DisablePreviousUI)
+                    {
+                        // 이전 UI를 비활성화 (CanvasGroup.interactable = false)
+                        var canvasGroup = previousPopup.GetComponent<CanvasGroup>();
+                        if (canvasGroup != null)
+                        {
+                            canvasGroup.interactable = false;
+                            canvasGroup.blocksRaycasts = false;
+                            Debug.Log($"[UIManager] 이전 Popup 비활성화: {previousPopup.name}");
+                        }
+                    }
+                    // 둘 다 false면 이전 UI는 활성화 상태 유지
                 }
             }
 
@@ -795,7 +815,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// 팝업 닫기
+        /// 현재 열린 Popup 닫기
         /// </summary>
         public void ClosePopup()
         {
@@ -810,14 +830,26 @@ namespace KYS
             {
                 Debug.Log($"[UIManager] Popup 닫기: {currentPopup.name}");
                 
+                // Popup의 Backdrop 가져오기
+                BackdropUI backdrop = currentPopup.GetOwnBackdrop();
+                
                 // Popup 숨기기
                 currentPopup.Hide();
                 
                 // UIManager에서 등록 해제
                 UnregisterUI(currentPopup);
                 
-                // Popup 파괴
-                Destroy(currentPopup.gameObject);
+                // Popup 파괴 (Backdrop도 함께 파괴됨 - Popup이 Backdrop의 자식이므로)
+                if (backdrop != null)
+                {
+                    Debug.Log($"[UIManager] Backdrop와 함께 Popup 파괴: {currentPopup.name}");
+                    Destroy(backdrop.gameObject);
+                }
+                else
+                {
+                    Debug.Log($"[UIManager] Popup 파괴: {currentPopup.name}");
+                    Destroy(currentPopup.gameObject);
+                }
             }
 
             // 이전 UI들의 터치 복원
@@ -829,19 +861,21 @@ namespace KYS
                 BaseUI previousPopup = popupStack.Peek();
                 if (previousPopup != null)
                 {
-                    Debug.Log($"[UIManager] 이전 Popup 활성화: {previousPopup.name}");
-                    previousPopup.gameObject.SetActive(true);
-                }
-            }
-
-            // Popup이 모두 닫혔으면 Backdrop도 제거
-            if (popupStack.Count == 0 && popupCanvas != null)
-            {
-                Transform backdrop = popupCanvas.transform.Find("Backdrop");
-                if (backdrop != null)
-                {
-                    Debug.Log("[UIManager] Backdrop 제거");
-                    Destroy(backdrop.gameObject);
+                    // 이전 UI가 비활성화되어 있다면 다시 활성화
+                    if (!previousPopup.gameObject.activeInHierarchy)
+                    {
+                        previousPopup.gameObject.SetActive(true);
+                        Debug.Log($"[UIManager] 이전 Popup 다시 활성화: {previousPopup.name}");
+                    }
+                    
+                    // CanvasGroup이 비활성화되어 있다면 다시 활성화
+                    var canvasGroup = previousPopup.GetComponent<CanvasGroup>();
+                    if (canvasGroup != null && !canvasGroup.interactable)
+                    {
+                        canvasGroup.interactable = true;
+                        canvasGroup.blocksRaycasts = true;
+                        Debug.Log($"[UIManager] 이전 Popup CanvasGroup 다시 활성화: {previousPopup.name}");
+                    }
                 }
             }
 
