@@ -14,6 +14,6 @@ public class JoystickPanel : MonoBehaviour
         Rect safeArea = Screen.safeArea;
 
         rect.anchorMin = new Vector2(0, safeArea.yMin / Screen.height);
-        rect.anchorMin = new Vector2(0, safeArea.yMin / Screen.height);
+        rect.anchorMax = new Vector2(1, safeArea.yMax / 2 / Screen.height);
     }
 }
