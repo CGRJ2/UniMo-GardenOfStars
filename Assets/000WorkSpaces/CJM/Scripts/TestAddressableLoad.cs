@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.PlayerLoop;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.UI;
 
 public class TestAddressableLoad : MonoBehaviour
 {
+    [SerializeField] Image image;
     void Start()
     {
-        //StartCoroutine(LoadTest());
-        //StartCoroutine(Test());
+        StartCoroutine(Fetch());
 
-        Addressables.CleanBundleCache().Completed += task =>
+
+        /*Addressables.InitializeAsync().Completed += task =>
         {
-            Caching.ClearCache();
-
-            Addressables.InitializeAsync().Completed += task =>
+            Addressables.CheckForCatalogUpdates().Completed += task =>  // 변경된 카탈로그 ID들
             {
-                Addressables.CheckForCatalogUpdates().Completed += task =>  // 변경된 카탈로그 ID들
-                {
-                    Debug.Log($"변경된 카탈로그 ID가 있나? => {task.Result.Count}");
+                Debug.Log($"변경된 카탈로그 ID가 있나? => {task.Result.Count}");
 
+                if (task.Result.Count > 0)
+                {
                     Addressables.UpdateCatalogs(task.Result).Completed += task =>   // 새로 로드된 카탈로그의 로케이터들
                     {
                         var locators = task.Result;
@@ -38,19 +39,107 @@ public class TestAddressableLoad : MonoBehaviour
                             }
                         }
 
-                        Addressables.DownloadDependenciesAsync(locations).Completed += task =>
+                        Addressables.GetDownloadSizeAsync(locations).Completed += task =>
                         {
-                            DownloadStatus downloadStatus = task.GetDownloadStatus();
+                            Debug.Log($"다운로드사이즈 어싱크{task.Result}");
 
-                            Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes}bytes 다운됨. 퍼센트:{task.GetDownloadStatus().Percent}");
-                            //Debug.Log(task.Result);
+                            Addressables.DownloadDependenciesAsync(locations).Completed += task =>
+                            {
+                                DownloadStatus downloadStatus = task.GetDownloadStatus();
+
+                                Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes}bytes 다운됨. 퍼센트:{task.GetDownloadStatus().Percent}");
+                                //Debug.Log(task.Result);
+
+                                // 테스트로 이미지 로드
+                                Addressables.LoadAssetAsync<Sprite>("Sprite01").Completed += task =>
+                                {
+                                    image.sprite = task.Result;
+                                };
+
+                                // 새로운 요소 추가 이후에 사용하지 않는 참조 캐시 삭제
+                                Addressables.CleanBundleCache().Completed += task =>
+                                { };
+                            };
                         };
                     };
-                };
+                }
             };
-        };
-
+        };*/
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            // 테스트로 이미지 로드
+            /*Addressables.LoadAssetAsync<Sprite>("Sprite01").Completed += task =>
+            {
+                image.sprite = task.Result;
+            };*/
+
+            Addressables.LoadAssetAsync<GameObject>("TestCapsule").Completed += task =>
+            {
+                Instantiate(task.Result);
+            };
+        }
+    }
+
+    IEnumerator Fetch()
+    {
+        yield return Addressables.InitializeAsync(true);
+
+        var checkHandle = Addressables.CheckForCatalogUpdates(false);  // 변경된 카탈로그 ID들
+        yield return checkHandle;
+        Debug.Log($"업데이트 존재 여부 => {checkHandle.Result.Count}");
+
+        if (checkHandle.Result.Count > 0)
+        {
+            // 새로 로드된 카탈로그의 IResourceLocator들
+            var updateCatalogHandle = Addressables.UpdateCatalogs(checkHandle.Result, false);
+            yield return updateCatalogHandle;
+
+            // IResourceLocator들을 IResourceLocation으로 치환
+            var locators = updateCatalogHandle.Result;
+            var locations = new List<IResourceLocation>();
+
+            foreach (var locator in locators)
+            {
+                foreach (var key in locator.Keys)
+                {
+                    Debug.LogWarning($"Locator:{key.ToString()}");
+                    if (locator.Locate(key, typeof(object), out var found))
+                        locations.AddRange(found);
+                }
+            }
+
+            // 다운로드 사이즈 체크
+            var sizeCheckHandle = Addressables.GetDownloadSizeAsync(locations);
+            yield return sizeCheckHandle;
+            Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
+
+
+            // 다운로드 진행
+            var downloadHandle = Addressables.DownloadDependenciesAsync(locations);
+
+            while (!downloadHandle.IsDone)
+            {
+                yield return null;
+                DownloadStatus downloadStatus = downloadHandle.GetDownloadStatus();
+                Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes 다운됨. 퍼센트:{(int)downloadStatus.Percent*100}");
+            }
+            yield return downloadHandle;
+
+            
+
+            // 새로운 요소 추가 이후에 사용하지 않는 참조 캐시 삭제
+            var clearCacheHandle = Addressables.CleanBundleCache();
+            
+            SafeRelease(ref updateCatalogHandle);
+            SafeRelease(ref clearCacheHandle);
+        }
+        SafeRelease(ref checkHandle);
+    }
+
 
     public IEnumerator LoadTest()
     {
