@@ -398,7 +398,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cam: {fileID: 0}
   _joy: {fileID: 735557429588207323}
-  _playerManager: {fileID: 0}
   prodsAttachPoint: {fileID: 626806258420880350}
 --- !u!114 &1453612269276443170
 MonoBehaviour:
@@ -412,6 +411,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea82bf7087f2e834ca5b54ad15f0b9fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ProdsAttachPoint: {fileID: 626806258420880350}
+  IsWork:
+    _value: 0
+  IsMove:
+    _value: 0
   Direction: {x: 0, y: 0, z: 0}
 --- !u!114 &4995163234578258346
 MonoBehaviour:
