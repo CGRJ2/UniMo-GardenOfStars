@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera _cam;   // 비워두면 자동으로 main 사용
     [SerializeField] private Joystick _joy;
 
+    // Controller를 통해 Player와 소통하는 클래스들의 호환성을 위해
+    // 프로퍼티로 Get 접근 추가.
     private PlayerRunTimeData _data;
     public PlayerRunTimeData Data => _data;
 
@@ -16,8 +18,16 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody _rb;
 
+    private StateMachine<PlayerStates> _stateMachine = new StateMachine<PlayerStates>();
+
     private void Awake()
     {
+        _stateMachine.AddState(PlayerStates.Idle, new PlayerState_Idle(_stateMachine, _data));
+        _stateMachine.AddState(PlayerStates.Move, new PlayerState_Move(_stateMachine, _data));
+        _stateMachine.AddState(PlayerStates.Work, new PlayerState_Work(_stateMachine, _data));
+
+        _stateMachine.ChangeState(PlayerStates.Idle);
+
         _rb ??= GetComponent<Rigidbody>();
         if (_cam == null) _cam = Camera.main;
         _data = GetComponent<PlayerRunTimeData>();
@@ -25,11 +35,15 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        _stateMachine.FixedUpdate();
+
         _rb.velocity = _data.Direction * Manager.player.Data.MoveSpeed;
     }
 
     private void Update()
     {
+        _stateMachine.Update();
+
         SetMoveDiretion();
     }
 
