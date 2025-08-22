@@ -7,4 +7,7 @@ public class PlayerRunTimeData : MonoBehaviour
     public Vector3 Direction;
 
     public Stack<IngrediantInstance> IngrediantStack = new();
+
+    public ObservableProperty<bool> IsWork;
+    public ObservableProperty<bool> IsMove;
 }

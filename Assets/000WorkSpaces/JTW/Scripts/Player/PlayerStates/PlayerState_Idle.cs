@@ -12,11 +12,20 @@ public class PlayerState_Idle : PlayerStateBase
     {
     }
 
+    public override void Update()
+    {
+        if(PlayerData.Direction != Vector3.zero)
+        {
+            StateMachine.ChangeState(PlayerStates.Move);
+        }
+        else if (PlayerData.IsWork.Value)
+        {
+            StateMachine.ChangeState(PlayerStates.Work);
+        }
+    }
+
     public override void Exit()
     {
     }
 
-    public override void Update()
-    {
-    }
 }

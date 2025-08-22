@@ -16,28 +16,24 @@ public class PlayerController : MonoBehaviour
     public Stack<IngrediantInstance> ingrediantStack => _data.IngrediantStack;
     public Transform prodsAttachPoint;
 
-    private Rigidbody _rb;
-
     private StateMachine<PlayerStates> _stateMachine = new StateMachine<PlayerStates>();
 
     private void Awake()
     {
+        _data = GetComponent<PlayerRunTimeData>();
+
         _stateMachine.AddState(PlayerStates.Idle, new PlayerState_Idle(_stateMachine, _data));
         _stateMachine.AddState(PlayerStates.Move, new PlayerState_Move(_stateMachine, _data));
         _stateMachine.AddState(PlayerStates.Work, new PlayerState_Work(_stateMachine, _data));
 
         _stateMachine.ChangeState(PlayerStates.Idle);
 
-        _rb ??= GetComponent<Rigidbody>();
         if (_cam == null) _cam = Camera.main;
-        _data = GetComponent<PlayerRunTimeData>();
     }
 
     private void FixedUpdate()
     {
         _stateMachine.FixedUpdate();
-
-        _rb.velocity = _data.Direction * Manager.player.Data.MoveSpeed;
     }
 
     private void Update()
@@ -75,6 +71,4 @@ public class PlayerController : MonoBehaviour
         // 입력 없으면 정지
         if (_data.Direction.sqrMagnitude < 0.01f) _data.Direction = Vector3.zero;
     }
-
-
 }
