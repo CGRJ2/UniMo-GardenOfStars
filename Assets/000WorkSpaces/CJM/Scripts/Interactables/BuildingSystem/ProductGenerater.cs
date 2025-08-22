@@ -1,13 +1,14 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ProductGenerater : InteractableBase
 {
-    public GenerateState state;
+    public bool isWorkable;
+    
+    //[SerializeField] GenerateState state;
     public float productionTime;
     public float progressedTime;
-    
+
     ObjectPool _Pool;
 
     [SerializeField] IngrediantInstance _SpawnedProduct;
@@ -26,13 +27,15 @@ public class ProductGenerater : InteractableBase
         // 생산물이 없을 때
         if (_SpawnedProduct == null)
         {
-            state = GenerateState.StandBy;
+            //state = GenerateState.StandBy;
+            isWorkable = false;
             return true;
         }
         // 생산물이 있을 때
         else
         {
-            state = GenerateState.Completed;
+            //state = GenerateState.Completed;
+            isWorkable = true;
             return false;
         }
     }
@@ -45,16 +48,15 @@ public class ProductGenerater : InteractableBase
             yield return new WaitUntil(() => StandByCheck());
 
             // 생산 시작
-            state = GenerateState.Generating;
-            while(state == GenerateState.Generating)
+            //state = GenerateState.Generating;
+            while (!isWorkable)
             {
                 progressedTime += Time.deltaTime;
 
                 if (progressedTime > productionTime)
                 {
                     SpawnProduct(); // 생산 완료
-                    state = GenerateState.Completed;
-                } 
+                }
 
                 yield return null;
             }
@@ -75,9 +77,6 @@ public class ProductGenerater : InteractableBase
 
     public void SpawnProduct()
     {
-        // 중복 방지
-        if (state != GenerateState.Generating) return; 
-
         // 오브젝트 풀에서 활성화
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
@@ -86,6 +85,8 @@ public class ProductGenerater : InteractableBase
 
         // 생산물 정보 저장
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
+
+        isWorkable = true;
     }
 
     public void PickUpProds()
@@ -97,22 +98,22 @@ public class ProductGenerater : InteractableBase
 
         // 들고 있는 재료와 다른 재료는 줍지 않게 만들기
         IngrediantInstance instanceProd;
-        if (characterRuntimeData.ingrediantStack.TryPeek(out instanceProd))
+        if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
             if (instanceProd.Data.ID != _SpawnedProduct.Data.ID) return;
         }
 
-        _SpawnedProduct.owner = characterRuntimeData.gameObject;
-        _SpawnedProduct.AttachToTarget(characterRuntimeData.prodsAttachPoint, characterRuntimeData.ingrediantStack.Count);
+        _SpawnedProduct.owner = characterRD.gameObject;
+        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
         //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
-        characterRuntimeData.ingrediantStack.Push(_SpawnedProduct);
+        characterRD.IngrediantStack.Push(_SpawnedProduct);
         _SpawnedProduct = null;
     }
 
 
-    public override void EnterInteract(PlayerController characterRuntimeData)
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        base.EnterInteract(characterRuntimeData);
+        base.Enter(characterRuntimeData);
 
         PickUpProds();
     }

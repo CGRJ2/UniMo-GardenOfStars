@@ -1,15 +1,15 @@
 using System.Collections;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class WorkArea : InteractableBase
 {
-    // 작업영역에 두개 이상의 오브젝트가 위치한 상태에서, 처음 작업중이던 객체가 나갔을 때 정상작동하는지 테스트 필요
+    public bool isWorkable { get { return curWorker == null & instance.ingrediantStack.Count > 0; } }
 
     [HideInInspector] public ManufactureBuilding instance;
 
-    PlayerController curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
+    CharaterRuntimeData curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
     [SerializeField] Slider progressBar;
 
     public void Init(ManufactureBuilding instance)
@@ -19,9 +19,16 @@ public class WorkArea : InteractableBase
 
     IEnumerator ProgressingTask()
     {
-        curWorker = characterRuntimeData; // 임시. 일꾼까지 포함한 변수로 수정 필요
-        while (characterRuntimeData != null)
+        curWorker = characterRD; // 임시. 일꾼까지 포함한 변수로 수정 필요
+
+        // 정지 상태까지 대기했다가 작업 실행
+        yield return new WaitUntil(() => !curWorker.IsMove.Value);
+
+        while (!curWorker.IsMove.Value) // 정지 상태일 동안은 지속
         {
+            // 작업 영역 밖으로 나가는 경우
+            if (curWorker != characterRD) break;
+
             // 쌓여있는 재료가 있을때만 실행
             if (instance.ingrediantStack.Count > 0)
             {
@@ -32,7 +39,7 @@ public class WorkArea : InteractableBase
                     CompleteTask(); // 결과물 생성
                     instance.progressedTime = 0; // 진행도 초기화
                 }
-                
+
                 // 진행도 게이지 업데이트
                 progressBar.value = instance.progressedTime / instance.runtimeData.productionTime;
 
@@ -40,7 +47,7 @@ public class WorkArea : InteractableBase
             }
             else yield return null;
         }
-        // 작업자 사라지면 curWorker 초기화
+
         curWorker = null;
     }
 
@@ -50,24 +57,26 @@ public class WorkArea : InteractableBase
         //GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
         // 회수영역에 개수 늘려주기
-        instance.prodsArea.prodsCount += 1;
+        instance.prodsArea.ProdsCount += 1;
 
         // 재료 소모
         instance.ingrediantStack.Pop().Despawn();
     }
 
 
-    public override void EnterInteract(PlayerController characterRuntimeData)
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        base.EnterInteract(characterRuntimeData);
+        base.Enter(characterRuntimeData);
         //Debug.Log($"건물작업영역({buildingInstance.name}): 즉발형 상호작용 실행");
-
-        StartCoroutine(ProgressingTask());
+        if (curWorker == null)
+        {
+            StartCoroutine(ProgressingTask());
+        }
     }
 
-    public override void ExitInteract(PlayerController characterRuntimeData)
+    public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
-        base.ExitInteract(characterRuntimeData);
+        base.Exit(characterRuntimeData);
         //Debug.Log($"건물작업영역({buildingInstance.name}): 팝업형 상호작용 비활성화");
     }
 }

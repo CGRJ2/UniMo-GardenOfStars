@@ -8,16 +8,16 @@ public class BuildingInstance : InteractableBase
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
 
 
-    public override void EnterInteract(PlayerController characterRuntimeData)
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        base.EnterInteract(characterRuntimeData);
+        base.Enter(characterRuntimeData);
         //활성화영역 (플레이어라면 UI버튼 활성화)
 
     }
 
-    public override void ExitInteract(PlayerController characterRuntimeData)
+    public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
-        base.ExitInteract(characterRuntimeData);
+        base.Exit(characterRuntimeData);
         //비활성화 (플레이어라면 UI버튼 비활성화)
     }
 }

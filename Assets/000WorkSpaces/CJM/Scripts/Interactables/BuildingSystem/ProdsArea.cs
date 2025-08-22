@@ -5,10 +5,12 @@ using UnityEngine.AddressableAssets;
 
 public class ProdsArea : InteractableBase
 {
+    public bool isWorkable { get { return ProdsCount > 0; } }
+
     [HideInInspector] public ManufactureBuilding instance;
     ObjectPool _Pool;
 
-    public int prodsCount;
+    public int ProdsCount;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -23,22 +25,24 @@ public class ProdsArea : InteractableBase
             _Pool = Manager.pool.GetPoolBundle(product).instancePool;
         };
     }
+
+
     public void PickUp()
     {
         // 오브젝트 풀에서 활성화
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
+    }
+
+
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Enter(characterRuntimeData);
+
 
     }
 
-    public override void EnterInteract(PlayerController characterRuntimeData)
+    public override void Enter_PersonalTask(CharaterRuntimeData singleInteracter)
     {
-        base.EnterInteract(characterRuntimeData);
-
-
-    }
-
-    public override void EnterInteractSingleOnly(PlayerController singleInteracter)
-    {
-        base.EnterInteractSingleOnly(singleInteracter);
+        base.Enter_PersonalTask(singleInteracter);
     }
 }

@@ -5,6 +5,9 @@ public class InsertArea : InteractableBase
 {
     [HideInInspector] public ManufactureBuilding instance;
 
+    public bool isWorkable
+    { get { return instance.ingrediantStack.Count < instance.runtimeData.maxStackableCount; }}
+
     // 데이터 구조 설계할 때 수정
     public void Init(ManufactureBuilding instance)
     {
@@ -13,7 +16,7 @@ public class InsertArea : InteractableBase
 
     IEnumerator AutoStacking()
     {
-        while (characterRuntimeData != null)
+        while (characterRD != null)
         {
             bool isStackable = false;
 
@@ -27,16 +30,16 @@ public class InsertArea : InteractableBase
             yield return new WaitUntil(() => isStackable);
 
             // 스택이 비었지만 플레이어가 나가면 쌓지 않고 break;
-            if (characterRuntimeData == null) yield break;
+            if (characterRD == null) yield break;
 
             // 플레이어 손에 재료가 있는지 체크
             IngrediantInstance instanceProd;
-            if (characterRuntimeData.ingrediantStack.TryPeek(out instanceProd))
+            if (characterRD.IngrediantStack.TryPeek(out instanceProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
                 if (instanceProd.Data.ID == instance.originData.RequireProdID)
                 {
-                    IngrediantInstance popedProd = characterRuntimeData.ingrediantStack.Pop();
+                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                     popedProd.AttachToTarget(instance.attachPoint, instance.ingrediantStack.Count);
                     instance.ingrediantStack.Push(instanceProd);
                 }
@@ -52,18 +55,18 @@ public class InsertArea : InteractableBase
         }
     }
 
-    public override void EnterInteract(PlayerController characterRuntimeData)
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        base.EnterInteract(characterRuntimeData);
+        base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
 
         StartCoroutine(AutoStacking());
     }
 
 
-    public override void ExitInteract(PlayerController characterRuntimeData)
+    public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
-        base.ExitInteract(characterRuntimeData);
+        base.Exit(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 팝업형 상호작용 비활성화");
     }
 }

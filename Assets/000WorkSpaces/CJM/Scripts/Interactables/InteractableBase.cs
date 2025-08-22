@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class InteractableBase : MonoBehaviour
 {
-    protected PlayerController characterRuntimeData;  // 현재 상호작용 주체를 Player로만 해놨는데. 플레이어와 일꾼 모두 주체가 될 수 있도록 수정 필요
+    protected CharaterRuntimeData characterRD;
+    public CharaterRuntimeData personalTaskOwner;
 
 
     [Header("기본 상호작용 팝업(없다면 공란으로 유지)")]
@@ -18,32 +19,39 @@ public class InteractableBase : MonoBehaviour
     }
 
     // 상호작용 범위 진입
-    public virtual void EnterInteract(PlayerController characterRuntimeData)
+    public virtual void Enter(CharaterRuntimeData characterRuntimeData)
     {
+        characterRD = characterRuntimeData;
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (interactPopUI != null)
             interactPopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
     }
 
 
-    public virtual void EnterInteractSingleOnly(PlayerController characterRuntimeData)
+    public virtual void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
-
+        personalTaskOwner = characterRuntimeData;
     }
 
 
     // 상호작용 범위에서 나감
-    public virtual void ExitInteract(PlayerController characterRuntimeData)
+    public virtual void Exit(CharaterRuntimeData characterRuntimeData)
     {
+        characterRD = null;
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (interactPopUI != null)
             interactPopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
     }
 
+    public virtual void Exit_PersonalTask(CharaterRuntimeData characterRuntimeData)
+    {
+        personalTaskOwner = null;
+    }
 
     public virtual void OnDisableAdditionalActions()
     {
-        ExitInteract(characterRuntimeData);
+        if (interactPopUI != null)
+            interactPopUI.gameObject.SetActive(false);
     }
 
     public void OnDisable()
@@ -53,32 +61,35 @@ public class InteractableBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 플레이어 상호작용
-        if (other.GetComponent<PlayerController>() != null)
-        {
-            // 일반 상호작용
-            EnterInteract(characterRuntimeData); // 플레이어 진입 상호작용 실행
+        CharaterRuntimeData _CharacterRD = other.transform.root.GetComponent<CharaterRuntimeData>();
 
-            // 싱글 상호작용(먼저 상호작용 진행중인 객체가 있으면 무시)
-            if (this.characterRuntimeData != null) return;
-            EnterInteractSingleOnly(characterRuntimeData);
+        if (_CharacterRD != null)
+        {
+            // 일반 상호작용 활성화
+            Enter(_CharacterRD);
+
+            // 1인 상호작용(먼저 상호작용 진행중인 객체가 있으면 무시)
+            if (personalTaskOwner == null)
+                Enter_PersonalTask(_CharacterRD);
         }
 
-        // 일꾼 상호작용
     }
 
     private void OnTriggerStay(Collider other)
     {
+        CharaterRuntimeData _CharacterRD = other.transform.root.GetComponent<CharaterRuntimeData>();
+
+
         // 플레이어 상호작용(우선순위)
 
         // 싱글 상호작용 자리가 비는 경우
-        if (characterRuntimeData == null)
+        if (characterRD == null)
         {
             // 플레이어
-            if (other.GetComponent<PlayerController>() != null)
-            { 
-                characterRuntimeData ??= other.GetComponent<PlayerController>();
-                EnterInteractSingleOnly(characterRuntimeData);
+            if (other.transform.root.GetComponent<CharaterRuntimeData>() != null)
+            {
+                characterRD ??= other.GetComponent<CharaterRuntimeData>();
+                //EnterInteractSingleOnly(characterRD);
             }
         }
         else
@@ -96,21 +107,20 @@ public class InteractableBase : MonoBehaviour
             }
         }
 
-        // 일꾼 상호작용
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // 플레이어 상호작용
-        if (other.GetComponent<PlayerController>() != null)
+        CharaterRuntimeData _CharacterRD = other.transform.root.GetComponent<CharaterRuntimeData>();
+
+        if (_CharacterRD != null)
         {
-            PlayerController pc = other.GetComponent<PlayerController>();
+            // 일반 상호작용 비활성화
+            Exit(_CharacterRD);
 
-            if (characterRuntimeData == pc) // 싱글 상호작용 중이던 객체가 지금 나간 플레이어라면
-                characterRuntimeData = null;
+            // 1인 상호작용 비활성화(방금 나간 캐릭터가 상호작용중이던 캐릭터여야함)
+            if (personalTaskOwner == _CharacterRD)
+                Exit_PersonalTask(_CharacterRD);
         }
-
-        // 일꾼 상호작용
-        ExitInteract(characterRuntimeData); // 팝업 비활성화
     }
 }
