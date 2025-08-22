@@ -10,13 +10,18 @@ public class WorkerState_Idle : WorkerStateBase
     }
     public override void Enter()
     {
-    }
-
-    public override void Exit()
-    {
+        WorkerData.CurWorkstation = null;
     }
 
     public override void Update()
+    {
+        if(WorkerData.CurWorkstation != null)
+        {
+            StateMachine.ChangeState(WorkerStates.Move);
+        }
+    }
+
+    public override void Exit()
     {
     }
 }

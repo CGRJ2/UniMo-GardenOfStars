@@ -43,6 +43,7 @@ public class WorkerManager : MonoBehaviour
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
         _workerList.Add(worker);
+        _availableWorkerList.Add(worker);
     }
 
     public void AddAvailableWorker(WorkerRuntimeData data)
