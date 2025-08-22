@@ -5,12 +5,9 @@ using GameQuest;
 
 public class QuestManager : Singleton<QuestManager>
 {
-    // 배열 형태와 현재 index를 지정하도록
-    private LinkedList<Quest> _questList;
-    // 현재
-    private LinkedListNode<Quest> _currentQuest;
-
-    // 목표치
+    private Quest[] _currentQuestList;
+    private int _currentQuestIndex;
+    private int _targetCompleteCount;
 
     private void Awake()
     {
@@ -21,14 +18,29 @@ public class QuestManager : Singleton<QuestManager>
     private void Init()
     {
         // 초기화
+        // 현재 Scene의 Npc를 검색하여 가져옴
     }
 
-    public void GetQuestsInRegion(string regionId)
+    public void SetQuestsInRegion(string regionId)
     {
-        // DB에서 해당 지역의 퀘스트 목록을 가져와서 
-        // _questList 에 목록 지정
+        // DB에서 regionId를 통해 해당 지역의 퀘스트 목록을 가져온다
+        // InitQuestList(목록 수);
+        // 가져온 목록을 _currentQuestList에 지정한다
+        // 
 
-        // _questList를 돌면서
+        // _currentQuestList를 돌면서
         // 미완인 퀘스트를 만나면 node 지정
+    }
+
+    public Quest GetCurrentQuest()
+    {
+        return _currentQuestList[_currentQuestIndex];
+    }
+
+    private void InitQuestList(int listCount)
+    {
+        _currentQuestList = new Quest[listCount];
+        _currentQuestIndex = 0;
+        _targetCompleteCount = listCount;
     }
 }
