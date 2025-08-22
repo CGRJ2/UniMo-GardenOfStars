@@ -30,11 +30,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        SetMoveDiretion();
+    }
+
+    private void SetMoveDiretion()
+    {
         float x = 0;
         float z = 0;
 
         // 조이스틱이 우선순위 입력 감지
-        if (_joy.Horizontal != 0) 
+        if (_joy.Horizontal != 0)
             x = _joy.Horizontal;
         else if (Input.GetAxis("Horizontal") != 0)
             x = Input.GetAxis("Horizontal");
