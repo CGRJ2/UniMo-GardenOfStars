@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager>
 {
-    public PlayerData Data = new PlayerData();
+    [SerializeField] private GameObject _playerPrefab;
 
+    public PlayerData Data { get; private set; } = new PlayerData();
 
     private void Awake() => Init();
 
@@ -19,5 +20,10 @@ public class PlayerManager : Singleton<PlayerManager>
         // TODO : 플레이어 데이터를 파이어베이스의 값으로 초기화
 
 
+    }
+
+    public void SpawnPlayer(Vector3 position = default)
+    {
+        Instantiate(_playerPrefab, position, Quaternion.identity);
     }
 }
