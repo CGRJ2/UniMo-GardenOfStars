@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class ProductGenerater : MonoBehaviour
 {
-    public IngrediantSO ingrediantSO;
     public GenerateState state;
-    public float cultivatingTime;
+    public float productionTime;
     public float progressedTime;
     
     ObjectPool _Pool;
@@ -61,7 +60,7 @@ public class ProductGenerater : MonoBehaviour
             {
                 progressedTime += Time.deltaTime;
 
-                if (progressedTime > cultivatingTime)
+                if (progressedTime > productionTime)
                 {
                     SpawnProduct(); // 생산 완료
                     state = GenerateState.Completed;
@@ -73,12 +72,11 @@ public class ProductGenerater : MonoBehaviour
         }
     }
 
-    public void Init(IngrediantSO ingrediantData, float cultivateTime)
+    public void Init(GameObject prodPrefab, float productionTime)
     {
-        this.ingrediantSO = ingrediantData;
-        this.cultivatingTime = cultivateTime;
+        this.productionTime = productionTime;
 
-        _Pool = Manager.pool.GetPoolBundle(ingrediantData.InstancePrefab).instancePool;
+        _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
 
         // 생산 루틴 가동(임시)
         if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);

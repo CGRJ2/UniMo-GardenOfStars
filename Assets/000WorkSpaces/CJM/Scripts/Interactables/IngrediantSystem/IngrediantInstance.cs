@@ -5,7 +5,7 @@ using UnityEngine.Timeline;
 
 public class IngrediantInstance : PooledObject
 {
-    [field: SerializeField] public IngrediantSO Data { get; private set; }
+    [field: SerializeField] public IngrediantData Data { get; private set; }
     public int count;
     Interactable_Ingrediant interactable;
     [SerializeField] float absorbAcceleration = 3f;
@@ -57,7 +57,7 @@ public class IngrediantInstance : PooledObject
         interactable.isInteracted = false;
     }
 
-    public void SetIngrediantSO(IngrediantSO ingrediantSO)
+    public void SetIngrediantSO(IngrediantData ingrediantSO)
     {
         this.Data = ingrediantSO;
     }

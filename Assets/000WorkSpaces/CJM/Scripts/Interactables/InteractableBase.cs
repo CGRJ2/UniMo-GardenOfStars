@@ -85,6 +85,20 @@ public class InteractableBase : MonoBehaviour
                 {
                     pc ??= other.GetComponent<PlayerController>();
                 }
+                else
+                {
+                    if (this is Interactable_Insert insert)
+                    {
+                        
+
+                    }
+
+                        if (this is BuildingInstance)
+                    {
+                        // 건물이라면 플레이어가 작업영역에서 정지했을때만 상호작용 실행
+                        //Player의 IsMoving이 false라면 작업 진행
+                    }
+                }
             }
         }
 

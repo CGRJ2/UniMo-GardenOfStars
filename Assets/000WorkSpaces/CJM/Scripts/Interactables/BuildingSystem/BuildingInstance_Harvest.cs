@@ -4,25 +4,45 @@ using UnityEngine.AddressableAssets;
 
 public class BuildingInstance_Harvest : BuildingInstance
 {
-    [SerializeField] IngrediantSO resultIngrediantData; // CSV or Sheet로 변경 예정
     [SerializeField] Transform prodsParentTransform;
-    [SerializeField] float cultivateTime;
+    //[SerializeField] float cultivateTime;
+    public BuildingRuntimeData runtimeData;
+    [HideInInspector] HarvestBD originData;
+
     ProductGenerater[] productGeneraters;
-     
+    ObjectPool _Pool;
+
     private void Awake()
     {
         base.InitPopUI();
+        InitRuntimeData();
 
         productGeneraters = prodsParentTransform.GetComponentsInChildren<ProductGenerater>();
+        SetIngrediantToGeneraters();
+    }
 
-        if (resultIngrediantData != null) SetIngrediantToGeneraters();
+    void InitRuntimeData()
+    {
+        if (_OriginData is HarvestBD harvestBD)
+        {
+            originData = harvestBD;
+            runtimeData = new();
+            runtimeData.SetCurLevelStatDatas(harvestBD);
+        }
     }
 
     public void SetIngrediantToGeneraters()
     {
-        foreach(ProductGenerater prodsGenerater in productGeneraters)
+        string productId = originData.ProductID;
+        Addressables.LoadAssetAsync<GameObject>(productId).Completed += task =>
         {
-            prodsGenerater.Init(resultIngrediantData, cultivateTime);
-        }
+            GameObject product = task.Result;
+
+            _Pool = Manager.pool.GetPoolBundle(product).instancePool;
+            foreach (ProductGenerater prodsGenerater in productGeneraters)
+            {
+                prodsGenerater.Init(product, runtimeData.productionTime);
+            }
+        };
     }
 }

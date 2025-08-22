@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 0}
+  isInteracted: 0
 --- !u!114 &2935625431654600468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0536fa56b79e726429b95cf1ffac7e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ingrediantSO>k__BackingField: {fileID: 11400000, guid: 0a4a0adf52060b246b3f5d31a395afee, type: 2}
+  <Data>k__BackingField: {fileID: 11400000, guid: 0a4a0adf52060b246b3f5d31a395afee, type: 2}
   count: 1
   absorbAcceleration: 30
   stackOffset: {x: 0, y: 0.5, z: 0}

@@ -1,20 +1,29 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class Interactable_Work : InteractableBase
 {
     // 작업영역에 두개 이상의 오브젝트가 위치한 상태에서, 처음 작업중이던 객체가 나갔을 때 정상작동하는지 테스트 필요
 
-    BuildingInstance_Work buildingInstance;
+    BuildingInstance_Manufacture instance;
+
     PlayerController curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
     [SerializeField] Slider progressBar;
     ObjectPool _Pool;
 
-    public void Init(BuildingInstance_Work buildingInstance)
+    public void Init(BuildingInstance_Manufacture instance)
     {
-        this.buildingInstance = buildingInstance;
-        _Pool = Manager.pool.GetPoolBundle(buildingInstance.resultProdData.InstancePrefab).instancePool;
+        this.instance = instance;
+        string key = instance.originData.ProductID; // 임시로 Id를 이름으로 설정
+        Addressables.LoadAssetAsync<GameObject>(key).Completed += task =>
+        {
+            GameObject product = task.Result;
+
+            _Pool = Manager.pool.GetPoolBundle(product).instancePool;
+        };
+        
     }
 
     IEnumerator ProgressingTask()
@@ -23,18 +32,18 @@ public class Interactable_Work : InteractableBase
         while (pc != null)
         {
             // 쌓여있는 재료가 있을때만 실행
-            if (buildingInstance.prodsStack.Count > 0)
+            if (instance.prodsStack.Count > 0)
             {
-                buildingInstance.progressedTime += Time.deltaTime;
+                instance.progressedTime += Time.deltaTime;
 
-                if (buildingInstance.taskTime < buildingInstance.progressedTime)
+                if (instance.runtimeData.productionTime < instance.progressedTime)
                 {
                     CompleteTask(); // 결과물 생성
-                    buildingInstance.progressedTime = 0; // 진행도 초기화
+                    instance.progressedTime = 0; // 진행도 초기화
                 }
                 
                 // 진행도 게이지 업데이트
-                progressBar.value = buildingInstance.progressedTime / buildingInstance.taskTime;
+                progressBar.value = instance.progressedTime / instance.runtimeData.productionTime;
 
                 yield return null;
             }
@@ -54,7 +63,7 @@ public class Interactable_Work : InteractableBase
         //_SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
 
         // 재료 소모
-        buildingInstance.prodsStack.Pop().Despawn();
+        instance.prodsStack.Pop().Despawn();
     }
 
 

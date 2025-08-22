@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class Interactable_Insert : InteractableBase
 {
-    BuildingInstance_Work buildingInstance;
+    public BuildingInstance_Manufacture instance;
 
     // 데이터 구조 설계할 때 수정
-    public void Init(BuildingInstance_Work buildingInstance)
+    public void Init(BuildingInstance_Manufacture instance)
     {
-        this.buildingInstance = buildingInstance;
+        this.instance = instance;
     }
 
     IEnumerator AutoStacking()
@@ -17,8 +17,9 @@ public class Interactable_Insert : InteractableBase
         {
             bool isStackable = false;
 
+
             // 건물에 스택 가능한 최대 수량만큼 쌓여있다면 스택 취소
-            if (buildingInstance.maxStackableCount > buildingInstance.prodsStack.Count)
+            if (instance.runtimeData.maxStackableCount > instance.prodsStack.Count)
                 isStackable = true;
             else isStackable = false;
 
@@ -30,18 +31,23 @@ public class Interactable_Insert : InteractableBase
 
             // 플레이어 손에 재료가 있는지 체크
             IngrediantInstance instanceProd;
+            Debug.Log(1);
             if (pc.ingrediantStack.TryPeek(out instanceProd))
             {
+                Debug.Log(2);
+
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
-                if (instanceProd.Data == buildingInstance.insertableProdData)
+                if (instanceProd.Data.ID == instance.originData.RequireProdID)
                 {
+                    Debug.Log(3);
+
                     IngrediantInstance popedProd = pc.ingrediantStack.Pop();
-                    popedProd.AttachToTarget(buildingInstance.attachPoint, buildingInstance.prodsStack.Count);
-                    buildingInstance.prodsStack.Push(instanceProd);
+                    popedProd.AttachToTarget(instance.attachPoint, instance.prodsStack.Count);
+                    instance.prodsStack.Push(instanceProd);
                 }
 
                 // 다음 투입까지 딜레이 시간 설정
-                yield return new WaitForSeconds(buildingInstance.insertDelayTime);
+                yield return new WaitForSeconds(instance.insertDelayTime);
             }
             // 플레이어 손에 재료가 없으면 바로 return
             else

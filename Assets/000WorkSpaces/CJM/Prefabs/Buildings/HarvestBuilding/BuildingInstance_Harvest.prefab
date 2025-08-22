@@ -44,9 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba7c44e425889d4ca665781f960aa43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingrediantSO: {fileID: 0}
   state: 0
-  cultivatingTime: 2
+  productionTime: 0
   progressedTime: 0
   _SpawnedProduct: {fileID: 0}
 --- !u!1 &1928748799489171060
@@ -93,9 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba7c44e425889d4ca665781f960aa43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingrediantSO: {fileID: 0}
   state: 0
-  cultivatingTime: 2
+  productionTime: 0
   progressedTime: 0
   _SpawnedProduct: {fileID: 0}
 --- !u!1 &1970576501450757505
@@ -177,9 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba7c44e425889d4ca665781f960aa43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingrediantSO: {fileID: 0}
   state: 0
-  cultivatingTime: 2
+  productionTime: 0
   progressedTime: 0
   _SpawnedProduct: {fileID: 0}
 --- !u!1 &2093617931379704920
@@ -252,10 +249,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 555364940453386928}
-  buildingData: {fileID: 0}
-  resultIngrediantData: {fileID: 11400000, guid: 17e0f491cb945ea4db0960e9161682e5, type: 2}
+  _OriginData: {fileID: 11400000, guid: 9de062aad5469914195d49243e4c6285, type: 2}
   prodsParentTransform: {fileID: 3806669960653268016}
-  cultivateTime: 1
+  runtimeData:
+    level: 0
+    maxStackableCount: 0
+    productionTime: 0
 --- !u!1 &3314702754178659697
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,9 +404,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba7c44e425889d4ca665781f960aa43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingrediantSO: {fileID: 0}
   state: 0
-  cultivatingTime: 1
+  productionTime: 0
   progressedTime: 0
   _SpawnedProduct: {fileID: 0}
 --- !u!1 &5104311126710464214
