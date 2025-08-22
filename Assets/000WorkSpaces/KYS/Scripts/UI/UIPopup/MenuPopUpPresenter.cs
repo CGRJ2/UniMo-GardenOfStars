@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace KYS
@@ -58,18 +58,11 @@ namespace KYS
         private void HandleSettingsButtonClicked(PointerEventData data)
         {
             Debug.Log("[MenuPopUpPresenter] 설정 버튼 클릭 처리");
-            
+
             // 설정 팝업 열기 (실제 구현 시 사용)
             // UIManager.Instance.ShowPopUpAsync<SettingsPopUp>();
-            
-            // 임시로 확인 팝업 표시
-            CheckPopUp.ShowCheckPopUp(
-                "설정 기능은 아직 구현되지 않았습니다.",
-                "확인",
-                "취소",
-                () => Debug.Log("[MenuPopUpPresenter] 설정 팝업 확인"),
-                null
-            );
+
+            Manager.ui.ShowPopUpAsync<LanguageSettingsPanel>();
         }
         
         private void HandleExitButtonClicked(PointerEventData data)

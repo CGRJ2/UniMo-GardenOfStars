@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 6691250949528995263}
   - component: {fileID: 3708865732496671579}
   - component: {fileID: 414070998980798548}
-  - component: {fileID: 526358102037829746}
+  - component: {fileID: 8533856260481844581}
   m_Layer: 5
   m_Name: ConfirmText
   m_TagString: Untagged
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &526358102037829746
+--- !u!114 &8533856260481844581
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,11 +265,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 804636894179498804}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: ui_confirm
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &3106096276133999572
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,14 +450,20 @@ MonoBehaviour:
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
+  enableSFX: 0
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
-  enableSFX: 0
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
+  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   confirmButton: {fileID: 8992353594968207868}
   closeButton: {fileID: 1838208384991327901}
-  titleText: {fileID: 219686387843106483}
+  titleText: {fileID: 0}
   confirmButtonText: {fileID: 0}
   closeButtonText: {fileID: 0}
   customLocalizeKeys:
@@ -473,7 +481,7 @@ GameObject:
   - component: {fileID: 770485827689493747}
   - component: {fileID: 280653133580978645}
   - component: {fileID: 4361316209272351411}
-  - component: {fileID: 219686387843106483}
+  - component: {fileID: 7614437887142928312}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -597,7 +605,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &219686387843106483
+--- !u!114 &7614437887142928312
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -606,11 +614,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4589840431367001606}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: titleText
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &4704232458979399318
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,7 +754,7 @@ GameObject:
   - component: {fileID: 4247144720893225949}
   - component: {fileID: 3394144284216993457}
   - component: {fileID: 1738863908958766233}
-  - component: {fileID: 9156213928357887768}
+  - component: {fileID: 5479152852976376219}
   m_Layer: 5
   m_Name: CancelText
   m_TagString: Untagged
@@ -912,7 +922,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &9156213928357887768
+--- !u!114 &5479152852976376219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -921,8 +931,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8903644968287737747}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: ui_cancel
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0

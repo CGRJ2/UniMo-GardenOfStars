@@ -18,10 +18,7 @@ namespace KYS
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button closeButton;
 
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText titleText;
-        [SerializeField] private LocalizedText confirmButtonText;
-        [SerializeField] private LocalizedText closeButtonText;
+
 
         [Header("Auto Localization Keys")]
         [SerializeField] private string[] customLocalizeKeys = {
@@ -78,7 +75,9 @@ namespace KYS
         private void OnCancelClicked(PointerEventData data)
         {
             Debug.Log("[TitlePanel] Cancel 버튼 클릭");
+            Manager.ui.ShowAllHUDElements();
             UIManager.Instance.ClosePanel();
+
         }
 
         private void OnCloseClicked(PointerEventData data)

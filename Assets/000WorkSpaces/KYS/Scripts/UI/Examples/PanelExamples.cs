@@ -19,13 +19,7 @@ namespace KYS
         [SerializeField] private Button applyButton;
         [SerializeField] private Button closeButton;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText titleText;
-        [SerializeField] private LocalizedText bgmLabelText;
-        [SerializeField] private LocalizedText sfxLabelText;
-        [SerializeField] private LocalizedText fullscreenLabelText;
-        [SerializeField] private LocalizedText applyButtonText;
-        [SerializeField] private LocalizedText closeButtonText;
+
         
         protected override void Awake()
         {
@@ -93,43 +87,31 @@ namespace KYS
         {
             // LocalizedText 컴포넌트가 있는 경우 자동으로 처리됨
             // 없으면 수동으로 설정
-            if (titleText == null)
+            var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
+            if (titleComponent != null)
             {
-                var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
-                if (titleComponent != null)
-                {
-                    titleComponent.text = GetLocalizedText("settings_title");
-                }
+                titleComponent.text = GetLocalizedText("settings_title");
             }
             
-            if (bgmLabelText == null)
+            var bgmLabelComponent = GetUI<TextMeshProUGUI>("BGMLabel");
+            if (bgmLabelComponent != null)
             {
-                var bgmLabelComponent = GetUI<TextMeshProUGUI>("BGMLabel");
-                if (bgmLabelComponent != null)
-                {
-                    bgmLabelComponent.text = GetLocalizedText("settings_bgm");
-                }
+                bgmLabelComponent.text = GetLocalizedText("settings_bgm");
             }
             
-            if (sfxLabelText == null)
+            var sfxLabelComponent = GetUI<TextMeshProUGUI>("SFXLabel");
+            if (sfxLabelComponent != null)
             {
-                var sfxLabelComponent = GetUI<TextMeshProUGUI>("SFXLabel");
-                if (sfxLabelComponent != null)
-                {
-                    sfxLabelComponent.text = GetLocalizedText("settings_sfx");
-                }
+                sfxLabelComponent.text = GetLocalizedText("settings_sfx");
             }
             
-            if (fullscreenLabelText == null)
+            var fullscreenLabelComponent = GetUI<TextMeshProUGUI>("FullscreenLabel");
+            if (fullscreenLabelComponent != null)
             {
-                var fullscreenLabelComponent = GetUI<TextMeshProUGUI>("FullscreenLabel");
-                if (fullscreenLabelComponent != null)
-                {
-                    fullscreenLabelComponent.text = GetLocalizedText("settings_fullscreen");
-                }
+                fullscreenLabelComponent.text = GetLocalizedText("settings_fullscreen");
             }
             
-            if (applyButtonText == null && applyButton != null)
+            if (applyButton != null)
             {
                 var textComponent = applyButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -138,7 +120,7 @@ namespace KYS
                 }
             }
             
-            if (closeButtonText == null && closeButton != null)
+            if (closeButton != null)
             {
                 var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -215,10 +197,7 @@ namespace KYS
         [SerializeField] private Button closeButton;
         [SerializeField] private TextMeshProUGUI itemCountText;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText titleText;
-        [SerializeField] private LocalizedText emptyText;
-        [SerializeField] private LocalizedText closeButtonText;
+
         
         private int itemCount = 0;
         
@@ -279,25 +258,19 @@ namespace KYS
         private void SetupLocalizedTexts()
         {
             // LocalizedText 컴포넌트가 있는 경우 자동으로 처리됨
-            if (titleText == null)
+                        var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
+            if (titleComponent != null)
             {
-                var titleComponent = GetUI<TextMeshProUGUI>("TitleText");
-                if (titleComponent != null)
-                {
-                    titleComponent.text = GetLocalizedText("inventory_title");
-                }
+                titleComponent.text = GetLocalizedText("inventory_title");
+            }
+
+            var emptyComponent = GetUI<TextMeshProUGUI>("EmptyText");
+            if (emptyComponent != null)
+            {
+                emptyComponent.text = GetLocalizedText("inventory_empty");
             }
             
-            if (emptyText == null)
-            {
-                var emptyComponent = GetUI<TextMeshProUGUI>("EmptyText");
-                if (emptyComponent != null)
-                {
-                    emptyComponent.text = GetLocalizedText("inventory_empty");
-                }
-            }
-            
-            if (closeButtonText == null && closeButton != null)
+            if (closeButton != null)
             {
                 var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -334,9 +307,7 @@ namespace KYS
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText confirmButtonText;
-        [SerializeField] private LocalizedText cancelButtonText;
+
         
         protected override void Awake()
         {
@@ -398,7 +369,7 @@ namespace KYS
         /// </summary>
         private void SetupLocalizedTexts()
         {
-            if (confirmButtonText == null && confirmButton != null)
+            if (confirmButton != null)
             {
                 var textComponent = confirmButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -407,7 +378,7 @@ namespace KYS
                 }
             }
             
-            if (cancelButtonText == null && cancelButton != null)
+            if (cancelButton != null)
             {
                 var textComponent = cancelButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)

@@ -16,11 +16,7 @@ namespace KYS
         [SerializeField] private Button exitButton;
         [SerializeField] private Button closeButton;
 
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText startButtonText;
-        [SerializeField] private LocalizedText settingsButtonText;
-        [SerializeField] private LocalizedText exitButtonText;
-        [SerializeField] private LocalizedText closeButtonText;
+
 
         // 이벤트 - Presenter가 구독
         public System.Action<PointerEventData> OnStartButtonClicked;
@@ -132,19 +128,31 @@ namespace KYS
         /// </summary>
         public void UpdateButtonTexts(string startText = null, string settingsText = null, string exitText = null)
         {
-            if (startText != null && startButtonText != null)
+            if (startText != null && startButton != null)
             {
-                startButtonText.SetText(startText);
+                var textComponent = startButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = startText;
+                }
             }
             
-            if (settingsText != null && settingsButtonText != null)
+            if (settingsText != null && settingsButton != null)
             {
-                settingsButtonText.SetText(settingsText);
+                var textComponent = settingsButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = settingsText;
+                }
             }
             
-            if (exitText != null && exitButtonText != null)
+            if (exitText != null && exitButton != null)
             {
-                exitButtonText.SetText(exitText);
+                var textComponent = exitButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = exitText;
+                }
             }
         }
 

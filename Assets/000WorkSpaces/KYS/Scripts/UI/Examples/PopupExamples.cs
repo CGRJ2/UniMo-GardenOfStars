@@ -17,9 +17,7 @@ namespace KYS
         [SerializeField] private Button closeButton;
         [SerializeField] private Image itemIcon;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText interactButtonText;
-        [SerializeField] private LocalizedText closeButtonText;
+
         
         protected override void Awake()
         {
@@ -82,7 +80,7 @@ namespace KYS
         /// </summary>
         private void SetupLocalizedTexts()
         {
-            if (interactButtonText == null && interactButton != null)
+            if (interactButton != null)
             {
                 var textComponent = interactButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -91,7 +89,7 @@ namespace KYS
                 }
             }
             
-            if (closeButtonText == null && closeButton != null)
+            if (closeButton != null)
             {
                 var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -153,9 +151,7 @@ namespace KYS
         [SerializeField] private Button okButton;
         [SerializeField] private Button closeButton;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText okButtonText;
-        [SerializeField] private LocalizedText closeButtonText;
+
         
         protected override void Awake()
         {
@@ -218,7 +214,7 @@ namespace KYS
         /// </summary>
         private void SetupLocalizedTexts()
         {
-            if (okButtonText == null && okButton != null)
+            if (okButton != null)
             {
                 var textComponent = okButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -227,7 +223,7 @@ namespace KYS
                 }
             }
             
-            if (closeButtonText == null && closeButton != null)
+            if (closeButton != null)
             {
                 var textComponent = closeButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (textComponent != null)
@@ -277,8 +273,7 @@ namespace KYS
         [SerializeField] private Slider progressSlider;
         [SerializeField] private Image loadingIcon;
         
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText defaultLoadingText;
+
         
         protected override void Awake()
         {
@@ -334,7 +329,7 @@ namespace KYS
         /// </summary>
         private void SetupLocalizedTexts()
         {
-            if (defaultLoadingText == null && loadingText != null)
+            if (loadingText != null)
             {
                 loadingText.text = GetLocalizedText("loading_text");
             }

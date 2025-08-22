@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 908620976303877422}
   - component: {fileID: 7145887025570369541}
   - component: {fileID: 5246261272950195262}
-  - component: {fileID: 6922117917408287700}
+  - component: {fileID: 4306237133254013218}
   m_Layer: 5
   m_Name: CloseButtonText
   m_TagString: Untagged
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6922117917408287700
+--- !u!114 &4306237133254013218
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -265,11 +265,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1533150445303171912}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: ui_close
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &5096695185779082677
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,7 +283,7 @@ GameObject:
   - component: {fileID: 7371042097004718350}
   - component: {fileID: 5081743176457846006}
   - component: {fileID: 1684861618507103628}
-  - component: {fileID: 8802932536223694442}
+  - component: {fileID: 5649669744269597016}
   m_Layer: 5
   m_Name: SettingsButtonText
   m_TagString: Untagged
@@ -405,7 +407,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8802932536223694442
+--- !u!114 &5649669744269597016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -414,11 +416,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5096695185779082677}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: menu_settings
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &6573336831984700142
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,7 +555,7 @@ GameObject:
   - component: {fileID: 1496034741423690437}
   - component: {fileID: 8371775375615015067}
   - component: {fileID: 4141486261208927199}
-  - component: {fileID: 6563048578153338448}
+  - component: {fileID: 3714373749132480595}
   m_Layer: 5
   m_Name: ExitButtonText
   m_TagString: Untagged
@@ -675,7 +679,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &6563048578153338448
+--- !u!114 &3714373749132480595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -684,11 +688,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7145577338417626737}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: menu_exit
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &7542325489563643151
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,7 +706,7 @@ GameObject:
   - component: {fileID: 7158433866785795418}
   - component: {fileID: 8373035434555382785}
   - component: {fileID: 5587147571079635851}
-  - component: {fileID: 5993443628913752550}
+  - component: {fileID: 4842456563513289388}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -824,7 +830,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5993443628913752550
+--- !u!114 &4842456563513289388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -833,11 +839,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7542325489563643151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: menu_title
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &7548245749634455686
 GameObject:
   m_ObjectHideFlags: 0
@@ -938,23 +946,29 @@ MonoBehaviour:
   showEase: OutBack
   hideEase: InBack
   canCloseWithESC: 1
-  canCloseWithBackdrop: 1
+  canCloseWithBackdrop: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
+  enableSFX: 0
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
-  enableSFX: 0
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
+  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   startButton: {fileID: 3164932655907661281}
   settingsButton: {fileID: 2444173173157306741}
   exitButton: {fileID: 9120397504429484142}
   closeButton: {fileID: 6648990507878492841}
-  startButtonText: {fileID: 5025360581597308231}
-  settingsButtonText: {fileID: 8802932536223694442}
-  exitButtonText: {fileID: 6563048578153338448}
-  closeButtonText: {fileID: 6922117917408287700}
+  startButtonText: {fileID: 0}
+  settingsButtonText: {fileID: 0}
+  exitButtonText: {fileID: 0}
+  closeButtonText: {fileID: 0}
 --- !u!1 &7691936073485030613
 GameObject:
   m_ObjectHideFlags: 0
@@ -1087,7 +1101,7 @@ GameObject:
   - component: {fileID: 1082489796969917776}
   - component: {fileID: 4951522122239775311}
   - component: {fileID: 7531740308130948938}
-  - component: {fileID: 5025360581597308231}
+  - component: {fileID: 3728876454795874597}
   m_Layer: 5
   m_Name: StartButtonText
   m_TagString: Untagged
@@ -1211,7 +1225,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5025360581597308231
+--- !u!114 &3728876454795874597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1220,11 +1234,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7994164075903395979}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizationKey: menu_start
-  updateOnLanguageChange: 1
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &8354567230002909029
 GameObject:
   m_ObjectHideFlags: 0

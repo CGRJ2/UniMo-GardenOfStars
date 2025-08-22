@@ -61,7 +61,7 @@ namespace KYS
             else
             {
                 safeArea = Screen.safeArea;
-                Debug.Log($"[SafeAreaManager] 실제 SafeArea 사용: {safeArea}");
+                //Debug.Log($"[SafeAreaManager] 실제 SafeArea 사용: {safeArea}");
             }
             
             // Canvas Scaler에 따른 정규화
@@ -78,7 +78,7 @@ namespace KYS
                 anchorMax = Vector2.one;
             }
             
-            Debug.Log($"[SafeAreaManager] SafeArea 계산 완료: {safeArea}, Anchor: {anchorMin} ~ {anchorMax}");
+            //Debug.Log($"[SafeAreaManager] SafeArea 계산 완료: {safeArea}, Anchor: {anchorMin} ~ {anchorMax}");
         }
         
         /// <summary>
@@ -154,40 +154,40 @@ namespace KYS
             // LoadingCanvas는 SafeArea 적용 제외
             if (canvas.name.Contains("LoadingCanvas") || canvas.name.Contains("Loading"))
             {
-                Debug.Log($"[SafeAreaManager] LoadingCanvas '{canvas.name}'는 SafeArea 적용 제외");
+                //Debug.Log($"[SafeAreaManager] LoadingCanvas '{canvas.name}'는 SafeArea 적용 제외");
                 return;
             }
             
             // 이미 SafeArea가 적용된 Canvas인지 확인
             if (safeAreaPanels.ContainsKey(canvas))
             {
-                Debug.Log($"[SafeAreaManager] Canvas '{canvas.name}'에는 이미 SafeArea가 적용되어 있습니다.");
+                //Debug.Log($"[SafeAreaManager] Canvas '{canvas.name}'에는 이미 SafeArea가 적용되어 있습니다.");
                 return;
             }
             
-            Debug.Log($"[SafeAreaManager] 🔧 SafeArea 패널 생성 시작: {canvas.name}");
-            Debug.Log($"[SafeAreaManager] safeAreaPanelPrefab 존재 여부: {safeAreaPanelPrefab != null}");
+            //Debug.Log($"[SafeAreaManager] 🔧 SafeArea 패널 생성 시작: {canvas.name}");
+            //Debug.Log($"[SafeAreaManager] safeAreaPanelPrefab 존재 여부: {safeAreaPanelPrefab != null}");
             
             // SafeArea 패널 생성
             GameObject safeAreaPanel = Instantiate(safeAreaPanelPrefab, canvas.transform);
             safeAreaPanel.name = "SafeAreaPanel";
             safeAreaPanel.SetActive(true);
             
-            Debug.Log($"[SafeAreaManager] SafeArea 패널 생성됨: {safeAreaPanel.name}");
-            Debug.Log($"[SafeAreaManager] SafeArea 패널 부모: {safeAreaPanel.transform.parent?.name}");
-            Debug.Log($"[SafeAreaManager] SafeArea 패널 위치: {safeAreaPanel.transform.position}");
+            //Debug.Log($"[SafeAreaManager] SafeArea 패널 생성됨: {safeAreaPanel.name}");
+            //Debug.Log($"[SafeAreaManager] SafeArea 패널 부모: {safeAreaPanel.transform.parent?.name}");
+            //Debug.Log($"[SafeAreaManager] SafeArea 패널 위치: {safeAreaPanel.transform.position}");
             
             // SafeArea 패널을 Canvas의 첫 번째 자식으로 이동
             safeAreaPanel.transform.SetAsFirstSibling();
             
-            Debug.Log($"[SafeAreaManager] SafeArea 패널을 첫 번째 자식으로 이동 완료");
-            Debug.Log($"[SafeAreaManager] Canvas 자식 수: {canvas.transform.childCount}");
+            //Debug.Log($"[SafeAreaManager] SafeArea 패널을 첫 번째 자식으로 이동 완료");
+            //Debug.Log($"[SafeAreaManager] Canvas 자식 수: {canvas.transform.childCount}");
             
             // 딕셔너리에 저장
             safeAreaPanels[canvas] = safeAreaPanel;
             
-            Debug.Log($"[SafeAreaManager] ✅ Canvas '{canvas.name}'에 SafeArea 적용 완료");
-            Debug.Log($"[SafeAreaManager] 현재 관리 중인 SafeArea 패널 수: {safeAreaPanels.Count}");
+            //Debug.Log($"[SafeAreaManager] ✅ Canvas '{canvas.name}'에 SafeArea 적용 완료");
+            //Debug.Log($"[SafeAreaManager] 현재 관리 중인 SafeArea 패널 수: {safeAreaPanels.Count}");
         }
         
         /// <summary>

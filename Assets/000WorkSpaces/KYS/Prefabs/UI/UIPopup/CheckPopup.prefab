@@ -145,16 +145,22 @@ MonoBehaviour:
   hidePreviousUI: 1
   disablePreviousUI: 0
   createBackdropForPopup: 1
+  enableSFX: 1
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
-  enableSFX: 1
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
+  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   messageText: {fileID: 5959800411796131031}
-  confirmText: {fileID: 6514549727330634144}
-  cancelText: {fileID: 9195618501566683812}
   confirmButton: {fileID: 8337931521305220601}
   cancelButton: {fileID: 8657686693786520844}
+  confirmButtonText: {fileID: 0}
+  cancelButtonText: {fileID: 0}
 --- !u!1 &5367403502700491820
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +293,6 @@ GameObject:
   - component: {fileID: 72777769237667391}
   - component: {fileID: 6873531637850529921}
   - component: {fileID: 9195618501566683812}
-  - component: {fileID: 4603962698122142827}
   m_Layer: 5
   m_Name: CancelText
   m_TagString: Untagged
@@ -344,8 +349,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
+  m_sharedMaterial: {fileID: -3859960208976514627, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -411,20 +416,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &4603962698122142827
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6190777258411544726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  localizationKey: 
-  updateOnLanguageChange: 1
 --- !u!1 &6982989053937160634
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,16 +518,22 @@ MonoBehaviour:
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
+  enableSFX: 0
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
-  enableSFX: 0
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
+  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   messageText: {fileID: 5959800411796131031}
-  confirmText: {fileID: 6514549727330634144}
-  cancelText: {fileID: 9195618501566683812}
   confirmButton: {fileID: 8337931521305220601}
   cancelButton: {fileID: 8657686693786520844}
+  confirmButtonText: {fileID: 0}
+  cancelButtonText: {fileID: 0}
 --- !u!1 &8181920889320225383
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,7 +545,6 @@ GameObject:
   - component: {fileID: 4428251734411695351}
   - component: {fileID: 337192057459762195}
   - component: {fileID: 6514549727330634144}
-  - component: {fileID: 2479518792397208273}
   m_Layer: 5
   m_Name: ConfrimText
   m_TagString: Untagged
@@ -605,8 +601,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
+  m_sharedMaterial: {fileID: -3859960208976514627, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -672,20 +668,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2479518792397208273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8181920889320225383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  localizationKey: 
-  updateOnLanguageChange: 1
 --- !u!1 &8883559669689114052
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,7 +679,6 @@ GameObject:
   - component: {fileID: 2341041133836543771}
   - component: {fileID: 4351104041575800871}
   - component: {fileID: 5959800411796131031}
-  - component: {fileID: 2100952959438738234}
   m_Layer: 5
   m_Name: TEST
   m_TagString: Untagged
@@ -754,8 +735,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
+  m_sharedMaterial: {fileID: -3859960208976514627, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -821,17 +802,3 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2100952959438738234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8883559669689114052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724d7b35e973954280344eb2a72ae57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  localizationKey: 
-  updateOnLanguageChange: 1

@@ -12,9 +12,7 @@ namespace KYS
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
 
-        [Header("Localized Text Components")]
-        [SerializeField] private LocalizedText confirmButtonText;
-        [SerializeField] private LocalizedText cancelButtonText;
+
 
         // 이벤트
         public System.Action OnConfirmClicked;
@@ -86,9 +84,13 @@ namespace KYS
         /// </summary>
         public void SetConfirmText(string text)
         {
-            if (confirmButtonText != null)
+            if (confirmButton != null)
             {
-                confirmButtonText.SetLocalizationKey(text);
+                var textComponent = confirmButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = text;
+                }
             }
         }
 
@@ -97,9 +99,13 @@ namespace KYS
         /// </summary>
         public void SetCancelText(string text)
         {
-            if (cancelButtonText != null)
+            if (cancelButton != null)
             {
-                cancelButtonText.SetLocalizationKey(text);
+                var textComponent = cancelButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (textComponent != null)
+                {
+                    textComponent.text = text;
+                }
             }
         }
 

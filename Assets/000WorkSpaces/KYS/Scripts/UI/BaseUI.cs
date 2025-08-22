@@ -33,11 +33,11 @@ namespace KYS
 #endif
         
         [Header("UI Behavior Settings")]
-        [SerializeField] protected bool canCloseWithESC = true;
-        [SerializeField] protected bool canCloseWithBackdrop = true;
-        [SerializeField] protected bool hidePreviousUI = true; // 이전 UI 숨김 여부 (SetActive(false))
+        [SerializeField] protected bool canCloseWithESC = false;
+        [SerializeField] protected bool canCloseWithBackdrop = false;
+        [SerializeField] protected bool hidePreviousUI = false; // 이전 UI 숨김 여부 (SetActive(false))
         [SerializeField] protected bool disablePreviousUI = false; // 이전 UI 비활성화 여부 (CanvasGroup.interactable = false)
-        [SerializeField] protected bool createBackdropForPopup = true; // Popup일 때 Backdrop 자동 생성
+        [SerializeField] protected bool createBackdropForPopup = false; // Popup일 때 Backdrop 자동 생성
         
         [Header("Backdrop Settings")]
         // Backdrop Prefab Reference는 UIManager에서 관리
@@ -128,9 +128,7 @@ namespace KYS
             {
                 CreateBackdrop();
             }
-            
-            // Canvas sorting order 확인 및 조정
-            EnsureProperCanvasOrder();
+           
             
             // 항상 Initialize 호출 (이미 활성화되어 있어도)
             Initialize();
@@ -184,7 +182,11 @@ namespace KYS
 
         public virtual void Initialize()
         {
-            Debug.Log($"[BaseUI] {gameObject.name}의 Initialize() 메서드 실행");
+            //Debug.Log($"[BaseUI] {gameObject.name}의 Initialize() 메서드 실행");
+            
+            // 자동 로컬라이제이션 설정
+            SetupAutoLocalization();
+            
             // Override in derived classes
         }
 
@@ -245,28 +247,6 @@ namespace KYS
             // 하위 클래스에서 구현
         }
 
-        /// <summary>
-        /// Canvas sorting order 확인 및 조정
-        /// </summary>
-        protected virtual void EnsureProperCanvasOrder()
-        {
-            Canvas currentCanvas = GetComponentInParent<Canvas>();
-            if (currentCanvas != null)
-            {
-                Debug.Log($"[BaseUI] {gameObject.name}의 Canvas sorting order: {currentCanvas.sortingOrder}");
-                
-                // Popup인 경우 Panel보다 높은 sorting order를 가지도록 보장
-                if (layerType == UILayerType.Popup)
-                {
-                    Canvas panelCanvas = UIManager.Instance?.PanelCanvas;
-                    if (panelCanvas != null && currentCanvas.sortingOrder <= panelCanvas.sortingOrder)
-                    {
-                        currentCanvas.sortingOrder = panelCanvas.sortingOrder + 10;
-                        Debug.Log($"[BaseUI] {gameObject.name}의 Canvas sorting order 조정: {currentCanvas.sortingOrder}");
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Popup용 Backdrop 생성 (PopupCanvas에 생성하고 Popup을 Backdrop의 자식으로 설정)
@@ -755,43 +735,41 @@ namespace KYS
         private List<TextMeshProUGUI> autoLocalizedTexts = new List<TextMeshProUGUI>();
         private List<string> autoLocalizeKeyList = new List<string>();
 
-        protected virtual void SetupAutoLocalization()
+                protected virtual void SetupAutoLocalization()
         {
             if (!enableAutoLocalization) return;
 
-            Debug.Log($"[{GetType().Name}] 자동 로컬라이제이션 설정 시작");
+            //Debug.Log($"[{GetType().Name}] 자동 로컬라이제이션 설정 시작");
+
+            SetupAutoLocalizedTextComponents();
+        }
+
+        /// <summary>
+        /// 새로운 AutoLocalizedText 컴포넌트를 사용한 자동 로컬라이제이션 설정
+        /// </summary>
+        private void SetupAutoLocalizedTextComponents()
+        {
+            //Debug.Log($"[{GetType().Name}] AutoLocalizedText 컴포넌트 기반 자동 로컬라이제이션 설정");
             
-            // LocalizedText 컴포넌트가 있는 텍스트들은 제외하고 수동으로 관리
+            // 모든 TextMeshProUGUI 컴포넌트 찾기
             var allTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
             
             foreach (var text in allTexts)
             {
-                // LocalizedText 컴포넌트가 있으면 건너뛰기
-                if (text.GetComponent<LocalizedText>() != null)
+                // AutoLocalizedText 컴포넌트가 없으면 추가
+                if (text.GetComponent<AutoLocalizedText>() == null)
                 {
-                    Debug.Log($"[{GetType().Name}] {text.name}은 LocalizedText 컴포넌트가 있어서 자동 로컬라이제이션에서 제외");
-                    continue;
+                    var autoLocalizedText = text.gameObject.AddComponent<AutoLocalizedText>();
+                    Debug.Log($"[{GetType().Name}] {text.name}에 AutoLocalizedText 컴포넌트 추가");
                 }
-
-                // 자동 로컬라이제이션 대상으로 추가
-                autoLocalizedTexts.Add(text);
-                
-                // 키 이름 결정 (UI 이름 기반 또는 설정된 키 사용)
-                string key = GetLocalizationKeyForText(text);
-                autoLocalizeKeyList.Add(key);
-                
-                Debug.Log($"[{GetType().Name}] {text.name}을 자동 로컬라이제이션에 추가 (키: {key})");
-            }
-
-            // 초기 텍스트 설정
-            UpdateAutoLocalizedTexts();
-            
-            // 언어 변경 이벤트 구독
-            if (Manager.localization != null)
-            {
-                Manager.localization.OnLanguageChanged += OnLanguageChanged;
+                else
+                {
+                    Debug.Log($"[{GetType().Name}] {text.name}에 이미 AutoLocalizedText 컴포넌트가 존재");
+                }
             }
         }
+
+
 
         protected virtual string GetLocalizationKeyForText(TextMeshProUGUI text)
         {
@@ -810,8 +788,14 @@ namespace KYS
                 }
             }
 
-            // 2. UI 이름을 기반으로 키 생성
-            string baseKey = text.name.ToLower().Replace("text", "").Replace("label", "").Trim();
+            // 2. LocalizationManager의 키 생성 함수 사용
+            if (Manager.localization != null)
+            {
+                return Manager.localization.GenerateKeyFromUIName(text.name);
+            }
+
+            // 3. 기본 방식 (text 접미사만 제거)
+            string baseKey = text.name.ToLower().Replace("text", "").Trim();
             return baseKey;
         }
 
@@ -835,8 +819,6 @@ namespace KYS
             Debug.Log($"[{GetType().Name}] 언어 변경 감지: {newLanguage}");
             UpdateAutoLocalizedTexts();
         }
-
-
 
         #endregion
 
