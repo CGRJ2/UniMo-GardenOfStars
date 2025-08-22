@@ -6,7 +6,8 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
 
-    private List<WorkerRuntimeData> _workers;
+    private List<WorkerRuntimeData> _workerList;
+    private List<WorkerRuntimeData> _availableWorkerList;
 
     private void SearchWorkStation()
     {
@@ -18,7 +19,7 @@ public class WorkerManager : MonoBehaviour
         float minDistance = float.MaxValue;
         WorkerRuntimeData resultWorker = null;
 
-        foreach(WorkerRuntimeData worker in _workers)
+        foreach(WorkerRuntimeData worker in _workerList)
         {
             float distance = Vector3.Distance(worker.transform.position, workStation.transform.position);
 
@@ -35,11 +36,17 @@ public class WorkerManager : MonoBehaviour
         }
     }
 
-    public void AddWorker(WorkerData data)
+    public void InstantiateWorker(WorkerData data)
     {
         WorkerRuntimeData worker = Instantiate(_workerPrefab).GetComponent<WorkerRuntimeData>();
 
+        worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
-        _workers.Add(worker);
+        _workerList.Add(worker);
+    }
+
+    public void AddAvailableWorker(WorkerRuntimeData data)
+    {
+        _availableWorkerList.Add(data);
     }
 }
