@@ -946,7 +946,7 @@ MonoBehaviour:
   showEase: OutBack
   hideEase: InBack
   canCloseWithESC: 1
-  canCloseWithBackdrop: 0
+  canCloseWithBackdrop: 1
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
@@ -959,16 +959,11 @@ MonoBehaviour:
   defaultOpenSound: SFX_UI_Open
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
-  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   startButton: {fileID: 3164932655907661281}
   settingsButton: {fileID: 2444173173157306741}
   exitButton: {fileID: 9120397504429484142}
   closeButton: {fileID: 6648990507878492841}
-  startButtonText: {fileID: 0}
-  settingsButtonText: {fileID: 0}
-  exitButtonText: {fileID: 0}
-  closeButtonText: {fileID: 0}
 --- !u!1 &7691936073485030613
 GameObject:
   m_ObjectHideFlags: 0

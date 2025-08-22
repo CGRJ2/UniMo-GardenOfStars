@@ -34,14 +34,7 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            layerType = UILayerType.Popup;
-            panelGroup = UIPanelGroup.Settings;
-            
-            // 기본 설정
-            canCloseWithESC = true;
-            canCloseWithBackdrop = true;
-            hidePreviousUI = false;
-            createBackdropForPopup = true;
+
         }
         
         protected override string[] GetAutoLocalizeKeys()

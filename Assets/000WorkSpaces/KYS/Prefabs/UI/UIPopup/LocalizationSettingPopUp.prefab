@@ -1278,8 +1278,8 @@ MonoBehaviour:
   animationDuration: 0.3
   showEase: OutBack
   hideEase: InBack
-  canCloseWithESC: 0
-  canCloseWithBackdrop: 1
+  canCloseWithESC: 1
+  canCloseWithBackdrop: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
@@ -1292,7 +1292,6 @@ MonoBehaviour:
   defaultOpenSound: SFX_UI_Open
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
-  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   languageDropdown: {fileID: 7595873006320057299}
   applyButton: {fileID: 8959633631636691935}
@@ -1303,7 +1302,6 @@ MonoBehaviour:
   translationProgressSlider: {fileID: 662737147841112004}
   previewText: {fileID: 1405351358430401396}
   previewKey: ui_confirm
-  autoLocalizeKeys: []
 --- !u!1 &3183759995914624088
 GameObject:
   m_ObjectHideFlags: 0
@@ -2060,13 +2058,10 @@ MonoBehaviour:
   defaultOpenSound: SFX_UI_Open
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
-  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   messageText: {fileID: 4379988152772503392}
   confirmButton: {fileID: 8959633631636691935}
   cancelButton: {fileID: 8502267004587564626}
-  confirmButtonText: {fileID: 0}
-  cancelButtonText: {fileID: 0}
 --- !u!1 &6515254017269566344
 GameObject:
   m_ObjectHideFlags: 0

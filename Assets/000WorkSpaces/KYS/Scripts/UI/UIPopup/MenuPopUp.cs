@@ -27,7 +27,6 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            layerType = UILayerType.Popup;
         }
 
         protected override void SetupMVP()
