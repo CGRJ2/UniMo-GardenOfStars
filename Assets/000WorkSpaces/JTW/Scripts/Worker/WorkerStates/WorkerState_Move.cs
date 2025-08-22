@@ -19,9 +19,8 @@ public class WorkerState_Move : WorkerStateBase
     public override void Update()
     {
         // TODO : 일이 가능한 상태인지 체크하는 bool 변수로 변경.
-        if (!WorkerData.CurWorkstation.gameObject.activeSelf)
+        if (!WorkerData.CurWorkstation.Value.gameObject.activeSelf)
         {
-            WorkerData.WorkerManager.AddAvailableWorker(WorkerData);
             StateMachine.ChangeState(WorkerStates.Idle);
         }
         // TODO : NevMesh를 이용하여 목적지에 도달했을 때.

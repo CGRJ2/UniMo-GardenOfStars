@@ -12,7 +12,6 @@
     {
         if (!CanWork())
         {
-            WorkerData.WorkerManager.AddAvailableWorker(WorkerData);
             StateMachine.ChangeState(WorkerStates.Idle);
         }
     }
@@ -24,9 +23,9 @@
     private bool CanWork()
     {
         // TODO : 일이 가능한 상태인지 체크하는 bool 변수로 변경.
-        if (!WorkerData.CurWorkstation.gameObject.activeSelf) return false;
+        if (!WorkerData.CurWorkstation.Value.gameObject.activeSelf) return false;
 
-        if (WorkerData.CurWorkstation is Interactable_Insert)
+        if (WorkerData.CurWorkstation.Value is Interactable_Insert)
         {
             if (WorkerData.IngrediantStack.Count == 0) return false;
         }

@@ -27,8 +27,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
     private WorkerManager _workerManager;
     public WorkerManager WorkerManager => _workerManager;
 
-    private InteractableBase _curWorkstation;
-    public InteractableBase CurWorkstation { get { return _curWorkstation; } set { _curWorkstation = value; } }
+    public ObservableProperty<InteractableBase> CurWorkstation;
 
     public void SetWorkerManager(WorkerManager manager)
     {
@@ -42,6 +41,6 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public void SetWorkstation(InteractableBase workstation)
     {
-        _curWorkstation = workstation;
+        CurWorkstation.Value = workstation;
     }
 }
