@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorkerRuntimeData : MonoBehaviour
+public class WorkerRuntimeData : CharaterRuntimeData
 {
     private WorkerData _data;
 
@@ -24,8 +24,16 @@ public class WorkerRuntimeData : MonoBehaviour
 
     #endregion
 
-    private InteractableBase _curWorkstation;
+    private WorkerManager _workerManager;
+    public WorkerManager WorkerManager => _workerManager;
 
+    private InteractableBase _curWorkstation;
+    public InteractableBase CurWorkstation { get { return _curWorkstation; } set { _curWorkstation = value; } }
+
+    public void SetWorkerManager(WorkerManager manager)
+    {
+        _workerManager = manager;
+    }
 
     public void SetWorkerData(WorkerData data)
     {
