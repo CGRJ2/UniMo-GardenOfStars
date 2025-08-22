@@ -433,7 +433,7 @@ GameObject:
   - component: {fileID: 338763460754311474}
   - component: {fileID: 845315589106052096}
   m_Layer: 0
-  m_Name: BuildingInstance_Work
+  m_Name: ManufactureBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -469,7 +469,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3864011823713307385}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75681f17facd791439ec41a74ce611fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 32205fbb9c6998742be3c0dbd18ca232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 8817856506370985237}
@@ -478,12 +478,13 @@ MonoBehaviour:
     level: 0
     maxStackableCount: 0
     productionTime: 0
-  originData: {fileID: 11400000, guid: a557bcb6796361e44828106a59d2f112, type: 2}
+  originData: {fileID: 0}
   attachPoint: {fileID: 5430793922066665192}
   insertDelayTime: 0.2
   progressedTime: 0
-  insertArea: {fileID: 3309636777576410186}
-  workArea: {fileID: 1767416883427801298}
+  insertArea: {fileID: 6339166833292814639}
+  workArea: {fileID: 7099810755419765868}
+  prodsArea: {fileID: 4753763416895158382}
 --- !u!1 &5051637644880339798
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,7 +495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3189641671765558796}
   - component: {fileID: 7563473477895658133}
-  - component: {fileID: 3309636777576410186}
+  - component: {fileID: 6339166833292814639}
   m_Layer: 0
   m_Name: InsertArea
   m_TagString: Untagged
@@ -538,7 +539,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3309636777576410186
+--- !u!114 &6339166833292814639
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -547,10 +548,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5051637644880339798}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85d1be14873cc5f46b267d73a2b5d05d, type: 3}
+  m_Script: {fileID: 11500000, guid: dfc9b4ac99e5e94488efe7c418a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 0}
+  instance: {fileID: 0}
 --- !u!1 &6245072844566303394
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +804,7 @@ GameObject:
   m_Component:
   - component: {fileID: 660693712991245297}
   - component: {fileID: 4314641817190544511}
+  - component: {fileID: 4753763416895158382}
   m_Layer: 0
   m_Name: ProdsArea
   m_TagString: Untagged
@@ -845,6 +848,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4753763416895158382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7693459722687459653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d04cdb82b38d994fb091ef659ce8fa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactPopUI: {fileID: 0}
+  instance: {fileID: 0}
+  prodsCount: 0
 --- !u!1 &7966259703352679652
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,7 +975,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5437522862429664227}
   - component: {fileID: 1287233023890671067}
-  - component: {fileID: 1767416883427801298}
+  - component: {fileID: 7099810755419765868}
   m_Layer: 0
   m_Name: WorkArea
   m_TagString: Untagged
@@ -1002,7 +1020,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1767416883427801298
+--- !u!114 &7099810755419765868
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1011,10 +1029,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8174644716966464262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6d335e39cbfa8042a2d054899f05f3a, type: 3}
+  m_Script: {fileID: 11500000, guid: a5951b785d583044eb7aa1963af183e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 5490139377870285}
+  instance: {fileID: 0}
   progressBar: {fileID: 5848589150477764333}
 --- !u!1 &8614295978529802839
 GameObject:

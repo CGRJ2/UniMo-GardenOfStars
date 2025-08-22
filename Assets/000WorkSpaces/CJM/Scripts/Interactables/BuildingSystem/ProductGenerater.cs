@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class ProductGenerater : MonoBehaviour
+public class ProductGenerater : InteractableBase
 {
     public GenerateState state;
     public float productionTime;
@@ -14,12 +14,13 @@ public class ProductGenerater : MonoBehaviour
 
     Coroutine _CultivateRoutine;
 
-    private void OnDisable()
+    public override void OnDisableAdditionalActions()
     {
-        // 현재 생산 진행도 저장 후 코루틴 중지
+        base.OnDisableAdditionalActions();
+
+        // 생산 코루틴 중지
         StopAllCoroutines();
     }
-
     public bool StandByCheck()
     {
         // 생산물이 없을 때
@@ -31,19 +32,8 @@ public class ProductGenerater : MonoBehaviour
         // 생산물이 있을 때
         else
         {
-            // 생산물을 아무도 가져가지 않았다면
-            if (_SpawnedProduct.owner == null)
-            {
-                state = GenerateState.Completed;
-                return false;
-            }
-            // 누군가 생산물을 가져갔다면
-            else
-            {
-                state = GenerateState.StandBy;
-                _SpawnedProduct = null;
-                return true;
-            }
+            state = GenerateState.Completed;
+            return false;
         }
     }
 
@@ -96,6 +86,35 @@ public class ProductGenerater : MonoBehaviour
 
         // 생산물 정보 저장
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
+    }
+
+    public void PickUpProds()
+    {
+        // 생성된 재료가 없으면 실행 안함
+        if (_SpawnedProduct == null) return;
+
+        // 일꾼일 경우에도 추가해야함
+
+        // 들고 있는 재료와 다른 재료는 줍지 않게 만들기
+        IngrediantInstance instanceProd;
+        if (characterRuntimeData.ingrediantStack.TryPeek(out instanceProd))
+        {
+            if (instanceProd.Data.ID != _SpawnedProduct.Data.ID) return;
+        }
+
+        _SpawnedProduct.owner = characterRuntimeData.gameObject;
+        _SpawnedProduct.AttachToTarget(characterRuntimeData.prodsAttachPoint, characterRuntimeData.ingrediantStack.Count);
+        //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
+        characterRuntimeData.ingrediantStack.Push(_SpawnedProduct);
+        _SpawnedProduct = null;
+    }
+
+
+    public override void EnterInteract(PlayerController characterRuntimeData)
+    {
+        base.EnterInteract(characterRuntimeData);
+
+        PickUpProds();
     }
 }
 

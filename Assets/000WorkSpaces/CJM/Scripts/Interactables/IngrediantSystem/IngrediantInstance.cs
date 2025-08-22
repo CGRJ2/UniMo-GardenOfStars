@@ -6,37 +6,10 @@ using UnityEngine.Timeline;
 public class IngrediantInstance : PooledObject
 {
     [field: SerializeField] public IngrediantData Data { get; private set; }
-    public int count;
-    Interactable_Ingrediant interactable;
     [SerializeField] float absorbAcceleration = 3f;
-
     [SerializeField] Vector3 stackOffset;
 
-
-    //[SerializeField] float destroyTime = 120f;
-    //float proceededtime;
-
     public GameObject owner; // CharacterBase 완성 후 변수 수정
-
-    private void Awake()
-    {
-        interactable = GetComponent<Interactable_Ingrediant>();
-        interactable.SetInstance(this);
-    }
-
-    void Update()
-    {
-        /*if (destroyTime < -90) return; // destroyTime을 -100으로 설정하여, 생존주기 비활성화 가능
-
-        proceededtime += Time.deltaTime;
-        if (destroyTime < proceededtime) Despawn();
-
-        // 테스트 용도
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            if (owner != null) Despawn();
-        }*/
-    }
 
     protected override void OnPooledEnable()
     {
@@ -54,7 +27,6 @@ public class IngrediantInstance : PooledObject
         owner = null;
 
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
-        interactable.isInteracted = false;
     }
 
     public void SetIngrediantSO(IngrediantData ingrediantSO)

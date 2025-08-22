@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingInstance_Manufacture : BuildingInstance
+public class ManufactureBuilding : BuildingInstance
 {
     public BuildingRuntimeData runtimeData;
     [HideInInspector] public ManufactureBD originData;
@@ -18,13 +18,15 @@ public class BuildingInstance_Manufacture : BuildingInstance
     public float progressedTime = 0f;   // 현재 진행도
 
     [Header("투입 영역 객체")]
-    public Interactable_Insert insertArea;
+    public InsertArea insertArea;
     [Header("작업 영역 객체")]
-    public Interactable_Work workArea;
+    public WorkArea workArea;
+    [Header("회수 영역 객체")]
+    public ProdsArea prodsArea;
 
 
-
-    public Stack<IngrediantInstance> prodsStack = new();
+    public Stack<IngrediantInstance> ingrediantStack = new();
+    //public Stack<IngrediantInstance> prodsStack = new();  // 회수영역을 스택처럼 표현할 때 사용하는걸로
 
 
     private void Awake()
@@ -32,6 +34,7 @@ public class BuildingInstance_Manufacture : BuildingInstance
         InitRuntimeData();
         insertArea.Init(this);
         workArea.Init(this);
+        prodsArea.Init(this);
     }
 
     void InitRuntimeData()
@@ -43,6 +46,5 @@ public class BuildingInstance_Manufacture : BuildingInstance
             runtimeData.SetCurLevelStatDatas(mfBD);
         }
     }
-
 }
 

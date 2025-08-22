@@ -7,16 +7,18 @@ public class BuildingInstance : InteractableBase
 {
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
 
-    public override void EnterInteract_Player()
+
+    public override void EnterInteract(PlayerController characterRuntimeData)
     {
-        base.EnterInteract_Player();
-        //Debug.Log($"건물인스턴스({buildingData?.name}): 즉발형 상호작용 실행");
+        base.EnterInteract(characterRuntimeData);
+        //활성화영역 (플레이어라면 UI버튼 활성화)
+
     }
 
-    public override void DeactiveInteract_Player()
+    public override void ExitInteract(PlayerController characterRuntimeData)
     {
-        base.DeactiveInteract_Player();
-        //Debug.Log($"건물인스턴스({buildingData?.name}): 팝업형 상호작용 비활성화");
+        base.ExitInteract(characterRuntimeData);
+        //비활성화 (플레이어라면 UI버튼 비활성화)
     }
 }
 

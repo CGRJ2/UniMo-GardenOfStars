@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-public class BuildingInstance_Harvest : BuildingInstance
+public class HarvestBuilding : BuildingInstance
 {
     [SerializeField] Transform prodsParentTransform;
     //[SerializeField] float cultivateTime;
