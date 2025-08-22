@@ -110,12 +110,23 @@ public class ProductGenerater : InteractableBase
         _SpawnedProduct = null;
     }
 
+    IEnumerator PickUpRoutine()
+    {
+        while (characterRD != null)
+        {
+            yield return new WaitUntil(() => _SpawnedProduct != null);
+
+            if (characterRD == null) break;
+
+            PickUpProds();
+        }
+    }
 
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
 
-        PickUpProds();
+        StartCoroutine(PickUpRoutine());
     }
 }
 

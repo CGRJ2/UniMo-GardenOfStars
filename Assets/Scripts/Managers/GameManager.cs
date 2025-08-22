@@ -17,13 +17,13 @@ public class GameManager : Singleton<GameManager>
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.X))
+        /*if (Input.GetKeyDown(KeyCode.X))
         {
             Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
             {
                 Instantiate(task.Result);
             };
-        }
+        }*/
     }
 
 
