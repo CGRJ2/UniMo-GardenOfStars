@@ -2,75 +2,87 @@ using UnityEngine;
 
 public class InteractableBase : MonoBehaviour
 {
-    protected PlayerController pc;
-    bool isActive;
+    protected CharaterRuntimeData characterRD;
+    public CharaterRuntimeData personalTaskOwner;
 
-
-    public virtual void ImediateInteract()
+    // 상호작용 범위 진입
+    public virtual void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        // 즉시 실행 상호작용 
+        characterRD = characterRuntimeData;
     }
 
-    public virtual void ActivePopUpInteract()
+    public virtual void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
-        // [패널을 활성화] 혹은 [버튼을 활성화]
+        personalTaskOwner = characterRuntimeData;
     }
 
-    public virtual void DeactivePopUpInteract()
+    // 상호작용 범위에서 나감
+    public virtual void Exit(CharaterRuntimeData characterRuntimeData)
     {
-        // [패널을 활성화] 혹은 [버튼을 활성화] 했던 것 비활성화
+        if (characterRD == characterRuntimeData)
+            characterRD = null;
     }
 
-    // 플레이어가 도중에 사라지거나, 
-    public virtual void OnDisableActions()
+    public virtual void Exit_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
-        if (isActive)
-        {
-            DeactivePopUpInteract();
-            isActive = false;
-        }
+        personalTaskOwner = null;
     }
+
+    public virtual void OnDisableAdditionalActions() { }
 
     public void OnDisable()
     {
-        OnDisableActions();
+        OnDisableAdditionalActions();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlayerController>() != null)
+        CharaterRuntimeData _CharacterRD = other.transform.parent.GetComponent<CharaterRuntimeData>();
+
+        if (_CharacterRD != null)
         {
-            pc = other.GetComponent<PlayerController>();
+            // 일반 상호작용 활성화
+            Enter(_CharacterRD);
 
-            // 플레이어가 들어온걸 확인 하면 활성화
-            isActive = true;
-
-            ImediateInteract(); // 즉발 상호작용 실행
-            ActivePopUpInteract(); // 팝업 활성화
+            // 1인 상호작용(먼저 상호작용 진행중인 객체가 있으면 무시)
+            if (personalTaskOwner == null)
+                Enter_PersonalTask(_CharacterRD);
         }
+
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.GetComponent<PlayerController>() != null)
+        CharaterRuntimeData _CharacterRD = other.transform.parent.GetComponent<CharaterRuntimeData>();
+
+        if (characterRD == null)
         {
-            // 플레이어가 들어와 있으면
-            if (isActive)
+            // 플레이어
+            if (_CharacterRD != null)
             {
-                pc ??= other.GetComponent<PlayerController>();
+                characterRD ??= other.GetComponent<CharaterRuntimeData>();
+                // 일반 상호작용 활성화
+                Enter(_CharacterRD);
+
+                // 1인 상호작용(먼저 상호작용 진행중인 객체가 있으면 무시)
+                if (personalTaskOwner == null)
+                    Enter_PersonalTask(_CharacterRD);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<PlayerController>() != null)
-        {
-            // 플레이어가 영역 밖으로 나갔다면 비활성화
-            isActive = false;
-            pc = null;
+        CharaterRuntimeData _CharacterRD = other.transform.parent.GetComponent<CharaterRuntimeData>();
 
-            DeactivePopUpInteract(); // 팝업 비활성화
+        if (_CharacterRD != null)
+        {
+            // 일반 상호작용 비활성화
+            Exit(_CharacterRD);
+
+            // 1인 상호작용 비활성화(방금 나간 캐릭터가 상호작용중이던 캐릭터여야함)
+            if (personalTaskOwner == _CharacterRD)
+                Exit_PersonalTask(_CharacterRD);
         }
     }
 }
