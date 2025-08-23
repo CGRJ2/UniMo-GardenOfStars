@@ -1,10 +1,13 @@
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 using UnityEngine;
+using KYS;
 
 public static class Manager
 {
     public static GameManager game => GameManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
+    public static UIManager ui => UIManager.Instance;
+    public static LocalizationManager localization => LocalizationManager.Instance;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -12,5 +15,7 @@ public static class Manager
     {
         GameManager.CreateInstance();
         PoolManager.CreateInstance();
+        UIManager.CreateInstance();
+        LocalizationManager.CreateInstance();
     }
 }
