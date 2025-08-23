@@ -432,6 +432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 338763460754311474}
   - component: {fileID: 845315589106052096}
+  - component: {fileID: 311108036302076126}
   m_Layer: 0
   m_Name: ManufactureBuilding
   m_TagString: Untagged
@@ -472,6 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32205fbb9c6998742be3c0dbd18ca232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  personalTaskOwner: {fileID: 0}
   interactPopUI: {fileID: 8817856506370985237}
   _OriginData: {fileID: 11400000, guid: a557bcb6796361e44828106a59d2f112, type: 2}
   runtimeData:
@@ -481,10 +483,32 @@ MonoBehaviour:
   originData: {fileID: 0}
   attachPoint: {fileID: 5430793922066665192}
   insertDelayTime: 0.2
+  prodsAbsorbDelayTime: 0.2
   progressedTime: 0
   insertArea: {fileID: 6339166833292814639}
   workArea: {fileID: 7099810755419765868}
   prodsArea: {fileID: 4753763416895158382}
+--- !u!135 &311108036302076126
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3864011823713307385}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5051637644880339798
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,8 +575,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc9b4ac99e5e94488efe7c418a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  personalTaskOwner: {fileID: 0}
   interactPopUI: {fileID: 0}
-  instance: {fileID: 0}
+  ownerInstance: {fileID: 0}
 --- !u!1 &6245072844566303394
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,9 +885,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d04cdb82b38d994fb091ef659ce8fa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  personalTaskOwner: {fileID: 0}
   interactPopUI: {fileID: 0}
-  instance: {fileID: 0}
-  prodsCount: 0
+  ownerInstance: {fileID: 0}
+  ProdsCount: 0
 --- !u!1 &7966259703352679652
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,8 +1058,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5951b785d583044eb7aa1963af183e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  personalTaskOwner: {fileID: 0}
   interactPopUI: {fileID: 5490139377870285}
-  instance: {fileID: 0}
+  ownerInstance: {fileID: 0}
   progressBar: {fileID: 5848589150477764333}
 --- !u!1 &8614295978529802839
 GameObject:

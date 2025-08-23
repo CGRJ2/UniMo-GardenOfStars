@@ -8,7 +8,7 @@ public class InteractableBase : MonoBehaviour
 
     [Header("기본 상호작용 팝업(없다면 공란으로 유지)")]
     [SerializeField] Canvas interactPopUI;
-    public void InitPopUI()
+    public void InitPopUI() // 기본 활성화 영역에서의 PopUI가 있는 객체에서만 실행
     {
         if (interactPopUI != null)
         {

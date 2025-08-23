@@ -15,6 +15,7 @@ public class WorkArea : InteractableBase
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
+        Manager.buildings.workStatinLists.workAreas.Add(this);
     }
 
     IEnumerator ProgressingTask()
@@ -83,5 +84,11 @@ public class WorkArea : InteractableBase
         {
             StartCoroutine(ProgressingTask());
         }
+    }
+
+    public override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+        Manager.buildings?.workStatinLists.workAreas?.Remove(this);
     }
 }

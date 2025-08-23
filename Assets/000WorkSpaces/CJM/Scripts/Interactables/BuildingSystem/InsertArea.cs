@@ -12,6 +12,7 @@ public class InsertArea : InteractableBase
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
+        Manager.buildings.workStatinLists.insertAreas.Add(this);
     }
 
     IEnumerator AutoStacking()
@@ -68,5 +69,11 @@ public class InsertArea : InteractableBase
     {
         base.Exit(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 팝업형 상호작용 비활성화");
+    }
+
+    public override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+        Manager.buildings?.workStatinLists.insertAreas?.Remove(this);
     }
 }

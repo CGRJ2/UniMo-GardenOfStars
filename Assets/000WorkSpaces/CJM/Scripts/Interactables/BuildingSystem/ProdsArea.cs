@@ -25,6 +25,8 @@ public class ProdsArea : InteractableBase
 
             _Pool = Manager.pool.GetPoolBundle(product).instancePool;
         };
+        
+        Manager.buildings.workStatinLists.prodsAreas.Add(this);
     }
 
 
@@ -71,5 +73,11 @@ public class ProdsArea : InteractableBase
     public override void Enter_PersonalTask(CharaterRuntimeData singleInteracter)
     {
         base.Enter_PersonalTask(singleInteracter);
+    }
+
+    public override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+        Manager.buildings?.workStatinLists.prodsAreas?.Remove(this);
     }
 }

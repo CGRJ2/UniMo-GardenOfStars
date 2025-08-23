@@ -14,7 +14,7 @@ public class HarvestBuilding : BuildingInstance
 
     private void Awake()
     {
-        base.InitPopUI();
+        base.BIBaseInit();
         InitRuntimeData();
 
         productGeneraters = prodsParentTransform.GetComponentsInChildren<ProductGenerater>();

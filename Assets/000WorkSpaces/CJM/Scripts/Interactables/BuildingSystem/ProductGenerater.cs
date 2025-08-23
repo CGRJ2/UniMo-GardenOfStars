@@ -14,6 +14,18 @@ public class ProductGenerater : InteractableBase
     [SerializeField] IngrediantInstance _SpawnedProduct;
 
     Coroutine _CultivateRoutine;
+    public void Init(GameObject prodPrefab, float productionTime)
+    {
+        this.productionTime = productionTime;
+
+        _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
+
+        // 생산 루틴 가동(임시)
+        if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
+        _CultivateRoutine = StartCoroutine(CultivateRoutine());
+
+        Manager.buildings.workStatinLists.productGeneraters.Add(this);
+    }
 
     public override void OnDisableAdditionalActions()
     {
@@ -21,6 +33,8 @@ public class ProductGenerater : InteractableBase
 
         // 생산 코루틴 중지
         StopAllCoroutines();
+
+        Manager.buildings?.workStatinLists.productGeneraters?.Remove(this);
     }
     public bool StandByCheck()
     {
@@ -64,16 +78,7 @@ public class ProductGenerater : InteractableBase
         }
     }
 
-    public void Init(GameObject prodPrefab, float productionTime)
-    {
-        this.productionTime = productionTime;
-
-        _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
-
-        // 생산 루틴 가동(임시)
-        if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
-        _CultivateRoutine = StartCoroutine(CultivateRoutine());
-    }
+    
 
     public void SpawnProduct()
     {

@@ -5,6 +5,17 @@ public class BuildingInstance : InteractableBase
 {
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
 
+    protected void BIBaseInit()
+    {
+        base.InitPopUI();
+        Manager.buildings.ActivatedBIList.Add(this);
+    }
+
+    public override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+        Manager.buildings?.ActivatedBIList.Remove(this);
+    }
 
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {

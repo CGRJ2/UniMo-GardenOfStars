@@ -34,6 +34,7 @@ public class ManufactureBuilding : BuildingInstance
 
     private void Awake()
     {
+        base.BIBaseInit();
         InitRuntimeData();
         insertArea.Init(this);
         workArea.Init(this);
