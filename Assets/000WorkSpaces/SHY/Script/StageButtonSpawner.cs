@@ -9,10 +9,10 @@ public class StageButtonSpawner : MonoBehaviour
     [Header("버튼 생성 위치 부모")]
     public Transform buttonParent;
 
-    void Start() //초기화 구성 오류 업데이트에서 진행.
-    {
-        SpawnStageButtons();
-    }
+    //void Start() //초기화 구성 오류 업데이트에서 진행.
+    //{
+    //    SpawnStageButtons();
+    //}
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.S))
@@ -23,7 +23,7 @@ public class StageButtonSpawner : MonoBehaviour
     void SpawnStageButtons()
     {
         
-        var stages = StageManager.instance.GetStages();
+        var stages = Manager.stage.GetStages();
         Debug.Log($"{stages.Count}");
         for (int i = 0; i < stages.Count; i++)
         {

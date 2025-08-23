@@ -3,11 +3,12 @@ using System.IO;
 using UnityEngine;
 
 
-public class StageManager : MonoBehaviour,IQuestObserver
+public class StageManager : Singleton<StageManager>,IQuestObserver
 {
-    public static StageManager instance;
+    //public static StageManager instance;
     [Header("So 그룹등록")]
     public StageData[] originalStageSOs;
+    public SceneChanger sceneChanger;
 
     private List<StageData> activeStageInstances = new(); // 복제본 리스트
 
@@ -44,15 +45,16 @@ public class StageManager : MonoBehaviour,IQuestObserver
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        base.SingletonInit();
+        //if (instance == null)
+        //{
+        //    instance = this;
+        //    DontDestroyOnLoad(gameObject);
+        //}
+        //else
+        //{
+        //    Destroy(gameObject);
+        //}
         savePath = Path.Combine(Application.persistentDataPath, "SaveFiles", "stageData.json");
     }
     private void Start()

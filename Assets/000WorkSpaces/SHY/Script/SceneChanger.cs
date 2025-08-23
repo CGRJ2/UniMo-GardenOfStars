@@ -5,18 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
-    public static SceneChanger instance; //임시 사용.
+    //public static SceneChanger instance; //임시 사용.
     private void Awake()
     {
-        if (instance ==null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-           Destroy(gameObject);
-        }
+        //if (instance ==null)
+        //{
+        //    instance = this;
+        //    DontDestroyOnLoad(gameObject);
+        //}
+        //else
+        //{
+        //   Destroy(gameObject);
+        //}
     }
 
     public void LoadSceneByName(string sceneName)

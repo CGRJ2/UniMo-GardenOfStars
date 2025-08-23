@@ -5,6 +5,7 @@ public static class Manager
 {
     public static GameManager game => GameManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
+    public static StageManager stage => StageManager.Instance;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -12,5 +13,6 @@ public static class Manager
     {
         GameManager.CreateInstance();
         PoolManager.CreateInstance();
+        StageManager.CreateInstance();
     }
 }

@@ -14,13 +14,13 @@ public class StageButton : MonoBehaviour
 
     private StageData stageData;
 
-    //void Start()  //프리펩 안쓸때
-    //{
-    //    // StageManager에서 해당 스테이지 데이터 가져오기
-    //    stageData = StageManager.instance.GetStages()[stageIndex];
+    void Start()  //프리펩 안쓸때
+    {
+        // StageManager에서 해당 스테이지 데이터 가져오기
+        stageData = Manager.stage.GetStages()[stageIndex];
 
-    //    UpdateVisual();
-    //}
+        UpdateVisual();
+    }
     public void Initialize(StageData data) //프리펩화된거 쓸때.
     {
         stageData = data;
@@ -52,7 +52,7 @@ public class StageButton : MonoBehaviour
             Debug.Log("이미 현재 스테이지입니다.");
             return;
         }
-        SceneChanger.instance.LoadSceneByIndex(stageIndex);
+        Manager.stage.sceneChanger.LoadSceneByIndex(stageIndex);
     }
 
     public void UpdateVisual()
