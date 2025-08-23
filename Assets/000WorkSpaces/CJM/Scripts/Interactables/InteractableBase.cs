@@ -5,43 +5,22 @@ public class InteractableBase : MonoBehaviour
     protected CharaterRuntimeData characterRD;
     public CharaterRuntimeData personalTaskOwner;
 
-
-    [Header("기본 상호작용 팝업(없다면 공란으로 유지)")]
-    [SerializeField] Canvas interactPopUI;
-    public void InitPopUI() // 기본 활성화 영역에서의 PopUI가 있는 객체에서만 실행
-    {
-        if (interactPopUI != null)
-        {
-            interactPopUI.worldCamera = Camera.main;
-            interactPopUI.gameObject.SetActive(false);
-        }
-    }
-
     // 상호작용 범위 진입
     public virtual void Enter(CharaterRuntimeData characterRuntimeData)
     {
         characterRD = characterRuntimeData;
-        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
-        if (interactPopUI != null)
-            interactPopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
     }
-
 
     public virtual void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         personalTaskOwner = characterRuntimeData;
     }
 
-
     // 상호작용 범위에서 나감
     public virtual void Exit(CharaterRuntimeData characterRuntimeData)
     {
         if (characterRD == characterRuntimeData)
             characterRD = null;
-
-        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
-        if (interactPopUI != null)
-            interactPopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
     }
 
     public virtual void Exit_PersonalTask(CharaterRuntimeData characterRuntimeData)
@@ -49,11 +28,7 @@ public class InteractableBase : MonoBehaviour
         personalTaskOwner = null;
     }
 
-    public virtual void OnDisableAdditionalActions()
-    {
-        if (interactPopUI != null)
-            interactPopUI.gameObject.SetActive(false);
-    }
+    public virtual void OnDisableAdditionalActions() { }
 
     public void OnDisable()
     {

@@ -24,6 +24,7 @@ public class ManufactureBuilding : BuildingInstance
     public InsertArea insertArea;
     [Header("작업 영역 객체")]
     public WorkArea workArea;
+    public WorkArea_SwitchType workArea_SwitchType;
     [Header("회수 영역 객체")]
     public ProdsArea prodsArea;
 
@@ -37,7 +38,8 @@ public class ManufactureBuilding : BuildingInstance
         base.BIBaseInit();
         InitRuntimeData();
         insertArea.Init(this);
-        workArea.Init(this);
+        workArea?.Init(this);
+        workArea_SwitchType?.Init(this);
         prodsArea.Init(this);
     }
 

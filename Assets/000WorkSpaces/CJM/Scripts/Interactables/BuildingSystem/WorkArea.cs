@@ -16,6 +16,7 @@ public class WorkArea : InteractableBase
     {
         this.ownerInstance = instance;
         Manager.buildings.workStatinLists.workAreas.Add(this);
+        progressBar.gameObject.SetActive(false);
     }
 
     IEnumerator ProgressingTask()
@@ -26,15 +27,26 @@ public class WorkArea : InteractableBase
         // 정지 상태까지 대기했다가 작업 실행
         yield return new WaitUntil(() => !curWorker.IsMove.Value);
 
+        // 작업 시작 시, 진행도 표기
+        progressBar.gameObject.SetActive(true);
+
         while (curWorker == characterRD) // 현재 작업자가 있는 동안 계속 실행
         {
             // 작업 진행 중, 영역 내에서 움직인 경우 대기
             if (curWorker.IsMove.Value)
+            {
+                progressBar.gameObject.SetActive(false);
                 yield return new WaitUntil(() => !curWorker.IsMove.Value);
-            
+                progressBar.gameObject.SetActive(true);
+            }
+
             // 재료 소진 시, 재료가 채워질 때 까지 대기
             if (ownerInstance.ingrediantStack.Count <= 0)
+            {
+                progressBar.gameObject.SetActive(false);
                 yield return new WaitUntil(() => ownerInstance.ingrediantStack.Count > 0);
+                progressBar.gameObject.SetActive(true);
+            }
 
             // 작업 영역 밖으로 나가는 경우
             if (curWorker != characterRD) break;
@@ -62,6 +74,9 @@ public class WorkArea : InteractableBase
         yield return null;
         curWorker.IsWork.Value = false;
         curWorker = null;
+
+        // 진행도 표기 비활성화
+        progressBar.gameObject.SetActive(false);
     }
 
     public void CompleteTask()
