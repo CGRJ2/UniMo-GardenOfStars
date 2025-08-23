@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3776656797019485392}
   - component: {fileID: 4167008545154292102}
   - component: {fileID: 5975307767123177464}
-  - component: {fileID: -7791644958067635653}
   m_Layer: 5
   m_Name: LoadingCanvas
   m_TagString: Untagged
@@ -57,7 +56,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 30
@@ -102,52 +101,3 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &-7791644958067635653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6083455681634262794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a2cb4c0332ecce4daa7f77b5fd5a633, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layerType: 3
-  panelGroup: 4
-  useAnimation: 1
-  animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
-  canCloseWithESC: 0
-  canCloseWithBackdrop: 0
-  hidePreviousUI: 0
-  disablePreviousUI: 0
-  createBackdropForPopup: 0
-  enableSFX: 1
-  defaultClickSound: SFX_ButtonClick
-  defaultBackSound: SFX_ButtonClickBack
-  defaultHoverSound: SFX_ButtonHover
-  defaultErrorSound: SFX_Error
-  defaultSuccessSound: SFX_Success
-  defaultOpenSound: SFX_UI_Open
-  defaultCloseSound: SFX_UI_Close
-  enableAutoLocalization: 1
-  autoLocalizeKeys: []
-  backgroundImage: {fileID: 0}
-  loadingImages: []
-  centerMessageText: {fileID: 0}
-  loadingProgressBar: {fileID: 0}
-  progressText: {fileID: 0}
-  imageSwitchInterval: 2
-  messageSwitchInterval: 3
-  autoSwitchImages: 1
-  autoSwitchMessages: 1
-  loadingMessages:
-  - "\uB85C\uB529 \uC911..."
-  - "\uC7A0\uC2DC\uB9CC \uAE30\uB2E4\uB824\uC8FC\uC138\uC694..."
-  - "\uB370\uC774\uD130\uB97C \uBD88\uB7EC\uC624\uB294 \uC911..."
-  - "\uAC70\uC758 \uC644\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4..."
-  enableImageFade: 1
-  fadeDuration: 0.5

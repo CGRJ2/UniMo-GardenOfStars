@@ -15,7 +15,8 @@ namespace KYS
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private Button menuButton;
         [SerializeField] private Button inventoryButton;
-        
+        [SerializeField] private TextMeshProUGUI questProgressText;
+
         // MVP Components
         private new HUDAllPanelPresenter presenter;
         private new HUDAllPanelModel model;
@@ -87,11 +88,19 @@ namespace KYS
                 levelText.text = $"레벨: {level}";
             }
         }
-        
+
+        public void UpdateQuestProgress(string progress)
+        {
+            if (questProgressText != null)
+            {
+                questProgressText.text = $"퀘스트 진행: {progress}";
+            }
+        }
+
         #endregion
-        
+
         #region Event Handlers
-        
+
         private void OnMenuButtonClicked()
         {
             Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
@@ -102,8 +111,7 @@ namespace KYS
         private void OnInventoryButtonClicked()
         {
             Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
-            // 인벤토리 패널 열기
-            UIManager.Instance.ShowPopUp<InventoryPanel>();
+
         }
         
         #endregion
@@ -127,6 +135,7 @@ namespace KYS
             {
                 hudModel.OnMoneyChanged += OnMoneyChanged;
                 hudModel.OnLevelChanged += OnLevelChanged;
+                hudModel.OnQuestProgressChanged += OnQuestProgressChanged;
             }
         }
         
@@ -137,6 +146,7 @@ namespace KYS
             {
                 hudModel.OnMoneyChanged -= OnMoneyChanged;
                 hudModel.OnLevelChanged -= OnLevelChanged;
+                hudModel.OnQuestProgressChanged -= OnQuestProgressChanged;
             }
         }
         
@@ -149,6 +159,12 @@ namespace KYS
         {
             hudView?.UpdateLevel(level);
         }
+
+        private void OnQuestProgressChanged(string progress)
+        {
+            hudView?.UpdateQuestProgress(progress);
+        }
+
     }
     
     /// <summary>
@@ -161,7 +177,8 @@ namespace KYS
         
         public System.Action<int> OnMoneyChanged;
         public System.Action<int> OnLevelChanged;
-        
+        public System.Action<string> OnQuestProgressChanged;
+
         public int Money
         {
             get => money;
