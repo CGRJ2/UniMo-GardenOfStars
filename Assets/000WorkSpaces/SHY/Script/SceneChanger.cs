@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
 public class SceneChanger : MonoBehaviour
 {
     //public static SceneChanger instance; //ÀÓ½Ã »ç¿ë.
+    public int CurSceneID { get; private set; }
+    public string CurSceneName { get; private set; }
     private void Awake()
     {
         //if (instance ==null)
@@ -21,12 +22,24 @@ public class SceneChanger : MonoBehaviour
 
     public void LoadSceneByName(string sceneName)
     {
-        SceneManager.LoadScene(sceneName); // ±âÁ¸ ¾ÀÀº ¾ð·ÎµåµÊ
+        //SceneManager.LoadScene(sceneName); // ±âÁ¸ ¾ÀÀº ¾ð·ÎµåµÊ
+        Addressables.LoadSceneAsync(sceneName).Completed += task =>
+        {
+            CurSceneName = sceneName;
+        };
     }
 
     public void LoadSceneByIndex(int sceneIndex)
     {
-        SceneManager.LoadScene(sceneIndex);
+
+        //SceneManager.LoadScene(sceneIndex);
+        Addressables.LoadSceneAsync($"stage{sceneIndex}").Completed += task =>
+        {
+            CurSceneID = sceneIndex;
+        };
+
+
     }
+
 
 }
