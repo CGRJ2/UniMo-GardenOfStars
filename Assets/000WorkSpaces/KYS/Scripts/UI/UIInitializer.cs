@@ -63,7 +63,7 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogError("[UIInitializer] MenuPopUp 생성 실패");
+                        Debug.LogError("[UIInitializer] MenuPopUp 생성 실패");
                     }
                 });
             }
@@ -80,7 +80,7 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
+                        Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
                     }
                 });
             }
@@ -102,7 +102,7 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogError("[UIInitializer] 테스트: 메뉴 팝업 생성 실패");
+                        Debug.LogError("[UIInitializer] 테스트: 메뉴 팝업 생성 실패");
                     }
                 });
             }
@@ -121,7 +121,7 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogError("[UIInitializer] 테스트: 타이틀 패널 생성 실패");
+                        Debug.LogError("[UIInitializer] 테스트: 타이틀 패널 생성 실패");
                     }
                 });
             }
@@ -155,7 +155,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
+                Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
             }
         }
 
@@ -169,7 +169,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
+                Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
             }
         }
 
@@ -183,7 +183,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
+                Debug.LogError("[UIInitializer] LocalizationManager가 null입니다.");
             }
         }
 
@@ -196,7 +196,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogError("[UIInitializer] SafeAreaManager가 null입니다.");
+                Debug.LogError("[UIInitializer] SafeAreaManager가 null입니다.");
             }
         }
 
@@ -213,12 +213,12 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[UIInitializer] PanelCanvas가 null입니다.");
+                    Debug.LogError("[UIInitializer] PanelCanvas가 null입니다.");
                 }
             }
             else
             {
-                //Debug.LogError("[UIInitializer] SafeAreaManager가 null입니다.");
+                Debug.LogError("[UIInitializer] SafeAreaManager가 null입니다.");
             }
         }
 
@@ -236,7 +236,7 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[UIInitializer] TitlePanel 부모를 찾을 수 없습니다.");
+                    Debug.LogError("[UIInitializer] TitlePanel 부모를 찾을 수 없습니다.");
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogError("[UIInitializer] UIManager가 null입니다.");
+                Debug.LogError("[UIInitializer] UIManager가 null입니다.");
             }
         }
 
@@ -336,12 +336,12 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogError("[UIInitializer] 모든 키로 HUD 생성 실패");
+                        Debug.LogError("[UIInitializer] 모든 키로 HUD 생성 실패");
                     }
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogError($"[UIInitializer] HUD 생성 중 오류: {e.Message}");
+                    Debug.LogError($"[UIInitializer] HUD 생성 중 오류: {e.Message}");
                 }
             }
             else

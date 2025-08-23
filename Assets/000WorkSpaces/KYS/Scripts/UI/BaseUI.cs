@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-#if DOTWEEN_AVAILABLE
+#if DOTWEEN
 using DG.Tweening;
 #endif
 
@@ -24,7 +24,7 @@ namespace KYS
         [Header("UI Animation Settings")]
         [SerializeField] protected bool useAnimation = true;
         [SerializeField] protected float animationDuration = 0.3f;
-#if DOTWEEN_AVAILABLE
+#if DOTWEEN
         [SerializeField] protected Ease showEase = Ease.OutBack;
         [SerializeField] protected Ease hideEase = Ease.InBack;
 #else
@@ -94,6 +94,18 @@ namespace KYS
 
         protected virtual void OnDestroy()
         {
+            // DOTween 애니메이션 정리
+#if DOTWEEN
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOKill(); // 진행 중인 DOTween 애니메이션 중단
+            }
+            if (rectTransform != null)
+            {
+                rectTransform.DOKill(); // 진행 중인 DOTween 애니메이션 중단
+            }
+#endif
+            
             // 언어 변경 이벤트 구독 해제
             try
             {
@@ -116,7 +128,7 @@ namespace KYS
 
         public virtual void Show()
         {
-            Debug.Log($"[BaseUI] {gameObject.name} Show() 호출됨");
+            //Debug.Log($"[BaseUI] {gameObject.name} Show() 호출됨");
             
             if (!gameObject.activeInHierarchy)
             {
@@ -142,7 +154,7 @@ namespace KYS
             // 이벤트 호출
             OnShow();
             
-            Debug.Log($"[BaseUI] {gameObject.name} Show() 완료");
+            //Debug.Log($"[BaseUI] {gameObject.name} Show() 완료");
         }
 
         public virtual void Hide()
@@ -155,34 +167,47 @@ namespace KYS
             if (useAnimation)
             {
                 PlayHideAnimation(() => {
-                    gameObject.SetActive(false);
-                    OnHide();
-                    
-                    // 스택 구조에서는 항상 파괴
-                    if (UIManager.Instance != null)
-                    {
-                        UIManager.Instance.UnregisterUI(this);
-                    }
-                    Destroy(gameObject);
+                    // 애니메이션 완료 후 안전하게 정리
+                    SafeDestroyUI();
                 });
             }
             else
             {
-                gameObject.SetActive(false);
-                OnHide();
-                
-                // 스택 구조에서는 항상 파괴
-                if (UIManager.Instance != null)
-                {
-                    UIManager.Instance.UnregisterUI(this);
-                }
-                Destroy(gameObject);
+                SafeDestroyUI();
             }
+        }
+
+        /// <summary>
+        /// UI를 안전하게 파괴하는 메서드
+        /// </summary>
+        protected virtual void SafeDestroyUI()
+        {
+            // DOTween 애니메이션 정리
+#if DOTWEEN
+            if (canvasGroup != null)
+            {
+                canvasGroup.DOKill(); // 진행 중인 DOTween 애니메이션 중단
+            }
+            if (rectTransform != null)
+            {
+                rectTransform.DOKill(); // 진행 중인 DOTween 애니메이션 중단
+            }
+#endif
+            
+            gameObject.SetActive(false);
+            OnHide();
+            
+            // 스택 구조에서는 항상 파괴
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UnregisterUI(this);
+            }
+            Destroy(gameObject);
         }
 
         public virtual void Initialize()
         {
-            //Debug.Log($"[BaseUI] {gameObject.name}의 Initialize() 메서드 실행");
+            ////Debug.Log($"[BaseUI] {gameObject.name}의 Initialize() 메서드 실행");
             
             // 자동 로컬라이제이션 설정
             SetupAutoLocalization();
@@ -201,7 +226,9 @@ namespace KYS
 
         protected virtual void PlayShowAnimation()
         {
-#if DOTWEEN_AVAILABLE
+#if DOTWEEN
+            //Debug.Log($"[BaseUI] {gameObject.name} Show 애니메이션 시작 - Duration: {animationDuration}, Ease: {showEase}, UseAnimation: {useAnimation}");
+            
             // Reset to initial state
             canvasGroup.alpha = 0f;
             rectTransform.localScale = Vector3.zero;
@@ -219,11 +246,17 @@ namespace KYS
 
         protected virtual void PlayHideAnimation(System.Action onComplete = null)
         {
-#if DOTWEEN_AVAILABLE
+#if DOTWEEN
+            //Debug.Log($"[BaseUI] {gameObject.name} Hide 애니메이션 시작 - Duration: {animationDuration}, Ease: {hideEase}, UseAnimation: {useAnimation}");
+            
             // Animate out
             canvasGroup.DOFade(0f, animationDuration).SetEase(hideEase);
             rectTransform.DOScale(Vector3.zero, animationDuration).SetEase(hideEase)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => {
+                    // 애니메이션 완료 후 콜백 실행
+                    onComplete?.Invoke();
+                })
+                .SetAutoKill(true); // 애니메이션 완료 후 자동 정리
 #else
             // DoTween이 없을 때는 즉시 숨김
             canvasGroup.alpha = 0f;
@@ -253,12 +286,12 @@ namespace KYS
         /// </summary>
         protected virtual async void CreateBackdrop()
         {
-            Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
+            //Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
             
             // 이미 Backdrop가 있는지 확인
             if (ownBackdrop != null)
             {
-                Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재합니다.");
+                //Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재합니다.");
                 return;
             }
 
@@ -295,7 +328,7 @@ namespace KYS
                 GameObject backdropGO = handle.Result;
                 backdropGO.name = "Backdrop"; // 일관된 이름 보장
                 
-                Debug.Log($"[BaseUI] Backdrop Prefab 인스턴스 생성 완료: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
+                //Debug.Log($"[BaseUI] Backdrop Prefab 인스턴스 생성 완료: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
                 
                 // RectTransform 설정 (전체 화면)
                 RectTransform backdropRect = backdropGO.GetComponent<RectTransform>();
@@ -307,7 +340,7 @@ namespace KYS
                     backdropRect.offsetMax = Vector2.zero;
                     backdropRect.localScale = Vector3.one;
                     
-                    Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
+                    //Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
                 }
                 
                 // BackdropUI 컴포넌트 확인 및 저장
@@ -327,7 +360,7 @@ namespace KYS
                 // Backdrop 클릭 이벤트 설정
                 SetupBackdropClickEvent();
                 
-                Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+                //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
             }
             catch (System.Exception e)
             {
@@ -341,13 +374,13 @@ namespace KYS
         /// </summary>
         private void CreateBackdropFallback(Canvas popupCanvas)
         {
-            Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
+            //Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
             
             // Backdrop GameObject 생성 (PopupCanvas의 자식으로)
             GameObject backdropGO = new GameObject("Backdrop");
             backdropGO.transform.SetParent(popupCanvas.transform);
             
-            Debug.Log($"[BaseUI] Backdrop GameObject 생성: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
+            //Debug.Log($"[BaseUI] Backdrop GameObject 생성: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
             
             // RectTransform 설정 (전체 화면)
             RectTransform backdropRect = backdropGO.AddComponent<RectTransform>();
@@ -357,7 +390,7 @@ namespace KYS
             backdropRect.offsetMax = Vector2.zero;
             backdropRect.localScale = Vector3.one;
             
-            Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
+            //Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
             
             // BackdropUI 컴포넌트 추가 및 저장
             ownBackdrop = backdropGO.AddComponent<BackdropUI>();
@@ -371,7 +404,7 @@ namespace KYS
             // Backdrop 클릭 이벤트 설정
             SetupBackdropClickEvent();
             
-            Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+            //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
         }
 
         /// <summary>
@@ -388,15 +421,15 @@ namespace KYS
             {
                 ownBackdrop.OnBackdropClicked += () =>
                 {
-                    Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
+                    //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
                     UIManager.Instance?.ClosePopup();
                 };
                 
-                Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 이벤트 설정 완료");
+                //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 이벤트 설정 완료");
             }
             else
             {
-                Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
+                //Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
             }
         }
 
@@ -482,32 +515,32 @@ namespace KYS
                 return null;
             }
 
-            Debug.Log($"[BaseUI] {gameObject.name}에서 '{name}' 검색 시작");
+            //Debug.Log($"[BaseUI] {gameObject.name}에서 '{name}' 검색 시작");
 
             // 캐시에서 먼저 검색
             if (goDict.TryGetValue(name, out GameObject foundGameObject) && foundGameObject != null)
             {
-                Debug.Log($"[BaseUI] 캐시에서 '{name}' 발견");
+                //Debug.Log($"[BaseUI] 캐시에서 '{name}' 발견");
                 return foundGameObject;
             }
 
-            Debug.Log($"[BaseUI] 캐시에서 '{name}'을 찾을 수 없음. 새로 검색합니다.");
+            //Debug.Log($"[BaseUI] 캐시에서 '{name}'을 찾을 수 없음. 새로 검색합니다.");
 
             // 캐시에 없거나 null인 경우 다시 검색
             foundGameObject = GameObject.Find($"{name}");
             if (foundGameObject == null)
             {
-                Debug.Log($"[BaseUI] GameObject.Find로 '{name}'을 찾을 수 없음. 하위 오브젝트에서 검색합니다.");
+                //Debug.Log($"[BaseUI] GameObject.Find로 '{name}'을 찾을 수 없음. 하위 오브젝트에서 검색합니다.");
                 // 하위 오브젝트에서 검색
                 Transform[] allChildren = GetComponentsInChildren<Transform>(true);
-                Debug.Log($"[BaseUI] 하위 오브젝트 수: {allChildren.Length}");
+                //Debug.Log($"[BaseUI] 하위 오브젝트 수: {allChildren.Length}");
                 foreach (Transform child in allChildren)
                 {
-                    Debug.Log($"[BaseUI] 하위 오브젝트 확인: {child.name}");
+                    //Debug.Log($"[BaseUI] 하위 오브젝트 확인: {child.name}");
                     if (child.name == name)
                     {
                         foundGameObject = child.gameObject;
-                        Debug.Log($"[BaseUI] '{name}' 발견: {foundGameObject.name}");
+                        //Debug.Log($"[BaseUI] '{name}' 발견: {foundGameObject.name}");
                         break;
                     }
                 }
@@ -521,7 +554,7 @@ namespace KYS
 
             // 캐시에 추가/업데이트
             goDict[name] = foundGameObject;
-            Debug.Log($"[BaseUI] '{name}'을 캐시에 추가했습니다.");
+            //Debug.Log($"[BaseUI] '{name}'을 캐시에 추가했습니다.");
             return foundGameObject;
         }
 
@@ -564,7 +597,7 @@ namespace KYS
 
             if (goDict.Remove(name, out GameObject outObject))
             {
-                Debug.Log($"[BaseUI] 딕셔너리에서 제거됨: {name}");
+                //Debug.Log($"[BaseUI] 딕셔너리에서 제거됨: {name}");
                 return outObject;
             }
 
@@ -651,7 +684,7 @@ namespace KYS
         /// </summary>
         public void RefreshCache()
         {
-            Debug.Log("[BaseUI] UI 캐시를 새로고침합니다.");
+            //Debug.Log("[BaseUI] UI 캐시를 새로고침합니다.");
             InitializeComponentCache();
         }
 
@@ -739,7 +772,7 @@ namespace KYS
         {
             if (!enableAutoLocalization) return;
 
-            //Debug.Log($"[{GetType().Name}] 자동 로컬라이제이션 설정 시작");
+            ////Debug.Log($"[{GetType().Name}] 자동 로컬라이제이션 설정 시작");
 
             SetupAutoLocalizedTextComponents();
         }
@@ -749,7 +782,7 @@ namespace KYS
         /// </summary>
         private void SetupAutoLocalizedTextComponents()
         {
-            //Debug.Log($"[{GetType().Name}] AutoLocalizedText 컴포넌트 기반 자동 로컬라이제이션 설정");
+            ////Debug.Log($"[{GetType().Name}] AutoLocalizedText 컴포넌트 기반 자동 로컬라이제이션 설정");
             
             // 모든 TextMeshProUGUI 컴포넌트 찾기
             var allTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
@@ -760,11 +793,11 @@ namespace KYS
                 if (text.GetComponent<AutoLocalizedText>() == null)
                 {
                     var autoLocalizedText = text.gameObject.AddComponent<AutoLocalizedText>();
-                    Debug.Log($"[{GetType().Name}] {text.name}에 AutoLocalizedText 컴포넌트 추가");
+                    //Debug.Log($"[{GetType().Name}] {text.name}에 AutoLocalizedText 컴포넌트 추가");
                 }
                 else
                 {
-                    Debug.Log($"[{GetType().Name}] {text.name}에 이미 AutoLocalizedText 컴포넌트가 존재");
+                    //Debug.Log($"[{GetType().Name}] {text.name}에 이미 AutoLocalizedText 컴포넌트가 존재");
                 }
             }
         }
@@ -809,14 +842,14 @@ namespace KYS
                 {
                     string localizedText = GetLocalizedText(autoLocalizeKeyList[i]);
                     autoLocalizedTexts[i].text = localizedText;
-                    Debug.Log($"[{GetType().Name}] {autoLocalizedTexts[i].name} 텍스트 업데이트: {localizedText}");
+                    //Debug.Log($"[{GetType().Name}] {autoLocalizedTexts[i].name} 텍스트 업데이트: {localizedText}");
                 }
             }
         }
 
         private void OnLanguageChanged(SystemLanguage newLanguage)
         {
-            Debug.Log($"[{GetType().Name}] 언어 변경 감지: {newLanguage}");
+            //Debug.Log($"[{GetType().Name}] 언어 변경 감지: {newLanguage}");
             UpdateAutoLocalizedTexts();
         }
 

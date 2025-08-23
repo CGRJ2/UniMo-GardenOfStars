@@ -134,7 +134,7 @@ namespace KYS
                     SafeAreaPanel safeAreaComponent = panel.AddComponent<SafeAreaPanel>();
                     if (safeAreaComponent == null)
                     {
-                        //Debug.LogError("[SafeAreaManager] SafeAreaPanel 컴포넌트 추가 실패");
+                        Debug.LogError("[SafeAreaManager] SafeAreaPanel 컴포넌트 추가 실패");
                         DestroyImmediate(panel);
                         return;
                     }
@@ -147,7 +147,7 @@ namespace KYS
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogError($"[SafeAreaManager] SafeArea 패널 프리팹 생성 중 오류: {e.Message}");
+                    Debug.LogError($"[SafeAreaManager] SafeArea 패널 프리팹 생성 중 오류: {e.Message}");
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace KYS
                 
                 if (safeAreaPanelPrefab == null)
                 {
-                    //Debug.LogError("[SafeAreaManager] safeAreaPanelPrefab 생성 실패");
+                    Debug.LogError("[SafeAreaManager] safeAreaPanelPrefab 생성 실패");
                     return;
                 }
             }
@@ -240,7 +240,7 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[SafeAreaManager] SafeAreaPanel 컴포넌트를 찾을 수 없습니다.");
+                    Debug.LogError("[SafeAreaManager] SafeAreaPanel 컴포넌트를 찾을 수 없습니다.");
                 }
                 
                 // 딕셔너리에 저장
@@ -251,7 +251,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[SafeAreaManager] SafeArea 패널 생성 중 오류: {e.Message}");
+                Debug.LogError($"[SafeAreaManager] SafeArea 패널 생성 중 오류: {e.Message}");
             }
         }
         

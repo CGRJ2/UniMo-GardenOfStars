@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6165170342688360613}
   - component: {fileID: 8560199497756082051}
   - component: {fileID: 8337931521305220601}
-  - component: {fileID: 8475093435904875545}
   m_Layer: 5
   m_Name: ConfirmButton
   m_TagString: Untagged
@@ -122,45 +121,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8475093435904875545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4668765813708582051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c635fe5b157e9442a5070419f968db0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layerType: 2
-  panelGroup: 4
-  useAnimation: 1
-  animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
-  canCloseWithESC: 1
-  canCloseWithBackdrop: 1
-  hidePreviousUI: 1
-  disablePreviousUI: 0
-  createBackdropForPopup: 1
-  enableSFX: 1
-  defaultClickSound: SFX_ButtonClick
-  defaultBackSound: SFX_ButtonClickBack
-  defaultHoverSound: SFX_ButtonHover
-  defaultErrorSound: SFX_Error
-  defaultSuccessSound: SFX_Success
-  defaultOpenSound: SFX_UI_Open
-  defaultCloseSound: SFX_UI_Close
-  enableAutoLocalization: 1
-  useAutoLocalizedTextComponent: 1
-  autoLocalizeKeys: []
-  messageText: {fileID: 5959800411796131031}
-  confirmButton: {fileID: 8337931521305220601}
-  cancelButton: {fileID: 8657686693786520844}
-  confirmButtonText: {fileID: 0}
-  cancelButtonText: {fileID: 0}
 --- !u!1 &5367403502700491820
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,8 +471,8 @@ MonoBehaviour:
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
+  showEase: 10
+  hideEase: 10
   canCloseWithESC: 1
   canCloseWithBackdrop: 1
   hidePreviousUI: 0
@@ -527,13 +487,10 @@ MonoBehaviour:
   defaultOpenSound: SFX_UI_Open
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
-  useAutoLocalizedTextComponent: 1
   autoLocalizeKeys: []
   messageText: {fileID: 5959800411796131031}
   confirmButton: {fileID: 8337931521305220601}
   cancelButton: {fileID: 8657686693786520844}
-  confirmButtonText: {fileID: 0}
-  cancelButtonText: {fileID: 0}
 --- !u!1 &8181920889320225383
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +503,7 @@ GameObject:
   - component: {fileID: 337192057459762195}
   - component: {fileID: 6514549727330634144}
   m_Layer: 5
-  m_Name: ConfrimText
+  m_Name: ConfirmText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

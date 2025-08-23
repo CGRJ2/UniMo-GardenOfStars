@@ -5,7 +5,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
-#if DOTWEEN_AVAILABLE
+#if DOTWEEN
 using DG.Tweening;
 #endif
 
@@ -153,7 +153,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] Canvas 초기화 중 오류: {e.Message}");
+                Debug.LogError($"[UIManager] Canvas 초기화 중 오류: {e.Message}");
             }
         }
 
@@ -189,7 +189,7 @@ namespace KYS
                     }
                     catch (System.Exception e)
                     {
-                        //Debug.LogWarning($"[UIManager] HUD {key} 생성 실패: {e.Message}");
+                        Debug.LogWarning($"[UIManager] HUD {key} 생성 실패: {e.Message}");
                     }
                 }
 
@@ -197,7 +197,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] HUD 요소들 초기화 중 오류: {e.Message}");
+                Debug.LogError($"[UIManager] HUD 요소들 초기화 중 오류: {e.Message}");
             }
         }
 
@@ -231,7 +231,7 @@ namespace KYS
                 }
             }
 
-            //Debug.LogWarning($"[UIManager] HUD용 SafeAreaPanel 생성 실패, HUD Canvas를 직접 사용: {hudCanvas.name}");
+            Debug.LogWarning($"[UIManager] HUD용 SafeAreaPanel 생성 실패, HUD Canvas를 직접 사용: {hudCanvas.name}");
             return hudCanvas.transform;
         }
 
@@ -297,7 +297,7 @@ namespace KYS
 
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    //Debug.LogError($"[UIManager] UI 로드 실패: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 로드 실패: {addressableKey}");
                     Addressables.Release(handle);
                     return null;
                 }
@@ -306,7 +306,7 @@ namespace KYS
                 Transform targetParent = parent ?? GetCanvasForUI<T>();
                 if (targetParent == null)
                 {
-                    //Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {addressableKey}");
                     Addressables.Release(handle);
                     return null;
                 }
@@ -317,7 +317,7 @@ namespace KYS
 
                 if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    //Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {addressableKey}");
                     Addressables.Release(handle);
                     return null;
                 }
@@ -327,7 +327,7 @@ namespace KYS
 
                 if (uiComponent == null)
                 {
-                    //Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {addressableKey}");
                     Addressables.ReleaseInstance(uiInstance);
                     Addressables.Release(handle);
                     return null;
@@ -343,7 +343,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] UI 로드 중 오류: {addressableKey}, {e.Message}");
+                Debug.LogError($"[UIManager] UI 로드 중 오류: {addressableKey}, {e.Message}");
                 return null;
             }
         }
@@ -357,7 +357,7 @@ namespace KYS
             {
                 if (assetReference == null || !assetReference.RuntimeKeyIsValid())
                 {
-                    //Debug.LogError("[UIManager] 유효하지 않은 AssetReference입니다.");
+                    Debug.LogError("[UIManager] 유효하지 않은 AssetReference입니다.");
                     return null;
                 }
 
@@ -383,7 +383,7 @@ namespace KYS
                 Transform targetParent = parent ?? GetCanvasForUI<T>();
                 if (targetParent == null)
                 {
-                    //Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {key}");
+                    Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {key}");
                     return null;
                 }
 
@@ -393,7 +393,7 @@ namespace KYS
 
                 if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    //Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {key}");
+                    Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {key}");
                     return null;
                 }
 
@@ -402,7 +402,7 @@ namespace KYS
 
                 if (uiComponent == null)
                 {
-                    //Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {key}");
+                    Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {key}");
                     Addressables.ReleaseInstance(uiInstance);
                     return null;
                 }
@@ -416,7 +416,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] UI 로드 중 오류: {e.Message}");
+                Debug.LogError($"[UIManager] UI 로드 중 오류: {e.Message}");
                 return null;
             }
         }
@@ -435,7 +435,7 @@ namespace KYS
 
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
-                    //Debug.LogError($"[UIManager] 라벨 로드 실패: {label}");
+                    Debug.LogError($"[UIManager] 라벨 로드 실패: {label}");
                     Addressables.Release(handle);
                     return new List<T>();
                 }
@@ -460,7 +460,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] 라벨 로드 중 오류: {label}, {e.Message}");
+                Debug.LogError($"[UIManager] 라벨 로드 중 오류: {label}, {e.Message}");
                 return new List<T>();
             }
         }
@@ -484,13 +484,13 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError($"[UIManager] UI 미리 로드 실패: {addressableKey}");
+                    Debug.LogError($"[UIManager] UI 미리 로드 실패: {addressableKey}");
                     Addressables.Release(handle);
                 }
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] UI 미리 로드 중 오류: {addressableKey}, {e.Message}");
+                Debug.LogError($"[UIManager] UI 미리 로드 중 오류: {addressableKey}, {e.Message}");
             }
         }
 
@@ -530,7 +530,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] UI 해제 중 오류: {addressableKey}, {e.Message}");
+                Debug.LogError($"[UIManager] UI 해제 중 오류: {addressableKey}, {e.Message}");
             }
         }
 
@@ -569,7 +569,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] Addressable 리소스 해제 중 오류: {e.Message}");
+                Debug.LogError($"[UIManager] Addressable 리소스 해제 중 오류: {e.Message}");
             }
         }
 
@@ -641,7 +641,7 @@ namespace KYS
                     }
                     else
                     {
-                        //Debug.LogWarning($"[UIManager] ❌ SafeAreaPanel을 찾을 수 없음: {targetCanvas.name}");
+                        Debug.LogWarning($"[UIManager] ❌ SafeAreaPanel을 찾을 수 없음: {targetCanvas.name}");
 
                         // SafeAreaPanel이 없으면 새로 생성 시도
                         //Debug.Log($"[UIManager] 🔧 SafeAreaPanel 새로 생성 시도: {targetCanvas.name}");
@@ -658,25 +658,25 @@ namespace KYS
                         }
                         else
                         {
-                            //Debug.LogWarning($"[UIManager] SafeAreaPanel 생성 실패, Canvas를 직접 사용: {targetCanvas.name}");
+                            Debug.LogWarning($"[UIManager] SafeAreaPanel 생성 실패, Canvas를 직접 사용: {targetCanvas.name}");
                             return targetTransform;
                         }
                     }
                 }
                 else
                 {
-                    //Debug.LogWarning($"[UIManager] Canvas 컴포넌트를 찾을 수 없음: {targetTransform.name}");
+                    Debug.LogWarning($"[UIManager] Canvas 컴포넌트를 찾을 수 없음: {targetTransform.name}");
                 }
             }
             else
             {
                 if (targetTransform == null)
                 {
-                    //Debug.LogWarning($"[UIManager] targetTransform이 null임");
+                    Debug.LogWarning($"[UIManager] targetTransform이 null임");
                 }
                 if (safeAreaManager == null)
                 {
-                    //Debug.LogWarning($"[UIManager] safeAreaManager가 null임");
+                    Debug.LogWarning($"[UIManager] safeAreaManager가 null임");
                 }
             }
 
@@ -909,7 +909,7 @@ namespace KYS
         {
             if (popupStack.Count == 0)
             {
-                //Debug.LogWarning("[UIManager] 닫을 Popup이 없습니다.");
+                Debug.LogWarning("[UIManager] 닫을 Popup이 없습니다.");
                 return;
             }
 
@@ -1008,7 +1008,7 @@ namespace KYS
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogWarning($"[UIManager] LoadingScreen 프리팹 로드 실패 ({key}): {e.Message}");
+                    Debug.LogWarning($"[UIManager] LoadingScreen 프리팹 로드 실패 ({key}): {e.Message}");
                     continue;
                 }
 
@@ -1030,7 +1030,7 @@ namespace KYS
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogWarning($"[UIManager] LoadingScreen 프리팹 처리 실패 ({key}): {e.Message}");
+                    Debug.LogWarning($"[UIManager] LoadingScreen 프리팹 처리 실패 ({key}): {e.Message}");
                     if (!loadSuccess)
                     {
                         Addressables.Release(handle);
@@ -1055,12 +1055,12 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[UIManager] LoadingScreen 컴포넌트를 찾을 수 없습니다.");
+                    Debug.LogError("[UIManager] LoadingScreen 컴포넌트를 찾을 수 없습니다.");
                 }
             }
             else
             {
-                //Debug.LogError("[UIManager] LoadingScreen 프리팹을 찾을 수 없습니다. Addressables 설정을 확인하세요.");
+                Debug.LogError("[UIManager] LoadingScreen 프리팹을 찾을 수 없습니다. Addressables 설정을 확인하세요.");
 
                 // 대체 방법: Resources 폴더에서 로드 시도
                 //Debug.Log("[UIManager] Resources 폴더에서 LoadingScreen 프리팹 로드 시도");
@@ -1082,7 +1082,7 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[UIManager] Resources 폴더에서도 LoadingScreen을 찾을 수 없습니다.");
+                    Debug.LogError("[UIManager] Resources 폴더에서도 LoadingScreen을 찾을 수 없습니다.");
                 }
             }
         }
@@ -1121,7 +1121,7 @@ namespace KYS
         public T ShowPopUp<T>() where T : BaseUI
         {
             // 동기적 호출은 문제가 있으므로 비동기 버전을 사용하도록 안내
-            //Debug.LogWarning($"[UIManager] ShowPopUp<T>()는 비동기 작업이므로 ShowPopUpAsync<T>()를 사용하세요.");
+            Debug.LogWarning($"[UIManager] ShowPopUp<T>()는 비동기 작업이므로 ShowPopUpAsync<T>()를 사용하세요.");
             return null;
         }
 
@@ -1167,7 +1167,7 @@ namespace KYS
                 }
                 else
                 {
-                    ////Debug.LogWarning($"[UIManager] 키 '{addressableKey}' 실패: {handle.OperationException?.Message}");
+                    //Debug.LogWarning($"[UIManager] 키 '{addressableKey}' 실패: {handle.OperationException?.Message}");
                     Addressables.Release(handle);
                 }
             }
@@ -1175,7 +1175,7 @@ namespace KYS
             // 모든 키 시도 후에도 실패한 경우
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                ////Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
+                Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
                 onComplete?.Invoke(null);
                 yield break;
             }
@@ -1184,7 +1184,7 @@ namespace KYS
             GameObject prefabAsset = handle.Result as GameObject;
             if (prefabAsset == null)
             {
-                ////Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
+                Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -1196,7 +1196,7 @@ namespace KYS
             Transform targetCanvas = GetCanvasForUI<T>();
             if (targetCanvas == null)
             {
-                ////Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
+                Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
                 yield break;
@@ -1221,7 +1221,7 @@ namespace KYS
             T uiComponent = uiInstance.GetComponent<T>();
             if (uiComponent == null)
             {
-                ////Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
+                Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                 Destroy(uiInstance);
                 Addressables.Release(handle);
                 onComplete?.Invoke(null);
@@ -1523,7 +1523,7 @@ namespace KYS
         {
             if (hudCanvas == null)
             {
-                //Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
+                Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
                 return null;
             }
 
@@ -1533,7 +1533,7 @@ namespace KYS
                 Transform safeAreaParent = GetSafeAreaParentForHUD();
                 if (safeAreaParent == null)
                 {
-                    //Debug.LogError("[UIManager] HUD용 SafeAreaPanel을 찾을 수 없습니다.");
+                    Debug.LogError("[UIManager] HUD용 SafeAreaPanel을 찾을 수 없습니다.");
                     return null;
                 }
 
@@ -1546,7 +1546,7 @@ namespace KYS
 
                 if (hudComponent == null)
                 {
-                    //Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다: {addressableKey}");
+                    Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다: {addressableKey}");
                     Addressables.Release(handle);
                     return null;
                 }
@@ -1563,7 +1563,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
+                Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
                 return null;
             }
         }
@@ -1575,7 +1575,7 @@ namespace KYS
         {
             if (hudCanvas == null)
             {
-                //Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
+                Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
                 return null;
             }
 
@@ -1585,7 +1585,7 @@ namespace KYS
                 Transform safeAreaParent = GetSafeAreaParentForHUD();
                 if (safeAreaParent == null)
                 {
-                    //Debug.LogError("[UIManager] HUD용 SafeAreaPanel을 찾을 수 없습니다.");
+                    Debug.LogError("[UIManager] HUD용 SafeAreaPanel을 찾을 수 없습니다.");
                     return null;
                 }
 
@@ -1598,7 +1598,7 @@ namespace KYS
 
                 if (hudComponent == null)
                 {
-                    //Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다.");
+                    Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다.");
                     Addressables.Release(handle);
                     return null;
                 }
@@ -1616,7 +1616,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
+                Debug.LogError($"[UIManager] HUD 생성 실패: {e.Message}");
                 return null;
             }
         }
@@ -1714,7 +1714,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
+                Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
             }
         }
 
@@ -1747,7 +1747,7 @@ namespace KYS
             }
             else
             {
-                //Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
+                Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
             }
         }
 

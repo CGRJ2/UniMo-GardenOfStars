@@ -139,7 +139,7 @@ namespace KYS
             }
             catch (Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] 초기화 중 오류 발생: {e.Message}");
+                Debug.LogError($"[LocalizationManager] 초기화 중 오류 발생: {e.Message}");
             }
         }
 
@@ -150,7 +150,7 @@ namespace KYS
         {
             if (csvLanguageFileReference == null || !csvLanguageFileReference.RuntimeKeyIsValid())
             {
-                //Debug.LogError("[LocalizationManager] CSV 파일 참조가 설정되지 않았습니다.");
+                Debug.LogError("[LocalizationManager] CSV 파일 참조가 설정되지 않았습니다.");
                 return;
             }
 
@@ -170,12 +170,12 @@ namespace KYS
                 }
                 else
                 {
-                    //Debug.LogError("[LocalizationManager] CSV 파일 로드 실패");
+                    Debug.LogError("[LocalizationManager] CSV 파일 로드 실패");
                 }
             }
             catch (Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] CSV 파일 로드 중 오류: {e.Message}");
+                Debug.LogError($"[LocalizationManager] CSV 파일 로드 중 오류: {e.Message}");
             }
         }
 
@@ -199,7 +199,7 @@ namespace KYS
             //Debug.Log($"[LocalizationManager] CSV 라인 수: {lines.Length}");
             if (lines.Length < 2)
             {
-                //Debug.LogError("[LocalizationManager] CSV 파일 형식이 올바르지 않습니다.");
+                Debug.LogError("[LocalizationManager] CSV 파일 형식이 올바르지 않습니다.");
                 return;
             }
             
@@ -737,15 +737,15 @@ namespace KYS
         [ContextMenu("Print Localization Info")]
         public void PrintLocalizationInfo()
         {
-            //Debug.Log($"[LocalizationManager] 현재 언어: {GetLanguageName(currentLanguage)}");
-            //Debug.Log($"[LocalizationManager] 활성 언어: {activeLanguages.Count}개");
+            Debug.Log($"[LocalizationManager] 현재 언어: {GetLanguageName(currentLanguage)}");
+            Debug.Log($"[LocalizationManager] 활성 언어: {activeLanguages.Count}개");
             foreach (var lang in activeLanguages)
             {
                 float completeness = GetTranslationCompleteness(lang);
-                //Debug.Log($"  - {GetLanguageName(lang)}: {completeness * 100:F1}%");
+                Debug.Log($"  - {GetLanguageName(lang)}: {completeness * 100:F1}%");
             }
-            //Debug.Log($"[LocalizationManager] 총 번역 키: {languageData.Count}개");
-            //Debug.Log($"[LocalizationManager] 초기화 상태: {isInitialized}");
+            Debug.Log($"[LocalizationManager] 총 번역 키: {languageData.Count}개");
+            Debug.Log($"[LocalizationManager] 초기화 상태: {isInitialized}");
         }
 
         [ContextMenu("Reset Saved Language (Delete PlayerPrefs)")]
@@ -753,7 +753,7 @@ namespace KYS
         {
             PlayerPrefs.DeleteKey("SelectedLanguage");
             PlayerPrefs.Save();
-            //Debug.Log("[LocalizationManager] 저장된 언어 설정(SelectedLanguage) 삭제 완료");
+            Debug.Log("[LocalizationManager] 저장된 언어 설정(SelectedLanguage) 삭제 완료");
         }
 
         [ContextMenu("Check for Duplicate Keys")]
@@ -766,10 +766,10 @@ namespace KYS
         public void PrintAllKeys()
         {
             string[] keys = GetAllKeys();
-            //Debug.Log($"[LocalizationManager] 모든 키 목록 ({keys.Length}개):");
+            Debug.Log($"[LocalizationManager] 모든 키 목록 ({keys.Length}개):");
             foreach (string key in keys)
             {
-                //Debug.Log($"  - {key}");
+                Debug.Log($"  - {key}");
             }
         }
 
@@ -779,10 +779,10 @@ namespace KYS
             foreach (SystemLanguage lang in allSupportedLanguages)
             {
                 string[] missingKeys = GetKeysWithoutTranslation(lang);
-                //Debug.Log($"[LocalizationManager] {GetLanguageName(lang)}에서 번역이 없는 키 ({missingKeys.Length}개):");
+                Debug.Log($"[LocalizationManager] {GetLanguageName(lang)}에서 번역이 없는 키 ({missingKeys.Length}개):");
                 foreach (string key in missingKeys)
                 {
-                    //Debug.Log($"  - {key}");
+                    Debug.Log($"  - {key}");
                 }
             }
         }
@@ -791,10 +791,10 @@ namespace KYS
         public void PrintKeysWithAllTranslations()
         {
             string[] completeKeys = GetKeysWithAllTranslations();
-            //Debug.Log($"[LocalizationManager] 모든 언어에서 번역이 완료된 키 ({completeKeys.Length}개):");
+            Debug.Log($"[LocalizationManager] 모든 언어에서 번역이 완료된 키 ({completeKeys.Length}개):");
             foreach (string key in completeKeys)
             {
-                //Debug.Log($"  - {key}");
+                Debug.Log($"  - {key}");
             }
         }
 
@@ -804,7 +804,7 @@ namespace KYS
         [ContextMenu("Detect Missing Keys")]
         public void DetectMissingKeys()
         {
-            //Debug.Log("[LocalizationManager] 누락된 키 감지 시작...");
+            Debug.Log("[LocalizationManager] 누락된 키 감지 시작...");
             
             // 현재 CSV에 있는 모든 키
             var existingKeys = new HashSet<string>(languageData.Keys);
@@ -826,10 +826,10 @@ namespace KYS
             
             if (missingKeys.Count > 0)
             {
-                //Debug.LogWarning($"[LocalizationManager] 누락된 키 {missingKeys.Count}개 발견:");
+                Debug.LogWarning($"[LocalizationManager] 누락된 키 {missingKeys.Count}개 발견:");
                 foreach (string key in missingKeys)
                 {
-                    //Debug.LogWarning($"  - {key}");
+                    Debug.LogWarning($"  - {key}");
                 }
                 
                 // CSV 파일에서 현재 지원 언어 확인
@@ -844,8 +844,8 @@ namespace KYS
                             string[] headers = ParseCSVLine(lines[0]);
                             int languageCount = headers.Length - 1; // Key 열 제외
                             
-                            //Debug.Log($"[LocalizationManager] 현재 지원 언어: {string.Join(", ", headers.Skip(1))}");
-                            //Debug.Log("[LocalizationManager] CSV 파일에 다음 키들을 추가해주세요:");
+                            Debug.Log($"[LocalizationManager] 현재 지원 언어: {string.Join(", ", headers.Skip(1))}");
+                            Debug.Log("[LocalizationManager] CSV 파일에 다음 키들을 추가해주세요:");
                             
                             foreach (string key in missingKeys)
                             {
@@ -855,25 +855,25 @@ namespace KYS
                                     keyFields.Add(""); // 각 언어별 빈 번역
                                 }
                                 string newLine = string.Join(",", keyFields);
-                                //Debug.Log($"  {newLine}");
+                                Debug.Log($"  {newLine}");
                             }
                         }
                     }
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogError($"[LocalizationManager] CSV 파일 읽기 실패: {e.Message}");
+                    Debug.LogError($"[LocalizationManager] CSV 파일 읽기 실패: {e.Message}");
                     // 폴백: 기본 형식으로 출력
-                    //Debug.Log("[LocalizationManager] CSV 파일에 다음 키들을 추가해주세요:");
+                    Debug.Log("[LocalizationManager] CSV 파일에 다음 키들을 추가해주세요:");
                     foreach (string key in missingKeys)
                     {
-                        //Debug.Log($"  {key},,,,");
+                        Debug.Log($"  {key},,,,");
                     }
                 }
             }
             else
             {
-                //Debug.Log("[LocalizationManager] 누락된 키가 없습니다.");
+                Debug.Log("[LocalizationManager] 누락된 키가 없습니다.");
             }
         }
 
@@ -883,7 +883,7 @@ namespace KYS
         [ContextMenu("Preview Generated Keys")]
         public void PreviewGeneratedKeys()
         {
-            //Debug.Log("[LocalizationManager] UI 이름에서 생성될 키 미리보기:");
+            Debug.Log("[LocalizationManager] UI 이름에서 생성될 키 미리보기:");
             
             // 씬의 모든 TextMeshProUGUI 컴포넌트 확인
             var allTexts = FindObjectsOfType<TextMeshProUGUI>();
@@ -893,7 +893,7 @@ namespace KYS
                 string generatedKey = GenerateKeyFromUIName(text.name, false);
                 bool hasTranslation = HasTranslation(generatedKey);
                 
-                //Debug.Log($"  {text.name} → {generatedKey} (번역 존재: {hasTranslation})");
+                Debug.Log($"  {text.name} → {generatedKey} (번역 존재: {hasTranslation})");
             }
         }
 
@@ -903,7 +903,7 @@ namespace KYS
         [ContextMenu("Auto Add Missing Keys to CSV")]
         public void AutoAddMissingKeysToCSV()
         {
-            //Debug.Log("[LocalizationManager] 누락된 키를 CSV에 자동 추가 시작...");
+            Debug.Log("[LocalizationManager] 누락된 키를 CSV에 자동 추가 시작...");
             
             // 현재 CSV에 있는 모든 키
             var existingKeys = new HashSet<string>(languageData.Keys);
@@ -926,7 +926,7 @@ namespace KYS
             
             if (missingKeys.Count > 0)
             {
-                //Debug.Log($"[LocalizationManager] {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
+                Debug.Log($"[LocalizationManager] {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
                 
                 // CSV 파일 경로
                 string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
@@ -951,15 +951,15 @@ namespace KYS
                         }
                         string newLine = string.Join(",", keyFields);
                         newLines.Add(newLine);
-                        //Debug.Log($"  - {key} 추가됨 (언어 {languageCount}개)");
+                        Debug.Log($"  - {key} 추가됨 (언어 {languageCount}개)");
                     }
                     
                     // CSV 파일 다시 쓰기 (UTF-8 인코딩으로 한글 깨짐 방지)
                     System.IO.File.WriteAllLines(csvPath, newLines.ToArray(), System.Text.Encoding.UTF8);
                     
-                    //Debug.Log($"[LocalizationManager] CSV 파일이 업데이트되었습니다: {csvPath}");
-                    //Debug.Log($"[LocalizationManager] 지원 언어: {string.Join(", ", headers.Skip(1))}");
-                    //Debug.Log("[LocalizationManager] 이제 각 언어별 번역을 추가해주세요.");
+                    Debug.Log($"[LocalizationManager] CSV 파일이 업데이트되었습니다: {csvPath}");
+                    Debug.Log($"[LocalizationManager] 지원 언어: {string.Join(", ", headers.Skip(1))}");
+                    Debug.Log("[LocalizationManager] 이제 각 언어별 번역을 추가해주세요.");
                     
                     // Unity 에디터에서 파일 새로고침
                     #if UNITY_EDITOR
@@ -968,12 +968,12 @@ namespace KYS
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogError($"[LocalizationManager] CSV 파일 업데이트 실패: {e.Message}");
+                    Debug.LogError($"[LocalizationManager] CSV 파일 업데이트 실패: {e.Message}");
                 }
             }
             else
             {
-                //Debug.Log("[LocalizationManager] 누락된 키가 없습니다.");
+                Debug.Log("[LocalizationManager] 누락된 키가 없습니다.");
             }
         }
 
@@ -990,11 +990,11 @@ namespace KYS
             try
             {
                 System.IO.File.Copy(csvPath, backupPath);
-                //Debug.Log($"[LocalizationManager] CSV 파일이 백업되었습니다: {backupPath}");
+                Debug.Log($"[LocalizationManager] CSV 파일이 백업되었습니다: {backupPath}");
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] CSV 백업 실패: {e.Message}");
+                Debug.LogError($"[LocalizationManager] CSV 백업 실패: {e.Message}");
             }
         }
 
@@ -1014,7 +1014,7 @@ namespace KYS
                 int languageIndex = GetLanguageColumnIndex(language);
                 if (languageIndex == -1)
                 {
-                    //Debug.LogError($"[LocalizationManager] 지원하지 않는 언어: {language}");
+                    Debug.LogError($"[LocalizationManager] 지원하지 않는 언어: {language}");
                     return;
                 }
                 
@@ -1032,7 +1032,7 @@ namespace KYS
                         }
                         newLines.Add(string.Join(",", columns));
                         keyFound = true;
-                        //Debug.Log($"[LocalizationManager] 키 '{key}'의 {language} 번역이 업데이트되었습니다: {translation}");
+                        Debug.Log($"[LocalizationManager] 키 '{key}'의 {language} 번역이 업데이트되었습니다: {translation}");
                     }
                     else
                     {
@@ -1042,7 +1042,7 @@ namespace KYS
                 
                 if (!keyFound)
                 {
-                    //Debug.LogWarning($"[LocalizationManager] 키 '{key}'를 CSV에서 찾을 수 없습니다.");
+                    Debug.LogWarning($"[LocalizationManager] 키 '{key}'를 CSV에서 찾을 수 없습니다.");
                     return;
                 }
                 
@@ -1062,7 +1062,7 @@ namespace KYS
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] CSV 업데이트 실패: {e.Message}");
+                Debug.LogError($"[LocalizationManager] CSV 업데이트 실패: {e.Message}");
             }
         }
 
@@ -1078,14 +1078,14 @@ namespace KYS
             {
                 if (!System.IO.File.Exists(csvPath))
                 {
-                    //Debug.LogWarning($"[LocalizationManager] CSV 파일이 존재하지 않습니다: {csvPath}");
+                    Debug.LogWarning($"[LocalizationManager] CSV 파일이 존재하지 않습니다: {csvPath}");
                     return -1;
                 }
                 
                 string[] lines = System.IO.File.ReadAllLines(csvPath, System.Text.Encoding.UTF8);
                 if (lines.Length == 0)
                 {
-                    //Debug.LogWarning("[LocalizationManager] CSV 파일이 비어있습니다.");
+                    Debug.LogWarning("[LocalizationManager] CSV 파일이 비어있습니다.");
                     return -1;
                 }
                 
@@ -1101,12 +1101,12 @@ namespace KYS
                     }
                 }
                 
-                //Debug.LogWarning($"[LocalizationManager] 언어 '{language}'에 해당하는 열을 찾을 수 없습니다.");
+                Debug.LogWarning($"[LocalizationManager] 언어 '{language}'에 해당하는 열을 찾을 수 없습니다.");
                 return -1;
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] CSV 헤더 읽기 실패: {e.Message}");
+                Debug.LogError($"[LocalizationManager] CSV 헤더 읽기 실패: {e.Message}");
                 return -1;
             }
         }
@@ -1117,19 +1117,19 @@ namespace KYS
         [ContextMenu("Add New Language to CSV")]
         public void AddNewLanguageToCSV()
         {
-            //Debug.Log("[LocalizationManager] 새로운 언어 추가 기능을 시작합니다.");
-            //Debug.Log("[LocalizationManager] 지원 가능한 언어:");
-            //Debug.Log("  - Korean (한국어)");
-            //Debug.Log("  - English (영어)");
-            //Debug.Log("  - Japanese (일본어)");
-            //Debug.Log("  - Chinese (중국어)");
-            //Debug.Log("  - French (프랑스어)");
-            //Debug.Log("  - German (독일어)");
-            //Debug.Log("  - Spanish (스페인어)");
-            //Debug.Log("  - Italian (이탈리아어)");
-            //Debug.Log("  - Portuguese (포르투갈어)");
-            //Debug.Log("  - Russian (러시아어)");
-            //Debug.Log("[LocalizationManager] AddNewLanguageToCSV(SystemLanguage language, string languageCode) 메서드를 직접 호출하세요.");
+            Debug.Log("[LocalizationManager] 새로운 언어 추가 기능을 시작합니다.");
+            Debug.Log("[LocalizationManager] 지원 가능한 언어:");
+            Debug.Log("  - Korean (한국어)");
+            Debug.Log("  - English (영어)");
+            Debug.Log("  - Japanese (일본어)");
+            Debug.Log("  - Chinese (중국어)");
+            Debug.Log("  - French (프랑스어)");
+            Debug.Log("  - German (독일어)");
+            Debug.Log("  - Spanish (스페인어)");
+            Debug.Log("  - Italian (이탈리아어)");
+            Debug.Log("  - Portuguese (포르투갈어)");
+            Debug.Log("  - Russian (러시아어)");
+            Debug.Log("[LocalizationManager] AddNewLanguageToCSV(SystemLanguage language, string languageCode) 메서드를 직접 호출하세요.");
         }
 
         /// <summary>
@@ -1143,14 +1143,14 @@ namespace KYS
             {
                 if (!System.IO.File.Exists(csvPath))
                 {
-                    //Debug.LogError($"[LocalizationManager] CSV 파일이 존재하지 않습니다: {csvPath}");
+                    Debug.LogError($"[LocalizationManager] CSV 파일이 존재하지 않습니다: {csvPath}");
                     return;
                 }
                 
                 string[] lines = System.IO.File.ReadAllLines(csvPath, System.Text.Encoding.UTF8);
                 if (lines.Length == 0)
                 {
-                    //Debug.LogError("[LocalizationManager] CSV 파일이 비어있습니다.");
+                    Debug.LogError("[LocalizationManager] CSV 파일이 비어있습니다.");
                     return;
                 }
                 
@@ -1165,7 +1165,7 @@ namespace KYS
                     SystemLanguage existingLang = GetLanguageFromCode(headers[i]);
                     if (existingLang == language)
                     {
-                        //Debug.LogWarning($"[LocalizationManager] 언어 '{language}'는 이미 CSV에 존재합니다.");
+                        Debug.LogWarning($"[LocalizationManager] 언어 '{language}'는 이미 CSV에 존재합니다.");
                         return;
                     }
                 }
@@ -1193,8 +1193,8 @@ namespace KYS
                 // CSV 파일 다시 쓰기
                 System.IO.File.WriteAllLines(csvPath, newLines.ToArray(), System.Text.Encoding.UTF8);
                 
-                //Debug.Log($"[LocalizationManager] 언어 '{language}' ({languageCode})가 CSV에 추가되었습니다.");
-                //Debug.Log($"[LocalizationManager] 총 {newLines.Count - 1}개의 키에 대해 빈 번역이 추가되었습니다.");
+                Debug.Log($"[LocalizationManager] 언어 '{language}' ({languageCode})가 CSV에 추가되었습니다.");
+                Debug.Log($"[LocalizationManager] 총 {newLines.Count - 1}개의 키에 대해 빈 번역이 추가되었습니다.");
                 
                 // Unity 에디터에서 파일 새로고침
                 #if UNITY_EDITOR
@@ -1207,12 +1207,12 @@ namespace KYS
                     var newSupportedLanguages = new List<SystemLanguage>(allSupportedLanguages);
                     newSupportedLanguages.Add(language);
                     // allSupportedLanguages는 readonly이므로 리플렉션으로 수정하거나 새 배열 할당 필요
-                    //Debug.Log($"[LocalizationManager] 지원 언어 목록에 '{language}'가 추가되었습니다.");
+                    Debug.Log($"[LocalizationManager] 지원 언어 목록에 '{language}'가 추가되었습니다.");
                 }
             }
             catch (System.Exception e)
             {
-                //Debug.LogError($"[LocalizationManager] 언어 추가 실패: {e.Message}");
+                Debug.LogError($"[LocalizationManager] 언어 추가 실패: {e.Message}");
             }
         }
 
@@ -1283,7 +1283,7 @@ namespace KYS
         [ContextMenu("Detect Missing Keys from Active UI")]
         public void DetectMissingKeysFromActiveUI()
         {
-            //Debug.Log("[LocalizationManager] 활성화된 UI에서 누락된 키 감지 시작...");
+            Debug.Log("[LocalizationManager] 활성화된 UI에서 누락된 키 감지 시작...");
             
             string[] activeKeys = GetActiveUIKeys();
             var existingKeys = new HashSet<string>(languageData.Keys);
@@ -1299,15 +1299,15 @@ namespace KYS
             
             if (missingKeys.Count > 0)
             {
-                //Debug.LogWarning($"[LocalizationManager] 활성화된 UI에서 누락된 키 {missingKeys.Count}개 발견:");
+                Debug.LogWarning($"[LocalizationManager] 활성화된 UI에서 누락된 키 {missingKeys.Count}개 발견:");
                 foreach (string key in missingKeys)
                 {
-                    //Debug.LogWarning($"  - {key}");
+                    Debug.LogWarning($"  - {key}");
                 }
             }
             else
             {
-                //Debug.Log("[LocalizationManager] 활성화된 UI에서 누락된 키가 없습니다.");
+                Debug.Log("[LocalizationManager] 활성화된 UI에서 누락된 키가 없습니다.");
             }
         }
 
@@ -1318,18 +1318,18 @@ namespace KYS
         {
             if (popupUI == null)
             {
-                //Debug.LogWarning("[LocalizationManager] popupUI가 null입니다.");
+                Debug.LogWarning("[LocalizationManager] popupUI가 null입니다.");
                 return new string[0];
             }
             
-            //Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'의 키들을 수집합니다.");
+            Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'의 키들을 수집합니다.");
             
             string[] keys = GetUIKeysFromBaseUI(popupUI);
             
-            //Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 {keys.Length}개의 키를 찾았습니다:");
+            Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 {keys.Length}개의 키를 찾았습니다:");
             foreach (string key in keys)
             {
-                //Debug.Log($"  - {key}");
+                Debug.Log($"  - {key}");
             }
             
             return keys;
@@ -1342,7 +1342,7 @@ namespace KYS
         {
             if (popupUI == null) return;
             
-            //Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'의 누락된 키를 CSV에 자동 추가 시작...");
+            Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'의 누락된 키를 CSV에 자동 추가 시작...");
             
             string[] popupKeys = GetPopupKeys(popupUI);
             var existingKeys = new HashSet<string>(languageData.Keys);
@@ -1358,7 +1358,7 @@ namespace KYS
             
             if (missingKeys.Count > 0)
             {
-                //Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
+                Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
                 
                 // CSV 파일 경로
                 string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
@@ -1383,15 +1383,15 @@ namespace KYS
                         }
                         string newLine = string.Join(",", keyFields);
                         newLines.Add(newLine);
-                        //Debug.Log($"  - {key} 추가됨 (언어 {languageCount}개)");
+                        Debug.Log($"  - {key} 추가됨 (언어 {languageCount}개)");
                     }
                     
                     // CSV 파일 다시 쓰기 (UTF-8 인코딩으로 한글 깨짐 방지)
                     System.IO.File.WriteAllLines(csvPath, newLines.ToArray(), System.Text.Encoding.UTF8);
                     
-                    //Debug.Log($"[LocalizationManager] CSV 파일이 업데이트되었습니다.");
-                    //Debug.Log($"[LocalizationManager] 지원 언어: {string.Join(", ", headers.Skip(1))}");
-                    //Debug.Log("[LocalizationManager] 이제 각 언어별 번역을 추가해주세요.");
+                    Debug.Log($"[LocalizationManager] CSV 파일이 업데이트되었습니다.");
+                    Debug.Log($"[LocalizationManager] 지원 언어: {string.Join(", ", headers.Skip(1))}");
+                    Debug.Log("[LocalizationManager] 이제 각 언어별 번역을 추가해주세요.");
                     
                     // Unity 에디터에서 파일 새로고침
                     #if UNITY_EDITOR
@@ -1400,12 +1400,12 @@ namespace KYS
                 }
                 catch (System.Exception e)
                 {
-                    //Debug.LogError($"[LocalizationManager] CSV 파일 업데이트 실패: {e.Message}");
+                    Debug.LogError($"[LocalizationManager] CSV 파일 업데이트 실패: {e.Message}");
                 }
             }
             else
             {
-                //Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 누락된 키가 없습니다.");
+                Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 누락된 키가 없습니다.");
             }
         }
 
@@ -1415,15 +1415,15 @@ namespace KYS
         [ContextMenu("Print Active UI Keys")]
         public void PrintActiveUIKeys()
         {
-            //Debug.Log("[LocalizationManager] === 현재 활성화된 UI 키 정보 ===");
+            Debug.Log("[LocalizationManager] === 현재 활성화된 UI 키 정보 ===");
             
             string[] activeKeys = GetActiveUIKeys();
-            //Debug.Log($"[LocalizationManager] 총 {activeKeys.Length}개의 활성 키:");
+            Debug.Log($"[LocalizationManager] 총 {activeKeys.Length}개의 활성 키:");
             
             foreach (string key in activeKeys)
             {
                 bool hasTranslation = HasTranslation(key);
-                //Debug.Log($"  - {key} (번역 존재: {hasTranslation})");
+                Debug.Log($"  - {key} (번역 존재: {hasTranslation})");
             }
             
             // UI별로 그룹화하여 출력
@@ -1435,10 +1435,10 @@ namespace KYS
                     string[] uiKeys = GetUIKeysFromBaseUI(ui);
                     if (uiKeys.Length > 0)
                     {
-                        //Debug.Log($"[LocalizationManager] UI '{ui.name}'의 키들 ({uiKeys.Length}개):");
+                        Debug.Log($"[LocalizationManager] UI '{ui.name}'의 키들 ({uiKeys.Length}개):");
                         foreach (string key in uiKeys)
                         {
-                            //Debug.Log($"    - {key}");
+                            Debug.Log($"    - {key}");
                         }
                     }
                 }

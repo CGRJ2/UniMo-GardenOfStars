@@ -30,10 +30,16 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            layerType = UILayerType.Panel;  // Panel 레이어 사용
-            panelGroup = UIPanelGroup.Other; // 패널 그룹 설정
-            hidePreviousUI = false;  // 이전 UI 숨기지 않음 (덮어쓰기 모드)
-            disablePreviousUI = false; // 이전 UI 비활성화하지 않음 (CanvasGroup.interactable = false)
+            // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+            if (layerType == UILayerType.Panel) // BaseUI의 기본값
+            {
+                layerType = UILayerType.Panel;
+            }
+            if (panelGroup == UIPanelGroup.Other) // BaseUI의 기본값
+            {
+                panelGroup = UIPanelGroup.Other;
+            }
+            // hidePreviousUI와 disablePreviousUI는 인스펙터에서 설정 가능하도록 유지
         }
 
 

@@ -78,7 +78,7 @@ namespace KYS
             CurrentProgress = GetTotalProgress();
             OnProgressUpdated?.Invoke(CurrentProgress);
             
-            Debug.Log($"[AddressableSceneLoadingManager] 단계 {stageIndex} 진행률: {progress * 100:F1}% (전체: {CurrentProgress * 100:F1}%)");
+            //Debug.Log($"[AddressableSceneLoadingManager] 단계 {stageIndex} 진행률: {progress * 100:F1}% (전체: {CurrentProgress * 100:F1}%)");
         }
 
         private LoadingScreen currentLoadingScreen;
@@ -134,7 +134,7 @@ namespace KYS
                 try
                 {
                     Addressables.Release(currentSceneHandle);
-                    Debug.Log("[AddressableSceneLoadingManager] 씬 핸들 해제 완료");
+                    //Debug.Log("[AddressableSceneLoadingManager] 씬 핸들 해제 완료");
                 }
                 catch (System.Exception e)
                 {
@@ -196,7 +196,7 @@ namespace KYS
             OnProgressUpdated?.Invoke(0f);
             OnMessageUpdated?.Invoke("");
             
-            Debug.Log("[AddressableSceneLoadingManager] 로딩 시작 - 진행률 완전 초기화");
+            //Debug.Log("[AddressableSceneLoadingManager] 로딩 시작 - 진행률 완전 초기화");
 
             if (showLoading)
             {
@@ -214,7 +214,7 @@ namespace KYS
                 if (currentLoadingScreen != null)
                 {
                     currentLoadingScreen.OnLoadingComplete += OnLoadingComplete;
-                    Debug.Log("[AddressableSceneLoadingManager] 로딩 화면 초기화 완료");
+                    //Debug.Log("[AddressableSceneLoadingManager] 로딩 화면 초기화 완료");
                 }
                 else
                 {
@@ -236,24 +236,24 @@ namespace KYS
                 if (Mathf.Abs(CurrentProgress - progress) > 0.001f)
                 {
                     CurrentProgress = progress; // 현재 진행률 저장
-                    Debug.Log($"[AddressableSceneLoadingManager] 진행률 변경: {CurrentProgress * 100:F1}%");
+                    //Debug.Log($"[AddressableSceneLoadingManager] 진행률 변경: {CurrentProgress * 100:F1}%");
                 }
 
                 if (showLoading && currentLoadingScreen != null)
                 {
-                    Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
+                    //Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
                     
                     // 진행률 시뮬레이션
                     float displayProgress;
                     if (simulateProgress)
                     {
                         displayProgress = Mathf.Lerp(0f, 0.9f, progress);
-                        Debug.Log($"[AddressableSceneLoadingManager] 시뮬레이션 진행률: {displayProgress * 100}%");
+                        //Debug.Log($"[AddressableSceneLoadingManager] 시뮬레이션 진행률: {displayProgress * 100}%");
                     }
                     else
                     {
                         displayProgress = Mathf.Lerp(0f, 0.95f, progress);
-                        Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
+                        //Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
                     }
                     
                     currentLoadingScreen.SetProgress(displayProgress);
@@ -291,7 +291,7 @@ namespace KYS
                 
                 if (remainingTime > 0)
                 {
-                    Debug.Log($"[AddressableSceneLoadingManager] 최소 로딩 시간 보장: {remainingTime:F2}초 대기");
+                    //Debug.Log($"[AddressableSceneLoadingManager] 최소 로딩 시간 보장: {remainingTime:F2}초 대기");
                     yield return new WaitForSeconds(remainingTime);
                 }
 
@@ -301,7 +301,7 @@ namespace KYS
                     currentLoadingScreen.SetProgress(1f);
                     yield return new WaitForSeconds(0.5f);
                     
-                    Debug.Log("[AddressableSceneLoadingManager] 로딩 완료 처리 완료 - 씬 활성화 대기");
+                    //Debug.Log("[AddressableSceneLoadingManager] 로딩 완료 처리 완료 - 씬 활성화 대기");
                 }
 
                 // 씬 활성화
@@ -354,20 +354,20 @@ namespace KYS
 
                 if (showLoading && currentLoadingScreen != null)
                 {
-                    Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
+                    //Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
                     
                     // 실제 로딩 시에도 시뮬레이션 적용 (사용자 경험 개선)
                     float displayProgress;
                     if (simulateProgress)
                     {
                         displayProgress = Mathf.Lerp(0f, 0.9f, progress);
-                        Debug.Log($"[AddressableSceneLoadingManager] 시뮬레이션 진행률: {displayProgress * 100}%");
+                        //Debug.Log($"[AddressableSceneLoadingManager] 시뮬레이션 진행률: {displayProgress * 100}%");
                     }
                     else
                     {
                         // 실제 진행률을 더 부드럽게 표시
                         displayProgress = Mathf.Lerp(0f, 0.95f, progress);
-                        Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
+                        //Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
                     }
                     
                     currentLoadingScreen.SetProgress(displayProgress);
@@ -430,7 +430,7 @@ namespace KYS
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Debug.Log($"[AddressableSceneLoadingManager] 씬 로딩 완료: {scene.name}");
+            //Debug.Log($"[AddressableSceneLoadingManager] 씬 로딩 완료: {scene.name}");
 
             // 로딩 화면 지연 숨김 시작
             StartCoroutine(HideLoadingScreenWithDelay());
@@ -441,7 +441,7 @@ namespace KYS
         /// </summary>
         private IEnumerator HideLoadingScreenWithDelay()
         {
-            Debug.Log($"[AddressableSceneLoadingManager] 로딩 화면 지연 숨김 시작: {loadingScreenHideDelay}초 대기");
+            //Debug.Log($"[AddressableSceneLoadingManager] 로딩 화면 지연 숨김 시작: {loadingScreenHideDelay}초 대기");
             
             // 지정된 시간만큼 대기
             yield return new WaitForSeconds(loadingScreenHideDelay);
@@ -456,16 +456,16 @@ namespace KYS
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.HideLoadingScreen();
-                Debug.Log("[AddressableSceneLoadingManager] UIManager를 통해 로딩 화면 숨김");
+                //Debug.Log("[AddressableSceneLoadingManager] UIManager를 통해 로딩 화면 숨김");
             }
             else
             {
                 LoadingScreen.HideLoadingScreen();
-                Debug.Log("[AddressableSceneLoadingManager] LoadingScreen 정적 메서드로 로딩 화면 숨김");
+                //Debug.Log("[AddressableSceneLoadingManager] LoadingScreen 정적 메서드로 로딩 화면 숨김");
             }
             
             currentLoadingScreen = null;
-            Debug.Log("[AddressableSceneLoadingManager] 로딩 화면 숨김 완료");
+            //Debug.Log("[AddressableSceneLoadingManager] 로딩 화면 숨김 완료");
         }
         
         /// <summary>
@@ -473,7 +473,7 @@ namespace KYS
         /// </summary>
         private IEnumerator WaitForUIInitialization()
         {
-            Debug.Log("[AddressableSceneLoadingManager] UI 초기화 완료 대기 시작");
+            //Debug.Log("[AddressableSceneLoadingManager] UI 초기화 완료 대기 시작");
             
             // UIManager가 준비될 때까지 대기
             float waitTime = 0f;
@@ -487,7 +487,7 @@ namespace KYS
             
             if (UIManager.Instance != null)
             {
-                Debug.Log("[AddressableSceneLoadingManager] UIManager 초기화 완료 감지");
+                //Debug.Log("[AddressableSceneLoadingManager] UIManager 초기화 완료 감지");
                 
                 // 추가로 한 프레임 더 대기 (UI 컴포넌트들이 완전히 준비되도록)
                 yield return null;
@@ -497,7 +497,7 @@ namespace KYS
                 Debug.LogWarning("[AddressableSceneLoadingManager] UIManager 초기화 타임아웃");
             }
             
-            Debug.Log("[AddressableSceneLoadingManager] UI 초기화 대기 완료");
+            //Debug.Log("[AddressableSceneLoadingManager] UI 초기화 대기 완료");
         }
 
         /// <summary>
@@ -505,7 +505,7 @@ namespace KYS
         /// </summary>
         private void OnSceneUnloaded(Scene scene)
         {
-            Debug.Log($"[AddressableSceneLoadingManager] 씬 언로딩: {scene.name}");
+            //Debug.Log($"[AddressableSceneLoadingManager] 씬 언로딩: {scene.name}");
         }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace KYS
         /// </summary>
         private void OnLoadingComplete()
         {
-            Debug.Log("[AddressableSceneLoadingManager] 로딩 완료 이벤트 발생");
+            //Debug.Log("[AddressableSceneLoadingManager] 로딩 완료 이벤트 발생");
         }
 
         #endregion

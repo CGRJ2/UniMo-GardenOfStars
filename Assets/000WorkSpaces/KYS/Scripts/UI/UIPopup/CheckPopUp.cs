@@ -21,7 +21,11 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            layerType = UILayerType.Popup; // Popup으로 설정
+            // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+            if (layerType == UILayerType.Panel) // BaseUI의 기본값
+            {
+                layerType = UILayerType.Popup;
+            }
         }
 
         protected override string[] GetAutoLocalizeKeys()
