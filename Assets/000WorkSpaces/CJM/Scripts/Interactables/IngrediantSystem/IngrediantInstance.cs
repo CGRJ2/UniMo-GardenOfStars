@@ -125,7 +125,6 @@ public class IngrediantInstance : PooledObject
                 while (transform.localScale.x > 0f)
                 {
                     transform.localScale -= Time.deltaTime * new Vector3(1, 1, 1) / 0.2f/*(축소 시간)*/;
-                    Debug.Log("축소중");
                     yield return null;
                 }
                 Despawn();
