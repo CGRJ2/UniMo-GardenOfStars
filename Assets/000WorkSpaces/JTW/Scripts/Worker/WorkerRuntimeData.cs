@@ -29,6 +29,8 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public ObservableProperty<InteractableBase> CurWorkstation;
 
+    public bool IsHarvest;
+
     public void SetWorkerManager(WorkerManager manager)
     {
         _workerManager = manager;
