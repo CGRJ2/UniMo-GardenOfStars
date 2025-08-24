@@ -4,11 +4,6 @@ using UnityEngine;
 
 namespace GameQuest
 {
-    public enum QuestType
-    {
-        Main, Sub
-    }
-
     public class QuestBaseData
     {
         #region 

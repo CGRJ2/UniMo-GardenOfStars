@@ -14,7 +14,10 @@ public class NpcManager : Singleton<NpcManager>
     private void Init()
     {
         // 초기화
-        // 현재 지역의 id를 가져와서
-        // npc를 불러와 _currentNpc에 지정함
+
+    }
+    public void SetCurrentNpc(string regionId)
+    { 
+        
     }
 }
