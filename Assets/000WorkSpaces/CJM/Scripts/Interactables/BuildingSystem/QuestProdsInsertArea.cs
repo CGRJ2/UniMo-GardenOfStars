@@ -13,7 +13,7 @@ public class QuestProdsInsertArea : InteractableBase
         //Manager.buildings.workStatinLists.insertAreas.Add(this);
     }
 
-    IEnumerator AutoStacking()
+    IEnumerator AutoInserting()
     {
         while (characterRD != null)
         {
@@ -69,7 +69,7 @@ public class QuestProdsInsertArea : InteractableBase
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
 
-        StartCoroutine(AutoStacking());
+        StartCoroutine(AutoInserting());
     }
 
 
