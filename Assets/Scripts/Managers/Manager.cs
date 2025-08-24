@@ -8,6 +8,7 @@ public static class Manager
     public static QuestManager quest => QuestManager.Instance;
     public static NpcManager npc => NpcManager.Instance;
 
+    public static PlayerManager player => PlayerManager.Instance;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
@@ -16,5 +17,6 @@ public static class Manager
         PoolManager.CreateInstance();
         // QuestManager.CreateInstance();
         NpcManager.CreateInstance();
+        PlayerManager.CreateInstance();
     }
 }
