@@ -14,7 +14,7 @@ public static class Manager
     {
         GameManager.CreateInstance();
         PoolManager.CreateInstance();
-        QuestManager.CreateInstance();
+        // QuestManager.CreateInstance();
         NpcManager.CreateInstance();
     }
 }
