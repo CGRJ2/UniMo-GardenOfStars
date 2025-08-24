@@ -6,6 +6,10 @@ public class Interactable_Work : InteractableBase
 {
     BuildingInstance buildingInstance;
     // CharacterBase curWorker;
+    public void Init(BuildingInstance_Work buildingInstance)
+    {
+        this.buildingInstance = buildingInstance;
+    }
 
     public override void ImediateInteract()
     {

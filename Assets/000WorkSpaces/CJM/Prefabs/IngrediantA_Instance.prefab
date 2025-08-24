@@ -174,8 +174,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactPopUI: {fileID: 0}
-  absorbAcceleration: 30
-  stackOffset: {x: 0, y: 1, z: 0}
 --- !u!114 &2935625431654600468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +188,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ingrediantSO>k__BackingField: {fileID: 11400000, guid: 17e0f491cb945ea4db0960e9161682e5, type: 2}
   count: 1
-  destroyTime: 120
+  absorbAcceleration: 30
+  stackOffset: {x: 0, y: 1, z: 0}
   owner: {fileID: 0}
 --- !u!1 &4874355103480385372
 GameObject:

@@ -2,7 +2,7 @@
 유니모 별자리 키우기
 
 노션 링크
-https://www.notion.so/team/237dd2ab-4b48-8134-bbcb-0042594d88ec/join
+https://www.notion.so/24fdd2ab4b4880b5affac46be38d984d
 
 UML
 https://app.diagrams.net/#G1XIFwOArBl1iGe6ewBzXxhnp85cBPHqRb#%7B%22pageId%22%3A%22CW4sCs0YsnL-EJ0x3yGD%22%7D

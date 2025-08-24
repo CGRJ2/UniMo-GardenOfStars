@@ -101,5 +101,5 @@ public class ProductGenerater : MonoBehaviour
     }
 }
 
-public enum GenerateState { StandBy,  Generating, Completed }
+public enum GenerateState { StandBy, Generating, Completed }
 
