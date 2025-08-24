@@ -25,7 +25,7 @@
         // TODO : 일이 가능한 상태인지 체크하는 bool 변수로 변경.
         if (!WorkerData.CurWorkstation.Value.gameObject.activeSelf) return false;
 
-        if (WorkerData.CurWorkstation.Value is Interactable_Insert)
+        if (WorkerData.CurWorkstation.Value is InsertArea)
         {
             if (WorkerData.IngrediantStack.Count == 0) return false;
         }
