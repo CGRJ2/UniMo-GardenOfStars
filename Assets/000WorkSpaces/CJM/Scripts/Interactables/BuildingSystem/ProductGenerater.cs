@@ -1,50 +1,56 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class ProductGenerater : MonoBehaviour
+public class ProductGenerater : InteractableBase
 {
-    public IngrediantSO ingrediantSO;
-    public GenerateState state;
-    public float cultivatingTime;
-    public float progressedTime;
+    public bool isWorkable;
     
+    //[SerializeField] GenerateState state;
+    public float productionTime;
+    public float progressedTime;
+
     ObjectPool _Pool;
 
     [SerializeField] IngrediantInstance _SpawnedProduct;
 
     Coroutine _CultivateRoutine;
-
-    private void OnDisable()
+    public void Init(GameObject prodPrefab, float productionTime)
     {
-        // 현재 생산 진행도 저장 후 코루틴 중지
-        StopAllCoroutines();
+        this.productionTime = productionTime;
+
+        _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
+
+        // 생산 루틴 가동(임시)
+        if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
+        _CultivateRoutine = StartCoroutine(CultivateRoutine());
+
+        Manager.buildings.workStatinLists.productGeneraters.Add(this);
     }
 
+    public override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+
+        // 생산 코루틴 중지
+        StopAllCoroutines();
+
+        Manager.buildings?.workStatinLists.productGeneraters?.Remove(this);
+    }
     public bool StandByCheck()
     {
         // 생산물이 없을 때
         if (_SpawnedProduct == null)
         {
-            state = GenerateState.StandBy;
+            //state = GenerateState.StandBy;
+            isWorkable = false;
             return true;
         }
         // 생산물이 있을 때
         else
         {
-            // 생산물을 아무도 가져가지 않았다면
-            if (_SpawnedProduct.owner == null)
-            {
-                state = GenerateState.Completed;
-                return false;
-            }
-            // 누군가 생산물을 가져갔다면
-            else
-            {
-                state = GenerateState.StandBy;
-                _SpawnedProduct = null;
-                return true;
-            }
+            //state = GenerateState.Completed;
+            isWorkable = true;
+            return false;
         }
     }
 
@@ -56,16 +62,15 @@ public class ProductGenerater : MonoBehaviour
             yield return new WaitUntil(() => StandByCheck());
 
             // 생산 시작
-            state = GenerateState.Generating;
-            while(state == GenerateState.Generating)
+            //state = GenerateState.Generating;
+            while (!isWorkable)
             {
                 progressedTime += Time.deltaTime;
 
-                if (progressedTime > cultivatingTime)
+                if (progressedTime > productionTime)
                 {
                     SpawnProduct(); // 생산 완료
-                    state = GenerateState.Completed;
-                } 
+                }
 
                 yield return null;
             }
@@ -73,23 +78,10 @@ public class ProductGenerater : MonoBehaviour
         }
     }
 
-    public void Init(IngrediantSO ingrediantData, float cultivateTime)
-    {
-        this.ingrediantSO = ingrediantData;
-        this.cultivatingTime = cultivateTime;
-
-        _Pool = Manager.pool.GetPoolBundle(ingrediantData.InstancePrefab).instancePool;
-
-        // 생산 루틴 가동(임시)
-        if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
-        _CultivateRoutine = StartCoroutine(CultivateRoutine());
-    }
+    
 
     public void SpawnProduct()
     {
-        // 중복 방지
-        if (state != GenerateState.Generating) return; 
-
         // 오브젝트 풀에서 활성화
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
@@ -98,6 +90,48 @@ public class ProductGenerater : MonoBehaviour
 
         // 생산물 정보 저장
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
+
+        isWorkable = true;
+    }
+
+    public void PickUpProds()
+    {
+        // 생성된 재료가 없으면 실행 안함
+        if (_SpawnedProduct == null) return;
+
+        // 일꾼일 경우에도 추가해야함
+
+        // 들고 있는 재료와 다른 재료는 줍지 않게 만들기
+        IngrediantInstance instanceProd;
+        if (characterRD.IngrediantStack.TryPeek(out instanceProd))
+        {
+            if (instanceProd.Data.ID != _SpawnedProduct.Data.ID) return;
+        }
+
+        _SpawnedProduct.owner = characterRD.gameObject;
+        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
+        //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
+        characterRD.IngrediantStack.Push(_SpawnedProduct);
+        _SpawnedProduct = null;
+    }
+
+    IEnumerator PickUpRoutine()
+    {
+        while (characterRD != null)
+        {
+            yield return new WaitUntil(() => _SpawnedProduct != null);
+
+            if (characterRD == null) break;
+
+            PickUpProds();
+        }
+    }
+
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Enter(characterRuntimeData);
+
+        StartCoroutine(PickUpRoutine());
     }
 }
 

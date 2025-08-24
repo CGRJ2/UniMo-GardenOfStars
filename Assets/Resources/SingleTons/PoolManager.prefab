@@ -44,13 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 065c34d4b073bab42ae408a565e6cffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pools:
-  - poolName: "\uC7AC\uB8CCA Pool"
-    pooledObjectPrefab: {fileID: 3680816240864458002, guid: 6ad5c92997cff8a4985b4b3a9ee8f883, type: 3}
-    count: 10
-  - poolName: "\uC7AC\uB8CCB Pool"
-    pooledObjectPrefab: {fileID: 3680816240864458002, guid: 091a157b4dc993e498dbc75b2d280399, type: 3}
-    count: 10
-  - poolName: "\uC7AC\uB8CCC Pool"
-    pooledObjectPrefab: {fileID: 3680816240864458002, guid: fd61ef10ef71a0842a346e20d1616d65, type: 3}
-    count: 10
+  pools: []
+  count: 10
