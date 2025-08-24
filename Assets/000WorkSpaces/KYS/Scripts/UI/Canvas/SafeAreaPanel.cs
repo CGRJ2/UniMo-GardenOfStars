@@ -10,7 +10,7 @@ namespace KYS
     {
         [Header("SafeArea Settings")]
         [SerializeField] private bool autoResizeChildren = true;
-        [SerializeField] private bool maintainAspectRatio = true;
+        //[SerializeField] private bool maintainAspectRatio = true;
         
         private RectTransform rectTransform;
         

@@ -7,16 +7,25 @@ namespace KYS
 {
     public class CheckPopUp : BaseUI
     {
-        [Header("UI Elements")]
-        [SerializeField] private TextMeshProUGUI messageText;
-        [SerializeField] private Button confirmButton;
-        [SerializeField] private Button cancelButton;
+        [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
+        [SerializeField] private string messageTextName = "MessageText";
+        [SerializeField] private string confirmButtonName = "ConfirmButton";
+        [SerializeField] private string cancelButtonName = "CancelButton";
+        
+
 
 
 
         // 이벤트
         public System.Action OnConfirmClicked;
         public System.Action OnCancelClicked;
+
+        #region UI Element References (동적 참조)
+        // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
+        private TextMeshProUGUI messageText => GetUI<TextMeshProUGUI>(messageTextName);
+        private Button confirmButton => GetUI<Button>(confirmButtonName);
+        private Button cancelButton => GetUI<Button>(cancelButtonName);
+        #endregion
 
         protected override void Awake()
         {
@@ -51,11 +60,18 @@ namespace KYS
 
         private void SetupButtons()
         {
-            if (confirmButton != null)
-                GetEventWithSFX("ConfirmButton").Click += OnConfirmButtonClicked;
+            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
+            var confirmEventHandler = GetEventWithSFX(confirmButtonName, "SFX_ButtonClick");
+            if (confirmEventHandler != null)
+            {
+                confirmEventHandler.Click += OnConfirmButtonClicked;
+            }
             
-            if (cancelButton != null)
-                GetBackEvent("CancelButton").Click += OnCancelButtonClicked;
+            var cancelEventHandler = GetBackEvent(cancelButtonName, "SFX_ButtonClickBack");
+            if (cancelEventHandler != null)
+            {
+                cancelEventHandler.Click += OnCancelButtonClicked;
+            }
         }
 
         private void OnConfirmButtonClicked(PointerEventData data)

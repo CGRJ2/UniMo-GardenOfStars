@@ -6,53 +6,33 @@ using TMPro;
 namespace KYS
 {
     /// <summary>
-    /// MenuPopUp의 View 클래스 - UI 표시와 사용자 입력만 담당
+    /// MenuPopUp - UI 표시와 사용자 입력만 담당 (View만 사용)
     /// </summary>
     public class MenuPopUp : BaseUI
     {
-        [Header("UI Elements")]
-        [SerializeField] private Button startButton;
-        [SerializeField] private Button settingsButton;
-        [SerializeField] private Button exitButton;
-        [SerializeField] private Button closeButton;
+        [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
+        [SerializeField] private string startButtonName = "StartButton";
+        [SerializeField] private string settingsButtonName = "SettingsButton";
+        [SerializeField] private string exitButtonName = "ExitButton";
+        [SerializeField] private string closeButtonName = "CloseButton";
 
-
-
-        // 이벤트 - Presenter가 구독
-        public System.Action<PointerEventData> OnStartButtonClicked;
-        public System.Action<PointerEventData> OnSettingsButtonClicked;
-        public System.Action<PointerEventData> OnExitButtonClicked;
-        public System.Action<PointerEventData> OnCloseButtonClicked;
-
+        #region UI Element References (동적 참조)
+        // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
+        private Button startButton => GetUI<Button>(startButtonName);
+        private Button settingsButton => GetUI<Button>(settingsButtonName);
+        private Button exitButton => GetUI<Button>(exitButtonName);
+        private Button closeButton => GetUI<Button>(closeButtonName);
+        #endregion
+        
         protected override void Awake()
         {
             base.Awake();
-        }
-
-        protected override void SetupMVP()
-        {
-            base.SetupMVP();
             
-            // MVP 컴포넌트들을 자동으로 찾아서 설정
-            // Presenter 찾기
-            MenuPopUpPresenter presenter = GetComponent<MenuPopUpPresenter>();
-            if (presenter == null)
+            // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+            if (layerType == UILayerType.Panel) // BaseUI의 기본값
             {
-                presenter = gameObject.AddComponent<MenuPopUpPresenter>();
-                Debug.Log("[MenuPopUp] MenuPopUpPresenter 컴포넌트를 자동으로 추가했습니다.");
+                layerType = UILayerType.Popup;
             }
-            SetPresenter(presenter);
-            
-            // Model 찾기
-            MenuPopUpModel model = GetComponent<MenuPopUpModel>();
-            if (model == null)
-            {
-                model = gameObject.AddComponent<MenuPopUpModel>();
-                Debug.Log("[MenuPopUp] MenuPopUpModel 컴포넌트를 자동으로 추가했습니다.");
-            }
-            SetModel(model);
-            
-            Debug.Log("[MenuPopUp] MVP 컴포넌트 설정 완료");
         }
 
         protected override string[] GetAutoLocalizeKeys()
@@ -80,14 +60,80 @@ namespace KYS
 
         private void SetupButtons()
         {
-            // 버튼 이벤트를 Presenter로 전달
-            GetEventWithSFX("StartButton").Click += (data) => OnStartButtonClicked?.Invoke(data);
-            GetEventWithSFX("SettingsButton").Click += (data) => OnSettingsButtonClicked?.Invoke(data);
-            GetEventWithSFX("ExitButton").Click += (data) => OnExitButtonClicked?.Invoke(data);
-            GetBackEvent("CloseButton").Click += (data) => OnCloseButtonClicked?.Invoke(data);
+            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
+            var startEventHandler = GetEventWithSFX(startButtonName, "SFX_ButtonClick");
+            if (startEventHandler != null)
+            {
+                startEventHandler.Click += (data) => OnStartButtonClicked();
+            }
+            
+            var settingsEventHandler = GetEventWithSFX(settingsButtonName, "SFX_ButtonClick");
+            if (settingsEventHandler != null)
+            {
+                settingsEventHandler.Click += (data) => OnSettingsButtonClicked();
+            }
+            
+            var exitEventHandler = GetEventWithSFX(exitButtonName, "SFX_ButtonClick");
+            if (exitEventHandler != null)
+            {
+                exitEventHandler.Click += (data) => OnExitButtonClicked();
+            }
+            
+            var closeEventHandler = GetBackEvent(closeButtonName, "SFX_ButtonClickBack");
+            if (closeEventHandler != null)
+            {
+                closeEventHandler.Click += (data) => OnCloseButtonClicked();
+            }
         }
 
-        #region Public Methods (Presenter가 호출)
+        #region Event Handlers
+
+        private void OnStartButtonClicked()
+        {
+            Debug.Log("[MenuPopUp] 시작 버튼 클릭");
+            // 게임 시작 로직
+            Manager.ui.ClosePopup();
+        }
+
+        private void OnSettingsButtonClicked()
+        {
+            Debug.Log("[MenuPopUp] 설정 버튼 클릭");
+            // 언어 설정 패널 열기
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowPopUpAsync<LanguageSettingsPanel>();
+            }
+        }
+
+        private void OnExitButtonClicked()
+        {
+            Debug.Log("[MenuPopUp] 종료 버튼 클릭");
+            // 게임 종료 확인 팝업
+            CheckPopUp.ShowCheckPopUp(
+                "게임을 종료하시겠습니까?",
+                "종료",
+                "취소",
+                () => {
+                    Debug.Log("[MenuPopUp] 게임 종료");
+                    #if UNITY_EDITOR
+                        UnityEditor.EditorApplication.isPlaying = false;
+                    #else
+                        Application.Quit();
+                    #endif
+                },
+                null
+            );
+        }
+
+        private void OnCloseButtonClicked()
+        {
+            Debug.Log("[MenuPopUp] 닫기 버튼 클릭");
+            Manager.ui.ClosePopup();
+        }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// 시작 버튼 상호작용 가능 여부 설정
@@ -163,6 +209,20 @@ namespace KYS
             SetStartButtonInteractable(canStart);
             SetSettingsButtonInteractable(canSettings);
             SetExitButtonInteractable(canExit);
+        }
+
+        #endregion
+
+        #region Debug Methods
+
+        [ContextMenu("UI 요소 정보 출력")]
+        public void PrintUIElementInfo()
+        {
+            Debug.Log($"[MenuPopUp] UI 요소 정보:");
+            Debug.Log($"  - startButton: {startButtonName} -> {(startButton != null ? "찾음" : "없음")}");
+            Debug.Log($"  - settingsButton: {settingsButtonName} -> {(settingsButton != null ? "찾음" : "없음")}");
+            Debug.Log($"  - exitButton: {exitButtonName} -> {(exitButton != null ? "찾음" : "없음")}");
+            Debug.Log($"  - closeButton: {closeButtonName} -> {(closeButton != null ? "찾음" : "없음")}");
         }
 
         #endregion

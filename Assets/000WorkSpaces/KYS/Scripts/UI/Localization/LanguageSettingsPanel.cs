@@ -11,25 +11,37 @@ namespace KYS
     /// </summary>
     public class LanguageSettingsPanel : BaseUI
     {
-        [Header("Language Settings UI")]
-        [SerializeField] private TMP_Dropdown languageDropdown;
-        [SerializeField] private Button applyButton;
-        [SerializeField] private Button closeButton;
-        [SerializeField] private Button resetButton;
+        [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
+        [SerializeField] private string languageDropdownName = "LanguageDropdown";
+        [SerializeField] private string applyButtonName = "ApplyButton";
+        [SerializeField] private string closeButtonName = "CloseButton";
+        [SerializeField] private string resetButtonName = "ResetButton";
         
-        [Header("Language Info UI")]
-        [SerializeField] private TextMeshProUGUI currentLanguageText;
-        [SerializeField] private TextMeshProUGUI translationCompletenessText;
-        [SerializeField] private Slider translationProgressSlider;
+        [SerializeField] private string currentLanguageTextName = "CurrentLanguageText";
+        [SerializeField] private string translationCompletenessTextName = "TranslationCompletenessText";
+        [SerializeField] private string translationProgressSliderName = "TranslationProgressSlider";
         
-        [Header("Language Preview")]
-        [SerializeField] private TextMeshProUGUI previewText;
+        [SerializeField] private string previewTextName = "PreviewText";
         [SerializeField] private string previewKey = "ui_confirm";
+        
+
         
 
         
         private SystemLanguage selectedLanguage;
         private Dictionary<SystemLanguage, float> languageCompleteness = new Dictionary<SystemLanguage, float>();
+        
+        #region UI Element References (동적 참조)
+        // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
+        private TMP_Dropdown languageDropdown => GetUI<TMP_Dropdown>(languageDropdownName);
+        private Button applyButton => GetUI<Button>(applyButtonName);
+        private Button closeButton => GetUI<Button>(closeButtonName);
+        private Button resetButton => GetUI<Button>(resetButtonName);
+        private TextMeshProUGUI currentLanguageText => GetUI<TextMeshProUGUI>(currentLanguageTextName);
+        private TextMeshProUGUI translationCompletenessText => GetUI<TextMeshProUGUI>(translationCompletenessTextName);
+        private Slider translationProgressSlider => GetUI<Slider>(translationProgressSliderName);
+        private TextMeshProUGUI previewText => GetUI<TextMeshProUGUI>(previewTextName);
+        #endregion
         
         protected override void Awake()
         {
@@ -143,8 +155,16 @@ namespace KYS
                 languageDropdown.options.Add(new TMP_Dropdown.OptionData(optionText));
             }
             
-            // 현재 언어 선택
-            int currentIndex = LocalizationManager.Instance.GetCurrentLanguageIndex();
+            // 현재 언어 선택 (activeLanguages 배열에서 인덱스 찾기)
+            int currentIndex = 0;
+            for (int i = 0; i < activeLanguages.Length; i++)
+            {
+                if (activeLanguages[i] == LocalizationManager.Instance.CurrentLanguage)
+                {
+                    currentIndex = i;
+                    break;
+                }
+            }
             languageDropdown.value = currentIndex;
             selectedLanguage = LocalizationManager.Instance.CurrentLanguage;
             
@@ -162,22 +182,23 @@ namespace KYS
         {
             Debug.Log("[LanguageSettingsPanel] 버튼 설정 시작");
             
-            // 적용 버튼
-            if (applyButton != null)
+            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
+            var applyEventHandler = GetEventWithSFX(applyButtonName, "SFX_ButtonClick");
+            if (applyEventHandler != null)
             {
-                GetEventWithSFX("ApplyButton", "SFX_ButtonClick").Click += (data) => OnApplyClicked();
+                applyEventHandler.Click += (data) => OnApplyClicked();
             }
             
-            // 닫기 버튼
-            if (closeButton != null)
+            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
+            if (closeEventHandler != null)
             {
-                GetEventWithSFX("CloseButton", "SFX_ButtonClickBack").Click += (data) => OnCloseClicked();
+                closeEventHandler.Click += (data) => OnCloseClicked();
             }
             
-            // 리셋 버튼
-            if (resetButton != null)
+            var resetEventHandler = GetEventWithSFX(resetButtonName, "SFX_ButtonClick");
+            if (resetEventHandler != null)
             {
-                GetEventWithSFX("ResetButton", "SFX_ButtonClick").Click += (data) => OnResetClicked();
+                resetEventHandler.Click += (data) => OnResetClicked();
             }
             
             Debug.Log("[LanguageSettingsPanel] 버튼 설정 완료");
@@ -227,11 +248,20 @@ namespace KYS
         {
             if (LocalizationManager.Instance == null) return;
             
-            selectedLanguage = LocalizationManager.Instance.GetLanguageByIndex(index);
-            Debug.Log($"[LanguageSettingsPanel] 언어 선택 변경: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
-            
-            UpdateLanguageInfo();
-            UpdatePreviewText();
+            // activeLanguages 배열에서 선택된 언어 가져오기
+            SystemLanguage[] activeLanguages = LocalizationManager.Instance.ActiveLanguages;
+            if (index >= 0 && index < activeLanguages.Length)
+            {
+                selectedLanguage = activeLanguages[index];
+                Debug.Log($"[LanguageSettingsPanel] 언어 선택 변경: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
+                
+                UpdateLanguageInfo();
+                UpdatePreviewText();
+            }
+            else
+            {
+                Debug.LogWarning($"[LanguageSettingsPanel] 잘못된 드롭다운 인덱스: {index}");
+            }
         }
         
         /// <summary>

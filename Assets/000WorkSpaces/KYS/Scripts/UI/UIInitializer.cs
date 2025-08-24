@@ -71,18 +71,44 @@ namespace KYS
             if (showTitleOnStart)
             {
                 if (enableDebugLog)
-                    //Debug.Log("[UIInitializer] TitlePanel 표시 시도...");
+                    Debug.Log("[UIInitializer] TitlePanel 표시 시도...");
 
-                UIManager.Instance.ShowPopUpAsync<TitlePanel>((panel) => {
-                    if (panel != null)
+                if (UIManager.Instance == null)
+                {
+                    Debug.LogError("[UIInitializer] UIManager.Instance가 null입니다!");
+                }
+                else
+                {
+                    // 이미 TitlePanel이 열려있는지 확인
+                    var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+                    bool titlePanelExists = false;
+                    foreach (var panel in existingPanels)
                     {
-                        //Debug.Log("[UIInitializer] TitlePanel 생성 완료");
+                        if (panel is TitlePanel)
+                        {
+                            titlePanelExists = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!titlePanelExists)
+                    {
+                        UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+                            if (panel != null)
+                            {
+                                Debug.Log("[UIInitializer] TitlePanel 생성 완료");
+                            }
+                            else
+                            {
+                                Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
+                            }
+                        });
                     }
                     else
                     {
-                        Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
+                        Debug.Log("[UIInitializer] 이미 TitlePanel이 존재하므로 생성하지 않습니다.");
                     }
-                });
+                }
             }
 
             if (enableDebugLog) { }
@@ -111,20 +137,33 @@ namespace KYS
         [ContextMenu("테스트 - 타이틀 패널 표시")]
         public void TestShowTitlePanel()
         {
-            if (UIManager.Instance != null)
+            if (UIManager.Instance == null)
             {
-
-                UIManager.Instance.ShowPopUpAsync<TitlePanel>((panel) => {
-                    if (panel != null)
-                    {
-                        //Debug.Log("[UIInitializer] 테스트: 타이틀 패널 생성 완료");
-                    }
-                    else
-                    {
-                        Debug.LogError("[UIInitializer] 테스트: 타이틀 패널 생성 실패");
-                    }
-                });
+                Debug.LogError("[UIInitializer] UIManager.Instance가 null입니다!");
+                return;
             }
+
+            // 이미 TitlePanel이 열려있는지 확인
+            var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+            foreach (var panel in existingPanels)
+            {
+                if (panel is TitlePanel)
+                {
+                    Debug.Log("[UIInitializer] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    return;
+                }
+            }
+
+            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+                if (panel != null)
+                {
+                    Debug.Log("[UIInitializer] 테스트: 타이틀 패널 생성 완료");
+                }
+                else
+                {
+                    Debug.LogError("[UIInitializer] 테스트: 타이틀 패널 생성 실패");
+                }
+            });
         }
 
         [ContextMenu("테스트 - 모든 패널 닫기")]

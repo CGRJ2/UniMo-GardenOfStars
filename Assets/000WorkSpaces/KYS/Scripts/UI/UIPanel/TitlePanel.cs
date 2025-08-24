@@ -14,9 +14,11 @@ namespace KYS
     {
 
 
-        [Header("UI Elements")]
-        [SerializeField] private Button confirmButton;
-        [SerializeField] private Button closeButton;
+        [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
+        [SerializeField] private string confirmButtonName = "ConfirmButton";
+        [SerializeField] private string closeButtonName = "CancelButton";
+        
+
 
 
 
@@ -27,6 +29,12 @@ namespace KYS
             "ui_cancel"
         };
 
+        #region UI Element References (동적 참조)
+        // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
+        private Button confirmButton => GetUI<Button>(confirmButtonName);
+        private Button closeButton => GetUI<Button>(closeButtonName);
+        #endregion
+        
         protected override void Awake()
         {
             base.Awake();
@@ -63,12 +71,34 @@ namespace KYS
             UIManager.Instance.UnregisterUI(this);
         }
 
-        private bool buttonsSetup = false;
-
         private void SetupButtons()
         {
-            GetEventWithSFX("ConfirmButton").Click += OnConfirmClicked;
-            GetBackEvent("CancelButton").Click += OnCancelClicked;
+            Debug.Log("[TitlePanel] SetupButtons() 시작");
+            
+            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
+            var confirmEventHandler = GetEventWithSFX(confirmButtonName, "SFX_ButtonClick");
+            if (confirmEventHandler != null)
+            {
+                confirmEventHandler.Click += OnConfirmClicked;
+                Debug.Log($"[TitlePanel] 확인 버튼 이벤트 설정 완료: {confirmButtonName}");
+            }
+            else
+            {
+                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {confirmButtonName}");
+            }
+            
+            var closeEventHandler = GetBackEvent(closeButtonName, "SFX_ButtonClickBack");
+            if (closeEventHandler != null)
+            {
+                closeEventHandler.Click += OnCancelClicked;
+                Debug.Log($"[TitlePanel] 닫기 버튼 이벤트 설정 완료: {closeButtonName}");
+            }
+            else
+            {
+                Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
+            }
+            
+            Debug.Log("[TitlePanel] SetupButtons() 완료");
         }
 
         private void OnConfirmClicked(PointerEventData data)
@@ -86,18 +116,42 @@ namespace KYS
 
         }
 
-        private void OnCloseClicked(PointerEventData data)
-        {
-            Debug.Log("[TitlePanel] Close 버튼 클릭");
-            UIManager.Instance.ClosePanel();
-        }
         
         /// <summary>
         /// TitlePanel 표시 (정적 메서드)
         /// </summary>
         public static void ShowTitlePanel()
         {
-            UIManager.Instance.ShowPopUpAsync<TitlePanel>();
+            Debug.Log("[TitlePanel] ShowTitlePanel() 정적 메서드 호출됨");
+            
+            if (UIManager.Instance == null)
+            {
+                Debug.LogError("[TitlePanel] UIManager.Instance가 null입니다!");
+                return;
+            }
+            
+            // 이미 TitlePanel이 열려있는지 확인
+            var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+            foreach (var panel in existingPanels)
+            {
+                if (panel is TitlePanel)
+                {
+                    Debug.Log("[TitlePanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    return;
+                }
+            }
+            
+            // TitlePanel은 Panel 타입이므로 Panel 전용 메서드 사용
+            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+                if (panel != null)
+                {
+                    Debug.Log("[TitlePanel] ShowTitlePanel() 완료 - 패널 생성 성공");
+                }
+                else
+                {
+                    Debug.LogError("[TitlePanel] ShowTitlePanel() 실패 - 패널 생성 실패");
+                }
+            });
         }
     }
 
