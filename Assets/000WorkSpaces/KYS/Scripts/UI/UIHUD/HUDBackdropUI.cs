@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -43,11 +43,11 @@ namespace KYS
             // InfoHUD 영역 클릭 확인
             if (IsClickInInfoHUDArea(eventData.position))
             {
-                Debug.Log("[HUDBackdropUI] InfoHUD 영역 클릭으로 무시됨");
+                //Debug.Log("[HUDBackdropUI] InfoHUD 영역 클릭으로 무시됨");
                 return;
             }
             
-            Debug.Log("[HUDBackdropUI] HUD Backdrop 클릭됨 - InfoHUD 닫기");
+            //Debug.Log("[HUDBackdropUI] HUD Backdrop 클릭됨 - InfoHUD 닫기");
             OnBackdropClicked?.Invoke();
         }
         

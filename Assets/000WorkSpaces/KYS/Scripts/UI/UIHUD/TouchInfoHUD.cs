@@ -74,8 +74,8 @@ namespace KYS
         {
             base.Show();
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] HUD 표시 시작");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] HUD 표시 시작");
             
             // HUD Backdrop 생성
             CreateHUDBackdrop();
@@ -85,8 +85,8 @@ namespace KYS
         {
             base.Initialize();
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] 정보 HUD 초기화");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] 정보 HUD 초기화");
             
             SetupHUD();
             SetupButtons();
@@ -96,8 +96,8 @@ namespace KYS
         {
             base.Cleanup();
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] 정보 HUD 정리");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] 정보 HUD 정리");
         }
         
         /// <summary>
@@ -107,11 +107,11 @@ namespace KYS
         {
             if (!IsActive) 
             {
-                Debug.Log("[TouchInfoHUD] HUD가 이미 비활성화되어 있음");
+                //Debug.Log("[TouchInfoHUD] HUD가 이미 비활성화되어 있음");
                 return;
             }
             
-            Debug.Log("[TouchInfoHUD] HUD 완전 파괴 시작");
+            //Debug.Log("[TouchInfoHUD] HUD 완전 파괴 시작");
             
             // HUD Backdrop 제거
             RemoveHUDBackdrop();
@@ -121,10 +121,10 @@ namespace KYS
             
             if (useAnimation)
             {
-                Debug.Log("[TouchInfoHUD] 애니메이션으로 HUD 파괴");
+                //Debug.Log("[TouchInfoHUD] 애니메이션으로 HUD 파괴");
                 PlayHideAnimation(() => {
                     // 애니메이션 완료 후 완전히 파괴
-                    Debug.Log("[TouchInfoHUD] 애니메이션 완료 후 HUD 파괴");
+                    //Debug.Log("[TouchInfoHUD] 애니메이션 완료 후 HUD 파괴");
                     OnHide();
                     
                     // UIManager에서 등록 해제
@@ -139,7 +139,7 @@ namespace KYS
             }
             else
             {
-                Debug.Log("[TouchInfoHUD] 즉시 HUD 파괴");
+                //Debug.Log("[TouchInfoHUD] 즉시 HUD 파괴");
                 OnHide();
                 
                 // UIManager에서 등록 해제
@@ -211,8 +211,8 @@ namespace KYS
             // HUD 위치 설정
             hudRectTransform.anchoredPosition = adjustedPosition;
             
-            if (enableDebugLogs)
-                Debug.Log($"[TouchInfoHUD] HUD 위치 설정: {adjustedPosition}");
+            if (enableDebugLogs) {}
+                //Debug.Log($"[TouchInfoHUD] HUD 위치 설정: {adjustedPosition}");
         }
         
         /// <summary>
@@ -274,8 +274,8 @@ namespace KYS
                 iconImage.gameObject.SetActive(false);
             }
             
-            if (enableDebugLogs)
-                Debug.Log($"[TouchInfoHUD] 정보 설정: {title} - {description}");
+            if (enableDebugLogs) {}
+                //Debug.Log($"[TouchInfoHUD] 정보 설정: {title} - {description}");
         }
         
         /// <summary>
@@ -310,8 +310,8 @@ namespace KYS
         /// </summary>
         private void OnCloseClicked()
         {
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] 닫기 버튼 클릭");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] 닫기 버튼 클릭");
             
             Hide();
         }
@@ -321,8 +321,8 @@ namespace KYS
         /// </summary>
         private void OnActionClicked()
         {
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] 액션 버튼 클릭");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] 액션 버튼 클릭");
             
             // 여기에 액션 로직 추가
             // 예: 건물 업그레이드, 생산 시작 등
@@ -331,11 +331,11 @@ namespace KYS
         /// <summary>
         /// 정적 메서드로 HUD 생성 (UIManager를 통해)
         /// </summary>
-        public static void ShowInfoHUD(Vector2 screenPosition, string title, string description, Sprite icon = null)
+        public static async System.Threading.Tasks.Task ShowInfoHUD(Vector2 screenPosition, string title, string description, Sprite icon = null)
         {
             if (UIManager.Instance != null)
             {
-                UIManager.Instance.ShowSingleInfoHUDAsync<TouchInfoHUD>(screenPosition, title, description, icon);
+                await UIManager.Instance.ShowSingleInfoHUDAsync<TouchInfoHUD>(screenPosition, title, description, icon);
             }
         }
         
@@ -346,8 +346,8 @@ namespace KYS
         {
             if (hudBackdrop != null)
             {
-                if (enableDebugLogs)
-                    Debug.Log("[TouchInfoHUD] 이미 HUD Backdrop가 존재합니다.");
+                if (enableDebugLogs) {}
+                    //Debug.Log("[TouchInfoHUD] 이미 HUD Backdrop가 존재합니다.");
                 return;
             }
 
@@ -363,8 +363,8 @@ namespace KYS
             GameObject backdropGO = new GameObject("HUDBackdrop");
             backdropGO.transform.SetParent(hudCanvas.transform);
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] HUD Backdrop GameObject 생성 완료");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] HUD Backdrop GameObject 생성 완료");
 
             // RectTransform 설정 (전체 화면)
             RectTransform backdropRect = backdropGO.AddComponent<RectTransform>();
@@ -386,8 +386,8 @@ namespace KYS
             // Backdrop 클릭 이벤트 설정
             SetupHUDBackdropClickEvent();
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] HUD Backdrop 설정 완료");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] HUD Backdrop 설정 완료");
         }
 
         /// <summary>
@@ -399,13 +399,13 @@ namespace KYS
             
             hudBackdrop.OnBackdropClicked += () =>
             {
-                if (enableDebugLogs)
-                    Debug.Log("[TouchInfoHUD] HUD Backdrop 클릭으로 HUD 닫기");
+                if (enableDebugLogs) {}
+                    //Debug.Log("[TouchInfoHUD] HUD Backdrop 클릭으로 HUD 닫기");
                 Hide();
             };
             
-            if (enableDebugLogs)
-                Debug.Log("[TouchInfoHUD] HUD Backdrop 클릭 이벤트 설정 완료");
+            if (enableDebugLogs) {}
+                //Debug.Log("[TouchInfoHUD] HUD Backdrop 클릭 이벤트 설정 완료");
         }
 
         /// <summary>
@@ -415,8 +415,8 @@ namespace KYS
         {
             if (hudBackdrop != null)
             {
-                if (enableDebugLogs)
-                    Debug.Log("[TouchInfoHUD] HUD Backdrop 제거");
+                if (enableDebugLogs) {}
+                    //Debug.Log("[TouchInfoHUD] HUD Backdrop 제거");
                 
                 // HUD를 원래 부모로 이동
                 transform.SetParent(hudBackdrop.transform.parent);
@@ -433,14 +433,14 @@ namespace KYS
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
-            Debug.Log($"[TouchInfoHUD] UI 요소 정보:");
-            Debug.Log($"  - titleText: {titleTextName} -> {(titleText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - descriptionText: {descriptionTextName} -> {(descriptionText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - iconImage: {iconImageName} -> {(iconImage != null ? "찾음" : "없음")}");
-            Debug.Log($"  - closeButton: {closeButtonName} -> {(closeButton != null ? "찾음" : "없음")}");
-            Debug.Log($"  - actionButton: {actionButtonName} -> {(actionButton != null ? "찾음" : "없음")}");
-            Debug.Log($"  - closeButtonText: {closeButtonTextName} -> {(closeButtonText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - actionButtonText: {actionButtonTextName} -> {(actionButtonText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[TouchInfoHUD] UI 요소 정보:");
+            //Debug.Log($"  - titleText: {titleTextName} -> {(titleText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - descriptionText: {descriptionTextName} -> {(descriptionText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - iconImage: {iconImageName} -> {(iconImage != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - closeButton: {closeButtonName} -> {(closeButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - actionButton: {actionButtonName} -> {(actionButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - closeButtonText: {closeButtonTextName} -> {(closeButtonText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - actionButtonText: {actionButtonTextName} -> {(actionButtonText != null ? "찾음" : "없음")}");
         }
     }
 }

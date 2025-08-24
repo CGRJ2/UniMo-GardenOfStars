@@ -2,7 +2,7 @@
 
 ## 📋 개요
 
-`PointerHandler`는 Unity UI 이벤트를 간편하게 처리할 수 있도록 도와주는 컴포넌트입니다. BaseUI에서 제공하는 메서드들을 통해 다양한 포인터 이벤트와 터치 제스처를 쉽게 처리할 수 있습니다.
+`PointerHandler`는 Unity UI 이벤트를 간편하게 처리할 수 있도록 도와주는 컴포넌트입니다. BaseUI에서 제공하는 메서드들을 통해 다양한 포인터 이벤트와 터치 제스처를 쉽게 처리할 수 있습니다. 현재 프로젝트에서는 **InfoHUD 시스템**과 **중복 생성 방지** 기능과 함께 사용됩니다.
 
 ## 🎯 주요 특징
 
@@ -13,6 +13,8 @@
 - **터치 피드백**: 시각적 및 촉각적 피드백 제공
 - **타입 안전성**: 컴파일 타임에 이벤트 타입 검증
 - **메모리 효율성**: 자동 이벤트 정리 및 메모리 누수 방지
+- **InfoHUD 통합**: TouchInfoManager와 연동하여 InfoHUD 제어
+- **중복 생성 방지**: UI 요소의 중복 생성 자동 방지
 
 ## 🔧 기본 사용법
 
@@ -208,449 +210,354 @@ public class SwipeButton : BaseUI
     
     private void OnSwipeUp()
     {
-        Debug.Log("위쪽 스와이프!");
+        Debug.Log("위로 스와이프!");
     }
     
     private void OnSwipeDown()
     {
-        Debug.Log("아래쪽 스와이프!");
+        Debug.Log("아래로 스와이프!");
     }
     
     private void OnSwipeLeft()
     {
-        Debug.Log("왼쪽 스와이프!");
+        Debug.Log("왼쪽으로 스와이프!");
     }
     
     private void OnSwipeRight()
     {
-        Debug.Log("오른쪽 스와이프!");
+        Debug.Log("오른쪽으로 스와이프!");
     }
 }
 ```
 
-### 5. 터치 피드백
+### 5. InfoHUD와 연동된 터치 이벤트
 
 ```csharp
-public class FeedbackButton : BaseUI
+public class InfoHUDButton : BaseUI
 {
-    private void SetupFeedbackEvents()
+    private void SetupInfoHUDEvents()
     {
-        // 터치 피드백이 포함된 이벤트
-        GetTouchFeedbackEvent("FeedbackButton", OnClick, enableHaptic: true);
+        // InfoHUD 표시를 위한 터치 이벤트
+        GetEvent("InfoButton").Click += (data) => OnInfoButtonClicked(data);
+        
+        // 롱프레스로 상세 정보 표시
+        GetLongPressEvent("InfoButton", OnInfoButtonLongPress);
     }
     
-    private void OnClick(PointerEventData data)
+    private void OnInfoButtonClicked(PointerEventData data)
     {
-        Debug.Log("터치 피드백과 함께 클릭!");
+        // 기본 정보 표시
+        _ = TouchInfoHUD.ShowInfoHUD(
+            screenPosition: data.position,
+            title: "기본 정보",
+            description: "이것은 기본 정보입니다.",
+            icon: null
+        );
+    }
+    
+    private void OnInfoButtonLongPress(PointerEventData data)
+    {
+        // 상세 정보 표시
+        _ = TouchInfoHUD.ShowInfoHUD(
+            screenPosition: data.position,
+            title: "상세 정보",
+            description: "이것은 상세한 정보입니다. 롱프레스로 표시됩니다.",
+            icon: null
+        );
     }
 }
 ```
 
-### 6. 게임에서의 활용
+### 6. 중복 생성 방지가 포함된 이벤트
 
 ```csharp
-public class GameUI : BaseUI
+public class SafeButton : BaseUI
 {
-    protected override void Awake()
+    private bool isProcessing = false;
+    
+    private void SetupSafeEvents()
     {
-        base.Awake();
-        SetupGameGestures();
+        // 중복 클릭 방지가 포함된 이벤트
+        GetEvent("SafeButton").Click += (data) => OnSafeButtonClicked();
     }
     
-    private void SetupGameGestures()
+    private async void OnSafeButtonClicked()
     {
-        // 인벤토리 버튼 - 롱프레스로 상세 정보
-        GetAdvancedTouchEvent("InventoryButton",
-            onClick: OnInventoryOpen,
-            onLongPress: OnInventoryDetail,
-            onDoubleTap: OnInventorySort
-        );
-
-        // 스킬 버튼 - 스와이프로 스킬 변경
-        GetDirectionalSwipeEvent("SkillButton",
-            onSwipeLeft: OnPreviousSkill,
-            onSwipeRight: OnNextSkill
-        );
-
-        // 맵 버튼 - 핀치로 줌
-        GetPinchEvent("MapButton", OnMapZoom);
-
-        // 게임 영역 - 제스처
-        GetAdvancedTouchEvent("GameArea",
-            onClick: OnGameClick,
-            onLongPress: OnContextMenu,
-            onDoubleTap: OnQuickAction
-        );
-    }
-    
-    private void OnInventoryOpen(PointerEventData data)
-    {
-        Debug.Log("인벤토리 열기");
-    }
-    
-    private void OnInventoryDetail(PointerEventData data)
-    {
-        Debug.Log("인벤토리 상세 정보");
-    }
-    
-    private void OnInventorySort(PointerEventData data)
-    {
-        Debug.Log("인벤토리 정렬");
-    }
-    
-    private void OnPreviousSkill()
-    {
-        Debug.Log("이전 스킬 선택");
-    }
-    
-    private void OnNextSkill()
-    {
-        Debug.Log("다음 스킬 선택");
-    }
-    
-    private void OnMapZoom(float pinchDelta)
-    {
-        Debug.Log($"맵 줌: {pinchDelta}");
-    }
-    
-    private void OnGameClick(PointerEventData data)
-    {
-        Debug.Log($"게임 클릭: {data.position}");
-    }
-    
-    private void OnContextMenu(PointerEventData data)
-    {
-        Debug.Log("컨텍스트 메뉴 표시");
-    }
-    
-    private void OnQuickAction(PointerEventData data)
-    {
-        Debug.Log("빠른 액션 실행");
-    }
-}
-```
-
-## 🎮 실제 게임 UI 예제
-
-### 1. 게임 메뉴 패널
-
-```csharp
-public class GameMenuPanel : BaseUI
-{
-    protected override void Awake()
-    {
-        base.Awake();
-        SetupMenuEvents();
-    }
-    
-    private void SetupMenuEvents()
-    {
-        // 메뉴 버튼들
-        GetEventWithSFX("StartButton").Click += (data) => OnStartGame();
-        GetEventWithSFX("SettingsButton").Click += (data) => OnOpenSettings();
-        GetEventWithSFX("ExitButton").Click += (data) => OnExitGame();
+        if (isProcessing) return; // 중복 실행 방지
         
-        // 뒤로가기 버튼
-        GetBackEvent("BackButton").Click += (data) => OnBackClicked();
+        isProcessing = true;
         
-        // 호버 효과가 있는 버튼들
-        SetupHoverEffects();
-    }
-    
-    private void SetupHoverEffects()
-    {
-        string[] buttonNames = { "StartButton", "SettingsButton", "ExitButton" };
-        
-        foreach (string buttonName in buttonNames)
+        try
         {
-            GetEvent(buttonName).Enter += (data) => OnButtonHover(buttonName);
-            GetEvent(buttonName).Exit += (data) => OnButtonExit(buttonName);
+            // UI 생성 (중복 생성 방지 포함)
+            await UIManager.Instance.ShowPopUpAsync<MessagePopup>((popup) => {
+                if (popup != null)
+                {
+                    popup.SetMessage("안전한 버튼 클릭!");
+                }
+            });
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}
+```
+
+## 🎮 InfoHUD 시스템과의 통합
+
+### 1. TouchInfoManager와의 연동
+
+```csharp
+// TouchInfoManager에서 PointerHandler 이벤트 활용
+public class TouchInfoManager : MonoBehaviour
+{
+    private void ProcessTouch(Vector2 screenPosition)
+    {
+        // UI 요소 클릭 확인
+        if (IsPointerOverUI(screenPosition))
+        {
+            // UI 요소 클릭 시 InfoHUD 닫기
+            CloseExistingTouchInfoHUD();
+            return;
+        }
+        
+        // UI가 아닌 오브젝트 클릭 시 InfoHUD 표시
+        GameObject hitObject = GetObjectAtPosition(screenPosition);
+        if (hitObject != null)
+        {
+            ShowInfoForObject(hitObject, screenPosition);
+        }
+    }
+}
+```
+
+### 2. HUDBackdropUI와의 연동
+
+```csharp
+// HUDBackdropUI에서 PointerHandler 사용
+public class HUDBackdropUI : MonoBehaviour
+{
+    private void SetupBackdropEvents()
+    {
+        // Backdrop 클릭 시 InfoHUD 닫기
+        GetEvent("Backdrop").Click += (data) => OnBackdropClicked();
+    }
+    
+    private void OnBackdropClicked()
+    {
+        // InfoHUD 닫기
+        UIManager.Instance.DestroyAllInfoHUDs();
+    }
+}
+```
+
+## 🔧 고급 사용법
+
+### 1. 커스텀 터치 제스처
+
+```csharp
+public class CustomGestureHandler : BaseUI
+{
+    private Vector2 startPosition;
+    private float startTime;
+    
+    private void SetupCustomGestures()
+    {
+        // 터치 시작
+        GetTouchStartEvent("CustomArea", OnTouchStart);
+        
+        // 터치 종료
+        GetTouchEndEvent("CustomArea", OnTouchEnd);
+        
+        // 터치 이동
+        GetTouchMoveEvent("CustomArea", OnTouchMove);
+    }
+    
+    private void OnTouchStart(PointerEventData data)
+    {
+        startPosition = data.position;
+        startTime = Time.time;
+    }
+    
+    private void OnTouchEnd(PointerEventData data)
+    {
+        float duration = Time.time - startTime;
+        float distance = Vector2.Distance(startPosition, data.position);
+        
+        // 커스텀 제스처 판정
+        if (duration < 0.5f && distance < 50f)
+        {
+            OnQuickTap(data);
+        }
+        else if (duration > 1.0f && distance < 30f)
+        {
+            OnLongHold(data);
         }
     }
     
-    private void OnStartGame()
+    private void OnTouchMove(Vector2 delta)
     {
-        Debug.Log("게임 시작!");
-        // 게임 시작 로직
+        // 터치 이동 처리
     }
     
-    private void OnOpenSettings()
+    private void OnQuickTap(PointerEventData data)
     {
-        Debug.Log("설정 열기!");
-        // 설정 패널 열기
+        Debug.Log("빠른 탭!");
     }
     
-    private void OnExitGame()
+    private void OnLongHold(PointerEventData data)
     {
-        Debug.Log("게임 종료!");
-        // 게임 종료 로직
-    }
-    
-    private void OnBackClicked()
-    {
-        Debug.Log("뒤로가기!");
-        Hide();
-    }
-    
-    private void OnButtonHover(string buttonName)
-    {
-        // 호버 효과
-        GetUI<Image>(buttonName).color = Color.yellow;
-    }
-    
-    private void OnButtonExit(string buttonName)
-    {
-        // 호버 효과 제거
-        GetUI<Image>(buttonName).color = Color.white;
+        Debug.Log("길게 홀드!");
     }
 }
 ```
 
-### 2. 인벤토리 아이템
+### 2. 멀티터치 처리
 
 ```csharp
-public class InventoryItem : BaseUI
+public class MultiTouchHandler : BaseUI
 {
-    private void SetupItemEvents()
+    private Dictionary<int, Vector2> touchPositions = new Dictionary<int, Vector2>();
+    
+    private void SetupMultiTouchEvents()
     {
-        var itemHandler = GetEvent("ItemButton");
+        // 멀티터치 이벤트 설정
+        GetTouchStartEvent("MultiTouchArea", OnMultiTouchStart);
+        GetTouchEndEvent("MultiTouchArea", OnMultiTouchEnd);
+        GetTouchMoveEvent("MultiTouchArea", OnMultiTouchMove);
+    }
+    
+    private void OnMultiTouchStart(PointerEventData data)
+    {
+        touchPositions[data.pointerId] = data.position;
         
-        // 클릭으로 아이템 선택
-        itemHandler.Click += (data) => OnItemSelected();
-        
-        // 호버로 아이템 정보 표시
-        itemHandler.Enter += (data) => OnItemHover();
-        itemHandler.Exit += (data) => OnItemExit();
-        
-        // 드래그로 아이템 이동
-        itemHandler.BeginDrag += (data) => OnBeginDragItem(data);
-        itemHandler.Drag += (data) => OnDragItem(data);
-        itemHandler.EndDrag += (data) => OnEndDragItem(data);
+        if (touchPositions.Count == 2)
+        {
+            OnTwoFingerTouch();
+        }
     }
     
-    private void OnItemSelected()
+    private void OnMultiTouchEnd(PointerEventData data)
     {
-        Debug.Log("아이템 선택됨!");
-        // 아이템 선택 로직
+        touchPositions.Remove(data.pointerId);
     }
     
-    private void OnItemHover()
+    private void OnMultiTouchMove(Vector2 delta)
     {
-        Debug.Log("아이템 호버!");
-        // 툴팁 표시
+        if (touchPositions.Count == 2)
+        {
+            // 두 손가락 제스처 처리
+            ProcessTwoFingerGesture();
+        }
     }
     
-    private void OnItemExit()
+    private void OnTwoFingerTouch()
     {
-        Debug.Log("아이템 호버 해제!");
-        // 툴팁 숨기기
+        Debug.Log("두 손가락 터치!");
     }
     
-    private void OnBeginDragItem(PointerEventData data)
+    private void ProcessTwoFingerGesture()
     {
-        Debug.Log("아이템 드래그 시작!");
-        // 드래그 시작 로직
-    }
-    
-    private void OnDragItem(PointerEventData data)
-    {
-        // 드래그 중 로직
-    }
-    
-    private void OnEndDragItem(PointerEventData data)
-    {
-        Debug.Log("아이템 드래그 종료!");
-        // 드래그 종료 로직
+        // 핀치, 회전 등 처리
     }
 }
 ```
 
-## ⚠️ 주의사항 및 모범 사례
+## 🛠️ 문제 해결
 
-### 1. 이벤트 정리
+### 1. 일반적인 문제들
 
-```csharp
-protected override void OnDestroy()
-{
-    base.OnDestroy();
-    
-    // 이벤트 정리
-    var buttonHandler = GetEvent("Button");
-    if (buttonHandler != null)
-    {
-        buttonHandler.Click -= OnButtonClicked;
-        buttonHandler.Enter -= OnButtonEnter;
-        buttonHandler.Exit -= OnButtonExit;
-        buttonHandler.LongPress -= OnLongPress;
-        buttonHandler.DoubleTap -= OnDoubleTap;
-    }
-}
+**이벤트가 발생하지 않음:**
 ```
+[PointerHandler] 이벤트가 발생하지 않음
+```
+- **해결**: UI 요소에 PointerHandler 컴포넌트가 있는지 확인
+- **해결**: UI 요소의 Raycast Target이 활성화되어 있는지 확인
+
+**터치 제스처가 인식되지 않음:**
+- **해결**: 제스처 설정값 확인 (시간, 거리 등)
+- **해결**: 터치 영역이 충분한지 확인
+
+**InfoHUD와 충돌:**
+```
+[TouchInfoManager] InfoHUD와 UI 이벤트 충돌
+```
+- **해결**: TouchInfoManager의 UI 감지 로직 확인
+- **해결**: InfoHUD 영역에서 UI 이벤트 처리 확인
 
 ### 2. 성능 최적화
 
+**이벤트 최적화:**
 ```csharp
-public class OptimizedUI : BaseUI
+// 불필요한 이벤트 제거
+private void OnDestroy()
 {
-    private PointerHandler cachedHandler;
-    
-    private void SetupOptimizedEvents()
+    // 이벤트 정리
+    if (pointerHandler != null)
     {
-        // 핸들러 캐싱으로 성능 향상
-        cachedHandler = GetEvent("Button");
-        cachedHandler.Click += OnButtonClicked;
-        cachedHandler.LongPress += OnLongPress;
-    }
-    
-    private void OnButtonClicked(PointerEventData data)
-    {
-        // 최적화된 클릭 처리
-    }
-    
-    private void OnLongPress(PointerEventData data)
-    {
-        // 최적화된 롱프레스 처리
+        pointerHandler.Click -= OnClick;
+        pointerHandler.LongPress -= OnLongPress;
     }
 }
 ```
 
-### 3. 메모리 누수 방지
-
+**터치 감지 최적화:**
 ```csharp
-public class SafeUI : BaseUI
-{
-    private void SetupSafeEvents()
-    {
-        // 람다 대신 메서드 참조 사용
-        GetEvent("Button").Click += OnButtonClicked;
-        
-        // 클로저 사용 시 주의
-        string buttonName = "Button";
-        GetEvent(buttonName).Click += (data) => OnButtonClickedWithName(buttonName);
-    }
-    
-    private void OnButtonClicked(PointerEventData data)
-    {
-        Debug.Log("버튼 클릭!");
-    }
-    
-    private void OnButtonClickedWithName(string name)
-    {
-        Debug.Log($"{name} 버튼 클릭!");
-    }
-}
+// 터치 감지 영역 최적화
+[SerializeField] private float touchThreshold = 0.1f;
+[SerializeField] private float swipeThreshold = 50f;
 ```
 
-### 4. 에러 처리
+### 3. 디버깅
 
+**터치 이벤트 디버깅:**
 ```csharp
-public class RobustUI : BaseUI
+// 터치 이벤트 로깅
+private void OnTouchStart(PointerEventData data)
 {
-    private void SetupRobustEvents()
-    {
-        try
-        {
-            var handler = GetEvent("Button");
-            if (handler != null)
-            {
-                handler.Click += OnButtonClicked;
-                handler.LongPress += OnLongPress;
-            }
-            else
-            {
-                Debug.LogWarning("Button 핸들러를 찾을 수 없습니다!");
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"이벤트 설정 중 오류: {e.Message}");
-        }
-    }
-    
-    private void OnButtonClicked(PointerEventData data)
-    {
-        try
-        {
-            Debug.Log("버튼 클릭!");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"버튼 클릭 처리 중 오류: {e.Message}");
-        }
-    }
-    
-    private void OnLongPress(PointerEventData data)
-    {
-        try
-        {
-            Debug.Log("롱프레스!");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"롱프레스 처리 중 오류: {e.Message}");
-        }
-    }
+    Debug.Log($"터치 시작: {data.position}, ID: {data.pointerId}");
+}
+
+private void OnTouchEnd(PointerEventData data)
+{
+    Debug.Log($"터치 종료: {data.position}, ID: {data.pointerId}");
 }
 ```
-
-## 🔍 디버깅 및 문제 해결
-
-### 1. 이벤트 디버깅
-
-```csharp
-public class DebugUI : BaseUI
-{
-    private void SetupDebugEvents()
-    {
-        var handler = GetEvent("Button");
-        
-        // 모든 이벤트에 디버그 로그 추가
-        handler.Click += (data) => Debug.Log($"Click: {data.position}");
-        handler.Enter += (data) => Debug.Log($"Enter: {data.position}");
-        handler.Exit += (data) => Debug.Log($"Exit: {data.position}");
-        handler.Down += (data) => Debug.Log($"Down: {data.position}");
-        handler.Up += (data) => Debug.Log($"Up: {data.position}");
-        handler.LongPress += (data) => Debug.Log($"LongPress: {data.position}");
-        handler.DoubleTap += (data) => Debug.Log($"DoubleTap: {data.position}");
-        handler.Swipe += (direction) => Debug.Log($"Swipe: {direction}");
-        handler.Pinch += (delta) => Debug.Log($"Pinch: {delta}");
-    }
-}
-```
-
-### 2. 일반적인 문제들
-
-**이벤트가 발생하지 않는 경우:**
-- UI 요소에 `PointerHandler` 컴포넌트가 있는지 확인
-- UI 요소가 활성화되어 있는지 확인
-- UI 요소의 `Raycast Target`이 활성화되어 있는지 확인
-- UI 요소가 다른 UI 요소에 가려져 있지 않은지 확인
-
-**터치 제스처가 감지되지 않는 경우:**
-- `enableGestureDetection`이 활성화되어 있는지 확인
-- `enableTouchFeedback`이 활성화되어 있는지 확인
-- 제스처 임계값 설정이 적절한지 확인
-
-**SFX가 재생되지 않는 경우:**
-- 사운드 파일이 올바른 경로에 있는지 확인
-- AudioManager가 초기화되어 있는지 확인
-- 사운드 이름이 올바른지 확인
-
-**메모리 누수가 발생하는 경우:**
-- UI 파괴 시 이벤트를 정리했는지 확인
-- 람다 표현식에서 클로저를 사용하지 않았는지 확인
-- 이벤트 핸들러가 중복 등록되지 않았는지 확인
 
 ## 📚 추가 리소스
 
-- [Unity UI 이벤트 시스템](https://docs.unity3d.com/Manual/EventSystem.html)
-- [Unity 터치 입력](https://docs.unity3d.com/Manual/MobileInput.html)
-- [BaseUI 클래스 문서](./README.md)
-- [PointerHandler 소스 코드](./PointerHandler.cs)
-- [터치 제스처 예제](./Examples/TouchGestureExamples.cs)
+- [Unity UI Event System](https://docs.unity3d.com/Manual/EventSystem.html)
+- [Unity Touch Input](https://docs.unity3d.com/Manual/MobileInput.html)
+- [프로젝트 README.md](./README.md)
+- [현재 사용 패턴 가이드](./현재_사용_패턴_가이드.md)
+
+## 🎯 모범 사례
+
+### 1. 이벤트 처리 원칙
+- **단일 책임**: 하나의 이벤트 핸들러는 하나의 기능만 처리
+- **메모리 관리**: 이벤트 구독 해제로 메모리 누수 방지
+- **성능 고려**: 불필요한 이벤트 처리 방지
+
+### 2. 터치 제스처 원칙
+- **사용자 친화적**: 직관적이고 예측 가능한 제스처
+- **반응성**: 빠른 반응과 적절한 피드백
+- **접근성**: 다양한 사용자가 사용할 수 있도록
+
+### 3. InfoHUD 통합 원칙
+- **충돌 방지**: InfoHUD와 UI 이벤트 간 충돌 방지
+- **일관성**: InfoHUD 표시/숨김 로직의 일관성
+- **사용자 경험**: 자연스러운 InfoHUD 전환
+
+### 4. 중복 생성 방지 원칙
+- **플래그 관리**: 중복 실행 방지를 위한 플래그 사용
+- **비동기 처리**: async/await를 활용한 안전한 비동기 처리
+- **에러 처리**: try-catch를 통한 안전한 에러 처리
 
 ---
 
-**버전**: 2.0  
-**최종 업데이트**: 2024년  
-**Unity 버전**: 2022.3 LTS 이상
+**버전**: 2.1  
+**최종 업데이트**: 2025년 8월  
+**Unity 버전**: 2022.3 LTS 이상  
+**주요 업데이트**: InfoHUD 시스템 통합, 중복 생성 방지, 터치 제스처 개선, 메모리 관리 최적화

@@ -104,7 +104,7 @@ namespace KYS
             {
                 if (enableDebugLogs)
                 {
-                    Debug.Log("[TouchInfoManager] TouchInfoHUD 자체 클릭 감지 - HUD 유지");
+                    //Debug.Log("[TouchInfoManager] TouchInfoHUD 자체 클릭 감지 - HUD 유지");
                 }
                 // TouchInfoHUD 자체를 클릭한 경우 아무것도 하지 않음 (HUD 유지)
                 return;
@@ -127,7 +127,7 @@ namespace KYS
                     }
                     else
                     {
-                        Debug.Log("[TouchInfoManager] UI 요소 클릭 감지 - HUD 없음, UI 기능 실행 허용");
+                        //Debug.Log("[TouchInfoManager] UI 요소 클릭 감지 - HUD 없음, UI 기능 실행 허용");
                     }
                 }
                 // UI 요소의 클릭 이벤트가 정상적으로 처리되도록 return
@@ -310,7 +310,7 @@ namespace KYS
             Sprite icon = GetObjectIcon(targetObject);
             
             // HUD 생성 (기존 HUD는 이미 ProcessTouch에서 닫혔음)
-            TouchInfoHUD.ShowInfoHUD(screenPosition, title, description, icon);
+            _ = TouchInfoHUD.ShowInfoHUD(screenPosition, title, description, icon);
 
             if (enableDebugLogs)
             {
@@ -328,7 +328,7 @@ namespace KYS
             string description = $"터치 위치: ({screenPosition.x:F0}, {screenPosition.y:F0})\n이곳에 실제 건물이나 생산시설이 배치됩니다.";
             
             // HUD 생성 (기존 HUD는 이미 ProcessTouch에서 닫혔음)
-            TouchInfoHUD.ShowInfoHUD(screenPosition, title, description);
+            _ = TouchInfoHUD.ShowInfoHUD(screenPosition, title, description);
 
             if (enableDebugLogs)
             {

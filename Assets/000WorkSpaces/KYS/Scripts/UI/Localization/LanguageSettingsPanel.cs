@@ -111,14 +111,14 @@ namespace KYS
         /// </summary>
         private void InitializeLanguageSettings()
         {
-            Debug.Log("[LanguageSettingsPanel] 언어 설정 초기화 시작");
+            //Debug.Log("[LanguageSettingsPanel] 언어 설정 초기화 시작");
             
             SetupLanguageDropdown();
             SetupButtons();
             UpdateLanguageInfo();
             UpdatePreviewText();
             
-            Debug.Log("[LanguageSettingsPanel] 언어 설정 초기화 완료");
+            //Debug.Log("[LanguageSettingsPanel] 언어 설정 초기화 완료");
         }
         
         /// <summary>
@@ -129,11 +129,11 @@ namespace KYS
             if (languageDropdown == null || LocalizationManager.Instance == null)
                 return;
             
-            Debug.Log("[LanguageSettingsPanel] 언어 드롭다운 설정 시작");
+            //Debug.Log("[LanguageSettingsPanel] 언어 드롭다운 설정 시작");
             
             // 활성 언어 목록 가져오기
             SystemLanguage[] activeLanguages = LocalizationManager.Instance.ActiveLanguages;
-            Debug.Log($"[LanguageSettingsPanel] 활성 언어 수: {activeLanguages.Length}");
+            //Debug.Log($"[LanguageSettingsPanel] 활성 언어 수: {activeLanguages.Length}");
             
             // 각 언어의 번역 완성도 계산
             languageCompleteness.Clear();
@@ -141,14 +141,14 @@ namespace KYS
             {
                 float completeness = LocalizationManager.Instance.GetTranslationCompleteness(lang);
                 languageCompleteness[lang] = completeness;
-                Debug.Log($"[LanguageSettingsPanel] {LocalizationManager.Instance.GetLanguageName(lang)}: {completeness * 100:F1}%");
+                //Debug.Log($"[LanguageSettingsPanel] {LocalizationManager.Instance.GetLocalizedLanguageName(lang)}: {completeness * 100:F1}%");
             }
             
             // 드롭다운 옵션 설정
             languageDropdown.ClearOptions();
             for (int i = 0; i < activeLanguages.Length; i++)
             {
-                string languageName = LocalizationManager.Instance.GetLanguageName(activeLanguages[i]);
+                string languageName = LocalizationManager.Instance.GetLocalizedLanguageName(activeLanguages[i]);
                 float completeness = languageCompleteness[activeLanguages[i]];
                 string optionText = $"{languageName} ({completeness * 100:F0}%)";
                 
@@ -172,7 +172,7 @@ namespace KYS
             languageDropdown.onValueChanged.RemoveAllListeners();
             languageDropdown.onValueChanged.AddListener(OnLanguageDropdownChanged);
             
-            Debug.Log($"[LanguageSettingsPanel] 현재 언어: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)} (인덱스: {currentIndex})");
+            //Debug.Log($"[LanguageSettingsPanel] 현재 언어: {LocalizationManager.Instance.GetLocalizedLanguageName(selectedLanguage)} (인덱스: {currentIndex})");
         }
         
         /// <summary>
@@ -180,7 +180,7 @@ namespace KYS
         /// </summary>
         private void SetupButtons()
         {
-            Debug.Log("[LanguageSettingsPanel] 버튼 설정 시작");
+            //Debug.Log("[LanguageSettingsPanel] 버튼 설정 시작");
             
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var applyEventHandler = GetEventWithSFX(applyButtonName, "SFX_ButtonClick");
@@ -201,7 +201,7 @@ namespace KYS
                 resetEventHandler.Click += (data) => OnResetClicked();
             }
             
-            Debug.Log("[LanguageSettingsPanel] 버튼 설정 완료");
+            //Debug.Log("[LanguageSettingsPanel] 버튼 설정 완료");
         }
         
         /// <summary>
@@ -214,7 +214,7 @@ namespace KYS
             // 현재 언어 정보
             if (currentLanguageText != null)
             {
-                string currentLangName = LocalizationManager.Instance.GetLanguageName(selectedLanguage);
+                string currentLangName = LocalizationManager.Instance.GetLocalizedLanguageName(selectedLanguage);
                 currentLanguageText.text = $"현재 언어: {currentLangName}";
             }
             
@@ -253,7 +253,7 @@ namespace KYS
             if (index >= 0 && index < activeLanguages.Length)
             {
                 selectedLanguage = activeLanguages[index];
-                Debug.Log($"[LanguageSettingsPanel] 언어 선택 변경: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
+                //Debug.Log($"[LanguageSettingsPanel] 언어 선택 변경: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
                 
                 UpdateLanguageInfo();
                 UpdatePreviewText();
@@ -271,7 +271,7 @@ namespace KYS
         {
             if (LocalizationManager.Instance == null) return;
             
-            Debug.Log($"[LanguageSettingsPanel] 언어 적용: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
+            //Debug.Log($"[LanguageSettingsPanel] 언어 적용: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
             
             // 언어 변경
             LocalizationManager.Instance.SetLanguage(selectedLanguage);
@@ -288,7 +288,7 @@ namespace KYS
         /// </summary>
         private void OnCloseClicked()
         {
-            Debug.Log("[LanguageSettingsPanel] 패널 닫기");
+            //Debug.Log("[LanguageSettingsPanel] 패널 닫기");
             Manager.ui.ClosePopup();
         }
         
@@ -299,7 +299,7 @@ namespace KYS
         {
             if (LocalizationManager.Instance == null) return;
             
-            Debug.Log("[LanguageSettingsPanel] 언어 설정 리셋");
+            //Debug.Log("[LanguageSettingsPanel] 언어 설정 리셋");
             
             // 기본 언어로 리셋
             LocalizationManager.Instance.SetLanguage(LocalizationManager.Instance.DefaultLanguage);

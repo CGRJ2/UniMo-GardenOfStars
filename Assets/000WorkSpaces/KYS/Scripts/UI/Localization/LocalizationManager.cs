@@ -436,6 +436,76 @@ namespace KYS
         }
 
         /// <summary>
+        /// 현재 언어에 맞는 언어 이름 반환
+        /// </summary>
+        public string GetLocalizedLanguageName(SystemLanguage language)
+        {
+            // 현재 언어가 한국어인 경우
+            if (currentLanguage == SystemLanguage.Korean)
+            {
+                switch (language)
+                {
+                    case SystemLanguage.Korean:
+                        return "한국어";
+                    case SystemLanguage.English:
+                        return "영어";
+                    case SystemLanguage.Japanese:
+                        return "일본어";
+                    case SystemLanguage.Chinese:
+                        return "중국어";
+                    case SystemLanguage.French:
+                        return "프랑스어";
+                    case SystemLanguage.German:
+                        return "독일어";
+                    case SystemLanguage.Spanish:
+                        return "스페인어";
+                    case SystemLanguage.Italian:
+                        return "이탈리아어";
+                    case SystemLanguage.Portuguese:
+                        return "포르투갈어";
+                    case SystemLanguage.Russian:
+                        return "러시아어";
+                    default:
+                        return language.ToString();
+                }
+            }
+            // 현재 언어가 영어인 경우
+            else if (currentLanguage == SystemLanguage.English)
+            {
+                switch (language)
+                {
+                    case SystemLanguage.Korean:
+                        return "Korean";
+                    case SystemLanguage.English:
+                        return "English";
+                    case SystemLanguage.Japanese:
+                        return "Japanese";
+                    case SystemLanguage.Chinese:
+                        return "Chinese";
+                    case SystemLanguage.French:
+                        return "French";
+                    case SystemLanguage.German:
+                        return "German";
+                    case SystemLanguage.Spanish:
+                        return "Spanish";
+                    case SystemLanguage.Italian:
+                        return "Italian";
+                    case SystemLanguage.Portuguese:
+                        return "Portuguese";
+                    case SystemLanguage.Russian:
+                        return "Russian";
+                    default:
+                        return language.ToString();
+                }
+            }
+            // 기타 언어의 경우 원래 이름 반환
+            else
+            {
+                return GetLanguageName(language);
+            }
+        }
+
+        /// <summary>
         /// 언어가 활성화되어 있는지 확인
         /// </summary>
         public bool IsLanguageActive(SystemLanguage language)

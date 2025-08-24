@@ -53,7 +53,7 @@ namespace KYS
 
         public override void Initialize()
         {
-            Debug.Log("[TitlePanel] Initialize() 메서드 시작");
+            //Debug.Log("[TitlePanel] Initialize() 메서드 시작");
             base.Initialize();
             
             // 자동 로컬라이제이션 설정
@@ -62,7 +62,7 @@ namespace KYS
             // 버튼 설정
             SetupButtons();
             
-            Debug.Log("[TitlePanel] Initialize() 완료");
+            //Debug.Log("[TitlePanel] Initialize() 완료");
         }
 
         public override void Cleanup()
@@ -73,14 +73,14 @@ namespace KYS
 
         private void SetupButtons()
         {
-            Debug.Log("[TitlePanel] SetupButtons() 시작");
+            //Debug.Log("[TitlePanel] SetupButtons() 시작");
             
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var confirmEventHandler = GetEventWithSFX(confirmButtonName, "SFX_ButtonClick");
             if (confirmEventHandler != null)
             {
                 confirmEventHandler.Click += OnConfirmClicked;
-                Debug.Log($"[TitlePanel] 확인 버튼 이벤트 설정 완료: {confirmButtonName}");
+                //Debug.Log($"[TitlePanel] 확인 버튼 이벤트 설정 완료: {confirmButtonName}");
             }
             else
             {
@@ -91,26 +91,26 @@ namespace KYS
             if (closeEventHandler != null)
             {
                 closeEventHandler.Click += OnCancelClicked;
-                Debug.Log($"[TitlePanel] 닫기 버튼 이벤트 설정 완료: {closeButtonName}");
+                //Debug.Log($"[TitlePanel] 닫기 버튼 이벤트 설정 완료: {closeButtonName}");
             }
             else
             {
                 Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
             }
             
-            Debug.Log("[TitlePanel] SetupButtons() 완료");
+            //Debug.Log("[TitlePanel] SetupButtons() 완료");
         }
 
         private void OnConfirmClicked(PointerEventData data)
         {
-            Debug.Log("[TitlePanel] 확인 버튼 클릭");
+            //Debug.Log("[TitlePanel] 확인 버튼 클릭");
             UIManager.Instance.ShowPopUpAsync<MenuPopUp>();
            
         }
 
         private void OnCancelClicked(PointerEventData data)
         {
-            Debug.Log("[TitlePanel] Cancel 버튼 클릭");
+            //Debug.Log("[TitlePanel] Cancel 버튼 클릭");
             Manager.ui.ShowAllHUDElements();
             UIManager.Instance.ClosePanel();
 
@@ -122,7 +122,7 @@ namespace KYS
         /// </summary>
         public static void ShowTitlePanel()
         {
-            Debug.Log("[TitlePanel] ShowTitlePanel() 정적 메서드 호출됨");
+            //Debug.Log("[TitlePanel] ShowTitlePanel() 정적 메서드 호출됨");
             
             if (UIManager.Instance == null)
             {
@@ -136,7 +136,7 @@ namespace KYS
             {
                 if (panel is TitlePanel)
                 {
-                    Debug.Log("[TitlePanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    //Debug.Log("[TitlePanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
                 }
             }
@@ -145,7 +145,7 @@ namespace KYS
             UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
                 if (panel != null)
                 {
-                    Debug.Log("[TitlePanel] ShowTitlePanel() 완료 - 패널 생성 성공");
+                    //Debug.Log("[TitlePanel] ShowTitlePanel() 완료 - 패널 생성 성공");
                 }
                 else
                 {

@@ -101,61 +101,53 @@ namespace KYS
         {
             try
             {
-                ////Debug.Log("[UIManager] Addressable Canvas 초기화 시작");
-
-                // HUD Canvas 로드
+                // HUD Canvas 로드 (가장 뒤에 렌더링)
                 if (hudCanvasReference != null && hudCanvasReference.RuntimeKeyIsValid())
                 {
                     var hudHandle = hudCanvasReference.InstantiateAsync();
                     await hudHandle.Task;
                     hudCanvas = hudHandle.Result.GetComponent<Canvas>();
-                    hudCanvas.sortingOrder = 0; // 가장 뒤에 렌더링
+                    hudCanvas.sortingOrder = 0;
                     addressableHandles["HUDCanvas"] = hudHandle;
                     DontDestroyOnLoad(hudHandle.Result);
-
-                    // HUD Canvas의 모든 UI 요소들을 숨김 상태로 초기화
                     HideAllHUDElements();
                 }
 
-                // Panel Canvas 로드
+                // Panel Canvas 로드 (HUD 위에 렌더링)
                 if (panelCanvasReference != null && panelCanvasReference.RuntimeKeyIsValid())
                 {
                     var panelHandle = panelCanvasReference.InstantiateAsync();
                     await panelHandle.Task;
                     panelCanvas = panelHandle.Result.GetComponent<Canvas>();
-                    panelCanvas.sortingOrder = 10; // HUD 위에 렌더링
+                    panelCanvas.sortingOrder = 10;
                     addressableHandles["PanelCanvas"] = panelHandle;
                     DontDestroyOnLoad(panelHandle.Result);
                 }
 
-                // Popup Canvas 로드
+                // Popup Canvas 로드 (Panel 위에 렌더링)
                 if (popupCanvasReference != null && popupCanvasReference.RuntimeKeyIsValid())
                 {
                     var popupHandle = popupCanvasReference.InstantiateAsync();
                     await popupHandle.Task;
                     popupCanvas = popupHandle.Result.GetComponent<Canvas>();
-                    popupCanvas.sortingOrder = 20; // Panel 위에 렌더링
+                    popupCanvas.sortingOrder = 20;
                     addressableHandles["PopupCanvas"] = popupHandle;
                     DontDestroyOnLoad(popupHandle.Result);
                 }
 
-                // Loading Canvas 로드
+                // Loading Canvas 로드 (가장 앞에 렌더링)
                 if (loadingCanvasReference != null && loadingCanvasReference.RuntimeKeyIsValid())
                 {
                     var loadingHandle = loadingCanvasReference.InstantiateAsync();
                     await loadingHandle.Task;
                     loadingCanvas = loadingHandle.Result.GetComponent<Canvas>();
-                    loadingCanvas.sortingOrder = 30; // 가장 앞에 렌더링
+                    loadingCanvas.sortingOrder = 30;
                     addressableHandles["LoadingCanvas"] = loadingHandle;
                     DontDestroyOnLoad(loadingHandle.Result);
                 }
 
                 ApplySafeAreaToCanvases();
-
-                // HUD 요소들 초기 생성 및 숨김
                 await InitializeHUDElements();
-
-                ////Debug.Log("[UIManager] Addressable Canvas 초기화 완료");
             }
             catch (System.Exception e)
             {
@@ -172,8 +164,6 @@ namespace KYS
 
             try
             {
-                //Debug.Log("[UIManager] HUD 요소들 초기화 시작");
-
                 // HUD 요소들을 미리 생성할 Addressable 키들
                 string[] hudKeys = {
                     "KYS/HUDAllPanel",
@@ -184,13 +174,10 @@ namespace KYS
                 {
                     try
                     {
-                        // HUD 생성 (이미 SafeAreaPanel 자식으로 생성됨)
                         var hud = await CreateHUDAsync<BaseUI>(key);
                         if (hud != null)
                         {
-                            // 생성 후 즉시 숨김
-                            hud.gameObject.SetActive(false);
-                            //Debug.Log($"[UIManager] HUD {hud.name} 생성 완료 및 숨김 (SafeAreaPanel 자식으로 생성됨)");
+                            hud.gameObject.SetActive(false); // 생성 후 즉시 숨김
                         }
                     }
                     catch (System.Exception e)
@@ -198,8 +185,6 @@ namespace KYS
                         Debug.LogWarning($"[UIManager] HUD {key} 생성 실패: {e.Message}");
                     }
                 }
-
-                ////Debug.Log("[UIManager] HUD 요소들 초기화 완료");
             }
             catch (System.Exception e)
             {
@@ -218,21 +203,18 @@ namespace KYS
             SafeAreaPanel safeAreaPanel = hudCanvas.GetComponentInChildren<SafeAreaPanel>();
             if (safeAreaPanel != null)
             {
-                //Debug.Log($"[UIManager] HUD용 SafeAreaPanel 발견: {safeAreaPanel.name}");
                 return safeAreaPanel.transform;
             }
 
             // SafeAreaPanel이 없으면 새로 생성
             if (safeAreaManager != null)
             {
-                //Debug.Log($"[UIManager] HUD용 SafeAreaPanel 생성 시도: {hudCanvas.name}");
                 safeAreaManager.ApplySafeAreaToCanvas(hudCanvas);
 
                 // 다시 SafeAreaPanel 찾기
                 safeAreaPanel = hudCanvas.GetComponentInChildren<SafeAreaPanel>();
                 if (safeAreaPanel != null)
                 {
-                    //Debug.Log($"[UIManager] HUD용 SafeAreaPanel 생성 완료: {safeAreaPanel.name}");
                     return safeAreaPanel.transform;
                 }
             }
@@ -288,8 +270,6 @@ namespace KYS
                 }
                 
                 isCreatingUI = true;
-                
-                //Debug.Log($"[UIManager] UI 로드 시작: {addressableKey}");
 
                 // 이미 로드된 UI가 있는지 확인
                 if (instantiatedUIs.ContainsKey(addressableKey))
@@ -300,7 +280,6 @@ namespace KYS
                         T existingComponent = existingUI.GetComponent<T>();
                         if (existingComponent != null)
                         {
-                            //Debug.Log($"[UIManager] 기존 UI 반환: {addressableKey}");
                             isCreatingUI = false;
                             return existingComponent;
                         }
@@ -354,7 +333,6 @@ namespace KYS
                 addressableHandles[addressableKey] = handle;
                 RegisterUI(uiComponent);
 
-                //Debug.Log($"[UIManager] UI 로드 완료: {addressableKey}");
                 isCreatingUI = false;
                 return uiComponent;
             }
@@ -390,7 +368,6 @@ namespace KYS
                 }
 
                 string key = assetReference.RuntimeKey.ToString();
-                //Debug.Log($"[UIManager] AssetReference로 UI 로드 시작: {key}");
 
                 // 이미 로드된 UI가 있는지 확인
                 if (instantiatedUIs.ContainsKey(key))
@@ -401,7 +378,6 @@ namespace KYS
                         T existingComponent = existingUI.GetComponent<T>();
                         if (existingComponent != null)
                         {
-                            //Debug.Log($"[UIManager] 기존 UI 반환: {key}");
                             isCreatingUI = false;
                             return existingComponent;
                         }
@@ -440,7 +416,6 @@ namespace KYS
                 instantiatedUIs[key] = uiInstance;
                 RegisterUI(uiComponent);
 
-                //Debug.Log($"[UIManager] UI 로드 완료: {key}");
                 isCreatingUI = false;
                 return uiComponent;
             }
@@ -467,8 +442,6 @@ namespace KYS
                 }
                 
                 isCreatingUI = true;
-                
-                //Debug.Log($"[UIManager] 라벨로 UI 로드 시작: {label}");
 
                 var handle = Addressables.LoadResourceLocationsAsync(label);
                 await handle.Task;
@@ -495,7 +468,6 @@ namespace KYS
                 }
 
                 Addressables.Release(handle);
-                //Debug.Log($"[UIManager] 라벨 로드 완료: {label}, {loadedUIs.Count}개");
                 isCreatingUI = false;
                 return loadedUIs;
             }
@@ -522,8 +494,6 @@ namespace KYS
                 }
                 
                 isCreatingUI = true;
-                
-                //Debug.Log($"[UIManager] UI 미리 로드 시작: {addressableKey}");
 
                 var handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
                 await handle.Task;
@@ -531,7 +501,6 @@ namespace KYS
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     addressableHandles[addressableKey] = handle;
-                    //Debug.Log($"[UIManager] UI 미리 로드 완료: {addressableKey}");
                 }
                 else
                 {
@@ -579,8 +548,6 @@ namespace KYS
                     Addressables.Release(addressableHandles[addressableKey]);
                     addressableHandles.Remove(addressableKey);
                 }
-
-                //Debug.Log($"[UIManager] UI 해제 완료: {addressableKey}");
             }
             catch (System.Exception e)
             {
@@ -595,8 +562,6 @@ namespace KYS
         {
             try
             {
-                //Debug.Log("[UIManager] 모든 Addressable 리소스 해제 시작");
-
                 // 인스턴스 해제
                 foreach (var kvp in instantiatedUIs)
                 {
@@ -618,8 +583,6 @@ namespace KYS
                     Addressables.Release(handle);
                 }
                 addressableHandles.Clear();
-
-                //Debug.Log("[UIManager] 모든 Addressable 리소스 해제 완료");
             }
             catch (System.Exception e)
             {
@@ -645,8 +608,6 @@ namespace KYS
             else if (typeName.Contains("loading"))
                 layerType = UILayerType.Loading;
 
-            //Debug.Log($"[UIManager] GetCanvasForUI: {typeof(T).Name} -> {layerType}");
-
             Transform targetTransform = null;
 
             switch (layerType)
@@ -668,12 +629,9 @@ namespace KYS
                     break;
             }
 
-            //Debug.Log($"[UIManager] 기본 Canvas: {targetTransform?.name}");
-
             // LoadingCanvas는 SafeAreaPanel 사용하지 않음
             if (layerType == UILayerType.Loading)
             {
-                //Debug.Log($"[UIManager] Loading 타입이므로 SafeAreaPanel 사용하지 않음");
                 return targetTransform;
             }
 
@@ -683,31 +641,23 @@ namespace KYS
                 Canvas targetCanvas = targetTransform.GetComponent<Canvas>();
                 if (targetCanvas != null)
                 {
-                    //Debug.Log($"[UIManager] SafeAreaManager에서 SafeAreaPanel 찾기 시도: {targetCanvas.name}");
                     SafeAreaPanel safeAreaPanel = safeAreaManager.GetSafeAreaPanelForCanvas(targetCanvas);
 
                     if (safeAreaPanel != null)
                     {
-                        //Debug.Log($"[UIManager] ✅ SafeAreaPanel을 부모로 사용: {safeAreaPanel.name} for {typeof(T).Name}");
-                        //Debug.Log($"[UIManager] SafeAreaPanel 위치: {safeAreaPanel.transform.position}");
-                        //Debug.Log($"[UIManager] SafeAreaPanel 자식 수: {safeAreaPanel.transform.childCount}");
                         return safeAreaPanel.transform;
                     }
                     else
                     {
-                        Debug.LogWarning($"[UIManager] ❌ SafeAreaPanel을 찾을 수 없음: {targetCanvas.name}");
+                        Debug.LogWarning($"[UIManager] SafeAreaPanel을 찾을 수 없음: {targetCanvas.name}");
 
                         // SafeAreaPanel이 없으면 새로 생성 시도
-                        //Debug.Log($"[UIManager] 🔧 SafeAreaPanel 새로 생성 시도: {targetCanvas.name}");
                         safeAreaManager.ApplySafeAreaToCanvas(targetCanvas);
 
                         // 다시 SafeAreaPanel 찾기
                         safeAreaPanel = safeAreaManager.GetSafeAreaPanelForCanvas(targetCanvas);
                         if (safeAreaPanel != null)
                         {
-                            //Debug.Log($"[UIManager] ✅ 새로 생성된 SafeAreaPanel을 부모로 사용: {safeAreaPanel.name} for {typeof(T).Name}");
-                            //Debug.Log($"[UIManager] SafeAreaPanel 위치: {safeAreaPanel.transform.position}");
-                            //Debug.Log($"[UIManager] SafeAreaPanel 자식 수: {safeAreaPanel.transform.childCount}");
                             return safeAreaPanel.transform;
                         }
                         else
@@ -734,7 +684,6 @@ namespace KYS
                 }
             }
 
-            //Debug.Log($"[UIManager] Canvas를 부모로 사용: {targetTransform?.name} for {typeof(T).Name}");
             return targetTransform;
         }
 
@@ -778,7 +727,6 @@ namespace KYS
             if (!layerUIs[layerType].Contains(ui))
             {
                 layerUIs[layerType].Add(ui);
-                ////Debug.Log($"[UIManager] UI 등록: {ui.name} -> {layerType}");
             }
         }
 
@@ -793,7 +741,6 @@ namespace KYS
             if (layerUIs.ContainsKey(layerType))
             {
                 layerUIs[layerType].Remove(ui);
-                //Debug.Log($"[UIManager] UI 등록 해제: {ui.name} -> {layerType}");
             }
         }
 
@@ -855,7 +802,6 @@ namespace KYS
                     {
                         // 이전 UI를 완전히 숨김 (SetActive(false))
                         previousPanel.gameObject.SetActive(false);
-                        //Debug.Log($"[UIManager] 이전 패널 숨김: {previousPanel.name}");
                     }
                     else if (panel.DisablePreviousUI)
                     {
@@ -865,7 +811,6 @@ namespace KYS
                         {
                             canvasGroup.interactable = false;
                             canvasGroup.blocksRaycasts = false;
-                            //Debug.Log($"[UIManager] 이전 패널 비활성화: {previousPanel.name}");
                         }
                     }
                     // 둘 다 false면 이전 UI는 활성화 상태 유지
@@ -877,7 +822,7 @@ namespace KYS
             RegisterUI(panel);
             panel.Show();
 
-            Debug.Log($"[UIManager] 패널 열기 완료: {panel.name}");
+            //Debug.Log($"[UIManager] 패널 열기 완료: {panel.name}");
             DebugStackStatus();
             
             // 생성 플래그는 ShowPanelAsyncCoroutine의 finally 블록에서 해제됨
@@ -896,7 +841,6 @@ namespace KYS
                 // 스택 구조에서는 항상 파괴
                 UnregisterUI(currentPanel);
                 currentPanel.Hide();
-                //Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name}");
             }
 
             // 이전 패널 다시 표시
@@ -909,7 +853,6 @@ namespace KYS
                     if (!previousPanel.gameObject.activeInHierarchy)
                     {
                         previousPanel.gameObject.SetActive(true);
-                        //Debug.Log($"[UIManager] 이전 패널 다시 활성화: {previousPanel.name}");
                     }
 
                     // CanvasGroup이 비활성화되어 있다면 다시 활성화
@@ -918,7 +861,6 @@ namespace KYS
                     {
                         canvasGroup.interactable = true;
                         canvasGroup.blocksRaycasts = true;
-                        //Debug.Log($"[UIManager] 이전 패널 CanvasGroup 다시 활성화: {previousPanel.name}");
                     }
 
                     previousPanel.Show();
@@ -949,8 +891,6 @@ namespace KYS
                 }
             }
 
-            //Debug.Log($"[UIManager] Popup 열기: {popup.name}");
-
             // 이전 Popup 처리
             if (popupStack.Count > 0)
             {
@@ -961,7 +901,6 @@ namespace KYS
                     {
                         // 이전 UI를 완전히 숨김 (SetActive(false))
                         previousPopup.gameObject.SetActive(false);
-                        //Debug.Log($"[UIManager] 이전 Popup 숨김: {previousPopup.name}");
                     }
                     else if (popup.DisablePreviousUI)
                     {
@@ -971,7 +910,6 @@ namespace KYS
                         {
                             canvasGroup.interactable = false;
                             canvasGroup.blocksRaycasts = false;
-                            //Debug.Log($"[UIManager] 이전 Popup 비활성화: {previousPopup.name}");
                         }
                     }
                     // 둘 다 false면 이전 UI는 활성화 상태 유지
@@ -989,8 +927,6 @@ namespace KYS
 
             // UIManager에 등록
             RegisterUI(popup);
-
-            //Debug.Log($"[UIManager] Popup 열기 완료: {popup.name}, 스택 크기: {popupStack.Count}");
         }
 
         /// <summary>
@@ -1007,8 +943,6 @@ namespace KYS
             BaseUI currentPopup = popupStack.Pop();
             if (currentPopup != null)
             {
-                //Debug.Log($"[UIManager] Popup 닫기: {currentPopup.name}");
-
                 // Popup의 Backdrop 가져오기
                 BackdropUI backdrop = currentPopup.GetOwnBackdrop();
 
@@ -1021,12 +955,10 @@ namespace KYS
                 // Popup 파괴 (Backdrop도 함께 파괴됨 - Popup이 Backdrop의 자식이므로)
                 if (backdrop != null)
                 {
-                    //Debug.Log($"[UIManager] Backdrop와 함께 Popup 파괴: {currentPopup.name}");
                     Destroy(backdrop.gameObject);
                 }
                 else
                 {
-                    //Debug.Log($"[UIManager] Popup 파괴: {currentPopup.name}");
                     Destroy(currentPopup.gameObject);
                 }
             }
@@ -1044,7 +976,6 @@ namespace KYS
                     if (!previousPopup.gameObject.activeInHierarchy)
                     {
                         previousPopup.gameObject.SetActive(true);
-                        //Debug.Log($"[UIManager] 이전 Popup 다시 활성화: {previousPopup.name}");
                     }
 
                     // CanvasGroup이 비활성화되어 있다면 다시 활성화
@@ -1053,12 +984,9 @@ namespace KYS
                     {
                         canvasGroup.interactable = true;
                         canvasGroup.blocksRaycasts = true;
-                        //Debug.Log($"[UIManager] 이전 Popup CanvasGroup 다시 활성화: {previousPopup.name}");
                     }
                 }
             }
-
-            //Debug.Log($"[UIManager] Popup 닫기 완료, 남은 스택 크기: {popupStack.Count}");
         }
 
         #endregion
@@ -1110,7 +1038,6 @@ namespace KYS
                     if (handle.Status == AsyncOperationStatus.Succeeded)
                     {
                         loadingScreenPrefab = handle.Result;
-                        //Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 성공: {key}");
                         loadSuccess = true;
                         break;
                     }
@@ -1142,7 +1069,6 @@ namespace KYS
                     {
                         loadingScreen.SetCenterMessage(message);
                     }
-                    //Debug.Log("[UIManager] LoadingScreen 표시 완료");
                 }
                 else
                 {
@@ -1154,7 +1080,6 @@ namespace KYS
                 Debug.LogError("[UIManager] LoadingScreen 프리팹을 찾을 수 없습니다. Addressables 설정을 확인하세요.");
 
                 // 대체 방법: Resources 폴더에서 로드 시도
-                //Debug.Log("[UIManager] Resources 폴더에서 LoadingScreen 프리팹 로드 시도");
                 GameObject fallbackPrefab = Resources.Load<GameObject>("LoadingScreen");
                 if (fallbackPrefab != null)
                 {
@@ -1168,7 +1093,6 @@ namespace KYS
                         {
                             loadingScreen.SetCenterMessage(message);
                         }
-                        //Debug.Log("[UIManager] Resources에서 LoadingScreen 로드 성공");
                     }
                 }
                 else
@@ -1226,14 +1150,11 @@ namespace KYS
             // 중복 생성 방지
             if (isCreatingPopup)
             {
-                Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다. (isCreatingPopup: {isCreatingPopup})");
-                Debug.Log($"[UIManager] 호출 스택: {System.Environment.StackTrace}");
+                Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다.");
                 onComplete?.Invoke(null);
                 return;
             }
             
-            Debug.Log($"[UIManager] {popupName} 팝업 생성 시작 (isCreatingPopup: {isCreatingPopup} -> true)");
-            Debug.Log($"[UIManager] 호출 스택: {System.Environment.StackTrace}");
             isCreatingPopup = true;
             StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
         }
@@ -1248,8 +1169,7 @@ namespace KYS
             // 중복 생성 방지
             if (isCreatingPanel)
             {
-                Debug.Log($"[UIManager] 이미 패널 생성 중이므로 {panelName} 무시합니다. (isCreatingPanel: {isCreatingPanel})");
-                Debug.Log($"[UIManager] 호출 스택: {System.Environment.StackTrace}");
+                Debug.Log($"[UIManager] 이미 패널 생성 중이므로 {panelName} 무시합니다.");
                 onComplete?.Invoke(null);
                 return;
             }
@@ -1265,8 +1185,6 @@ namespace KYS
                 }
             }
             
-            Debug.Log($"[UIManager] {panelName} 패널 생성 시작 (isCreatingPanel: {isCreatingPanel} -> true)");
-            Debug.Log($"[UIManager] 호출 스택: {System.Environment.StackTrace}");
             isCreatingPanel = true;
             StartCoroutine(ShowPanelAsyncCoroutine<T>(onComplete));
         }
@@ -1274,7 +1192,6 @@ namespace KYS
         private System.Collections.IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
-            ////Debug.Log($"[UIManager] Addressable에서 {prefabName} 팝업 로드 시작");
 
             AsyncOperationHandle<GameObject> handle = default;
             
@@ -1293,14 +1210,11 @@ namespace KYS
             // 가능한 키들을 순서대로 시도
             foreach (string addressableKey in possibleKeys)
             {
-                ////Debug.Log($"[UIManager] 키 '{addressableKey}'로 로드 시도");
-
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
                 yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    ////Debug.Log($"[UIManager] 성공한 키: {addressableKey}");
                     break; // 성공하면 루프 종료
                 }
                 else
@@ -1330,8 +1244,6 @@ namespace KYS
                     yield break;
                 }
 
-                ////Debug.Log($"[UIManager] {prefabName} 프리팹 캐스팅 성공: {prefabAsset.name}");
-
                 // UI 타입에 따라 적절한 Canvas 선택
                 Transform targetCanvas = GetCanvasForUI<T>();
                 if (targetCanvas == null)
@@ -1341,21 +1253,8 @@ namespace KYS
                     yield break;
                 }
 
-                ////Debug.Log($"[UIManager] {prefabName}이 {targetCanvas.name}에 생성됩니다.");
-                ////Debug.Log($"[UIManager] targetCanvas 타입: {targetCanvas.GetType().Name}");
-                ////Debug.Log($"[UIManager] targetCanvas 부모: {targetCanvas.parent?.name}");
-                ////Debug.Log($"[UIManager] targetCanvas가 SafeAreaPanel인가? {targetCanvas.GetComponent<SafeAreaPanel>() != null}");
-                ////Debug.Log($"[UIManager] targetCanvas가 Canvas인가? {targetCanvas.GetComponent<Canvas>() != null}");
-
                 // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
-                ////Debug.Log($"[UIManager] {prefabName} 인스턴스 생성 시작... (Canvas: {targetCanvas.name})");
                 GameObject uiInstance = Instantiate(prefabAsset, targetCanvas);
-
-                ////Debug.Log($"[UIManager] {prefabName} 인스턴스 생성 완료: {uiInstance.name}");
-                ////Debug.Log($"[UIManager] {prefabName} 부모: {uiInstance.transform.parent?.name}");
-                ////Debug.Log($"[UIManager] {prefabName} 위치: {uiInstance.transform.position}");
-                ////Debug.Log($"[UIManager] {prefabName} 부모가 SafeAreaPanel인가? {uiInstance.transform.parent?.GetComponent<SafeAreaPanel>() != null}");
-                ////Debug.Log($"[UIManager] {prefabName} 부모가 Canvas인가? {uiInstance.transform.parent?.GetComponent<Canvas>() != null}");
 
                 T uiComponent = uiInstance.GetComponent<T>();
                 if (uiComponent == null)
@@ -1370,12 +1269,10 @@ namespace KYS
                 if (uiComponent.LayerType == UILayerType.Panel)
                 {
                     OpenPanel(uiComponent);
-                    ////Debug.Log($"[UIManager] {prefabName} 패널 표시 완료");
                 }
                 else
                 {
                     OpenPopup(uiComponent);
-                    ////Debug.Log($"[UIManager] {prefabName} 팝업 표시 완료");
                 }
 
                 onComplete?.Invoke(uiComponent);
@@ -1388,7 +1285,6 @@ namespace KYS
             finally
             {
                 // 항상 플래그 해제 및 리소스 정리
-                Debug.Log($"[UIManager] {prefabName} 팝업 생성 완료 - isCreatingPopup 플래그 해제");
                 isCreatingPopup = false;
                 
                 if (handle.IsValid())
@@ -1404,7 +1300,6 @@ namespace KYS
         private System.Collections.IEnumerator ShowPanelAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
-            Debug.Log($"[UIManager] Addressable에서 {prefabName} 패널 로드 시작");
 
             AsyncOperationHandle<GameObject> handle = default;
             
@@ -1423,14 +1318,11 @@ namespace KYS
             // 가능한 키들을 순서대로 시도
             foreach (string addressableKey in possibleKeys)
             {
-                Debug.Log($"[UIManager] 키 '{addressableKey}'로 패널 로드 시도");
-
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
                 yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Debug.Log($"[UIManager] 성공한 키: {addressableKey}");
                     break; // 성공하면 루프 종료
                 }
                 else
@@ -1460,8 +1352,6 @@ namespace KYS
                     yield break;
                 }
 
-                Debug.Log($"[UIManager] {prefabName} 프리팹 캐스팅 성공: {prefabAsset.name}");
-
                 // UI 타입에 따라 적절한 Canvas 선택
                 Transform targetCanvas = GetCanvasForUI<T>();
                 if (targetCanvas == null)
@@ -1471,11 +1361,8 @@ namespace KYS
                     yield break;
                 }
 
-                Debug.Log($"[UIManager] {prefabName}이 {targetCanvas.name}에 생성됩니다.");
-
                 // Unity의 기본 Instantiate 사용
                 GameObject uiInstance = Instantiate(prefabAsset, targetCanvas);
-                Debug.Log($"[UIManager] {prefabName} 인스턴스 생성 완료: {uiInstance.name}");
 
                 T uiComponent = uiInstance.GetComponent<T>();
                 if (uiComponent == null)
@@ -1500,7 +1387,6 @@ namespace KYS
             finally
             {
                 // 항상 플래그 해제 및 리소스 정리
-                Debug.Log($"[UIManager] {prefabName} 패널 생성 완료 - isCreatingPanel 플래그 해제");
                 isCreatingPanel = false;
                 
                 if (handle.IsValid())
@@ -1569,24 +1455,16 @@ namespace KYS
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                //Debug.Log("[UIManager] ESC 키 감지됨");
-
                 if (canClose)
                 {
                     if (popupStack.Count > 0)
                     {
-                        //Debug.Log("[UIManager] 팝업 닫기 시도");
                         ClosePopup();
                     }
                     else if (panelStack.Count > 0)
                     {
-                        //Debug.Log("[UIManager] 패널 닫기 시도");
                         ClosePanel();
                     }
-                }
-                else
-                {
-                    //Debug.Log("[UIManager] ESC 키 무시됨 - canClose 조건 불만족");
                 }
             }
         }
@@ -1620,8 +1498,6 @@ namespace KYS
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            //Debug.Log($"[UIManager] 씬 로드됨: {scene.name}");
-
             // 씬 전환 시 모든 UI 정리
             CleanAllUI();
         }
@@ -1657,12 +1533,8 @@ namespace KYS
         /// </summary>
         public void CleanAllUI()
         {
-            //Debug.Log("[UIManager] 모든 UI 정리 시작");
-
             CloseAllPanels();
             CloseAllPopups();
-
-            //Debug.Log("[UIManager] 모든 UI가 정리되었습니다.");
         }
 
         /// <summary>
@@ -1670,10 +1542,6 @@ namespace KYS
         /// </summary>
         public void DebugStackStatus()
         {
-            ////Debug.Log($"[UIManager] === 스택 상태 ===");
-            ////Debug.Log($"[UIManager] Panel 스택 크기: {panelStack.Count}");
-            ////Debug.Log($"[UIManager] Popup 스택 크기: {popupStack.Count}");
-
             if (panelStack.Count > 0)
             {
                 //Debug.Log($"[UIManager] 최상위 Panel: {panelStack.Peek().name}");
@@ -1724,8 +1592,6 @@ namespace KYS
 
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-
-            //Debug.Log($"[UIManager] UI 터치 차단: {ui.name}");
         }
 
         /// <summary>
@@ -1740,8 +1606,6 @@ namespace KYS
             {
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
-
-                //Debug.Log($"[UIManager] UI 터치 복원: {ui.name}");
             }
         }
 
@@ -1760,8 +1624,6 @@ namespace KYS
 
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-
-            //Debug.Log($"[UIManager] Canvas 터치 차단: {canvas.name}");
         }
 
         /// <summary>
@@ -1776,8 +1638,6 @@ namespace KYS
             {
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
-
-                //Debug.Log($"[UIManager] Canvas 터치 복원: {canvas.name}");
             }
         }
 
@@ -1825,7 +1685,6 @@ namespace KYS
                 addressableHandles[addressableKey] = handle;
                 instantiatedUIs[addressableKey] = hudObject;
 
-                //Debug.Log($"[UIManager] HUD 생성 완료: {typeof(T).Name} from {addressableKey} (SafeAreaPanel 자식으로 생성)");
                 return hudComponent;
             }
             catch (System.Exception e)
@@ -1880,7 +1739,6 @@ namespace KYS
                 addressableHandles[key] = handle;
                 instantiatedUIs[key] = hudObject;
 
-                //Debug.Log($"[UIManager] HUD 생성 완료: {typeof(T).Name} (SafeAreaPanel 자식으로 생성)");
                 return hudComponent;
             }
             catch (System.Exception e)
@@ -1945,7 +1803,7 @@ namespace KYS
             
             if (!foundAndDestroyed)
             {
-                Debug.Log("[UIManager] 제거할 InfoHUD가 없음");
+                //Debug.Log("[UIManager] 제거할 InfoHUD가 없음");
             }
             
             return foundAndDestroyed;
@@ -1959,14 +1817,13 @@ namespace KYS
             // 이미 생성 중이면 무시
             if (isCreatingHUD)
             {
-                Debug.Log("[UIManager] 이미 InfoHUD 생성 중이므로 무시합니다.");
+                //Debug.Log("[UIManager] 이미 InfoHUD 생성 중이므로 무시합니다.");
                 return null;
             }
             
             // 기존 InfoHUD 완전 제거 (비활성화된 것도 포함)
             DestroyAllInfoHUDs();
             
-            Debug.Log("[UIManager] 새로운 InfoHUD 생성 시작");
             isCreatingHUD = true;
             
             try
@@ -2016,14 +1873,12 @@ namespace KYS
             }
             
             string currentKey = keys[index];
-            Debug.Log($"[UIManager] 키 '{currentKey}'로 InfoHUD 생성 시도 ({index + 1}/{keys.Length})");
             
             try
             {
                 T result = await CreateHUDAsync<T>(currentKey);
                 if (result != null)
                 {
-                    Debug.Log($"[UIManager] InfoHUD 생성 성공: {currentKey}");
                     return result;
                 }
                 else
@@ -2055,7 +1910,6 @@ namespace KYS
                 if (hudUI != null && hudUI.LayerType == UILayerType.HUD)
                 {
                     hudUI.gameObject.SetActive(false);
-                    //Debug.Log($"[UIManager] HUD UI 숨김: {hudUI.name}");
                 }
             }
 
@@ -2066,11 +1920,8 @@ namespace KYS
                 if (canvasGroup != null && canvasGroup.gameObject != hudCanvas.gameObject)
                 {
                     canvasGroup.gameObject.SetActive(false);
-                    //Debug.Log($"[UIManager] HUD 요소 숨김: {canvasGroup.name}");
                 }
             }
-
-            ////Debug.Log($"[UIManager] HUD Canvas 초기화 완료 - 모든 HUD 요소가 숨김 상태로 설정됨");
         }
 
         /// <summary>
@@ -2087,7 +1938,6 @@ namespace KYS
                 if (hudUI != null && hudUI.LayerType == UILayerType.HUD)
                 {
                     hudUI.gameObject.SetActive(true);
-                    //Debug.Log($"[UIManager] HUD UI 표시: {hudUI.name}");
                 }
             }
 
@@ -2098,11 +1948,8 @@ namespace KYS
                 if (canvasGroup != null && canvasGroup.gameObject != hudCanvas.gameObject)
                 {
                     canvasGroup.gameObject.SetActive(true);
-                    //Debug.Log($"[UIManager] HUD 요소 표시: {canvasGroup.name}");
                 }
             }
-
-            //Debug.Log($"[UIManager] HUD Canvas 표시 완료 - 모든 HUD 요소가 표시됨");
         }
 
         /// <summary>
@@ -2130,7 +1977,6 @@ namespace KYS
             if (hudUI != null)
             {
                 hudUI.gameObject.SetActive(true);
-                //Debug.Log($"[UIManager] HUD UI 표시: {hudUI.name}");
             }
             else
             {
@@ -2163,7 +2009,6 @@ namespace KYS
             if (hudUI != null)
             {
                 hudUI.gameObject.SetActive(false);
-                //Debug.Log($"[UIManager] HUD UI 숨김: {hudUI.name}");
             }
             else
             {

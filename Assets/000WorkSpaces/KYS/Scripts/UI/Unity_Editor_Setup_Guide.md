@@ -2,13 +2,15 @@
 
 ## 📋 개요
 
-이 가이드는 Unity 에디터에서 KYS UI 시스템을 설정하고 구성하는 방법을 단계별로 설명합니다. Addressables, SafeArea, UI 프리팹 설정 등을 포함합니다.
+이 가이드는 Unity 에디터에서 KYS UI 시스템을 설정하고 구성하는 방법을 단계별로 설명합니다. Addressables, SafeArea, UI 프리팹 설정 등을 포함합니다. 현재 프로젝트에서는 **InfoHUD 시스템**, **중복 생성 방지**, **로컬라이제이션** 기능과 함께 사용됩니다.
 
 ## 🎯 설정 목표
 
 - **Addressables 설정**: UI 프리팹을 Addressable로 구성
 - **UIManager 설정**: Canvas Reference 및 SafeArea 설정
 - **프리팹 구성**: UI 프리팹 구조 및 컴포넌트 설정
+- **InfoHUD 시스템 설정**: TouchInfoHUD 및 HUDBackdropUI 설정
+- **로컬라이제이션 설정**: 다국어 지원 시스템 설정
 - **테스트 환경**: 에디터에서 UI 시스템 테스트
 
 ## ⚙️ 1단계: Addressables 패키지 설치
@@ -36,7 +38,7 @@
 ```
 UI/
 ├── Canvas/          # 캔버스 프리팹
-├── HUD/            # HUD UI 요소
+├── HUD/            # HUD UI 요소 (TouchInfoHUD, HUDBackdropUI 포함)
 ├── Panel/          # 패널 UI
 ├── Popup/          # 팝업 UI
 └── Loading/        # 로딩 UI
@@ -79,7 +81,10 @@ UI/Canvas/PanelCanvas
 UI/Canvas/PopupCanvas
 UI/Canvas/LoadingCanvas
 
-# HUD UI
+# HUD UI (새로 추가)
+UI/HUD/TouchInfoHUD
+UI/HUD/HUDBackdropUI
+UI/HUD/HUDAllPanel
 UI/HUD/StatusPanel
 UI/HUD/HealthBar
 UI/HUD/ScoreDisplay
@@ -89,11 +94,14 @@ UI/Panel/MainMenu
 UI/Panel/Settings
 UI/Panel/Inventory
 UI/Panel/Shop
+UI/Panel/TitlePanel
+UI/Panel/LanguageSettingsPanel
 
 # 팝업 UI
 UI/Popup/MessagePopup
 UI/Popup/CheckPopUp
 UI/Popup/ItemDetailPopup
+UI/Popup/LanguageSettingPopup
 
 # 로딩 UI
 UI/Loading/LoadingScreen
@@ -116,6 +124,25 @@ Canvas (Canvas)
 - **Pivot**: (0.5, 0.5)
 - **Size**: Canvas 크기에 맞춤
 - **SafeAreaPanel** 컴포넌트 추가
+
+### 3.4 InfoHUD 프리팹 설정
+
+**TouchInfoHUD 프리팹 구조:**
+```
+TouchInfoHUD (TouchInfoHUD)
+├── Background (Image)
+├── TitleText (TextMeshProUGUI)
+├── DescriptionText (TextMeshProUGUI)
+├── IconImage (Image)
+└── CloseButton (Button)
+```
+
+**HUDBackdropUI 프리팹 구조:**
+```
+HUDBackdropUI (HUDBackdropUI)
+└── Backdrop (Image)
+    └── PointerHandler (PointerHandler)
+```
 
 ## 🔧 4단계: UIManager 설정
 
@@ -146,6 +173,12 @@ Canvas (Canvas)
 - **Debug Color**: 빨간색 (0.3f 알파)
 - **Show Debug Area**: 개발 중에만 체크
 
+### 4.4 중복 생성 방지 설정
+
+**Duplicate Prevention Settings 섹션:**
+- **Enable Duplicate Prevention**: ✅ 체크
+- **Debug Duplicate Prevention**: 개발 중에만 체크
+
 ## 🎮 5단계: SafeAreaManager 설정
 
 ### 5.1 SafeAreaManager 오브젝트 생성
@@ -161,9 +194,56 @@ Canvas (Canvas)
 - **Debug Color**: 빨간색 (0.3f 알파)
 - **Show Debug Area**: 개발 중에만 체크
 
-## 🧪 6단계: 테스트 환경 설정
+## 🌐 6단계: 로컬라이제이션 설정
 
-### 6.1 Game View 설정
+### 6.1 LocalizationManager 설정
+
+1. **빈 GameObject 생성** (이름: "LocalizationManager")
+2. **LocalizationManager** 컴포넌트 추가
+3. **DontDestroyOnLoad** 설정
+
+### 6.2 CSV 파일 설정
+
+**LanguageData.csv 파일 구성:**
+```csv
+Key,Korean,English
+title,제목,Title
+description,설명,Description
+confirm,확인,Confirm
+cancel,취소,Cancel
+```
+
+### 6.3 언어 설정
+
+**Inspector에서 설정:**
+- **Default Language**: Korean
+- **Current Language**: Korean
+- **CSV File**: LanguageData.csv 파일 할당
+
+## 🎯 7단계: InfoHUD 시스템 설정
+
+### 7.1 TouchInfoManager 설정
+
+1. **빈 GameObject 생성** (이름: "TouchInfoManager")
+2. **TouchInfoManager** 컴포넌트 추가
+3. **DontDestroyOnLoad** 설정
+
+### 7.2 TouchInfoHUD AssetReference 설정
+
+**Inspector에서 설정:**
+- **TouchInfoHUD Reference**: TouchInfoHUD 프리팹 할당
+- **HUDBackdropUI Reference**: HUDBackdropUI 프리팹 할당
+
+### 7.3 터치 감지 설정
+
+**Touch Detection Settings:**
+- **Enable Touch Detection**: ✅ 체크
+- **Touch Layer**: UI가 아닌 오브젝트 레이어 설정
+- **Debug Touch Detection**: 개발 중에만 체크
+
+## 🧪 8단계: 테스트 환경 설정
+
+### 8.1 Game View 설정
 
 **해상도 설정:**
 1. **Game View**에서 **Resolution** 드롭다운 선택
@@ -176,18 +256,20 @@ Canvas (Canvas)
 - Samsung Galaxy S21: 360 x 800
 - Google Pixel 5: 393 x 851
 
-### 6.2 테스트 씬 구성
+### 8.2 테스트 씬 구성
 
 **기본 씬 구조:**
 ```
 Scene
 ├── UIManager (DontDestroyOnLoad)
 ├── SafeAreaManager (DontDestroyOnLoad)
+├── LocalizationManager (DontDestroyOnLoad)
+├── TouchInfoManager (DontDestroyOnLoad)
 ├── Main Camera
 └── Directional Light
 ```
 
-### 6.3 테스트 스크립트 추가
+### 8.3 테스트 스크립트 추가
 
 **간단한 테스트 스크립트:**
 ```csharp
@@ -205,112 +287,107 @@ public class UITest : MonoBehaviour
         {
             Debug.Log("SafeAreaManager 초기화 완료");
         }
-    }
-    
-    private void Update()
-    {
-        // 테스트 키 입력
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        
+        if (LocalizationManager.Instance != null)
         {
-            TestLoadUI();
+            Debug.Log("LocalizationManager 초기화 완료");
+        }
+        
+        if (TouchInfoManager.Instance != null)
+        {
+            Debug.Log("TouchInfoManager 초기화 완료");
         }
     }
     
-    private async void TestLoadUI()
+    // InfoHUD 테스트
+    public async void TestInfoHUD()
     {
-        // 테스트 UI 로드
-        BaseUI testUI = await UIManager.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
-        if (testUI != null)
-        {
-            UIManager.Instance.OpenPanel(testUI);
-            Debug.Log("테스트 UI 로드 성공");
-        }
+        await TouchInfoHUD.ShowInfoHUD(
+            screenPosition: Input.mousePosition,
+            title: "테스트 제목",
+            description: "테스트 설명입니다.",
+            icon: null
+        );
+    }
+    
+    // 로컬라이제이션 테스트
+    public void TestLocalization()
+    {
+        string title = LocalizationManager.Instance.GetLocalizedText("title");
+        Debug.Log($"현재 언어: {LocalizationManager.Instance.CurrentLanguage}");
+        Debug.Log($"제목: {title}");
     }
 }
 ```
 
-## 🔍 7단계: Addressables 빌드
+## 🔍 9단계: 디버깅 및 검증
 
-### 7.1 첫 번째 빌드
+### 9.1 콘솔 로그 확인
 
-1. **Window > Asset Management > Addressables > Groups**
-2. **Build > New Build > Default Build Script**
-3. 빌드 완료 대기
-4. 생성된 파일들 확인:
-   - `catalog.json`: 에셋 카탈로그
-   - `*.bundle`: 에셋 번들 파일들
-
-### 7.2 빌드 설정 확인
-
-**Build Settings:**
-- **Platform**: Android 또는 iOS
-- **Scripting Backend**: IL2CPP
-- **Target Architectures**: ARM64
-
-**Player Settings:**
-- **Other Settings > Scripting Define Symbols**: `DOTWEEN_AVAILABLE` 추가 (DoTween 사용 시)
-
-## 🛠️ 8단계: 문제 해결
-
-### 8.1 일반적인 문제들
-
-**Addressable 키를 찾을 수 없음:**
+**정상 초기화 시 나타나는 로그:**
 ```
-[UIManager] UI 로드 실패: UI/Panel/MainMenu
+[UIManager] UIManager 초기화 완료
+[SafeAreaManager] SafeAreaManager 초기화 완료
+[LocalizationManager] LocalizationManager 초기화 완료
+[TouchInfoManager] TouchInfoManager 초기화 완료
 ```
-- **해결**: Addressable 키 확인
-- **해결**: 프리팹이 올바른 그룹에 있는지 확인
-- **해결**: Addressables 빌드 재실행
 
-**Canvas Reference 누락:**
-```
-[UIManager] UI 부모를 찾을 수 없음
-```
-- **해결**: UIManager의 Canvas Reference 설정 확인
-- **해결**: 프리팹이 Addressable로 설정되었는지 확인
+### 9.2 SafeArea 디버그
 
-**SafeArea가 적용되지 않음:**
+**SafeArea 시각화:**
+1. SafeAreaManager의 **Show Debug Area** 체크
+2. Game View에서 SafeArea 영역 확인
+3. 빨간색 영역이 안전 영역을 나타냄
+
+### 9.3 InfoHUD 테스트
+
+**InfoHUD 기능 테스트:**
+1. UI가 아닌 오브젝트 클릭
+2. InfoHUD가 나타나는지 확인
+3. 다른 곳 클릭 시 InfoHUD가 사라지는지 확인
+4. InfoHUD 자체 클릭 시 닫히지 않는지 확인
+
+### 9.4 로컬라이제이션 테스트
+
+**언어 변경 테스트:**
+1. LanguageSettingsPanel 열기
+2. 언어 변경
+3. UI 텍스트가 변경되는지 확인
+4. 드롭다운 언어명이 올바르게 표시되는지 확인
+
+## 🛠️ 10단계: 문제 해결
+
+### 10.1 일반적인 문제들
+
+**UIManager 초기화 실패:**
+```
+[UIManager] UIManager 초기화 실패
+```
+- **해결**: Canvas Reference 설정 확인
+- **해결**: Addressable 키가 올바른지 확인
+
+**SafeArea 적용 안됨:**
+```
+[SafeAreaManager] SafeArea 적용 실패
+```
 - **해결**: SafeAreaManager가 씬에 있는지 확인
 - **해결**: Canvas에 SafeAreaPanel이 있는지 확인
 
-### 8.2 디버깅 도구
+**InfoHUD 생성 안됨:**
+```
+[TouchInfoHUD] InfoHUD 생성 실패
+```
+- **해결**: TouchInfoHUD AssetReference 설정 확인
+- **해결**: TouchInfoManager가 초기화되었는지 확인
 
-**Addressables Profiler:**
-1. **Window > Asset Management > Addressables > Profiler**
-2. 로딩 상태 및 메모리 사용량 확인
+**로컬라이제이션 작동 안됨:**
+```
+[LocalizationManager] 로컬라이제이션 초기화 실패
+```
+- **해결**: CSV 파일 경로 확인
+- **해결**: CSV 파일 형식 확인
 
-**Console 로그 확인:**
-- UIManager의 상세 로그 확인
-- SafeAreaManager의 디버그 정보 확인
-- Addressables 관련 에러 메시지 확인
-
-## 📋 9단계: 검증 체크리스트
-
-### 9.1 기본 설정 확인
-
-- [ ] Addressables 패키지 설치 완료
-- [ ] Addressable Groups 생성 완료
-- [ ] UI 프리팹을 Addressable로 설정 완료
-- [ ] UIManager 오브젝트 생성 및 설정 완료
-- [ ] SafeAreaManager 오브젝트 생성 및 설정 완료
-
-### 9.2 기능 테스트
-
-- [ ] UIManager 초기화 확인
-- [ ] SafeAreaManager 초기화 확인
-- [ ] UI 로드 테스트 성공
-- [ ] SafeArea 적용 확인
-- [ ] 팝업 표시 테스트 성공
-
-### 9.3 빌드 테스트
-
-- [ ] Addressables 빌드 성공
-- [ ] 플랫폼별 빌드 성공
-- [ ] 실제 디바이스에서 테스트 성공
-
-## 🎯 10단계: 최적화
-
-### 10.1 성능 최적화
+### 10.2 성능 최적화
 
 **번들 크기 최적화:**
 - 관련 UI들을 같은 그룹에 배치
@@ -322,40 +399,31 @@ public class UITest : MonoBehaviour
 - 로딩 화면 표시
 - 비동기 로딩 활용
 
-### 10.2 메모리 관리
-
-**메모리 누수 방지:**
-- UI 사용 후 반드시 `ReleaseUI()` 호출
-- 씬 전환 시 모든 UI 해제
-- Addressables 핸들 관리
-
 ## 📚 추가 리소스
 
-- [Unity Addressables 공식 문서](https://docs.unity3d.com/Packages/com.unity.addressables@latest)
 - [프로젝트 README.md](./README.md)
 - [Addressable UI 설정 가이드](./Addressable_UI_Setup_Guide.md)
 - [SafeArea 설정 가이드](./SafeArea_Setup_Guide.md)
+- [현재 사용 패턴 가이드](./현재_사용_패턴_가이드.md)
 
 ## 🎯 모범 사례
 
-### 1. 네이밍 컨벤션
-- **Address 키**: `UI/Type/Name` 형식 사용
-- **그룹명**: 기능별로 명확하게 구분
-- **프리팹명**: PascalCase 사용
+### 1. 설정 순서
+- **Addressables** → **UIManager** → **SafeAreaManager** → **LocalizationManager** → **TouchInfoManager**
 
-### 2. 파일 구조
-- **UI 프리팹**: `Assets/000WorkSpaces/KYS/Prefabs/UI/` 하위에 구성
-- **스크립트**: `Assets/000WorkSpaces/KYS/Scripts/UI/` 하위에 구성
-- **문서**: 각 기능별로 별도 가이드 문서 작성
+### 2. 테스트 전략
+- **단계별 테스트**: 각 단계별로 기능 확인
+- **통합 테스트**: 모든 시스템이 함께 작동하는지 확인
+- **성능 테스트**: 실제 디바이스에서 성능 확인
 
-### 3. 버전 관리
-- **Addressables 빌드**: 버전별로 관리
-- **프리팹 변경**: Addressables 재빌드 필요
-- **설정 변경**: 문서 업데이트
+### 3. 유지보수
+- **정기적인 업데이트**: Addressables 카탈로그 업데이트
+- **로그 모니터링**: 콘솔 로그를 통한 문제 감지
+- **문서 업데이트**: 설정 변경 시 문서 업데이트
 
 ---
 
-**버전**: 2.0  
-**최종 업데이트**: 2024년  
+**버전**: 2.1  
+**최종 업데이트**: 2025년 8월  
 **Unity 버전**: 2022.3 LTS 이상  
-**지원 플랫폼**: iOS, Android, Windows, macOS
+**주요 업데이트**: InfoHUD 시스템, 중복 생성 방지, 로컬라이제이션, 통합 설정 가이드

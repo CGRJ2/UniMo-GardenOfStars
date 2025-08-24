@@ -66,7 +66,7 @@ namespace KYS
             UpdateLevel(1);
             UpdateQuestProgress("진행 중");
             
-            Debug.Log("[HUDAllPanel] HUD 초기화 완료");
+            //Debug.Log("[HUDAllPanel] HUD 초기화 완료");
         }
         
         public override void Cleanup()
@@ -78,7 +78,7 @@ namespace KYS
             }
             
             base.Cleanup();
-            Debug.Log("[HUDAllPanel] HUD 정리 완료");
+            //Debug.Log("[HUDAllPanel] HUD 정리 완료");
         }
         
         private void SetupButtons()
@@ -180,7 +180,7 @@ namespace KYS
 
         private void OnMenuButtonClicked()
         {
-            Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
+            //Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
             
             if (UIManager.Instance != null)
             {
@@ -188,7 +188,7 @@ namespace KYS
                 UIManager.Instance.ShowPopUpAsync<MenuPopUp>((popup) => {
                     if (popup != null)
                     {
-                        Debug.Log("[HUDAllPanel] MenuPopUp 성공적으로 열림");
+                        //Debug.Log("[HUDAllPanel] MenuPopUp 성공적으로 열림");
                     }
                     else
                     {
@@ -204,7 +204,7 @@ namespace KYS
         
         private void OnInventoryButtonClicked()
         {
-            Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
+            //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
             
             if (UIManager.Instance == null)
             {
@@ -218,7 +218,7 @@ namespace KYS
             {
                 if (panel is TitlePanel)
                 {
-                    Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
                 }
             }
@@ -227,7 +227,7 @@ namespace KYS
             UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
                 if (panel != null)
                 {
-                    Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
+                    //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
                 }
                 else
                 {
@@ -243,24 +243,24 @@ namespace KYS
         [ContextMenu("HUDAllPanel 상태 확인")]
         public void CheckHUDAllPanelStatus()
         {
-            Debug.Log($"[HUDAllPanel] GameObject 이름: {gameObject.name}");
-            Debug.Log($"[HUDAllPanel] 활성화 상태: {gameObject.activeInHierarchy}");
-            Debug.Log($"[HUDAllPanel] menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
-            Debug.Log($"[HUDAllPanel] inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
-            Debug.Log($"[HUDAllPanel] moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            Debug.Log($"[HUDAllPanel] levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
-            Debug.Log($"[HUDAllPanel] questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] GameObject 이름: {gameObject.name}");
+            //Debug.Log($"[HUDAllPanel] 활성화 상태: {gameObject.activeInHierarchy}");
+            //Debug.Log($"[HUDAllPanel] menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
         
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
-            Debug.Log($"[HUDAllPanel] UI 요소 정보:");
-            Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
-            Debug.Log($"  - inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
-            Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] UI 요소 정보:");
+            //Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
         
         #endregion

@@ -162,7 +162,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -255, y: -22}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7844895001865926805
 CanvasRenderer:
@@ -219,10 +219,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 69.05
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -581,13 +581,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 44.15
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -969,10 +969,10 @@ MonoBehaviour:
   m_fontSize: 30
   m_fontSizeBase: 30
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1060,7 +1060,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 230, y: -19}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2772207241789556070
 CanvasRenderer:
@@ -1117,10 +1117,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 69.05
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -1188,7 +1188,7 @@ GameObject:
   - component: {fileID: 4273825218135574822}
   - component: {fileID: 8137911250117992349}
   m_Layer: 5
-  m_Name: LocalizationSettingPopUp
+  m_Name: LanguageSettingsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1212,8 +1212,8 @@ RectTransform:
   - {fileID: 5176580745441269477}
   - {fileID: 1363714348616576926}
   - {fileID: 3128505945019169045}
-  - {fileID: 7632631593698643967}
   - {fileID: 3835688934035378568}
+  - {fileID: 7632631593698643967}
   - {fileID: 4807783919898877245}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1276,8 +1276,8 @@ MonoBehaviour:
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
+  showEase: 0
+  hideEase: 0
   canCloseWithESC: 1
   canCloseWithBackdrop: 0
   hidePreviousUI: 0
@@ -1293,14 +1293,14 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  languageDropdown: {fileID: 7595873006320057299}
-  applyButton: {fileID: 8959633631636691935}
-  closeButton: {fileID: 8502267004587564626}
-  resetButton: {fileID: 3682665244083596020}
-  currentLanguageText: {fileID: 6591717932207272038}
-  translationCompletenessText: {fileID: 921499223471331892}
-  translationProgressSlider: {fileID: 662737147841112004}
-  previewText: {fileID: 1405351358430401396}
+  languageDropdownName: Dropdown
+  applyButtonName: ApplyButton
+  closeButtonName: CloseButton
+  resetButtonName: ResetButton
+  currentLanguageTextName: CurrentLanguageText
+  translationCompletenessTextName: translationCompletenessText
+  translationProgressSliderName: Slider
+  previewTextName: previewText
   previewKey: ui_confirm
 --- !u!1 &3183759995914624088
 GameObject:
@@ -2042,8 +2042,8 @@ MonoBehaviour:
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
+  showEase: 0
+  hideEase: 0
   canCloseWithESC: 1
   canCloseWithBackdrop: 1
   hidePreviousUI: 1
@@ -2059,9 +2059,9 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  messageText: {fileID: 4379988152772503392}
-  confirmButton: {fileID: 8959633631636691935}
-  cancelButton: {fileID: 8502267004587564626}
+  messageTextName: MessageText
+  confirmButtonName: ConfirmButton
+  cancelButtonName: CancelButton
 --- !u!1 &6515254017269566344
 GameObject:
   m_ObjectHideFlags: 0
@@ -2481,7 +2481,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 7, y: 85}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9065616019728383900
 CanvasRenderer:
@@ -2538,10 +2538,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 69.05
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -2729,8 +2729,6 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Option B
       m_Image: {fileID: 0}
-    - m_Text: Option C
-      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2771,8 +2769,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -7, y: -18}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: -12, y: -51}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &662737147841112004
 MonoBehaviour:
