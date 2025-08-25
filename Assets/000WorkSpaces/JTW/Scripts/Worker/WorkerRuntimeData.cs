@@ -46,5 +46,16 @@ public class WorkerRuntimeData : CharaterRuntimeData
     {
         workstation.SetReserveState(true);
         CurWorkstation.Value = workstation;
+        Debug.Log(workstation);
+    }
+
+    public override int GetMaxCapacity()
+    {
+        return MaxCapacity;
+    }
+
+    public override float GetProductionSpeed()
+    {
+        return ProductionSpeed;
     }
 }
