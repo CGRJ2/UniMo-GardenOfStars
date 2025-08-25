@@ -1,16 +1,16 @@
-﻿using UnityEngine.SceneManagement;
 using UnityEngine;
-using KYS;
 
 public static class Manager
 {
     public static GameManager game => GameManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
     public static PlayerManager player => PlayerManager.Instance;
+    public static BuildingManager buildings => BuildingManager.Instance;
+    public static QuestManager quest => QuestManager.Instance;
+    public static NpcManager npc => NpcManager.Instance;
+    public static StageManager stage => StageManager.Instance;
     public static UIManager ui => UIManager.Instance;
     public static LocalizationManager localization => LocalizationManager.Instance;
-
-    
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
@@ -18,8 +18,11 @@ public static class Manager
         GameManager.CreateInstance();
         PoolManager.CreateInstance();
         PlayerManager.CreateInstance();
+        BuildingManager.CreateInstance();
+        StageManager.CreateInstance();
+        QuestManager.CreateInstance();
+        NpcManager.CreateInstance();
         UIManager.CreateInstance();
         LocalizationManager.CreateInstance();
-      
     }
 }
