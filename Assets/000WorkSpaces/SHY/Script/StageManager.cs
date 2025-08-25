@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 
 
-public class StageManager : Singleton<StageManager>,IQuestObserver
+public class StageManager : MonoBehaviour,IQuestObserver
 {
-    //public static StageManager instance;
+    public static StageManager instance;
     [Header("So 그룹등록")]
     public StageData[] originalStageSOs;
-    public SceneChanger sceneChanger;
+    
 
     private List<StageData> activeStageInstances = new(); // 복제본 리스트
 
@@ -45,23 +47,43 @@ public class StageManager : Singleton<StageManager>,IQuestObserver
 
     private void Awake()
     {
-        base.SingletonInit();
-        //if (instance == null)
-        //{
-        //    instance = this;
-        //    DontDestroyOnLoad(gameObject);
-        //}
-        //else
-        //{
-        //    Destroy(gameObject);
-        //}
+        
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         savePath = Path.Combine(Application.persistentDataPath, "SaveFiles", "stageData.json");
     }
     private void Start()
     {
         InitializeStages();
+        //Addressables.LoadSceneAsync(Manager.game.CurrentSceneId,LoadSceneMode.Additive);
+        //Addressables.LoadSceneAsync(Manager.game.CurrentSceneName, LoadSceneMode.Additive);
+        
+        
+         //Addressables.LoadSceneAsync($"MapScene_Stage0{Manager.scene.CurSceneID}", LoadSceneMode.Additive);
+        Addressables.LoadSceneAsync($"MapScene_Stage0{Manager.scene.CurSceneID}", LoadSceneMode.Additive).Completed += task =>
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        };
+        
+        //Addressables.LoadSceneAsync(Manager.scene.CurSceneName, LoadSceneMode.Additive);
     }
-
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"씬 로드됨: {scene.name}, 모드: {mode}");
+        SceneManager.sceneLoaded -= OnSceneLoaded; // 한 번만 실행되도록 제거
+        Addressables.LoadSceneAsync($"MapScene_Stage0{Manager.scene.CurSceneID}", LoadSceneMode.Additive).Completed += task =>
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        };
+        
+    }
     public void InitializeStages()
     {
         activeStageInstances.Clear();

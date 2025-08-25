@@ -21,7 +21,7 @@ public class ActiveChack : MonoBehaviour
     }
     public void chack() // 미사용할듯.
     {
-        List<bool> get = Manager.stage.GetUnlockStates();
+        List<bool> get = StageManager.instance.GetUnlockStates();
         for (int i = 0; i < active.Length; i++)
         {
             active[i+1].SetActive(get[i]);// 기초 값은 항상 언락중이어야함 그러니 스테이지0 은 항상 열려있음으로 제외
