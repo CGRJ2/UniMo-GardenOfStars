@@ -2009,6 +2009,7 @@ GameObject:
   - component: {fileID: 1975702802524866915}
   - component: {fileID: 7276471133965826969}
   - component: {fileID: 7285661655263589757}
+  - component: {fileID: -4049683279892084752}
   m_Layer: 5
   m_Name: ManufactureBuildingInfoPanel
   m_TagString: Untagged
@@ -2075,6 +2076,51 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-4049683279892084752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6319579293748491044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e07d6ca5d47934fb12a2578aa0e559, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerType: 1
+  panelGroup: 4
+  useAnimation: 1
+  animationDuration: 0.3
+  showEase: 27
+  hideEase: 26
+  canCloseWithESC: 0
+  canCloseWithBackdrop: 0
+  hidePreviousUI: 0
+  disablePreviousUI: 0
+  createBackdropForPopup: 0
+  enableSFX: 1
+  defaultClickSound: SFX_ButtonClick
+  defaultBackSound: SFX_ButtonClickBack
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
+  tmp_Name: {fileID: 4510576295636417898}
+  tmp_Description: {fileID: 7437259317423163083}
+  tmp_RequireName: {fileID: 5837603941352590179}
+  image_Require: {fileID: 6191173307515140403}
+  tmp_ProdName: {fileID: 8120618758459653877}
+  image_Prod: {fileID: 7146205955767506372}
+  tmp_ProdTimeUpCost: {fileID: 4280055640294063257}
+  tmp_CurProdTime: {fileID: 5991842210944080009}
+  tmp_AfterUpProdTime: {fileID: 2728557190660843603}
+  tmp_CapacityUpCost: {fileID: 7285165268379493068}
+  tmp_CurCapacity: {fileID: 7630469113849749345}
+  tmp_AfterUpCapacity: {fileID: 2276624125386149680}
 --- !u!1 &6661688286323412593
 GameObject:
   m_ObjectHideFlags: 0
@@ -3257,7 +3303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3677868092799404634}
   - component: {fileID: 5974560815765352739}
-  - component: {fileID: 2886542982560407373}
+  - component: {fileID: 6191173307515140403}
   m_Layer: 5
   m_Name: InputmaterialsImage
   m_TagString: Untagged
@@ -3281,7 +3327,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -100, y: -560}
+  m_AnchoredPosition: {x: -99.99997, y: -560}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5974560815765352739
@@ -3292,7 +3338,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7997763126226077392}
   m_CullTransparentMesh: 1
---- !u!114 &2886542982560407373
+--- !u!114 &6191173307515140403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

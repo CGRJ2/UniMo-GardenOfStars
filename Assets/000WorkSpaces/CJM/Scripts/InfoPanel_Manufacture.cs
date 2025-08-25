@@ -1,26 +1,27 @@
-using KYS;
+ï»¿using KYS;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 
 public class InfoPanel_Manufacture : BaseUI
 {
-    [Header("°Ç¹° Á¤º¸")]
+    [Header("ê±´ë¬¼ ì •ë³´")]
     [SerializeField] TMP_Text tmp_Name;
     [SerializeField] TMP_Text tmp_Description;
     [SerializeField] TMP_Text tmp_RequireName;
-    [SerializeField] Sprite sprite_Require;
+    [SerializeField] Image image_Require;
     [SerializeField] TMP_Text tmp_ProdName;
-    [SerializeField] Sprite sprite_Prod;
+    [SerializeField] Image image_Prod;
 
-    [Header("»ı»ê ¼Óµµ ½ºÅÈ")]
+    [Header("ìƒì‚° ì†ë„ ìŠ¤íƒ¯")]
     //[SerializeField] TMP_Text tmp_ProdTimeLevel;
     [SerializeField] TMP_Text tmp_ProdTimeUpCost;
     [SerializeField] TMP_Text tmp_CurProdTime;
     [SerializeField] TMP_Text tmp_AfterUpProdTime;
 
-    [Header("Àç·á ÀúÀå ¿ë·® ½ºÅÈ(ÀÛ¾÷Çü °Ç¹° Àü¿ë)")]
+    [Header("ì¬ë£Œ ì €ì¥ ìš©ëŸ‰ ìŠ¤íƒ¯(ì‘ì—…í˜• ê±´ë¬¼ ì „ìš©)")]
     //[SerializeField] TMP_Text tmp_CapacityLevel;
     [SerializeField] TMP_Text tmp_CapacityUpCost;
     [SerializeField] TMP_Text tmp_CurCapacity;
@@ -39,12 +40,12 @@ public class InfoPanel_Manufacture : BaseUI
         Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
         {
             tmp_RequireName.text = requireData.Result.Name;
-            sprite_Require = requireData.Result.Sprite;
+            image_Require.sprite = requireData.Result.Sprite;
         };
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
             tmp_RequireName.text = prodData.Result.Name;
-            sprite_Require = prodData.Result.Sprite;
+            image_Require.sprite = prodData.Result.Sprite;
         };
 
         //tmp_ProdTimeLevel.text = $"{curLevel_ProdTime}";

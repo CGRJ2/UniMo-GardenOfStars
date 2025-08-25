@@ -224,6 +224,7 @@ namespace KYS
             }
             
             // 인벤토리 관련 로직 추가
+            
             UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
                 if (panel != null)
                 {
