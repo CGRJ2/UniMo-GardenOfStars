@@ -27,7 +27,8 @@ public class WorkerRuntimeData : CharaterRuntimeData
     private WorkerManager _workerManager;
     public WorkerManager WorkerManager => _workerManager;
 
-    public ObservableProperty<IWorkStation> CurWorkstation;
+    public ObservableProperty<IWorkStation> CurWorkstation = new ObservableProperty<IWorkStation>();
+
 
     public bool IsHarvest;
 

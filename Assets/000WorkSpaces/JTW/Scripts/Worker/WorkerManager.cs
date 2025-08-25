@@ -5,8 +5,8 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
 
-    private List<WorkerRuntimeData> _workerList;
-    private List<WorkerRuntimeData> _availableWorkerList;
+    private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
+    private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
 
     // Test용
     public WorkStatoinLists workStatinLists = new();
@@ -100,7 +100,8 @@ public class WorkerManager : MonoBehaviour
 
             if (minDistance <= distance) continue;
 
-            
+            workstation = prod;
+            minDistance = distance;
         }
 
         if (workstation != null)
