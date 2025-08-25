@@ -27,7 +27,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
     private WorkerManager _workerManager;
     public WorkerManager WorkerManager => _workerManager;
 
-    public ObservableProperty<InteractableBase> CurWorkstation;
+    public ObservableProperty<IWorkStation> CurWorkstation;
 
     public bool IsHarvest;
 
@@ -41,7 +41,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
         _data = data;
     }
 
-    public void SetWorkstation(InteractableBase workstation)
+    public void SetWorkstation(IWorkStation workstation)
     {
         CurWorkstation.Value = workstation;
     }

@@ -1,30 +1,49 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WorkerState_Move : WorkerStateBase
 {
+    private NavMeshAgent _navAgent;
     private bool _isArrive;
 
     public WorkerState_Move(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
+        _navAgent = WorkerData.GetComponent<NavMeshAgent>();
+        _navAgent.speed = WorkerData.MoveSpeed;
     }
 
     public override void Enter()
     {
-        // TODO : 네브메쉬를 이용하여 목적지로 이동을 시작하는 함수 추가.
+        NavMeshHit hit;
+
+        IWorkStation workStatation = WorkerData.CurWorkstation.Value;
+
+        // 목적지 중에 ProductGenerater 같은 경우 영역 중간이 막혀있을 것,
+        // 따라서 중간에서 가장 가까운 갈 수 있는 위치를 지정해준다.
+        if (NavMesh.SamplePosition(workStatation.GetPosition(), out hit, 3f, NavMesh.AllAreas))
+        {
+            _navAgent.SetDestination(hit.position);
+        }
+        else
+        {
+            Debug.Log($"[NavMesh]{WorkerData.gameObject.name}이 적절한 목적지를 찾지 못하였습니다.");
+        }
+
+        _navAgent.isStopped = false;
+
         WorkerData.IsMove.Value = true;
     }
 
     public override void Update()
     {
-        // TODO : 일이 가능한 상태인지 체크하는 bool 변수로 변경.
-        if (!WorkerData.CurWorkstation.Value.gameObject.activeSelf)
+        if (!WorkerData.CurWorkstation.Value.GetWorkableState())
         {
+            _navAgent.isStopped = true;
             StateMachine.ChangeState(WorkerStates.Idle);
         }
-        // TODO : NevMesh를 이용하여 목적지에 도달했을 때.
-        else if (_isArrive)
+        else if (_navAgent.remainingDistance < 0.01f)
         {
             StateMachine.ChangeState(WorkerStates.Work);
         }
@@ -34,5 +53,4 @@ public class WorkerState_Move : WorkerStateBase
     {
         WorkerData.IsMove.Value = false;
     }
-
 }

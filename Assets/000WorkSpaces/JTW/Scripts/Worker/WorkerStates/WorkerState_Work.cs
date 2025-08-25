@@ -22,12 +22,17 @@
 
     private bool CanWork()
     {
-        // TODO : 일이 가능한 상태인지 체크하는 bool 변수로 변경.
-        if (!WorkerData.CurWorkstation.Value.gameObject.activeSelf) return false;
+        IWorkStation workstation = WorkerData.CurWorkstation.Value;
 
-        if (WorkerData.CurWorkstation.Value is InsertArea)
+        if (!workstation.GetWorkableState()) return false;
+
+        if (workstation is InsertArea)
         {
             if (WorkerData.IngrediantStack.Count == 0) return false;
+        }
+        else if (workstation is ProductGenerater || workstation is ProdsArea)
+        {
+            if (WorkerData.IngrediantStack.Count >= WorkerData.MaxCapacity) return false;
         }
 
         return true;
