@@ -57,10 +57,17 @@ public class WorkerState_Move : WorkerStateBase
     {
         if (!CurWorkstation.GetWorkableState()) return false;
 
-        if(CurWorkstation is WorkArea)
+        if (CurWorkstation is WorkArea)
         {
-            if((CurWorkstation as WorkArea).curWorker != null
+            if ((CurWorkstation as WorkArea).curWorker != null
                 && (CurWorkstation as WorkArea).curWorker != WorkerData)
+            {
+                return false;
+            }
+        }
+        else if (CurWorkstation is ProdsArea || CurWorkstation is ProductGenerater)
+        {
+            if (WorkerData.IngrediantStack.Count >= WorkerData.MaxCapacity)
             {
                 return false;
             }
