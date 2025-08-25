@@ -32,7 +32,6 @@ public class ManufactureBuilding : BuildingInstance
     public Stack<IngrediantInstance> ingrediantStack = new();
     //public Stack<IngrediantInstance> prodsStack = new();  // 회수영역을 스택처럼 표현할 때 사용하는걸로
 
-
     private void Awake()
     {
         base.BIBaseInit();
