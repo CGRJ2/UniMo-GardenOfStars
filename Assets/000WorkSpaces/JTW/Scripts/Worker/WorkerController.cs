@@ -9,7 +9,7 @@ public enum WorkerStates
 
 public class WorkerController : MonoBehaviour
 {
-    private StateMachine<WorkerStates> _stateMachine;
+    private StateMachine<WorkerStates> _stateMachine = new StateMachine<WorkerStates>();
 
     private void Awake()
     {
