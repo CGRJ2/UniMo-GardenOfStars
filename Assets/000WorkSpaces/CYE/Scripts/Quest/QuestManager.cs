@@ -6,10 +6,12 @@ using System;
 
 public class QuestManager : Singleton<QuestManager>
 {
+    // for test
     [SerializeField] private CYETestQuestDataSO[] _curruntQuestDataList;
     private Quest[] _currentQuestList;
     private int _currentQuestIndex;
-    public int CurrentQuestIndex { get { return _currentQuestIndex; } } // 옵저버블프로퍼티
+    // public int CurrentQuestIndex { get { return _currentQuestIndex; } } // 옵저버블프로퍼티
+    public ObservableProperty<int> CurrentQuestIndex;
     // private int _targetCompleteCount;
     public int TargetCompleteCount { get { return _currentQuestList.Length; } }
     public event Action OnQuestProgressUpdate;
@@ -30,17 +32,19 @@ public class QuestManager : Singleton<QuestManager>
     public void SetQuestsInRegion(string regionId)
     {
         // DB에서 regionId를 통해 해당 지역의 퀘스트 목록을 가져온다
+        // for test
         InitQuestList(_curruntQuestDataList.Length);
         ConvertDataSOToClass();
         // 가져온 목록을 "완료해야하는 순서대로 정렬 후" _currentQuestList에 지정한다
 
-        _currentQuestIndex = GetCurrentQuestIndex();
+        // _currentQuestIndex = GetCurrentQuestIndex();
+        CurrentQuestIndex.Value = GetCurrentQuestIndex();
     }
 
     private void InitQuestList(int listCount)
     {
         _currentQuestList = new Quest[listCount];
-        _currentQuestIndex = 0;
+        // _currentQuestIndex = 0;
         // _targetCompleteCount = listCount;
     }
 
