@@ -9,6 +9,8 @@ public static class Manager
     public static QuestManager quest => QuestManager.Instance;
     public static NpcManager npc => NpcManager.Instance;
     public static StageManager stage => StageManager.Instance;
+    public static UIManager ui => UIManager.Instance;
+    public static LocalizationManager localization => LocalizationManager.Instance;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
@@ -20,5 +22,7 @@ public static class Manager
         StageManager.CreateInstance();
         QuestManager.CreateInstance();
         NpcManager.CreateInstance();
+        UIManager.CreateInstance();
+        LocalizationManager.CreateInstance();
     }
 }
