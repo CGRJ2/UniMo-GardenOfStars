@@ -6,7 +6,7 @@ public class InsertArea : InteractableBase, IWorkStation
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     public bool isWorkable
-    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.runtimeData.maxStackableCount; }}
+    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.runtimeData.capacity; }}
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -27,7 +27,7 @@ public class InsertArea : InteractableBase, IWorkStation
 
 
             // 건물에 스택 가능한 최대 수량만큼 쌓여있다면 스택 취소
-            if (ownerInstance.runtimeData.maxStackableCount > ownerInstance.ingrediantStack.Count)
+            if (ownerInstance.runtimeData.capacity > ownerInstance.ingrediantStack.Count)
                 isStackable = true;
             else isStackable = false;
 
@@ -64,6 +64,11 @@ public class InsertArea : InteractableBase, IWorkStation
     {
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
+
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
 
         StartCoroutine(AutoStacking());
     }

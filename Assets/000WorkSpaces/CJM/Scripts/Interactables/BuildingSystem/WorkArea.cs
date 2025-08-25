@@ -101,6 +101,11 @@ public class WorkArea : InteractableBase, IWorkStation
     {
         base.Enter_PersonalTask(characterRuntimeData);
 
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
+
         if (curWorker == null)
         {
             StartCoroutine(ProgressingTask());

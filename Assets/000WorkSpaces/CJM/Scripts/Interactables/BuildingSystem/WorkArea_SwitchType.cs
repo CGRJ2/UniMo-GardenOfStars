@@ -142,6 +142,11 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     {
         base.Enter_PersonalTask(characterRuntimeData);
 
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
+
         if (curWorker == null)
         {
             StartCoroutine(PrepareTask());
