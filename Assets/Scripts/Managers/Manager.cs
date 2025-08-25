@@ -1,4 +1,5 @@
 using UnityEngine;
+using KYS;
 
 public static class Manager
 {
