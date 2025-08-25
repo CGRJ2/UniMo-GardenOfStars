@@ -44,6 +44,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec97b433098a7374f9f3cc2b3966727c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _curruntQuestDataList:
+  _questDataList:
   - {fileID: 11400000, guid: 965470890d41d234cb97bbc61a567483, type: 2}
   - {fileID: 11400000, guid: 0d7c083a547d345418cf7c15e15199ca, type: 2}
+  _questContentDataList:
+  - {fileID: 11400000, guid: 8bb5301227da9b34ebe9308660d8a992, type: 2}
+  - {fileID: 11400000, guid: 170c2db5bb3deba4cba1d9b768b8a247, type: 2}
+  - {fileID: 11400000, guid: 702875c88fc3de84f8c124bb37908282, type: 2}
+  - {fileID: 11400000, guid: 9a9b115a8bd99ea4cb86b384fc91a105, type: 2}
+  - {fileID: 11400000, guid: b4ff6ee8afcd6794faed1d34594bc7d7, type: 2}
+  - {fileID: 11400000, guid: ec4099f3383b0384ca71bcc9bdd4260b, type: 2}
+  _questProgressDataList:
+  - {fileID: 11400000, guid: 37507d8570c148f40b650a42adbbfc4d, type: 2}
+  - {fileID: 11400000, guid: f9bfc32ca34d97a499f8069b92cbf0ca, type: 2}
+  - {fileID: 11400000, guid: 6c65db8b800a9cb4da4203559a9fc616, type: 2}
+  - {fileID: 11400000, guid: 8d9f8756dd528eb44b1e9e20a451ee79, type: 2}
+  - {fileID: 11400000, guid: 7b51fa35d6da27a48b169de75c42a85a, type: 2}
+  - {fileID: 11400000, guid: fdf9526644bb1db4bb689bfdebca3b28, type: 2}
+  _currentQuestIndex:
+    _value: 0
