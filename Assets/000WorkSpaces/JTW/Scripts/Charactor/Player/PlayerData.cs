@@ -18,6 +18,8 @@ public class PlayerData
     public float Nego;
     public int NegoLv;
 
+    public int Money;
+
     public PlayerData()
     {
         MoveSpeed = 5;
@@ -31,5 +33,7 @@ public class PlayerData
 
         Nego = 20;
         NegoLv = 1;
+
+        Money = 0;
     }
 }
