@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -10,12 +11,15 @@ public class ProdsArea : InteractableBase, IWorkStation
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
+    public Vector3 GetPosition() { return transform.position; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
     ObjectPool _Pool;
 
     public int ProdsCount;
-    //IngrediantInstance _SpawnedProduct;
+    IngrediantInstance _ProdsResultInstance;
+    [SerializeField] Canvas canvas_ProdsResult;
+    [SerializeField] TMP_Text tmp_Count;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -63,7 +67,7 @@ public class ProdsArea : InteractableBase, IWorkStation
 
             PickUp();
             //_SpawnedProduct = null;
-
+            tmp_Count.text = $"{ProdsCount}";
             yield return new WaitForSeconds(ownerInstance.prodsAbsorbDelayTime);
         }
     }
