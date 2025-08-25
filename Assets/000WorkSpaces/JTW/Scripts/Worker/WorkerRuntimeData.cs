@@ -43,6 +43,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public void SetWorkstation(IWorkStation workstation)
     {
+        workstation.SetReserveState(true);
         CurWorkstation.Value = workstation;
     }
 }
