@@ -58,7 +58,7 @@ public class WorkerManager : MonoBehaviour
         // 작업 영역에 일거리 있는지 탐색
         foreach (WorkArea work in workStatinLists.workAreas)
         {
-            if (!work.GetWorkableState() || work.GetReserveState()) continue;
+            if (!work.GetWorkableState() || work.GetReserveState() || work.curWorker != null) continue;
 
             float distance = Vector3.Distance(worker.transform.position, work.transform.position);
 
