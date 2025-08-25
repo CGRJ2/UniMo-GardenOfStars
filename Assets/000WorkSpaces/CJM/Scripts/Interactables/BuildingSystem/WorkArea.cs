@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class WorkArea : InteractableBase, IWorkStation
 {
-    public bool isWorkable { get { return curWorker == null & ownerInstance.ingrediantStack.Count > 0; } }
+    public bool isWorkable { get { return ownerInstance.ingrediantStack.Count > 0; } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -14,7 +14,7 @@ public class WorkArea : InteractableBase, IWorkStation
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
-    CharaterRuntimeData curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
+    public CharaterRuntimeData curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
     [SerializeField] Slider progressBar;
 
     public void Init(ManufactureBuilding instance)
@@ -26,6 +26,7 @@ public class WorkArea : InteractableBase, IWorkStation
 
     IEnumerator ProgressingTask()
     {
+        isReserved = false;
         curWorker = characterRD; // 임시. 일꾼까지 포함한 변수로 수정 필요
         curWorker.IsWork.Value = true;
 

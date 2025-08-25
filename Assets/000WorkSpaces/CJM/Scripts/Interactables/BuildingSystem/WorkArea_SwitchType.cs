@@ -36,6 +36,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     // 작업 준비 단계
     IEnumerator PrepareTask()
     {
+        isReserved = false;
+
         curWorker = characterRD; // 임시. 일꾼까지 포함한 변수로 수정 필요
         curWorker.IsWork.Value = true;
 

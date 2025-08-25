@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -24,9 +24,9 @@ public class ProdsArea : InteractableBase, IWorkStation
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
-        string key = instance.originData.ProductID; // ÀÓ½Ã·Î Id¸¦ ÀÌ¸§À¸·Î ¼³Á¤
+        string key = instance.originData.ProductID; // ì„ì‹œë¡œ Idë¥¼ ì´ë¦„ìœ¼ë¡œ ì„¤ì •
 
-        // »ı»êµÉ Àç·á ÀÎ½ºÅÏ½º Ç® ÁöÁ¤ or »ı¼º
+        // ìƒì‚°ë  ì¬ë£Œ ì¸ìŠ¤í„´ìŠ¤ í’€ ì§€ì • or ìƒì„±
         Addressables.LoadAssetAsync<GameObject>(key).Completed += task =>
         {
             GameObject product = task.Result;
@@ -40,19 +40,20 @@ public class ProdsArea : InteractableBase, IWorkStation
 
     public void PickUp()
     {
-        // ¼Õ¿¡ ÀÖ´Â°Å¶û ´Ù¸¥ Àç·á¸é È¸¼ö ¸øÇÔ
+        // ë“¤ê³  ìˆëŠ” ì¬ë£Œì™€ ë‹¤ë¥¸ ì¬ë£Œë¼ë©´ or ì†ì— ìµœëŒ€ ìˆ˜ëŸ‰ë§Œí¼ ë“¤ê³  ìˆì„ ì‹œ => ì¤ì§€ ì•Šê²Œ ë§Œë“¤ê¸°
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
             if (instanceProd.Data.ID != ownerInstance.originData.ProductID) return;
+            if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 
-        // ¿ÀºêÁ§Æ® Ç®¿¡¼­ È°¼ºÈ­
+        // ì˜¤ë¸Œì íŠ¸ í’€ì—ì„œ í™œì„±í™”
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
         IngrediantInstance _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
 
         _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
-        //Debug.Log($"{pc.ingrediantStack.Count}¹øÂ° À§Ä¡·Î");
+        //Debug.Log($"{pc.ingrediantStack.Count}ë²ˆì§¸ ìœ„ì¹˜ë¡œ");
         characterRD.IngrediantStack.Push(_SpawnedProduct);
         ProdsCount -= 1;
     }
