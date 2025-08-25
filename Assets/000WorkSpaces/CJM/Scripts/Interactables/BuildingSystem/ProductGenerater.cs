@@ -1,17 +1,21 @@
 using System.Collections;
 using UnityEngine;
 
-public class ProductGenerater : InteractableBase
+public class ProductGenerater : InteractableBase, IWorkStation
 {
     public bool isWorkable;
-    
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
+
     //[SerializeField] GenerateState state;
     public float productionTime;
     public float progressedTime;
 
     ObjectPool _Pool;
 
-    [SerializeField] IngrediantInstance _SpawnedProduct;
+    public IngrediantInstance _SpawnedProduct { get; private set; }
 
     Coroutine _CultivateRoutine;
     public void Init(GameObject prodPrefab, float productionTime)

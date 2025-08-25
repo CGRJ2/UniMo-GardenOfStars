@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-public class ProdsArea : InteractableBase
+public class ProdsArea : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return ProdsCount > 0; } }
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
     ObjectPool _Pool;

@@ -2,9 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorkArea_SwitchType : InteractableBase
+public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return (curWorker == null & ownerInstance.ingrediantStack.Count > 0 && !isOperating); } }
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
@@ -23,7 +27,7 @@ public class WorkArea_SwitchType : InteractableBase
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
-        //Manager.buildings.workStatinLists.workAreas.Add(this);
+        Manager.buildings.workStatinLists.workAreas_SwitchType.Add(this);
         temp_PrepareBar.gameObject.SetActive(false);
         progressBar.gameObject.SetActive(false);
     }
@@ -144,6 +148,6 @@ public class WorkArea_SwitchType : InteractableBase
     public override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
-        //Manager.buildings?.workStatinLists.workAreas?.Remove(this);
+        Manager.buildings?.workStatinLists.workAreas_SwitchType?.Remove(this);
     }
 }
