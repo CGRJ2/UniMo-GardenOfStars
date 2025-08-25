@@ -1,23 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 public class WorkerState_Move : WorkerStateBase
 {
     private NavMeshAgent _navAgent;
+    private Rigidbody _rigid;
     private bool _isArrive;
     private IWorkStation CurWorkstation => WorkerData.CurWorkstation.Value;
 
     public WorkerState_Move(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
         _navAgent = WorkerData.GetComponent<NavMeshAgent>();
-        _navAgent.speed = WorkerData.MoveSpeed;
+        _rigid = WorkerData.GetComponent<Rigidbody>();
     }
 
     public override void Enter()
     {
         NavMeshHit hit;
+
+        _navAgent.speed = WorkerData.MoveSpeed;
 
         // 목적지 중에 ProductGenerater 같은 경우 영역 중간이 막혀있을 것,
         // 따라서 중간에서 가장 가까운 갈 수 있는 위치를 지정해준다.
@@ -50,6 +51,8 @@ public class WorkerState_Move : WorkerStateBase
     public override void Exit()
     {
         _navAgent.isStopped = true;
+        _rigid.velocity = Vector3.zero;
+        _rigid.angularVelocity = Vector3.zero;
         WorkerData.IsMove.Value = false;
     }
 
