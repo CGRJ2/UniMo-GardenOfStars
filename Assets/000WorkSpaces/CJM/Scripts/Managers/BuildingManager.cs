@@ -9,18 +9,11 @@ public class BuildingManager : Singleton<BuildingManager>
     public List<BuildingInstance> ActivatedBIList = new();
     public WorkStatoinLists workStatinLists = new ();
 
-    public Action workStationActiveEvent;
-
-
-
     private void Awake() => Init();
     void Init()
     {
         base.SingletonInit();
     }
-
-
-
 }
 
 [Serializable]

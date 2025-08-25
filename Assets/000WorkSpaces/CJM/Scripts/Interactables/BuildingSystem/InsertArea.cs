@@ -11,7 +11,7 @@ public class InsertArea : InteractableBase, IWorkStation
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
-
+    public Vector3 GetPosition() { return transform.position; }
     // 데이터 구조 설계할 때 수정
     public void Init(ManufactureBuilding instance)
     {
