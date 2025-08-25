@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GameQuest
 {
     public enum QuestType
@@ -14,6 +16,10 @@ namespace GameQuest
         // 시작전, 진행중, 완료됨
         BeforeStart = 1, InProgress, Completed
     }
-    
+
+    public static class QuestUtil
+    {
+        
+    }
 }
     
