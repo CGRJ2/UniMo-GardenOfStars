@@ -86,3 +86,11 @@ public class InteractableBase : MonoBehaviour
         }
     }
 }
+
+
+public interface IWorkStation
+{
+    public bool GetWorkableState();
+    public bool GetReserveState();
+    public void SetReserveState(bool reserve);
+}

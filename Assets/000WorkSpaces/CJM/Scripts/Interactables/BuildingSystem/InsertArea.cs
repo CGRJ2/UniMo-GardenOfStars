@@ -1,12 +1,16 @@
 using System.Collections;
 using UnityEngine;
 
-public class InsertArea : InteractableBase
+public class InsertArea : InteractableBase, IWorkStation
 {
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     public bool isWorkable
     { get { return ownerInstance.ingrediantStack.Count < ownerInstance.runtimeData.maxStackableCount; }}
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
 
     // 데이터 구조 설계할 때 수정
     public void Init(ManufactureBuilding instance)

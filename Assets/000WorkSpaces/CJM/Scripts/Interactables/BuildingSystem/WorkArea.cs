@@ -3,9 +3,13 @@ using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorkArea : InteractableBase
+public class WorkArea : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return curWorker == null & ownerInstance.ingrediantStack.Count > 0; } }
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
@@ -106,4 +110,6 @@ public class WorkArea : InteractableBase
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas?.Remove(this);
     }
+
+    
 }
