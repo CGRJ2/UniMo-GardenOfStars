@@ -1,17 +1,22 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
-public class ProductGenerater : InteractableBase
+public class ProductGenerater : InteractableBase, IWorkStation
 {
     public bool isWorkable;
-    
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
+    public Vector3 GetPosition() { return transform.position; }
+
     //[SerializeField] GenerateState state;
     public float productionTime;
     public float progressedTime;
 
     ObjectPool _Pool;
 
-    [SerializeField] IngrediantInstance _SpawnedProduct;
+    public IngrediantInstance _SpawnedProduct { get; private set; }
 
     Coroutine _CultivateRoutine;
     public void Init(GameObject prodPrefab, float productionTime)
@@ -20,7 +25,7 @@ public class ProductGenerater : InteractableBase
 
         _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
 
-        // »ı»ê ·çÆ¾ °¡µ¿(ÀÓ½Ã)
+        // ìƒì‚° ë£¨í‹´ ê°€ë™(ì„ì‹œ)
         if (_CultivateRoutine != null) StopCoroutine(_CultivateRoutine);
         _CultivateRoutine = StartCoroutine(CultivateRoutine());
 
@@ -31,21 +36,21 @@ public class ProductGenerater : InteractableBase
     {
         base.OnDisableAdditionalActions();
 
-        // »ı»ê ÄÚ·çÆ¾ ÁßÁö
+        // ìƒì‚° ì½”ë£¨í‹´ ì¤‘ì§€
         StopAllCoroutines();
 
         Manager.buildings?.workStatinLists.productGeneraters?.Remove(this);
     }
     public bool StandByCheck()
     {
-        // »ı»ê¹°ÀÌ ¾øÀ» ¶§
+        // ìƒì‚°ë¬¼ì´ ì—†ì„ ë•Œ
         if (_SpawnedProduct == null)
         {
             //state = GenerateState.StandBy;
             isWorkable = false;
             return true;
         }
-        // »ı»ê¹°ÀÌ ÀÖÀ» ¶§
+        // ìƒì‚°ë¬¼ì´ ìˆì„ ë•Œ
         else
         {
             //state = GenerateState.Completed;
@@ -58,10 +63,11 @@ public class ProductGenerater : InteractableBase
     {
         while (true)
         {
-            // ¸Å ÇÁ·¹ÀÓ¸¶´Ù, ½ºÅÄ¹ÙÀÌ »óÅÂ Ã¼Å©
+            
+            // ë§¤ í”„ë ˆì„ë§ˆë‹¤, ìŠ¤íƒ ë°”ì´ ìƒíƒœ ì²´í¬
             yield return new WaitUntil(() => StandByCheck());
 
-            // »ı»ê ½ÃÀÛ
+            // ìƒì‚° ì‹œì‘
             //state = GenerateState.Generating;
             while (!isWorkable)
             {
@@ -69,7 +75,7 @@ public class ProductGenerater : InteractableBase
 
                 if (progressedTime > productionTime)
                 {
-                    SpawnProduct(); // »ı»ê ¿Ï·á
+                    SpawnProduct(); // ìƒì‚° ì™„ë£Œ
                 }
 
                 yield return null;
@@ -82,13 +88,13 @@ public class ProductGenerater : InteractableBase
 
     public void SpawnProduct()
     {
-        // ¿ÀºêÁ§Æ® Ç®¿¡¼­ È°¼ºÈ­
+        // ì˜¤ë¸Œì íŠ¸ í’€ì—ì„œ í™œì„±í™”
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
-        // ÁøÇàµµ ÃÊ±âÈ­
+        // ì§„í–‰ë„ ì´ˆê¸°í™”
         progressedTime = 0;
 
-        // »ı»ê¹° Á¤º¸ ÀúÀå
+        // ìƒì‚°ë¬¼ ì •ë³´ ì €ì¥
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
 
         isWorkable = true;
@@ -96,21 +102,22 @@ public class ProductGenerater : InteractableBase
 
     public void PickUpProds()
     {
-        // »ı¼ºµÈ Àç·á°¡ ¾øÀ¸¸é ½ÇÇà ¾ÈÇÔ
+        // ìƒì„±ëœ ì¬ë£Œê°€ ì—†ìœ¼ë©´ ì‹¤í–‰ ì•ˆí•¨
         if (_SpawnedProduct == null) return;
 
-        // ÀÏ²ÛÀÏ °æ¿ì¿¡µµ Ãß°¡ÇØ¾ßÇÔ
+        // ì¼ê¾¼ì¼ ê²½ìš°ì—ë„ ì¶”ê°€í•´ì•¼í•¨
 
-        // µé°í ÀÖ´Â Àç·á¿Í ´Ù¸¥ Àç·á´Â ÁİÁö ¾Ê°Ô ¸¸µé±â
+        // ë“¤ê³  ìˆëŠ” ì¬ë£Œì™€ ë‹¤ë¥¸ ì¬ë£Œë¼ë©´ or ì†ì— ìµœëŒ€ ìˆ˜ëŸ‰ë§Œí¼ ë“¤ê³  ìˆì„ ì‹œ => ì¤ì§€ ì•Šê²Œ ë§Œë“¤ê¸°
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
             if (instanceProd.Data.ID != _SpawnedProduct.Data.ID) return;
+            if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 
         _SpawnedProduct.owner = characterRD.gameObject;
         _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
-        //Debug.Log($"{pc.ingrediantStack.Count}¹øÂ° À§Ä¡·Î");
+        //Debug.Log($"{pc.ingrediantStack.Count}ë²ˆì§¸ ìœ„ì¹˜ë¡œ");
         characterRD.IngrediantStack.Push(_SpawnedProduct);
         _SpawnedProduct = null;
     }
@@ -130,6 +137,11 @@ public class ProductGenerater : InteractableBase
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
+
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
 
         StartCoroutine(PickUpRoutine());
     }

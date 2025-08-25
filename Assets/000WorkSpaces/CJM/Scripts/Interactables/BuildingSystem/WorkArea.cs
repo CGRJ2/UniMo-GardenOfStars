@@ -3,13 +3,18 @@ using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorkArea : InteractableBase
+public class WorkArea : InteractableBase, IWorkStation
 {
-    public bool isWorkable { get { return curWorker == null & ownerInstance.ingrediantStack.Count > 0; } }
+    public bool isWorkable { get { return ownerInstance.ingrediantStack.Count > 0; } }
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
+    public Vector3 GetPosition() { return transform.position; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
-    CharaterRuntimeData curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
+    public CharaterRuntimeData curWorker; // 임시. 일꾼까지 포함한 변수로 수정 필요
     [SerializeField] Slider progressBar;
 
     public void Init(ManufactureBuilding instance)
@@ -21,6 +26,7 @@ public class WorkArea : InteractableBase
 
     IEnumerator ProgressingTask()
     {
+        isReserved = false;
         curWorker = characterRD; // 임시. 일꾼까지 포함한 변수로 수정 필요
         curWorker.IsWork.Value = true;
 
@@ -95,6 +101,11 @@ public class WorkArea : InteractableBase
     {
         base.Enter_PersonalTask(characterRuntimeData);
 
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
+
         if (curWorker == null)
         {
             StartCoroutine(ProgressingTask());
@@ -106,4 +117,6 @@ public class WorkArea : InteractableBase
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas?.Remove(this);
     }
+
+    
 }

@@ -1,18 +1,20 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildingInstance : InteractableBase
 {
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
-    [SerializeField] Canvas activateAreaPopUI;
+    [SerializeField] protected BuildingActivePopUI activatePopUI;
+    
     protected void BIBaseInit()
     {
         Manager.buildings.ActivatedBIList.Add(this);
 
-        if (activateAreaPopUI != null)
+        if (activatePopUI != null)
         {
-            activateAreaPopUI.worldCamera = Camera.main;
-            activateAreaPopUI.gameObject.SetActive(false);
+            activatePopUI.GetComponent<Canvas>().worldCamera = Camera.main;
+            activatePopUI.gameObject.SetActive(false);
         }
     }
 
@@ -21,8 +23,8 @@ public class BuildingInstance : InteractableBase
         base.OnDisableAdditionalActions();
         Manager.buildings?.ActivatedBIList.Remove(this);
 
-        if (activateAreaPopUI != null)
-            activateAreaPopUI.gameObject.SetActive(false);
+        if (activatePopUI != null)
+            activatePopUI.gameObject.SetActive(false);
     }
 
     // 건물 활성화 범위 상호작용
@@ -33,8 +35,8 @@ public class BuildingInstance : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            if (activateAreaPopUI != null)
-                activateAreaPopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
+            if (activatePopUI != null)
+                activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
         }
     }
 
@@ -46,27 +48,12 @@ public class BuildingInstance : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            if (activateAreaPopUI != null)
-                activateAreaPopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
+            if (activatePopUI != null)
+                activatePopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
         }
     }
+
+    
 }
 
-[Serializable]
-public class BuildingRuntimeData
-{
-    public int level;
-    public int maxStackableCount;
-    public float productionTime;
 
-    public void SetCurLevelStatDatas(ManufactureBD manufactureBD)
-    {
-        this.maxStackableCount = manufactureBD.Stat_MaxStackableCount.Values[level];
-        this.productionTime = manufactureBD.Stat_ProductionTime.Values[level];
-    }
-
-    public void SetCurLevelStatDatas(HarvestBD harvestBD)
-    {
-        this.productionTime = harvestBD.Stat_ProductionTime.Values[level];
-    }
-}
