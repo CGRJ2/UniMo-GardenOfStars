@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class WorkerRuntimeData : CharaterRuntimeData
 {
-    private WorkerData _data;
+    private WorkerData _data = new();
 
     #region WorkerDatas
 
-    public int Id => _data.Id;
+    public string Id => _data.Id;
     public int Rank => _data.Rank;
 
     public float MoveSpeed => _data.MoveSpeed;
