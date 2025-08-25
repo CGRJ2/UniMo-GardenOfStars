@@ -1,15 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
+    [SerializeField] private float _assignDelay = 3f;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
 
     // Test용
     public WorkStatoinLists workStatinLists = new();
+
+
+    private void Start()
+    {
+        StartCoroutine(AssignWorkerCoroutine());
+    }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
     public bool AssignWorker(WorkerRuntimeData worker)
@@ -160,5 +169,23 @@ public class WorkerManager : MonoBehaviour
                 }
             }
         });
+    }
+
+    private IEnumerator AssignWorkerCoroutine()
+    {
+        WaitForSeconds delay = new WaitForSeconds(_assignDelay);
+
+        while (true)
+        {
+            yield return delay;
+
+            foreach(WorkerRuntimeData worker in _availableWorkerList.ToList())
+            {
+                if (AssignWorker(worker))
+                {
+                    _availableWorkerList.Remove(worker);
+                }
+            }
+        }
     }
 }
