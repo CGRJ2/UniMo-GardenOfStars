@@ -1,4 +1,6 @@
-﻿public class WorkerState_Work : WorkerStateBase
+﻿using System.Diagnostics;
+
+public class WorkerState_Work : WorkerStateBase
 {
     public WorkerState_Work(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
@@ -33,6 +35,14 @@
         else if (workstation is ProductGenerater || workstation is ProdsArea)
         {
             if (WorkerData.IngrediantStack.Count >= WorkerData.MaxCapacity) return false;
+        }
+        else if (workstation is WorkArea)
+        {
+            if ((workstation as WorkArea).curWorker != null
+                && (workstation as WorkArea).curWorker != WorkerData)
+            {
+                return false;
+            }
         }
 
         return true;
