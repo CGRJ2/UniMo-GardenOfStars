@@ -1,0 +1,148 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6089567795745533163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4230384178591793759}
+  - component: {fileID: 8344534742512476613}
+  - component: {fileID: -3472078758766084158}
+  - component: {fileID: 1866889963921382428}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4230384178591793759
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6089567795745533163}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 202, y: 359, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8344534742512476613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6089567795745533163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94da5fb9f8115d04db58990c56d9615c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hudCanvasReference:
+    m_AssetGUID: b5c6b18148f15cd499d09d9000249951
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  panelCanvasReference:
+    m_AssetGUID: 55c19b750b102d24eb6baba67f8a53ad
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  popupCanvasReference:
+    m_AssetGUID: b54a12f5f0a0940438713731d5297981
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  loadingCanvasReference:
+    m_AssetGUID: 9f099a9d198c12043b2d1907fc015e20
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  safeAreaManager: {fileID: -3472078758766084158}
+  backdropPrefabReference:
+    m_AssetGUID: 12345678901234567890123456789012
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+--- !u!114 &-3472078758766084158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6089567795745533163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ef768982752434da993db5cf9d29bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableSafeArea: 1
+  debugColor: {r: 1, g: 0, b: 0, a: 0.3}
+  showDebugArea: 0
+  useTestSafeArea: 0
+  testSafeArea:
+    serializedVersion: 2
+    x: 800
+    y: 1000
+    width: 1080
+    height: 1920
+  showTestSafeArea: 0
+  safeAreaPanelPrefab: {fileID: 3377468802654154707, guid: b2c8af4abf950654681235911ed638bb, type: 3}
+--- !u!114 &1866889963921382428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6089567795745533163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92200a4abd75aa24d8738d4d5f8f666f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneReferences:
+  - m_AssetGUID: 5a884e49914659a4b8daa5052da70ef5
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: f85b11eb7b27de4419a60780b83ad400
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 1
+  minLoadingTime: 5
+  simulateProgress: 0
+  loadingScreenInitDelay: 0.5
+  loadingScreenHideDelay: 1
+  waitForUIInitialization: 1
+  useCustomMessages: 0
+  sceneLoadingMessages:
+  - "\uC52C\uC744 \uBD88\uB7EC\uC624\uB294 \uC911..."
+  - "\uC624\uBE0C\uC81D\uD2B8\uB4E4\uC744 \uCD08\uAE30\uD654\uD558\uB294 \uC911..."
+  - "\uB9AC\uC18C\uC2A4\uB97C \uB85C\uB4DC\uD558\uB294 \uC911..."
+  - "\uAC70\uC758 \uC644\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4..."
+  useMultiStageLoading: 0
+  loadingStages:
+  - stageName: "\uC52C \uB85C\uB529"
+    weight: 0.4
+    currentProgress: 0
+    isCompleted: 0
+  - stageName: "\uB9AC\uC18C\uC2A4 \uB2E4\uC6B4\uB85C\uB4DC"
+    weight: 0.3
+    currentProgress: 0
+    isCompleted: 0
+  - stageName: "\uC624\uBE0C\uC81D\uD2B8 \uCD08\uAE30\uD654"
+    weight: 0.2
+    currentProgress: 0
+    isCompleted: 0
+  - stageName: "\uCD5C\uC885 \uC124\uC815"
+    weight: 0.1
+    currentProgress: 0
+    isCompleted: 0
