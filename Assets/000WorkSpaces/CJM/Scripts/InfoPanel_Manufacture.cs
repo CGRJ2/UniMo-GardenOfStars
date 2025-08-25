@@ -27,6 +27,9 @@ public class InfoPanel_Manufacture : BaseUI
     [SerializeField] TMP_Text tmp_CurCapacity;
     [SerializeField] TMP_Text tmp_AfterUpCapacity;
 
+    [SerializeField] Button btn_ProdTimeUpgrade;
+    [SerializeField] Button btn_CapacityUpgrade;
+
 
     public void SetUpgradeData(ManufactureBuilding manufacture)
     {
@@ -35,6 +38,7 @@ public class InfoPanel_Manufacture : BaseUI
         int curLevel_ProdTime = manufacture.runtimeData.level_ProductionTime;
         int curLevel_Capacity = manufacture.runtimeData.level_StackCount;
         ManufactureBD data = manufacture.originData;
+
         tmp_Name.text = data.Name;
         tmp_Description.text = data.Description;
         Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
@@ -44,8 +48,8 @@ public class InfoPanel_Manufacture : BaseUI
         };
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
-            tmp_RequireName.text = prodData.Result.Name;
-            image_Require.sprite = prodData.Result.Sprite;
+            tmp_ProdName.text = prodData.Result.Name;
+            image_Prod.sprite = prodData.Result.Sprite;
         };
 
         //tmp_ProdTimeLevel.text = $"{curLevel_ProdTime}";
