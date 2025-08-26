@@ -1,5 +1,4 @@
 ﻿using KYS;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -41,11 +40,30 @@ public class InfoPanel_Manufacture : BaseUI
     [SerializeField] Button btn_ProdTimeUpgrade;
     [SerializeField] Button btn_CapacityUpgrade;
 
+    [Header("패널 닫기 버튼")]
+    [SerializeField] Button btn_Close;
+
     //private void Awake() => Init();
+
+    protected override void Awake()
+    {
+        base.Awake();
+        // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+        if (layerType == UILayerType.Panel) // BaseUI의 기본값
+        {
+            layerType = UILayerType.Panel;
+        }
+
+        Init();
+
+    }
+
+
     public void Init() // 초기화를 어디서 해줘야 할까요?
     {
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_CapacityUpgrade.onClick.AddListener(UpgradeCapacity);
+        btn_Close.onClick.AddListener(Close);
     }
 
 
@@ -57,6 +75,10 @@ public class InfoPanel_Manufacture : BaseUI
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
         Manager.player.Data.Money -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+
     }
     void UpgradeCapacity()
     {
@@ -66,6 +88,9 @@ public class InfoPanel_Manufacture : BaseUI
         // 돈 차감
         int curLevel_Capacity = Manager.buildings.GetUpgradeData(targetBD.ID).level_Capacity;
         Manager.player.Data.Money -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
+
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
     }
 
     public void SetUpgradeData(ManufactureBD manufacture)
@@ -147,4 +172,13 @@ public class InfoPanel_Manufacture : BaseUI
             btn_CapacityUpgrade.interactable = false;
         }
     }
+
+
+    private void Close()
+    {
+        UIManager.Instance.ClosePanel();
+    }
+
+
+
 }

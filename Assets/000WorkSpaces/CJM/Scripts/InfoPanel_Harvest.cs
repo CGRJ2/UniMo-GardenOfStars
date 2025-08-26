@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class InfoPanel_Harvest : BaseUI
 {
@@ -28,19 +27,44 @@ public class InfoPanel_Harvest : BaseUI
     [Header("업그레이드 버튼")]
     [SerializeField] Button btn_ProdTimeUpgrade;
 
+    [Header("패널 닫기 버튼")]
+    [SerializeField] Button btn_Close;
+
+
+
+    protected override void Awake()
+    {
+        base.Awake();
+        // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+        if (layerType == UILayerType.Panel) // BaseUI의 기본값
+        {
+            layerType = UILayerType.Panel;
+        }
+
+        Init();
+
+    }
+
     public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
+        
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
+        btn_Close.onClick.AddListener(Close);
     }
 
     void UpgradeProdTime()
     {
+        Debug.Log("생산 속도 업그레이드 버튼 클릭");
         // 업그레이드 스탯 적용
         Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
 
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
         Manager.player.Data.Money -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+
     }
 
     public void SetUpgradeData(HarvestBD harvest)
@@ -85,5 +109,10 @@ public class InfoPanel_Harvest : BaseUI
 
             btn_ProdTimeUpgrade.interactable = false;
         }
+    }
+
+    private void Close()
+    {
+           UIManager.Instance.ClosePanel();
     }
 }
