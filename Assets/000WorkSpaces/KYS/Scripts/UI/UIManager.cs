@@ -115,7 +115,7 @@ namespace KYS
                     hudCanvas.sortingOrder = 0;
                     addressableHandles["HUDCanvas"] = hudHandle;
                     DontDestroyOnLoad(hudHandle.Result);
-                    HideAllHUDElements();
+                    //HideAllHUDElements();
                 }
 
                 // Panel Canvas 로드 (HUD 위에 렌더링)
@@ -152,7 +152,7 @@ namespace KYS
                 }
 
                 ApplySafeAreaToCanvases();
-                await InitializeHUDElements();
+               await InitializeHUDElements();
                 
                 // 게임 시작 시 로딩 화면 표시
                 if (showLoadingScreenOnStart)
@@ -188,7 +188,7 @@ namespace KYS
                         var hud = await CreateHUDAsync<BaseUI>(key);
                         if (hud != null)
                         {
-                            hud.gameObject.SetActive(false); // 생성 후 즉시 숨김
+                            //hud.gameObject.SetActive(false); // 생성 후 즉시 숨김
                         }
                     }
                     catch (System.Exception e)
