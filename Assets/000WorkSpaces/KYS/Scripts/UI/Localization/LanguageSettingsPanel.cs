@@ -53,7 +53,7 @@ namespace KYS
             }
         }
         
-        protected override string[] GetAutoLocalizeKeys()
+        public override string[] GetAutoLocalizeKeys()
         {
             return new string[] {
                 "language_settings_title",

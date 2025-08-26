@@ -212,8 +212,9 @@ GameObject:
   - component: {fileID: 1053453249451191395}
   - component: {fileID: 7629010600675753711}
   - component: {fileID: 7125376831234237362}
+  - component: {fileID: 4894518125057679390}
   m_Layer: 5
-  m_Name: MoenyButtonText
+  m_Name: RunMoenyButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,6 +336,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4894518125057679390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1930438062270868150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &2163810583951488273
 GameObject:
   m_ObjectHideFlags: 0
@@ -664,8 +681,9 @@ GameObject:
   - component: {fileID: 1160611692901442093}
   - component: {fileID: 7756685776708284924}
   - component: {fileID: 5279645490308636118}
+  - component: {fileID: 4207704730667771695}
   m_Layer: 5
-  m_Name: GemButtonText
+  m_Name: RunGemButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -787,6 +805,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4207704730667771695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7674002210789354538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &8061524255313939740
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,6 +1107,7 @@ GameObject:
   - component: {fileID: 6285260388191734781}
   - component: {fileID: 2211958358137026708}
   - component: {fileID: 6398984313393767891}
+  - component: {fileID: 1942516252042600877}
   m_Layer: 5
   m_Name: PlayerUpgradeText
   m_TagString: Untagged
@@ -1196,6 +1231,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1942516252042600877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8343844132176883501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &8649177711313756702
 GameObject:
   m_ObjectHideFlags: 0

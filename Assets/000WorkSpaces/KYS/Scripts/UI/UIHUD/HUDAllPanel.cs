@@ -10,7 +10,7 @@ namespace KYS
     public class HUDAllPanel : BaseUI
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
-        [SerializeField] private string moneyTextName = "MoneyText";
+        [SerializeField] private string moneyTextName = "MoneyBottonText";
         [SerializeField] private string levelTextName = "LevelText";
         [SerializeField] private string menuButtonName = "MenuButton";
         [SerializeField] private string inventoryButtonName = "InventoryButton";
@@ -36,7 +36,7 @@ namespace KYS
             }
         }
         
-        protected override string[] GetAutoLocalizeKeys()
+        public override string[] GetAutoLocalizeKeys()
         {
             return new string[] {
                 // 숫자가 포함된 텍스트는 AutoLocalization에서 제외하고 수동으로 관리
@@ -60,12 +60,20 @@ namespace KYS
             {
                 LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
             }
-            
-            // 초기 데이터 설정
-            UpdateMoney(1000);
-            UpdateLevel(1);
-            UpdateQuestProgress("진행 중");
-            
+
+            // PlayerManager 초기화 확인 후 데이터 설정
+            if (Manager.player != null && Manager.player.Data != null)
+            {
+                UpdateMoney(Manager.player.Data.Money);
+            }
+            else
+            {
+                Debug.LogWarning("[HUDAllPanel] PlayerManager가 초기화되지 않았습니다. 기본값 사용");
+                UpdateMoney(1000); // 기본값 사용
+            }
+            //UpdateLevel(1);
+            //UpdateQuestProgress("진행 중");
+
             //Debug.Log("[HUDAllPanel] HUD 초기화 완료");
         }
         
@@ -93,7 +101,7 @@ namespace KYS
             var inventoryEventHandler = GetEventWithSFX(inventoryButtonName, "SFX_ButtonClick");
             if (inventoryEventHandler != null)
             {
-                inventoryEventHandler.Click += (data) => OnInventoryButtonClicked();
+                inventoryEventHandler.Click += (data) => OnPropertyButtonClicked();
             }
         }
         
@@ -101,16 +109,19 @@ namespace KYS
         
         public void UpdateMoney(int amount)
         {
+            
             currentMoney = amount; // 현재 값 저장
             if (moneyText != null)
             {
                 // 번역된 텍스트에 동적 값 삽입
-                string localizedText = GetLocalizedText("hud_money");
-                if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_money")
-                {
-                    localizedText = "재화"; // 번역이 없으면 기본값 사용
-                }
-                moneyText.text = $"{localizedText}: {amount:N0}";
+                //string localizedText = GetLocalizedText("hud_money");
+                //if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_money")
+                //{
+                //    localizedText = "재화"; // 번역이 없으면 기본값 사용
+                //}
+                Debug.Log($"여기 들어옴?{moneyText.text}");
+
+                moneyText.text = $"{amount:N0}";
             }
         }
         
@@ -180,7 +191,7 @@ namespace KYS
 
         private void OnMenuButtonClicked()
         {
-            //Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
+            Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
             
             if (UIManager.Instance != null)
             {
@@ -188,7 +199,7 @@ namespace KYS
                 UIManager.Instance.ShowPopUpAsync<MenuPopUp>((popup) => {
                     if (popup != null)
                     {
-                        //Debug.Log("[HUDAllPanel] MenuPopUp 성공적으로 열림");
+                        Debug.Log("[HUDAllPanel] MenuPopUp 성공적으로 열림");
                     }
                     else
                     {
@@ -202,7 +213,7 @@ namespace KYS
             }
         }
         
-        private void OnInventoryButtonClicked()
+        private void OnPropertyButtonClicked()
         {
             //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
             
@@ -216,7 +227,7 @@ namespace KYS
             var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
             foreach (var panel in existingPanels)
             {
-                if (panel is TitlePanel)
+                if (panel is InfoPanel_Manufacture)
                 {
                     //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
@@ -225,10 +236,11 @@ namespace KYS
             
             // 인벤토리 관련 로직 추가
             
-            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+            UIManager.Instance.ShowPanelAsync<InfoPanel_Manufacture>((panel) => {
                 if (panel != null)
                 {
                     //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
+                 
                 }
                 else
                 {

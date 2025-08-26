@@ -35,7 +35,7 @@ namespace KYS
             }
         }
 
-        protected override string[] GetAutoLocalizeKeys()
+        public override string[] GetAutoLocalizeKeys()
         {
             return new string[]
             {
