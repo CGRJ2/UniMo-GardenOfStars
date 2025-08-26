@@ -10,7 +10,7 @@ namespace KYS
     public class HUDAllPanel : BaseUI
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
-        [SerializeField] private string moneyTextName = "MoneyBottonText";
+        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
         [SerializeField] private string levelTextName = "LevelText";
         [SerializeField] private string menuButtonName = "MenuButton";
         [SerializeField] private string inventoryButtonName = "InventoryButton";
@@ -20,8 +20,6 @@ namespace KYS
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
-        private Button menuButton => GetUI<Button>(menuButtonName);
-        private Button inventoryButton => GetUI<Button>(inventoryButtonName);
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
         #endregion
         
@@ -61,16 +59,10 @@ namespace KYS
                 LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
             }
 
-            // PlayerManager 초기화 확인 후 데이터 설정
-            if (Manager.player != null && Manager.player.Data != null)
-            {
+
                 UpdateMoney(Manager.player.Data.Money);
-            }
-            else
-            {
-                Debug.LogWarning("[HUDAllPanel] PlayerManager가 초기화되지 않았습니다. 기본값 사용");
-                UpdateMoney(1000); // 기본값 사용
-            }
+   
+
             //UpdateLevel(1);
             //UpdateQuestProgress("진행 중");
 
@@ -119,7 +111,7 @@ namespace KYS
                 //{
                 //    localizedText = "재화"; // 번역이 없으면 기본값 사용
                 //}
-                Debug.Log($"여기 들어옴?{moneyText.text}");
+              
 
                 moneyText.text = $"{amount:N0}";
             }
@@ -196,16 +188,16 @@ namespace KYS
             if (UIManager.Instance != null)
             {
                 // 메뉴 팝업 열기
-                UIManager.Instance.ShowPopUpAsync<MenuPopUp>((popup) => {
-                    if (popup != null)
-                    {
-                        Debug.Log("[HUDAllPanel] MenuPopUp 성공적으로 열림");
-                    }
-                    else
-                    {
-                        Debug.LogError("[HUDAllPanel] MenuPopUp 열기 실패");
-                    }
-                });
+                UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
+    if (popup != null)
+    {
+        Debug.Log("[HUDAllPanel] SettingPopUp 성공적으로 열림");
+    }
+    else
+    {
+        Debug.LogError("[HUDAllPanel] SettingPopUp 열기 실패");
+    }
+});
             }
             else
             {

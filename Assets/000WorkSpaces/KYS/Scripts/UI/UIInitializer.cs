@@ -55,17 +55,17 @@ namespace KYS
             if (showMenuOnStart)
             {
                 if (enableDebugLog)
-                    ////Debug.Log("[UIInitializer] MenuPopUp 표시 시도...");
-                UIManager.Instance.ShowPopUpAsync<MenuPopUp>((popup) => {
-                    if (popup != null)
-                    {
-                        ////Debug.Log("[UIInitializer] MenuPopUp 생성 완료");
-                    }
-                    else
-                    {
-                        Debug.LogError("[UIInitializer] MenuPopUp 생성 실패");
-                    }
-                });
+                    ////Debug.Log("[UIInitializer] SettingPopUp 표시 시도...");
+UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
+    if (popup != null)
+    {
+        ////Debug.Log("[UIInitializer] SettingPopUp 생성 완료");
+    }
+    else
+    {
+        Debug.LogError("[UIInitializer] SettingPopUp 생성 실패");
+    }
+});
             }
             
             if (showTitleOnStart)
@@ -116,23 +116,23 @@ namespace KYS
         }
 
         // 테스트용 버튼 메서드들
-        [ContextMenu("테스트 - 메뉴 팝업 표시")]
-        public void TestShowMenuPopUp()
-        {
-            if (UIManager.Instance != null)
+        [ContextMenu("테스트 - 설정 팝업 표시")]
+public void TestShowSettingPopUp()
+{
+    if (UIManager.Instance != null)
+    {
+        UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
+            if (popup != null)
             {
-                UIManager.Instance.ShowPopUpAsync<MenuPopUp>((popup) => {
-                    if (popup != null)
-                    {
-                        ////Debug.Log("[UIInitializer] 테스트: 메뉴 팝업 생성 완료");
-                    }
-                    else
-                    {
-                        Debug.LogError("[UIInitializer] 테스트: 메뉴 팝업 생성 실패");
-                    }
-                });
+                ////Debug.Log("[UIInitializer] 테스트: 설정 팝업 생성 완료");
             }
-        }
+            else
+            {
+                Debug.LogError("[UIInitializer] 테스트: 설정 팝업 생성 실패");
+            }
+        });
+    }
+}
 
         [ContextMenu("테스트 - 타이틀 패널 표시")]
         public void TestShowTitlePanel()
