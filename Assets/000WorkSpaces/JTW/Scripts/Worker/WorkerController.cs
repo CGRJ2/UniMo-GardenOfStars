@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum WorkerStates
@@ -9,6 +11,8 @@ public enum WorkerStates
 
 public class WorkerController : MonoBehaviour
 {
+    [SerializeField] private TextMeshPro _text;
+
     private StateMachine<WorkerStates> _stateMachine = new StateMachine<WorkerStates>();
 
     private void Awake()
@@ -26,10 +30,25 @@ public class WorkerController : MonoBehaviour
     private void Update()
     {
         _stateMachine.Update();
+
+        if(_text != null)
+        {
+            _text.text = _stateMachine.CurState.ToString();
+        }
     }
 
     private void FixedUpdate()
     {
         _stateMachine.FixedUpdate();
+    }
+
+    public WorkerStates GetCurState()
+    {
+        return _stateMachine.CurStateEnum;
+    }
+
+    public void Stun()
+    {
+        _stateMachine.ChangeState(WorkerStates.Stun);
     }
 }

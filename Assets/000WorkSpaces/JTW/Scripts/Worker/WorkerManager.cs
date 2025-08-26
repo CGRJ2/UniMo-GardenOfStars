@@ -7,6 +7,7 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
+    [SerializeField] private float _stunDelay = 10f;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
@@ -18,6 +19,7 @@ public class WorkerManager : MonoBehaviour
     private void Start()
     {
         StartCoroutine(AssignWorkerCoroutine());
+        StartCoroutine(StunWorkerCoroutine());
     }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
@@ -42,7 +44,7 @@ public class WorkerManager : MonoBehaviour
 
             foreach (InsertArea insert in workStatinLists.insertAreas)
             {
-                if (!insert.GetWorkableState()) continue;
+                if (!insert.GetWorkableState() || insert.GetReserveState()) continue;
 
                 if (insert.ownerInstance.originData.RequireProdID != worker.IngrediantStack.Peek().Data.ID) continue;
 
@@ -100,7 +102,7 @@ public class WorkerManager : MonoBehaviour
         // 생산 결과 구역에 수확할게 있는지 확인
         foreach (ProdsArea prod in workStatinLists.prodsAreas)
         {
-            if (!prod.GetWorkableState()) continue;
+            if (!prod.GetWorkableState() || prod.GetReserveState()) continue;
 
             if (!(worker.IngrediantStack.Count == 0
                 || prod.ownerInstance.originData.ProductID == worker.IngrediantStack.Peek().Data.ID)) continue;
@@ -124,7 +126,7 @@ public class WorkerManager : MonoBehaviour
         // 수확 건물 중에서 수확할게 있는지 확인
         foreach (ProductGenerater gene in workStatinLists.productGeneraters)
         {
-            if (!gene.GetWorkableState()) continue;
+            if (!gene.GetWorkableState() || gene.GetReserveState()) continue;
 
             if (!(worker.IngrediantStack.Count == 0 
                 || gene._SpawnedProduct.Data.ID == worker.IngrediantStack.Peek().Data.ID)) continue;
@@ -152,6 +154,7 @@ public class WorkerManager : MonoBehaviour
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
+        worker.NavMeshPriority = _workerList.Count;
 
         _workerList.Add(worker);
         if (!AssignWorker(worker))
@@ -181,9 +184,36 @@ public class WorkerManager : MonoBehaviour
 
             foreach(WorkerRuntimeData worker in _availableWorkerList.ToList())
             {
+                if (worker.WorkerController.GetCurState() == WorkerStates.Stun) continue;
+
                 if (AssignWorker(worker))
                 {
                     _availableWorkerList.Remove(worker);
+                }
+            }
+        }
+    }
+
+    private IEnumerator StunWorkerCoroutine()
+    {
+        WaitForSeconds delay = new WaitForSeconds(_stunDelay);
+
+        while (true)
+        {
+            yield return delay;
+
+            float temp = _workerList.Sum(worker => worker.StunChance);
+            float rand = Random.Range(0f, temp);
+            float total = 0;
+
+            foreach(WorkerRuntimeData worker in _workerList)
+            {
+                total += worker.StunChance;
+
+                if(total >= rand)
+                {
+                    worker.WorkerController.Stun();
+                    break;
                 }
             }
         }
