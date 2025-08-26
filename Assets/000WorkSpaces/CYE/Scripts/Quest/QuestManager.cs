@@ -15,10 +15,10 @@ public class QuestManager : Singleton<QuestManager>
 
     public Quest[] _currentQuestList;
     // private int _currentQuestIndex;
-    public ObservableProperty<int> _currentQuestIndex;
+    public ObservableProperty<int> CurrentQuestIndex = new();
     public int TargetCompleteCount { get { return _currentQuestList.Length; } }
     public event Action OnQuestProgressUpdate;
-    public Quest CurrentQuest { get { return _currentQuestList[_currentQuestIndex.Value]; } }
+    public Quest CurrentQuest { get { return _currentQuestList[CurrentQuestIndex.Value]; } }
 
     private void Awake()
     {
@@ -43,7 +43,7 @@ public class QuestManager : Singleton<QuestManager>
         InitQuestList(_questDataList.Length);
         ConvertDataSOToClass();
 
-        _currentQuestIndex.Value = GetCurrentQuestIndex();
+        CurrentQuestIndex.Value = GetCurrentQuestIndex();
     }
 
     private void InitQuestList(int listCount)
@@ -120,9 +120,10 @@ public class QuestManager : Singleton<QuestManager>
 
     public void ChangeToNextQuest()
     {
-        int nextQuestIndex = _currentQuestIndex.Value + 1;
-        if (nextQuestIndex!=_currentQuestList.Length) {
-            _currentQuestIndex.Value = nextQuestIndex;
+        int nextQuestIndex = CurrentQuestIndex.Value + 1;
+        if (nextQuestIndex != _currentQuestList.Length)
+        {
+            CurrentQuestIndex.Value = nextQuestIndex;
             CurrentQuest.AcceptQuest();
         }
         QuestEventBus.Publish(0, nextQuestIndex);
