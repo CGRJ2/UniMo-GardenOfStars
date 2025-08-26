@@ -13,8 +13,8 @@ public class WorkerManager : MonoBehaviour
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
 
     // Test용
-    public WorkStatoinLists workStatinLists = new();
-
+    // public WorkStatoinLists workStatinLists = new();
+    public WorkStatoinLists WorkStatinLists => Manager.buildings.workStatinLists;
 
     private void Start()
     {
@@ -42,7 +42,7 @@ public class WorkerManager : MonoBehaviour
             minDistance = float.MaxValue;
             workstation = null;
 
-            foreach (InsertArea insert in workStatinLists.insertAreas)
+            foreach (InsertArea insert in WorkStatinLists.insertAreas)
             {
                 if (!insert.GetWorkableState() || insert.GetReserveState()) continue;
 
@@ -67,7 +67,7 @@ public class WorkerManager : MonoBehaviour
         workstation = null;
 
         // 작업 영역에 일거리 있는지 탐색
-        foreach (WorkArea work in workStatinLists.workAreas)
+        foreach (WorkArea work in WorkStatinLists.workAreas)
         {
             if (!work.GetWorkableState() || work.GetReserveState() || work.curWorker != null) continue;
 
@@ -100,7 +100,7 @@ public class WorkerManager : MonoBehaviour
         IWorkStation workstation = null;
 
         // 생산 결과 구역에 수확할게 있는지 확인
-        foreach (ProdsArea prod in workStatinLists.prodsAreas)
+        foreach (ProdsArea prod in WorkStatinLists.prodsAreas)
         {
             if (!prod.GetWorkableState() || prod.GetReserveState()) continue;
 
@@ -124,7 +124,7 @@ public class WorkerManager : MonoBehaviour
         minDistance = float.MaxValue;
 
         // 수확 건물 중에서 수확할게 있는지 확인
-        foreach (ProductGenerater gene in workStatinLists.productGeneraters)
+        foreach (ProductGenerater gene in WorkStatinLists.productGeneraters)
         {
             if (!gene.GetWorkableState() || gene.GetReserveState()) continue;
 
