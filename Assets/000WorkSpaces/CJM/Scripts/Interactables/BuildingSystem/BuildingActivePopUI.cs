@@ -1,4 +1,4 @@
-using KYS;
+ï»¿using KYS;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,34 +26,34 @@ public class BuildingActivePopUI : MonoBehaviour
     {
         if (UIManager.Instance == null)
         {
-            Debug.LogError("[°Ç¹° Á¤º¸ ÆĞ³Î] UIManager.Instance°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("[ê±´ë¬¼ ì •ë³´ íŒ¨ë„] UIManager.Instanceê°€ nullì…ë‹ˆë‹¤!");
             return;
         }
 
-        // ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ
+        // ì´ë¯¸ TitlePanelì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
             if (panel is InfoPanel_Harvest)
             {
-                //Debug.Log("[HUDAllPanel] ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Áßº¹ È£Ãâ ¹«½Ã");
+                //Debug.Log("[HUDAllPanel] ì´ë¯¸ TitlePanelì´ ì—´ë ¤ìˆìŠµë‹ˆë‹¤. ì¤‘ë³µ í˜¸ì¶œ ë¬´ì‹œ");
                 return;
             }
         }
 
-        // ¾÷±×·¹ÀÌµå ÆĞ³Î ¿­±â
+        // ì—…ê·¸ë ˆì´ë“œ íŒ¨ë„ ì—´ê¸°
         Manager.ui.ShowPanelAsync<InfoPanel_Harvest>((panel) =>
         {
             if (panel != null)
             {
-                //Debug.Log("[HUDAllPanel] TitlePanel ¼º°øÀûÀ¸·Î ¿­¸²");
+                //Debug.Log("[HUDAllPanel] TitlePanel ì„±ê³µì ìœ¼ë¡œ ì—´ë¦¼");
 
                 if (buildingInstance is HarvestBuilding harvesst)
-                    panel.SetUpgradeData(harvesst);
+                    panel.SetUpgradeData(harvesst.originData);
             }
             else
             {
-                //Debug.LogError("[HUDAllPanel]  ¿­±â ½ÇÆĞ");
+                //Debug.LogError("[HUDAllPanel]  ì—´ê¸° ì‹¤íŒ¨");
             }
         });
     }
@@ -61,45 +61,47 @@ public class BuildingActivePopUI : MonoBehaviour
     {
         if (UIManager.Instance == null)
         {
-            Debug.LogError("[°Ç¹° Á¤º¸ ÆĞ³Î] UIManager.Instance°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("[ê±´ë¬¼ ì •ë³´ íŒ¨ë„] UIManager.Instanceê°€ nullì…ë‹ˆë‹¤!");
             return;
         }
 
-        // ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ
+        // ì´ë¯¸ TitlePanelì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
             if (panel is InfoPanel_Manufacture)
             {
-                //Debug.Log("[HUDAllPanel] ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Áßº¹ È£Ãâ ¹«½Ã");
+                //Debug.Log("[HUDAllPanel] ì´ë¯¸ TitlePanelì´ ì—´ë ¤ìˆìŠµë‹ˆë‹¤. ì¤‘ë³µ í˜¸ì¶œ ë¬´ì‹œ");
                 return;
             }
         }
 
-        // ¾÷±×·¹ÀÌµå ÆĞ³Î ¿­±â
+        // ì—…ê·¸ë ˆì´ë“œ íŒ¨ë„ ì—´ê¸°
         Manager.ui.ShowPanelAsync<InfoPanel_Manufacture>((panel) =>
         {
             if (panel != null)
             {
-                //Debug.Log("[HUDAllPanel] TitlePanel ¼º°øÀûÀ¸·Î ¿­¸²");
+                //Debug.Log("[HUDAllPanel] TitlePanel ì„±ê³µì ìœ¼ë¡œ ì—´ë¦¼");
 
                 if (buildingInstance is ManufactureBuilding manufacture)
-                    panel.SetUpgradeData(manufacture);
+                    panel.SetUpgradeData(manufacture.originData);
             }
             else
             {
-                //Debug.LogError("[HUDAllPanel]  ¿­±â ½ÇÆĞ");
+                //Debug.LogError("[HUDAllPanel]  ì—´ê¸° ì‹¤íŒ¨");
             }
         });
     }
 
-    public void ActiveUpgradeBtn()
+    
+
+    public void ActiveUpgradeBtnView()
     {
-        tmp_BtnState.text = "UP"; // ÀÓ½Ã
+        tmp_BtnState.text = "UP"; // ì„ì‹œ
     }
 
-    public void ActiveInfoBtn()
+    public void ActiveInfoBtnView()
     {
-        tmp_BtnState.text = "!"; // ÀÓ½Ã
+        tmp_BtnState.text = "!"; // ì„ì‹œ
     }
 }

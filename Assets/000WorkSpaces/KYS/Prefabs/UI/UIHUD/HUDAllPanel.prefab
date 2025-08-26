@@ -82,10 +82,10 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  moneyTextName: MoneyText
+  moneyTextName: RunMoneyButtonText
   levelTextName: LevelText
-  menuButtonName: RImageButton1
-  inventoryButtonName: RImageButton2
+  menuButtonName: MenuButton
+  inventoryButtonName: PropertyButton
   questProgressTextName: QuestProgressText
 --- !u!1 &359135910222191079
 GameObject:
@@ -1000,8 +1000,9 @@ GameObject:
   - component: {fileID: 8986346706047411877}
   - component: {fileID: 8597291766019140767}
   - component: {fileID: 6648878225722628775}
+  - component: {fileID: 6331608703342224091}
   m_Layer: 5
-  m_Name: GemButtonText
+  m_Name: RunGemButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1123,6 +1124,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6331608703342224091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3728377166361177213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &4495183740985085434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1134,6 +1151,7 @@ GameObject:
   - component: {fileID: 6694995294549977931}
   - component: {fileID: 2203052776278451750}
   - component: {fileID: 8126948899680358358}
+  - component: {fileID: 399366732415962990}
   m_Layer: 5
   m_Name: QuestProgressText
   m_TagString: Untagged
@@ -1257,6 +1275,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &399366732415962990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495183740985085434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &5065462716241004478
 GameObject:
   m_ObjectHideFlags: 0
@@ -1855,6 +1889,7 @@ GameObject:
   - component: {fileID: 5893865825665694927}
   - component: {fileID: 4679455796514322359}
   - component: {fileID: 368837193732154193}
+  - component: {fileID: 5148553202927603877}
   m_Layer: 5
   m_Name: LevelText
   m_TagString: Untagged
@@ -1978,6 +2013,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5148553202927603877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6591848315345540622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &6603797424164507034
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,8 +2190,9 @@ GameObject:
   - component: {fileID: 387145796023474250}
   - component: {fileID: 5410940751121402925}
   - component: {fileID: 2720133780156241463}
+  - component: {fileID: 91035849897173546}
   m_Layer: 5
-  m_Name: GoalButton
+  m_Name: RunGoalButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2262,6 +2314,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &91035849897173546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8199742712078690735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &8544107657612292443
 GameObject:
   m_ObjectHideFlags: 0
@@ -2592,8 +2660,9 @@ GameObject:
   - component: {fileID: 7364092843129742687}
   - component: {fileID: 4270498700531591174}
   - component: {fileID: 6388399876775798208}
+  - component: {fileID: 3985006462216192734}
   m_Layer: 5
-  m_Name: MoenyButtonText
+  m_Name: RunMoneyButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2715,6 +2784,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3985006462216192734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8987528323308045578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &9030199038946870921
 GameObject:
   m_ObjectHideFlags: 0

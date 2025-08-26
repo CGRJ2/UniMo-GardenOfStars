@@ -831,6 +831,128 @@ namespace KYS
         {
             CheckForDuplicateKeys();
         }
+        
+        /// <summary>
+        /// 중복된 키를 제거하고 CSV 파일을 업데이트
+        /// </summary>
+        [ContextMenu("Remove Duplicate Keys from CSV")]
+        public void RemoveDuplicateKeysFromCSV()
+        {
+            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            
+            try
+            {
+                if (!System.IO.File.Exists(csvPath))
+                {
+                    Debug.LogError("[LocalizationManager] CSV 파일이 존재하지 않습니다.");
+                    return;
+                }
+                
+                string[] lines = System.IO.File.ReadAllLines(csvPath, System.Text.Encoding.UTF8);
+                if (lines.Length < 2)
+                {
+                    Debug.LogWarning("[LocalizationManager] CSV 파일에 데이터가 없습니다.");
+                    return;
+                }
+                
+                // 헤더와 데이터 분리
+                string headerLine = lines[0];
+                var dataLines = new List<string>(lines.Skip(1));
+                
+                // 중복 키 찾기
+                var keyCount = new Dictionary<string, int>();
+                var keyLines = new Dictionary<string, List<string>>();
+                
+                foreach (string line in dataLines)
+                {
+                    if (string.IsNullOrEmpty(line.Trim())) continue;
+                    
+                    string[] fields = ParseCSVLine(line);
+                    if (fields.Length > 0)
+                    {
+                        string key = fields[0].Trim();
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            if (!keyCount.ContainsKey(key))
+                            {
+                                keyCount[key] = 0;
+                                keyLines[key] = new List<string>();
+                            }
+                            keyCount[key]++;
+                            keyLines[key].Add(line);
+                        }
+                    }
+                }
+                
+                // 중복된 키들 찾기
+                var duplicateKeys = keyCount.Where(kvp => kvp.Value > 1).ToList();
+                
+                if (duplicateKeys.Count == 0)
+                {
+                    Debug.Log("[LocalizationManager] 중복된 키가 없습니다.");
+                    return;
+                }
+                
+                Debug.LogWarning($"[LocalizationManager] 중복된 키 {duplicateKeys.Count}개 발견:");
+                foreach (var duplicate in duplicateKeys)
+                {
+                    Debug.LogWarning($"  - {duplicate.Key}: {duplicate.Value}번 중복");
+                }
+                
+                // 중복 제거 (첫 번째 라인만 유지)
+                var newDataLines = new List<string>();
+                var processedKeys = new HashSet<string>();
+                
+                foreach (string line in dataLines)
+                {
+                    if (string.IsNullOrEmpty(line.Trim())) continue;
+                    
+                    string[] fields = ParseCSVLine(line);
+                    if (fields.Length > 0)
+                    {
+                        string key = fields[0].Trim();
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            if (!processedKeys.Contains(key))
+                            {
+                                newDataLines.Add(line);
+                                processedKeys.Add(key);
+                            }
+                            else
+                            {
+                                Debug.Log($"[LocalizationManager] 중복 키 '{key}' 제거됨");
+                            }
+                        }
+                    }
+                }
+                
+                // 새로운 CSV 파일 작성
+                var newLines = new List<string> { headerLine };
+                newLines.AddRange(newDataLines);
+                
+                // 백업 생성
+                string backupPath = csvPath.Replace(".csv", $"_backup_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv");
+                System.IO.File.Copy(csvPath, backupPath);
+                Debug.Log($"[LocalizationManager] 백업 파일 생성: {backupPath}");
+                
+                // 새 파일 작성
+                System.IO.File.WriteAllLines(csvPath, newLines.ToArray(), System.Text.Encoding.UTF8);
+                Debug.Log($"[LocalizationManager] 중복 키 제거 완료. {dataLines.Count - newDataLines.Count}개의 중복 라인 제거됨");
+                
+                // 데이터 다시 로드
+                if (isInitialized)
+                {
+                    // CSV 파일 다시 파싱
+                    string newCsvText = System.IO.File.ReadAllText(csvPath, System.Text.Encoding.UTF8);
+                    ParseCSVLanguageFile(newCsvText);
+                    Debug.Log("[LocalizationManager] CSV 데이터가 다시 로드되었습니다.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[LocalizationManager] 중복 키 제거 중 오류 발생: {e.Message}");
+            }
+        }
 
         [ContextMenu("Print All Keys")]
         public void PrintAllKeys()

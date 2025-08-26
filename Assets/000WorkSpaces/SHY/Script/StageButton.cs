@@ -19,7 +19,7 @@ public class StageButton : MonoBehaviour
     void Start()  //프리펩 안쓸때
     {
         // StageManager에서 해당 스테이지 데이터 가져오기
-        stageData = Manager.stage.GetStages()[stageIndex];
+        stageData = StageManager.instance.GetStages()[stageIndex];
 
         UpdateVisual();
     }
@@ -42,36 +42,44 @@ public class StageButton : MonoBehaviour
         //string targetScene = stageData.StageId.ToString(); // 외버전
         //string targetScene = stageData.StageName;
 
-        if (Manager.stage.sceneChanger.CurSceneName == stageData.StageName) // 이름 체크 방식.
+        if (Manager.scene.CurSceneName == stageData.StageName) // 이름 체크 방식.
         {
-            Debug.Log("이미 현재 스테이지입니다.");
+            Debug.Log($"이미 현재 스테이지입니다.{Manager.scene.CurSceneName}");
             return;
         }
         //int cs = SceneManager.GetActiveScene().buildIndex;
         //int ts = stageData.StageId;
-        if (Manager.stage.sceneChanger.CurSceneID == stageData.StageId)//인덱스 체크 방식.
+        if (Manager.scene.CurSceneID == stageData.StageId)//인덱스 체크 방식.
         {
-            Debug.Log("이미 현재 스테이지입니다.");
+            Debug.Log($"이미 현재 스테이지입니다.{Manager.scene.CurSceneID}");
             return;
         }
-        
-        Manager.stage.sceneChanger.LoadSceneByIndex(stageIndex);
+
+
+        //StageManager.instance.sceneChanger.LoadSceneByIndex(stageIndex); //유동씬 로드
+        SetScene(); //최종 안정성 버전.
+        //StageManager.instance.sceneChanger.GoBaseScene(stageData); //고정씬 로드
+
         //Manager.stage.sceneChanger.LoadSceneByName(stageData.StageName);
     }
-
+    public void SetScene()
+    {
+        Manager.scene.SetTarget(stageData.StageId,stageData.StageName);
+        Manager.scene.GoBaseScene(); //고정씬 로드
+    }
     public void UpdateVisual()
     {
         if (label == null) return;
 
         if (stageData.Unlock)
         {
-            label.text = $"Stage {stageData.StageId} (열림)";
+            label.text = $"Stage {stageData.StageId}\n(열림)";
             label.color = Color.black; // 해금 상태 색상
         }
         else
         {
-            label.text = $"Stage {stageData.StageId} (잠김)";
-            label.color = Color.gray; // 잠금 상태 색상
+            label.text = $"Stage {stageData.StageId}\n(잠김)";
+            label.color = Color.red; // 잠금 상태 색상
         }
     }
 }
