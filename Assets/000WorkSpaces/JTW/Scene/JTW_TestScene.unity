@@ -962,7 +962,7 @@ PrefabInstance:
     - target: {fileID: 845315589106052096, guid: f477c9596fc9cb9418187ab7ff9bf8c3, type: 3}
       propertyPath: _OriginData
       value: 
-      objectReference: {fileID: 11400000, guid: 2e017b5ea86563747912d629a5a33bd4, type: 2}
+      objectReference: {fileID: 11400000, guid: ee6eb64079fcf594aaa531abf3f51822, type: 2}
     - target: {fileID: 1989029535957415814, guid: f477c9596fc9cb9418187ab7ff9bf8c3, type: 3}
       propertyPath: m_Layer
       value: 0
@@ -1166,6 +1166,18 @@ PrefabInstance:
       value: WorkerManager
       objectReference: {fileID: 0}
     - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
+      propertyPath: workStatinLists.workAreas.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
+      propertyPath: workStatinLists.prodsAreas.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
+      propertyPath: workStatinLists.insertAreas.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
       propertyPath: workStatinLists.workAreas.Array.data[0]
       value: 
       objectReference: {fileID: 321144460}
@@ -1189,6 +1201,10 @@ PrefabInstance:
       propertyPath: workStatinLists.insertAreas.Array.data[1]
       value: 
       objectReference: {fileID: 802882409}
+    - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
+      propertyPath: workStatinLists.productGeneraters.Array.size
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8186773985890660665, guid: 7689c2c143d82764d9436d2fa77939ac, type: 3}
       propertyPath: workStatinLists.productGeneraters.Array.data[0]
       value: 
