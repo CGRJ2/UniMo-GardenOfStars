@@ -36,12 +36,13 @@ public class QuestManager : Singleton<QuestManager>
         SetQuestsOnNpc("test");
     }
 
-    public void SetQuestsOnNpc(string regionId)
+    public void SetQuestsOnNpc(string npcId)
     {
         // DB에서 regionId를 통해 해당 지역의 퀘스트 목록을 가져온다
-        Array.Sort(_questDataList);
-        InitQuestList(_questDataList.Length);
-        ConvertDataSOToClass();
+        CYETestQuestDataSO[] temp = Array.FindAll(_questDataList, item => item._npcId == npcId);
+        Array.Sort(temp);
+        InitQuestList(temp.Length);
+        ConvertDataSOToClass(temp);
 
         CurrentQuestIndex.Value = GetCurrentQuestIndex();
     }
@@ -53,15 +54,15 @@ public class QuestManager : Singleton<QuestManager>
         // _targetCompleteCount = listCount;
     }
 
-    private void ConvertDataSOToClass()
+    private void ConvertDataSOToClass(CYETestQuestDataSO[] temp)
     {
-        for (int idx = 0; idx < _questDataList.Length; idx++)
+        for (int idx = 0; idx < temp.Length; idx++)
         {
             _currentQuestList[idx]
              = new Quest(
-                _questDataList[idx],
-                Array.FindAll(_questContentDataList, item => item._questId == _questDataList[idx]._id),
-                Array.FindAll(_questProgressDataList, item => item._questId == _questDataList[idx]._id)
+                temp[idx],
+                Array.FindAll(_questContentDataList, item => item._questId == temp[idx]._id),
+                Array.FindAll(_questProgressDataList, item => item._questId == temp[idx]._id)
                 );
         }
     }
@@ -86,7 +87,7 @@ public class QuestManager : Singleton<QuestManager>
             }
             else
             {
-                questIdx = _currentQuestList.Length;
+                questIdx = _currentQuestList.Length - 1;
             }
         }
         return questIdx;

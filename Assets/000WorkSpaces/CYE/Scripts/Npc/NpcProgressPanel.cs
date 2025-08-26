@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class NpcProgressPanel : MonoBehaviour
 {
     public string _itemId;
-    [SerializeField] private SpriteRenderer _itemImage;
+    [SerializeField] private Image _itemImage;
     [SerializeField] private TMP_Text _currentCountText;
     [SerializeField] private TMP_Text _targetCountText;
 

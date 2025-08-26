@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 1.5}
-  m_SizeDelta: {x: 1, y: 1}
+  m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &7705028234394309942
 Canvas:
@@ -116,6 +116,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slots: 0
+  _displayArea: []
+  _cellPrefab: {fileID: 0}
+  _viewContent: {fileID: 0}
 --- !u!1 &2714298388551243282
 GameObject:
   m_ObjectHideFlags: 0

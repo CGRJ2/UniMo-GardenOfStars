@@ -19,8 +19,8 @@ namespace GameNpc
         void Init()
         {
             InitItemPanel(Manager.quest.CurrentQuestIndex.Value);
-            // UI 카메라 방향으로 돌려놓기
-            transform.forward = Camera.main.transform.forward;
+            // // UI 카메라 방향으로 돌려놓기
+            // transform.forward = Camera.main.transform.forward;
             // 이벤트 구독
             Manager.quest.OnQuestProgressUpdate += UpdateProgressUI;
             // TO DO: 나중에 제외 필요(대화시 퀘스트가 받아지도록 변경 예정)
