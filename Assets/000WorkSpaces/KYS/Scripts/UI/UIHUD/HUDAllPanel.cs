@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
 
 namespace KYS
 {
@@ -12,8 +11,8 @@ namespace KYS
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
         [SerializeField] private string levelTextName = "LevelText";
-        [SerializeField] private string menuButtonName = "MenuButton";
-        [SerializeField] private string inventoryButtonName = "InventoryButton";
+        [SerializeField] private string settingButtonName = "SettingButton";
+        [SerializeField] private string PropertyButtonName = "PropertyButton";
         [SerializeField] private string questProgressTextName = "QuestProgressText";
 
         #region UI Element References (동적 참조)
@@ -22,18 +21,18 @@ namespace KYS
         private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
         #endregion
-        
+
         protected override void Awake()
         {
             base.Awake();
-            
+
             // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
             if (layerType == UILayerType.Panel) // BaseUI의 기본값
             {
                 layerType = UILayerType.HUD;
             }
         }
-        
+
         public override string[] GetAutoLocalizeKeys()
         {
             return new string[] {
@@ -45,14 +44,14 @@ namespace KYS
                 "hud_inventory"
             };
         }
-        
+
         public override void Initialize()
         {
             base.Initialize();
-            
+
             SetupButtons();
             SetupAutoLocalization();
-            
+
             // 언어 변경 이벤트 구독
             if (LocalizationManager.Instance != null)
             {
@@ -60,15 +59,15 @@ namespace KYS
             }
 
 
-                UpdateMoney(Manager.player.Data.Money);
-   
+            UpdateMoney(Manager.player.Data.Money);
+
 
             //UpdateLevel(1);
             //UpdateQuestProgress("진행 중");
 
             //Debug.Log("[HUDAllPanel] HUD 초기화 완료");
         }
-        
+
         public override void Cleanup()
         {
             // 언어 변경 이벤트 구독 해제
@@ -76,32 +75,32 @@ namespace KYS
             {
                 LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
             }
-            
+
             base.Cleanup();
             //Debug.Log("[HUDAllPanel] HUD 정리 완료");
         }
-        
+
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var menuEventHandler = GetEventWithSFX(menuButtonName, "SFX_ButtonClick");
+            var menuEventHandler = GetEventWithSFX(settingButtonName, "SFX_ButtonClick");
             if (menuEventHandler != null)
             {
-                menuEventHandler.Click += (data) => OnMenuButtonClicked();
+                menuEventHandler.Click += (data) => OnSettingButtonClicked();
             }
-            
-            var inventoryEventHandler = GetEventWithSFX(inventoryButtonName, "SFX_ButtonClick");
+
+            var inventoryEventHandler = GetEventWithSFX(PropertyButtonName, "SFX_ButtonClick");
             if (inventoryEventHandler != null)
             {
                 inventoryEventHandler.Click += (data) => OnPropertyButtonClicked();
             }
         }
-        
+
         #region UI Update Methods
-        
+
         public void UpdateMoney(int amount)
         {
-            
+
             currentMoney = amount; // 현재 값 저장
             if (moneyText != null)
             {
@@ -111,12 +110,12 @@ namespace KYS
                 //{
                 //    localizedText = "재화"; // 번역이 없으면 기본값 사용
                 //}
-              
+
 
                 moneyText.text = $"{amount:N0}";
             }
         }
-        
+
         public void UpdateLevel(int level)
         {
             currentLevel = level; // 현재 값 저장
@@ -150,7 +149,7 @@ namespace KYS
         #endregion
 
         #region Language Change Handler
-        
+
         private void OnLanguageChanged(SystemLanguage newLanguage)
         {
             // 언어 변경 시 현재 값으로 텍스트 다시 업데이트
@@ -167,72 +166,74 @@ namespace KYS
                 UpdateQuestProgress(GetCurrentQuestProgress());
             }
         }
-        
+
         // 현재 값들을 저장할 변수들
         private int currentMoney = 1000;
         private int currentLevel = 1;
         private string currentQuestProgress = "진행 중";
-        
+
         private int GetCurrentMoneyValue() => currentMoney;
         private int GetCurrentLevelValue() => currentLevel;
         private string GetCurrentQuestProgress() => currentQuestProgress;
-        
+
         #endregion
 
         #region Event Handlers
 
-        private void OnMenuButtonClicked()
+        private void OnSettingButtonClicked()
         {
-            Debug.Log("[HUDAllPanel] 메뉴 버튼 클릭");
-            
+            Debug.Log("[HUDAllPanel] SettingPopUp 버튼 클릭");
+
             if (UIManager.Instance != null)
             {
                 // 메뉴 팝업 열기
-                UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
-    if (popup != null)
-    {
-        Debug.Log("[HUDAllPanel] SettingPopUp 성공적으로 열림");
-    }
-    else
-    {
-        Debug.LogError("[HUDAllPanel] SettingPopUp 열기 실패");
-    }
-});
+                UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) =>
+                {
+                    if (popup != null)
+                    {
+                        Debug.Log("[HUDAllPanel] SettingPopUp 성공적으로 열림");
+                    }
+                    else
+                    {
+                        Debug.LogError("[HUDAllPanel] SettingPopUp 열기 실패");
+                    }
+                });
             }
             else
             {
                 Debug.LogError("[HUDAllPanel] UIManager 인스턴스가 null입니다!");
             }
         }
-        
+
         private void OnPropertyButtonClicked()
         {
             //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
-            
+
             if (UIManager.Instance == null)
             {
                 Debug.LogError("[HUDAllPanel] UIManager.Instance가 null입니다!");
                 return;
             }
-            
+
             // 이미 TitlePanel이 열려있는지 확인
             var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
             foreach (var panel in existingPanels)
             {
-                if (panel is InfoPanel_Manufacture)
+                if (panel is PropertyPanel)
                 {
                     //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
                 }
             }
-            
+
             // 인벤토리 관련 로직 추가
-            
-            UIManager.Instance.ShowPanelAsync<InfoPanel_Manufacture>((panel) => {
+
+            UIManager.Instance.ShowPanelAsync<PropertyPanel>((panel) =>
+            {
                 if (panel != null)
                 {
                     //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
-                 
+
                 }
                 else
                 {
@@ -240,11 +241,52 @@ namespace KYS
                 }
             });
         }
-        
+
+
+        private void OnHRRoomButtonClicked()
+        {
+            //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
+
+            if (UIManager.Instance == null)
+            {
+                Debug.LogError("[HUDAllPanel] UIManager.Instance가 null입니다!");
+                return;
+            }
+
+            // 이미 TitlePanel이 열려있는지 확인
+            var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+            foreach (var panel in existingPanels)
+            {
+                if (panel is PropertyPanel)
+                {
+                    //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    return;
+                }
+            }
+
+            // 인벤토리 관련 로직 추가
+
+            UIManager.Instance.ShowPanelAsync<PropertyPanel>((panel) =>
+            {
+                if (panel != null)
+                {
+                    //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
+
+                }
+                else
+                {
+                    Debug.LogError("[HUDAllPanel] TitlePanel 열기 실패");
+                }
+            });
+        }
+
+
+
+
         #endregion
 
         #region Debug Methods
-        
+
         [ContextMenu("HUDAllPanel 상태 확인")]
         public void CheckHUDAllPanelStatus()
         {
@@ -256,7 +298,7 @@ namespace KYS
             //Debug.Log($"[HUDAllPanel] levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
             //Debug.Log($"[HUDAllPanel] questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
-        
+
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
@@ -267,7 +309,7 @@ namespace KYS
             //Debug.Log($"  - inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
             //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
-        
+
         #endregion
     }
 }

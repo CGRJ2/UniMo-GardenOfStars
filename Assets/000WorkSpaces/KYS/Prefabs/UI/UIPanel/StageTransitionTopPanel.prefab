@@ -960,6 +960,7 @@ GameObject:
   - component: {fileID: 5595017453698616687}
   - component: {fileID: 8914303320032473044}
   - component: {fileID: 6640564879724233228}
+  - component: {fileID: 8224134016971184563}
   m_Layer: 5
   m_Name: RunConstellationText
   m_TagString: Untagged
@@ -1083,6 +1084,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8224134016971184563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5190852891799526908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &5599455017786509851
 GameObject:
   m_ObjectHideFlags: 0

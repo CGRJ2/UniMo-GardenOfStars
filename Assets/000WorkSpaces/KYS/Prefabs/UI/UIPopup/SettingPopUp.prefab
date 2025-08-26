@@ -1261,6 +1261,7 @@ GameObject:
   - component: {fileID: 8377685991558954528}
   - component: {fileID: 566246906456376478}
   - component: {fileID: 6520319978787939112}
+  - component: {fileID: 1365701801063312056}
   m_Layer: 5
   m_Name: BGMText
   m_TagString: Untagged
@@ -1384,6 +1385,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1365701801063312056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2230678905232030681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &2254785202404335484
 GameObject:
   m_ObjectHideFlags: 0
@@ -2474,7 +2491,8 @@ GameObject:
   - component: {fileID: 185144028655554886}
   - component: {fileID: 8007274413402937682}
   - component: {fileID: 1870574617216416109}
-  - component: {fileID: 3632780224852609800}
+  - component: {fileID: 6391911730139890898}
+  - component: {fileID: -7598800810005463440}
   m_Layer: 5
   m_Name: SettingPopUp
   m_TagString: Untagged
@@ -2489,7 +2507,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6024707580441897166}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2553,7 +2571,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3632780224852609800
+--- !u!225 &6391911730139890898
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6024707580441897166}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &-7598800810005463440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2562,21 +2592,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 6024707580441897166}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10989fa37d0fa674a99012fc1982ccf3, type: 3}
+  m_Script: {fileID: 11500000, guid: a19c7c28fcba1b94eba13ed6298ab709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   layerType: 2
-  panelGroup: 3
+  panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
-  showEase: 2
-  hideEase: 3
-  canCloseWithESC: 1
-  canCloseWithBackdrop: 1
+  showEase: 27
+  hideEase: 26
+  canCloseWithESC: 0
+  canCloseWithBackdrop: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
-  createBackdropForPopup: 1
-  enableSFX: 0
+  createBackdropForPopup: 0
+  enableSFX: 1
   defaultClickSound: SFX_ButtonClick
   defaultBackSound: SFX_ButtonClickBack
   defaultHoverSound: SFX_ButtonHover
@@ -2586,10 +2616,9 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  startButtonName: StartButton
-  settingsButtonName: SettingsButton
-  exitButtonName: ExitButton
-  closeButtonName: CloseButton
+  BGMText: BGMText
+  SFXText: SFXText
+  VibrationText: VibrationText
 --- !u!1 &6825701894105294135
 GameObject:
   m_ObjectHideFlags: 0
@@ -2727,6 +2756,7 @@ GameObject:
   - component: {fileID: 4878068526541023343}
   - component: {fileID: 2816932185674871800}
   - component: {fileID: 4281487573427888017}
+  - component: {fileID: 2070157453858093293}
   m_Layer: 5
   m_Name: SFXText
   m_TagString: Untagged
@@ -2850,6 +2880,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2070157453858093293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7237897751976017664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &7263169625766140649
 GameObject:
   m_ObjectHideFlags: 0
@@ -3454,6 +3500,7 @@ GameObject:
   - component: {fileID: 3188681837173517878}
   - component: {fileID: 6231353028222669202}
   - component: {fileID: 5395960650882571499}
+  - component: {fileID: 9168286164826637893}
   m_Layer: 5
   m_Name: VibrationText
   m_TagString: Untagged
@@ -3577,3 +3624,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9168286164826637893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9166228443808401581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0

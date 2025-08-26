@@ -1,6 +1,7 @@
 ﻿using KYS;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SettingPopUp : BaseUI
 {
@@ -9,6 +10,7 @@ public class SettingPopUp : BaseUI
     [SerializeField] private string BGMText = "BGMText";
     [SerializeField] private string SFXText = "SFXText";
     [SerializeField] private string VibrationText = "VibrationText";
+    [SerializeField] private string closeButtonName = "CloseButton";
 
 
 
@@ -20,6 +22,9 @@ public class SettingPopUp : BaseUI
         {
             layerType = UILayerType.Popup;
         }
+
+
+
     }
 
     private TextMeshProUGUI BGU => GetUI<TextMeshProUGUI>(BGMText);
@@ -41,6 +46,29 @@ public class SettingPopUp : BaseUI
     {
         base.Initialize();
         SetupAutoLocalization();
+        SetupButtons();
     }
+
+
+    private void SetupButtons()
+    {
+        var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+        if (confirmEventHandler != null)
+        {
+            confirmEventHandler.Click += OnCloseButton;
+
+        }
+        else
+        {
+            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+
+    }
+
+    private void OnCloseButton(PointerEventData data)
+    {
+        Manager.ui.ClosePopup();
+    }
+
 
 }
