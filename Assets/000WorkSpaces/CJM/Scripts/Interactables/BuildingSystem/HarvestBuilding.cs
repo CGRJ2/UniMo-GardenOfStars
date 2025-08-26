@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -6,9 +6,16 @@ using UnityEngine.AddressableAssets;
 public class HarvestBuilding : BuildingInstance
 {
     [SerializeField] Transform prodsParentTransform;
-    //[SerializeField] float cultivateTime;
-    public HarvestRuntimeData runtimeData;
     [HideInInspector] public HarvestBD originData;
+
+    public float ProdTime // 현재 업그레이드 단계에 따른 [생산 속도]
+    {
+        get
+        {
+            int level = Manager.buildings.GetUpgradeData(originData.ID).level_ProdTime;
+            return originData.Stat_ProdTime.Values[level];
+        }
+    }
 
     ProductGenerater[] productGeneraters;
     ObjectPool _Pool;
@@ -28,8 +35,6 @@ public class HarvestBuilding : BuildingInstance
         if (_OriginData is HarvestBD harvestBD)
         {
             originData = harvestBD;
-            runtimeData = new();
-            runtimeData.SetCurLevelStatDatas(harvestBD);
         }
     }
 
@@ -43,19 +48,8 @@ public class HarvestBuilding : BuildingInstance
             _Pool = Manager.pool.GetPoolBundle(product).instancePool;
             foreach (ProductGenerater prodsGenerater in productGeneraters)
             {
-                prodsGenerater.Init(product, runtimeData.productionTime);
+                prodsGenerater.Init(product, ProdTime);
             }
         };
-    }
-}
-[Serializable]
-public class HarvestRuntimeData
-{
-    public int level_ProductionTime;
-    public float productionTime;
-
-    public void SetCurLevelStatDatas(HarvestBD harvestBD)
-    {
-        this.productionTime = harvestBD.Stat_ProductionTime.Values[level_ProductionTime];
     }
 }

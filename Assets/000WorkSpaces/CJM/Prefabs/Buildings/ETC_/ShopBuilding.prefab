@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8388898394763269272}
   - component: {fileID: 7431239190230663473}
   - component: {fileID: 6969844040011912673}
+  - component: {fileID: 5623439372059295273}
   m_Layer: 0
   m_Name: View
   m_TagString: Untagged
@@ -105,6 +106,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &5623439372059295273
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526224199194119815}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &3751225586828446903
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +510,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   personalTaskOwner: {fileID: 0}
   _OriginData: {fileID: 0}
-  activateAreaPopUI: {fileID: 0}
+  activatePopUI: {fileID: 0}
   insertDelayTime: 0.1
   attachPoint: {fileID: 5139473940089992903}
   Canvas_PriceData: {fileID: 6957850589915231290}

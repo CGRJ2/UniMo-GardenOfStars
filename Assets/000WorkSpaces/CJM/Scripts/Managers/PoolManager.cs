@@ -1,14 +1,14 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PoolManager : Singleton<PoolManager>
 {
-    [Header("»ı¼ºµÈ Ç® °ü¸®")]    // ¾À ÀüÈ¯ ½Ã ÃÊ±âÈ­ ÇÊ¿äÇÑ°¡?
+    [Header("ìƒì„±ëœ í’€ ê´€ë¦¬")]    // ì”¬ ì „í™˜ ì‹œ ì´ˆê¸°í™”
     public List<PoolBundle> pools = new();
 
-    [Header("Ç® »ı¼º ½Ã ±âº» °³¼ö ¼³Á¤")]
+    [Header("í’€ ìƒì„± ì‹œ ê¸°ë³¸ ê°œìˆ˜ ì„¤ì •")]
     public int count;
 
     private void Awake() => Init();
@@ -37,7 +37,7 @@ public class PoolManager : Singleton<PoolManager>
                 return poolBundle;
         }
 
-        Debug.Log("ÇØ´ç ÇÁ¸®ÆéÀ» ´ã¾ÆµĞ ¿ÀºêÁ§Æ® Ç®ÀÌ ¾øÀ½ => ¾øÀ¸¸é Ç® ¸¸µé±â");
+        Debug.Log("í•´ë‹¹ í”„ë¦¬í©ì„ ë‹´ì•„ë‘” ì˜¤ë¸Œì íŠ¸ í’€ì´ ì—†ìŒ => ì—†ìœ¼ë©´ í’€ ë§Œë“¤ê¸°");
         PoolBundle bundle = new($"{prefab.name} Pool", prefab, count);
         bundle.Init();
         pools.Add(bundle);

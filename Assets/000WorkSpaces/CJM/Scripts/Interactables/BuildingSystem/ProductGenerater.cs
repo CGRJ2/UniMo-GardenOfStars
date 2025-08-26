@@ -138,11 +138,6 @@ public class ProductGenerater : InteractableBase, IWorkStation
     {
         base.Enter(characterRuntimeData);
 
-        if (characterRD is WorkerRuntimeData worker)
-        {
-            if (worker.CurWorkstation.Value != this as IWorkStation) return;
-        }
-
         StartCoroutine(PickUpRoutine());
     }
 }

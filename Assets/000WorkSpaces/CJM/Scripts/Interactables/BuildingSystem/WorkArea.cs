@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +14,9 @@ public class WorkArea : InteractableBase, IWorkStation
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
-    public CharaterRuntimeData curWorker; // ÀÓ½Ã. ÀÏ²Û±îÁö Æ÷ÇÔÇÑ º¯¼ö·Î ¼öÁ¤ ÇÊ¿ä
+    // í˜„ì¬ ì‘ì—… ì¤‘ì¸ ì¼ê¾¼ ì •ë³´
+    public CharaterRuntimeData curWorker; 
+
     [SerializeField] Slider progressBar;
 
     public void Init(ManufactureBuilding instance)
@@ -27,18 +29,18 @@ public class WorkArea : InteractableBase, IWorkStation
     IEnumerator ProgressingTask()
     {
         isReserved = false;
-        curWorker = characterRD; // ÀÓ½Ã. ÀÏ²Û±îÁö Æ÷ÇÔÇÑ º¯¼ö·Î ¼öÁ¤ ÇÊ¿ä
+        curWorker = characterRD; // ì„ì‹œ. ì¼ê¾¼ê¹Œì§€ í¬í•¨í•œ ë³€ìˆ˜ë¡œ ìˆ˜ì • í•„ìš”
         curWorker.IsWork.Value = true;
 
-        // Á¤Áö »óÅÂ±îÁö ´ë±âÇß´Ù°¡ ÀÛ¾÷ ½ÇÇà
+        // ì •ì§€ ìƒíƒœê¹Œì§€ ëŒ€ê¸°í–ˆë‹¤ê°€ ì‘ì—… ì‹¤í–‰
         yield return new WaitUntil(() => !curWorker.IsMove.Value);
 
-        // ÀÛ¾÷ ½ÃÀÛ ½Ã, ÁøÇàµµ Ç¥±â
+        // ì‘ì—… ì‹œì‘ ì‹œ, ì§„í–‰ë„ í‘œê¸°
         progressBar.gameObject.SetActive(true);
 
-        while (curWorker == characterRD) // ÇöÀç ÀÛ¾÷ÀÚ°¡ ÀÖ´Â µ¿¾È °è¼Ó ½ÇÇà
+        while (curWorker == characterRD) // í˜„ì¬ ì‘ì—…ìê°€ ìˆëŠ” ë™ì•ˆ ê³„ì† ì‹¤í–‰
         {
-            // ÀÛ¾÷ ÁøÇà Áß, ¿µ¿ª ³»¿¡¼­ ¿òÁ÷ÀÎ °æ¿ì ´ë±â
+            // ì‘ì—… ì§„í–‰ ì¤‘, ì˜ì—­ ë‚´ì—ì„œ ì›€ì§ì¸ ê²½ìš° ëŒ€ê¸°
             if (curWorker.IsMove.Value)
             {
                 progressBar.gameObject.SetActive(false);
@@ -46,7 +48,7 @@ public class WorkArea : InteractableBase, IWorkStation
                 progressBar.gameObject.SetActive(true);
             }
 
-            // Àç·á ¼ÒÁø ½Ã, Àç·á°¡ Ã¤¿öÁú ¶§ ±îÁö ´ë±â
+            // ì¬ë£Œ ì†Œì§„ ì‹œ, ì¬ë£Œê°€ ì±„ì›Œì§ˆ ë•Œ ê¹Œì§€ ëŒ€ê¸°
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
                 progressBar.gameObject.SetActive(false);
@@ -54,59 +56,51 @@ public class WorkArea : InteractableBase, IWorkStation
                 progressBar.gameObject.SetActive(true);
             }
 
-            // ÀÛ¾÷ ¿µ¿ª ¹ÛÀ¸·Î ³ª°¡´Â °æ¿ì
+            // ì‘ì—… ì˜ì—­ ë°–ìœ¼ë¡œ ë‚˜ê°€ëŠ” ê²½ìš°
             if (curWorker != characterRD) break;
 
-            // ½×¿©ÀÖ´Â Àç·á°¡ ÀÖÀ»¶§¸¸ ½ÇÇà
+            // ìŒ“ì—¬ìˆëŠ” ì¬ë£Œê°€ ìˆì„ë•Œë§Œ ì‹¤í–‰
             if (ownerInstance.ingrediantStack.Count > 0)
             {
                 ownerInstance.progressedTime += Time.deltaTime;
 
-                if (ownerInstance.runtimeData.productionTime < ownerInstance.progressedTime)
+                if (ownerInstance.ProdTime < ownerInstance.progressedTime)
                 {
-                    CompleteTask(); // °á°ú¹° »ı¼º
-                    ownerInstance.progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                    CompleteTask(); // ê²°ê³¼ë¬¼ ìƒì„±
+                    ownerInstance.progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 }
                 
-                // ÁøÇàµµ °ÔÀÌÁö ¾÷µ¥ÀÌÆ®
-                progressBar.value = ownerInstance.progressedTime / ownerInstance.runtimeData.productionTime;
+                // ì§„í–‰ë„ ê²Œì´ì§€ ì—…ë°ì´íŠ¸
+                progressBar.value = ownerInstance.progressedTime / ownerInstance.ProdTime;
 
                 yield return null;
             }
             else yield return null;
         }
 
-        // ÀÛ¾÷ Á¾·á ½Ã, ÇöÀç ÀÛ¾÷ÀÚ Á¤º¸ ÃÊ±âÈ­
+        // ì‘ì—… ì¢…ë£Œ ì‹œ, í˜„ì¬ ì‘ì—…ì ì •ë³´ ì´ˆê¸°í™”
         yield return null;
         
         if (curWorker != null)
             curWorker.IsWork.Value = false;
         curWorker = null;
 
-        // ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+        // ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
         progressBar.gameObject.SetActive(false);
     }
 
     public void CompleteTask()
     {
-        // °á°ú¹° ÀÎ½ºÅÏ½º »ı¼º(È°¼ºÈ­) ----> ÀÌ°Å¸¦ ´ÜÀÏ °³Ã¼¿¡ ½×ÀÓ ÇüÅÂ·Î ÇÒ°ÇÁö ¾ÆÁ÷ ¹ÌÁ¤ÀÓ
-        //GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
-
-        // È¸¼ö¿µ¿ª¿¡ °³¼ö ´Ã·ÁÁÖ±â
+        // íšŒìˆ˜ì˜ì—­ì— ê°œìˆ˜ ëŠ˜ë ¤ì£¼ê¸°
         ownerInstance.prodsArea.ProdsCount += 1;
 
-        // Àç·á ¼Ò¸ğ
+        // ì¬ë£Œ ì†Œëª¨
         ownerInstance.ingrediantStack.Pop().Despawn();
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
-
-        if (characterRD is WorkerRuntimeData worker)
-        {
-            if (worker.CurWorkstation.Value != this as IWorkStation) return;
-        }
 
         if (curWorker == null)
         {

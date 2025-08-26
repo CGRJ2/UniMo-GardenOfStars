@@ -14,30 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ManufactureBD
   <ID>k__BackingField: "\uC7AC\uB8CCC \uACF5\uC7A5"
   <Name>k__BackingField: "\uC7AC\uB8CCC \uACF5\uC7A5"
+  <Description>k__BackingField: 
   <Prefab>k__BackingField: {fileID: 7222427607021911485, guid: 5a453f302bf82f2498f4e78d02064232, type: 3}
   <ProductID>k__BackingField: IngrediantC
-  <Stat_ProductionTime>k__BackingField:
-    <MaxLevel>k__BackingField: 5
+  <Stat_ProdTime>k__BackingField:
+    <MaxLevel>k__BackingField: 3
     <Values>k__BackingField:
-    - 5
-    - 5
-    - 5
-    - 5
-    - 5
-    - 5
+    - 3
+    - 2
+    - 1
+    - 0.5
     <cost>k__BackingField:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 100
+    - 200
+    - 300
   <RequireProdID>k__BackingField: IngrediantA
-  <Stat_MaxStackableCount>k__BackingField:
-    <MaxLevel>k__BackingField: 5
-    <Values>k__BackingField: 050000000a0000000f000000140000001900000019000000
+  <Stat_Capacity>k__BackingField:
+    <MaxLevel>k__BackingField: 3
+    <Values>k__BackingField: 050000000a0000000f00000014000000
     <cost>k__BackingField:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 150
+    - 300
+    - 450
