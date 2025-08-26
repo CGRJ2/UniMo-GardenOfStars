@@ -9,17 +9,18 @@ public enum WorkerStates
 
 public class WorkerController : MonoBehaviour
 {
-    private InteractableBase _curWorkstation;
-    private StateMachine<WorkerStates> _stateMachine;
-    
-    private WorkerData _workerData;
-    public WorkerData WorkData => _workerData;
-
-    public bool IsSetWorkstation => _curWorkstation != null;
+    private StateMachine<WorkerStates> _stateMachine = new StateMachine<WorkerStates>();
 
     private void Awake()
     {
-        // TODO : _stateMachine에 상태 추가 및 기본 상태로 설정.
+        WorkerRuntimeData data = GetComponent<WorkerRuntimeData>();
+
+        _stateMachine.AddState(WorkerStates.Idle, new WorkerState_Idle(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Move, new WorkerState_Move(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Work, new WorkerState_Work(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Stun, new WorkerState_Stun(_stateMachine, data));
+
+        _stateMachine.ChangeState(WorkerStates.Idle);
     }
 
     private void Update()
@@ -30,15 +31,5 @@ public class WorkerController : MonoBehaviour
     private void FixedUpdate()
     {
         _stateMachine.FixedUpdate();
-    }
-
-    public void SetWorkerData(WorkerData data)
-    {
-        _workerData = data;
-    }
-
-    public void SetWorkstation(InteractableBase workstation)
-    {
-        _curWorkstation = workstation;
     }
 }
