@@ -68,7 +68,7 @@ public class ProdsArea : InteractableBase, IWorkStation
 
             PickUp();
             //_SpawnedProduct = null;
-            tmp_Count.text = $"{ProdsCount}";
+            //tmp_Count.text = $"{ProdsCount}";
             yield return new WaitForSeconds(ownerInstance.prodsAbsorbDelayTime);
         }
     }
@@ -76,6 +76,12 @@ public class ProdsArea : InteractableBase, IWorkStation
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
+
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
+
         StartCoroutine(PickUpRoutine());
     }
 

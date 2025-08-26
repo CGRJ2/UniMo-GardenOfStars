@@ -63,6 +63,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
     {
         while (true)
         {
+            
             // 매 프레임마다, 스탠바이 상태 체크
             yield return new WaitUntil(() => StandByCheck());
 
@@ -136,6 +137,11 @@ public class ProductGenerater : InteractableBase, IWorkStation
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
+
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
 
         StartCoroutine(PickUpRoutine());
     }

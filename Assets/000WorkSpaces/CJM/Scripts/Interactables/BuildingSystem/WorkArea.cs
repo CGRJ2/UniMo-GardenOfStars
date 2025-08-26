@@ -78,7 +78,9 @@ public class WorkArea : InteractableBase, IWorkStation
 
         // 작업 종료 시, 현재 작업자 정보 초기화
         yield return null;
-        curWorker.IsWork.Value = false;
+        
+        if (curWorker != null)
+            curWorker.IsWork.Value = false;
         curWorker = null;
 
         // 진행도 표기 비활성화
@@ -100,6 +102,11 @@ public class WorkArea : InteractableBase, IWorkStation
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
+
+        if (characterRD is WorkerRuntimeData worker)
+        {
+            if (worker.CurWorkstation.Value != this as IWorkStation) return;
+        }
 
         if (curWorker == null)
         {

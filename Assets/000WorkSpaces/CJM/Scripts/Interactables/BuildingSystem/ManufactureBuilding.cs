@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ManufactureBuilding : BuildingInstance
 {
-    public BuildingRuntimeData runtimeData;
+    public ManufactureRuntimeData runtimeData;
     [HideInInspector] public ManufactureBD originData;
 
     [Header("재료를 쌓아놓을 위치")]
@@ -36,6 +35,8 @@ public class ManufactureBuilding : BuildingInstance
     {
         base.BIBaseInit();
         InitRuntimeData();
+        activatePopUI.Init(this);
+        
         insertArea.Init(this);
         workArea?.Init(this);
         workArea_SwitchType?.Init(this);
@@ -51,5 +52,35 @@ public class ManufactureBuilding : BuildingInstance
             runtimeData.SetCurLevelStatDatas(mfBD);
         }
     }
+
+
+    public void CheckUpgradable()
+    {
+        int curLevel_ProdTime = runtimeData.level_ProductionTime; 
+        int curLevel_StackCount = runtimeData.level_StackCount; 
+        int curMoney = Manager.player.Data.Money;
+
+        // 두 스탯 중 업그레이드 비용이 충족될 때
+        if (curMoney > originData.Stat_MaxStackableCount.cost[curLevel_StackCount] 
+            || curMoney > originData.Stat_ProductionTime.cost[curLevel_StackCount])
+        {
+            // 버튼 모양 업그레이드 형태로 바꾸기
+        }
+        //Manager.player.Data.Money
+    }
 }
 
+[Serializable]
+public class ManufactureRuntimeData
+{
+    public int level_ProductionTime;
+    public int level_StackCount;
+    public int capacity;
+    public float productionTime;
+
+    public void SetCurLevelStatDatas(ManufactureBD manufactureBD)
+    {
+        this.capacity = manufactureBD.Stat_MaxStackableCount.Values[level_StackCount];
+        this.productionTime = manufactureBD.Stat_ProductionTime.Values[level_ProductionTime];
+    }
+}
