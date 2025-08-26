@@ -1,4 +1,6 @@
 using System.Collections;
+using GameNpc;
+using GameQuest;
 using UnityEngine;
 
 public class QuestProdsInsertArea : InteractableBase
@@ -22,30 +24,59 @@ public class QuestProdsInsertArea : InteractableBase
             IngrediantInstance instanceProd;
             if (characterRD.IngrediantStack.TryPeek(out instanceProd))
             {
-                Temp_Requirement targetRequirement = null;
-                foreach (Temp_Requirement requirement in ownerInstance.requirements)
+                // Temp_Requirement targetRequirement = null;
+                // foreach (Temp_Requirement requirement in ownerInstance.requirements)
+                // {
+                //     // 손에 있는 재료가 퀘스트 조건에 있는 재료이고 && 충족되지 않은 상황이면
+                //     if (instanceProd.Data.ID == requirement.prodId && !requirement.isClear)
+                //     {
+                //         targetRequirement = requirement;    // 타겟으로 설정
+                //         break;
+                //     }
+                // }                
+
+                // if (targetRequirement != null)
+                // {
+                //     // 현재 진행도에 개수 추가
+                //     if (targetRequirement.curCount < targetRequirement.needCount)
+                //     {
+                //         IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+                //         targetRequirement.curCount += 1;
+                //         popedProd.MoveToTargetAndShrink(attachPoint);
+                //     }
+                //     else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
+                //     {
+                //         targetRequirement.isClear = true;
+                //         break;
+                //     }
+                // }
+
+                QuestProgressData targetRequirement = null;
+                foreach (QuestProgressData requirement in Manager.quest.CurrentQuest._questProgresses)
                 {
                     // 손에 있는 재료가 퀘스트 조건에 있는 재료이고 && 충족되지 않은 상황이면
-                    if (instanceProd.Data.ID == requirement.prodId && !requirement.isClear)
+                    if (instanceProd.Data.ID == requirement._targetId && requirement._currentState!=QuestProgressState.Completed)
                     {
                         targetRequirement = requirement;    // 타겟으로 설정
                         break;
                     }
                 }
-
-
                 if (targetRequirement != null)
                 {
                     // 현재 진행도에 개수 추가
-                    if (targetRequirement.curCount < targetRequirement.needCount)
+                    if (targetRequirement._currentCount < targetRequirement._targetCount)
                     {
+                        GetComponentInParent<Npc>()?.ReceiveEachProduct(targetRequirement._targetId);
+                        // targetRequirement._currentCount += 1;
                         IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-                        targetRequirement.curCount += 1;
                         popedProd.MoveToTargetAndShrink(attachPoint);
+
+                        // 재료 투입 후 퀘스트 상태 업데이트
+                        // GetComponentInParent<Npc>()?.ReceiveEachProduct(targetRequirement._targetId);
                     }
                     else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
                     {
-                        targetRequirement.isClear = true;
+                        // targetRequirement._currentState = QuestProgressState.Completed;
                         break;
                     }
                 }
@@ -53,8 +84,6 @@ public class QuestProdsInsertArea : InteractableBase
                 // 다음 투입까지 딜레이 시간 설정
                 yield return new WaitForSeconds(insertDelayTime);
 
-                // 재료 투입 후 퀘스트 상태 업데이트
-                // 
             }
             // 플레이어 손에 재료가 없으면 바로 return
             else
