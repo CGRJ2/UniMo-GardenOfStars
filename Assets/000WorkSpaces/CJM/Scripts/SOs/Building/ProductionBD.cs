@@ -1,11 +1,11 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class ProductionBD : BuildingData
 {
-    [field: Header("»ı»êµÉ Àç·á Id")]
+    [field: Header("ìƒì‚°ë  ì¬ë£Œ Id")]
     [field: SerializeField] public string ProductID { get; private set; }
     
-    [field: Header("»ı»ê ½Ã°£(¾÷±×·¹ÀÌµå Ç¥)")]
-    [field: SerializeField] public UpgradableStat<float> Stat_ProductionTime { get; private set; }
+    [field: Header("ìƒì‚° ì‹œê°„(ì—…ê·¸ë ˆì´ë“œ í‘œ)")]
+    [field: SerializeField] public UpgradableStat<float> Stat_ProdTime { get; private set; }
 
 }

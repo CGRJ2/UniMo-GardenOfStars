@@ -1,10 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Building", menuName = "SO/ÀÛ¾÷Çü °Ç¹° µ¥ÀÌÅÍ Å¬·¡½º")]
+[CreateAssetMenu(fileName = "Building", menuName = "SO/ì‘ì—…í˜• ê±´ë¬¼ ë°ì´í„° í´ë˜ìŠ¤")]
 public class ManufactureBD : ProductionBD
 {
-    [field: Header("ÅõÀÔ °¡´ÉÇÑ Àç·á(¼Ò¸ğ) Id")]
+    [field: Header("íˆ¬ì… ê°€ëŠ¥í•œ ì¬ë£Œ(ì†Œëª¨) Id")]
     [field: SerializeField] public string RequireProdID { get; private set; }
-    [field: Header("Àç·á ½ºÅÃ °¡´É °³¼ö(¾÷±×·¹ÀÌµå Ç¥)")]
-    [field: SerializeField] public UpgradableStat<int> Stat_MaxStackableCount { get; private set; }
+    [field: Header("ì¬ë£Œ ìŠ¤íƒ ê°€ëŠ¥ ê°œìˆ˜(ì—…ê·¸ë ˆì´ë“œ í‘œ)")]
+    [field: SerializeField] public UpgradableStat<int> Stat_Capacity { get; private set; }
 }

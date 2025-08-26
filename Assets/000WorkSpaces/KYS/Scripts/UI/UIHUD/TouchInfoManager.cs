@@ -325,7 +325,7 @@ namespace KYS
         {
             // 테스트용 정보 생성
             string title = "빈 공간";
-            string description = $"터치 위치: ({screenPosition.x:F0}, {screenPosition.y:F0})\n이곳에 실제 건물이나 생산시설이 배치됩니다.";
+            string description = $"터치 위치: ({screenPosition.x:F0}, {screenPosition.y:F0})\n";
             
             // HUD 생성 (기존 HUD는 이미 ProcessTouch에서 닫혔음)
             _ = TouchInfoHUD.ShowInfoHUD(screenPosition, title, description);

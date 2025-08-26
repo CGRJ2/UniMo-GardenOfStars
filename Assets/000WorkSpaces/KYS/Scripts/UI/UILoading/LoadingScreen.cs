@@ -337,6 +337,17 @@ namespace KYS
                 SetCenterMessageByKey(loadingMessageKeys[index], fallback);
             }
         }
+
+        /// <summary>
+        /// 특정 키로 로딩 메시지 설정
+        /// </summary>
+        public void SetLoadingMessage(string messageKey)
+        {
+            if (!string.IsNullOrEmpty(messageKey))
+            {
+                SetCenterMessageByKey(messageKey, null);
+            }
+        }
         
         /// <summary>
         /// 특정 이미지로 전환

@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 72777769237667391}
   - component: {fileID: 6873531637850529921}
   - component: {fileID: 9195618501566683812}
+  - component: {fileID: 3499448567487689765}
   m_Layer: 5
   m_Name: CancelText
   m_TagString: Untagged
@@ -376,6 +377,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3499448567487689765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6190777258411544726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &6982989053937160634
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,9 +505,9 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  messageText: {fileID: 5959800411796131031}
-  confirmButton: {fileID: 8337931521305220601}
-  cancelButton: {fileID: 8657686693786520844}
+  messageTextName: MessageText
+  confirmButtonName: ConfirmButton
+  cancelButtonName: CancelButton
 --- !u!1 &8181920889320225383
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,6 +519,7 @@ GameObject:
   - component: {fileID: 4428251734411695351}
   - component: {fileID: 337192057459762195}
   - component: {fileID: 6514549727330634144}
+  - component: {fileID: 7403995251406521820}
   m_Layer: 5
   m_Name: ConfirmText
   m_TagString: Untagged
@@ -625,6 +643,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7403995251406521820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181920889320225383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &8883559669689114052
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,6 +670,7 @@ GameObject:
   - component: {fileID: 2341041133836543771}
   - component: {fileID: 4351104041575800871}
   - component: {fileID: 5959800411796131031}
+  - component: {fileID: 966143774459758510}
   m_Layer: 5
   m_Name: TEST
   m_TagString: Untagged
@@ -759,3 +794,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &966143774459758510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8883559669689114052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0

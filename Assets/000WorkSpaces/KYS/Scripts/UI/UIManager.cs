@@ -34,6 +34,11 @@ namespace KYS
         //[SerializeField] private string panelPrefabLabel = "UI_Panel";
         //[SerializeField] private string popupPrefabLabel = "UI_Popup";
 
+        [Header("Auto Loading Screen Settings")]
+        [SerializeField] private bool showLoadingScreenOnStart = true; // 게임 시작 시 로딩 화면 표시 여부
+        [SerializeField] private string initialLoadingMessage = "loading_data"; // 초기 로딩 메시지 키
+        [SerializeField] private float loadingScreenHideDelay = 1f; // 로딩 화면 숨김 지연 시간
+
         // Canvas 참조들
         private Canvas hudCanvas;
         private Canvas panelCanvas;
@@ -148,6 +153,12 @@ namespace KYS
 
                 ApplySafeAreaToCanvases();
                 await InitializeHUDElements();
+                
+                // 게임 시작 시 로딩 화면 표시
+                if (showLoadingScreenOnStart)
+                {
+                    StartCoroutine(ShowInitialLoadingScreen());
+                }
             }
             catch (System.Exception e)
             {
@@ -2014,6 +2025,52 @@ namespace KYS
             {
                 Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
             }
+        }
+
+        #endregion
+
+        #region Initial Loading Screen
+
+        /// <summary>
+        /// 게임 시작 시 초기 로딩 화면 표시
+        /// </summary>
+        private IEnumerator ShowInitialLoadingScreen()
+        {
+            if (loadingCanvas == null)
+            {
+                Debug.LogWarning("[UIManager] Loading Canvas가 초기화되지 않았습니다.");
+                yield break;
+            }
+
+            // 로딩 화면 UI 찾기
+            LoadingScreen loadingScreen = loadingCanvas.GetComponentInChildren<LoadingScreen>(true);
+            if (loadingScreen == null)
+            {
+                Debug.LogWarning("[UIManager] LoadingScreen 컴포넌트를 찾을 수 없습니다.");
+                yield break;
+            }
+
+            // 로딩 화면 표시
+            loadingScreen.gameObject.SetActive(true);
+            loadingScreen.Show();
+
+            // 초기 로딩 메시지 설정
+            if (!string.IsNullOrEmpty(initialLoadingMessage))
+            {
+                loadingScreen.SetLoadingMessage(initialLoadingMessage);
+            }
+
+            // 로딩 화면이 완전히 표시될 때까지 대기
+            yield return new WaitForSeconds(0.5f);
+
+            // Addressables 초기화 완료 대기
+            yield return new WaitForSeconds(0.5f);
+
+            // 로딩 완료 후 지연 시간만큼 대기
+            yield return new WaitForSeconds(loadingScreenHideDelay);
+
+            // 로딩 화면 숨김
+            loadingScreen.Hide();
         }
 
         #endregion

@@ -14,20 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestBD
   <ID>k__BackingField: "\uC218\uD655\uD615\uAC74\uBB3CA"
   <Name>k__BackingField: "\uB18D\uC7A5A"
+  <Description>k__BackingField: 
   <Prefab>k__BackingField: {fileID: 2093617931379704920, guid: 6ac2d25af39395c4189b3e3f2304ae98, type: 3}
   <ProductID>k__BackingField: IngrediantA
-  <Stat_ProductionTime>k__BackingField:
-    <MaxLevel>k__BackingField: 5
+  <Stat_ProdTime>k__BackingField:
+    <MaxLevel>k__BackingField: 3
     <Values>k__BackingField:
     - 3
+    - 2
     - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 0.5
     <cost>k__BackingField:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 100
+    - 200
+    - 300

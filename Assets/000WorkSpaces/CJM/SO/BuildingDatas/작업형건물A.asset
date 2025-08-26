@@ -17,28 +17,22 @@ MonoBehaviour:
   <Description>k__BackingField: "\uADF8\uB0E5 \uC124"
   <Prefab>k__BackingField: {fileID: 3864011823713307385, guid: f477c9596fc9cb9418187ab7ff9bf8c3, type: 3}
   <ProductID>k__BackingField: IngrediantB
-  <Stat_ProductionTime>k__BackingField:
-    <MaxLevel>k__BackingField: 5
+  <Stat_ProdTime>k__BackingField:
+    <MaxLevel>k__BackingField: 3
     <Values>k__BackingField:
     - 3
     - 2
     - 1
-    - 1
-    - 1
-    - 1
+    - 0.5
     <cost>k__BackingField:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 100
+    - 200
+    - 300
   <RequireProdID>k__BackingField: IngrediantA
-  <Stat_MaxStackableCount>k__BackingField:
-    <MaxLevel>k__BackingField: 5
-    <Values>k__BackingField: 050000000a0000000a0000000a0000000a0000000a000000
+  <Stat_Capacity>k__BackingField:
+    <MaxLevel>k__BackingField: 3
+    <Values>k__BackingField: 050000000a0000000f00000014000000
     <cost>k__BackingField:
-    - 1
-    - 1
-    - 1
-    - 1
-    - 1
+    - 150
+    - 300
+    - 450
