@@ -39,8 +39,6 @@ public class QuestManager : Singleton<QuestManager>
     public void SetQuestsOnNpc(string regionId)
     {
         // DB에서 regionId를 통해 해당 지역의 퀘스트 목록을 가져온다
-        // for test
-
         Array.Sort(_questDataList);
         InitQuestList(_questDataList.Length);
         ConvertDataSOToClass();
@@ -96,8 +94,13 @@ public class QuestManager : Singleton<QuestManager>
 
     public void UpdateCurrentQuestProgress(string targetId, int count)
     {
-        bool isUpdateSuccess = _currentQuestList[_currentQuestIndex.Value].UpdateProgress(targetId, count);
+        bool isUpdateSuccess = CurrentQuest.UpdateProgress(targetId, count);
         OnQuestProgressUpdate?.Invoke();
+        if (CurrentQuest.CheckProgressComplete())
+        {
+            CurrentQuest.UpdateQuestState(QuestState.Completed);
+            ChangeToNextQuest();
+        }
         Debug.Log($"{isUpdateSuccess}");
     }
 
@@ -113,5 +116,15 @@ public class QuestManager : Singleton<QuestManager>
             }
         }
         return isCompleted;
+    }
+
+    public void ChangeToNextQuest()
+    {
+        int nextQuestIndex = _currentQuestIndex.Value + 1;
+        if (nextQuestIndex!=_currentQuestList.Length) {
+            _currentQuestIndex.Value = nextQuestIndex;
+            CurrentQuest.AcceptQuest();
+        }
+        QuestEventBus.Publish(0, nextQuestIndex);
     }
 }

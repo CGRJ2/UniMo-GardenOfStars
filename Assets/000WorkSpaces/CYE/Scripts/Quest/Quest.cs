@@ -25,6 +25,9 @@ namespace GameQuest
             this._baseData._questType = rawData._questType;
             this._baseData._description = rawData._description;
 
+            // for test
+            _questState = QuestState.BeforeStart;
+
             _questProgresses = this.InitProgress(rawContentData, rawProgressData);
         }
 
@@ -60,6 +63,7 @@ namespace GameQuest
                     Debug.LogWarning($"[Quest.cs] 비정상적인 업데이트입니다.");
                     break;
             }
+            Debug.Log($"[Quest.cs] {_baseData._id} - {_questState}");
         }
 
         /// <summary>
@@ -83,11 +87,7 @@ namespace GameQuest
             }
             // if (_targetProgress.CheckUpdatableCount(insertCount, out int checkedLeftover))
             {
-                _targetProgress.UpdateCurrentCount(insertCount);
-                if (CheckProgressComplete())
-                {
-                    UpdateQuestState(QuestState.Completed);
-                }
+                _targetProgress.UpdateData(insertCount);
                 return true;
             }
             // return false;

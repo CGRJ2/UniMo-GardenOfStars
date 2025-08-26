@@ -31,7 +31,7 @@ namespace GameNpc
             foreach (QuestProgressData item in Manager.quest.CurrentQuest._questProgresses)
             {
                 // item에 해당하는 icon 및 갯수를 가져와서 업데이트
-                Debug.Log($"{item._targetId}");
+                Debug.Log($"{item._targetId}-{item._currentCount}/{item._targetCount}");
             }
         }
         /// <summary>
@@ -43,6 +43,7 @@ namespace GameNpc
             // interact 발판에 있는 재료 정보를 들고와서
             // interact 발판에 있는 재료를 차감함
             Manager.quest.UpdateCurrentQuestProgress(targetId, 1);
+            UpdateQuestUI();
         }
     }
 }
