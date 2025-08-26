@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PoolManager : Singleton<PoolManager>
 {
     [Header("생성된 풀 관리")]    // 씬 전환 시 초기화 필요한가?
-    public List<PoolBundle> pools;
+    public List<PoolBundle> pools = new();
 
     [Header("풀 생성 시 기본 개수 설정")]
     public int count;
@@ -15,12 +16,18 @@ public class PoolManager : Singleton<PoolManager>
     public void Init()
     {
         base.SingletonInit();
-
+        SceneManager.sceneLoaded += OnSceneLoaded;
         /*foreach (PoolBundle poolBundle in pools)
         {
             poolBundle.Init();
         }*/
     }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        pools = new();
+    }
+
 
     public PoolBundle GetPoolBundle(GameObject prefab)
     {
