@@ -58,9 +58,10 @@ namespace KYS
                 LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
             }
 
+            // ObservableProperty 구독 - 실시간 돈 업데이트
+            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
 
             UpdateMoney(Manager.player.Data.Money.Value);
-
 
             //UpdateLevel(1);
             //UpdateQuestProgress("진행 중");
@@ -70,6 +71,9 @@ namespace KYS
 
         public override void Cleanup()
         {
+            // ObservableProperty 구독 해제
+            Manager.player.Data.Money.Unsubscribe(OnMoneyChanged);
+
             // 언어 변경 이벤트 구독 해제
             if (LocalizationManager.Instance != null)
             {
@@ -165,6 +169,14 @@ namespace KYS
             {
                 UpdateQuestProgress(GetCurrentQuestProgress());
             }
+        }
+
+        /// <summary>
+        /// ObservableProperty Money 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnMoneyChanged(int newMoneyValue)
+        {
+            UpdateMoney(newMoneyValue);
         }
 
         // 현재 값들을 저장할 변수들
