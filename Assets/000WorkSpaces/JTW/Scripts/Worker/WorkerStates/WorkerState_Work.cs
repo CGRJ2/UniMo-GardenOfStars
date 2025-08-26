@@ -20,6 +20,8 @@ public class WorkerState_Work : WorkerStateBase
 
     public override void Exit()
     {
+        // 시작할 때는 작업영역이 아닐 수도 있어서 true로 만들지는 않음.
+        WorkerData.IsWork.Value = false;
     }
 
     private bool CanWork()
