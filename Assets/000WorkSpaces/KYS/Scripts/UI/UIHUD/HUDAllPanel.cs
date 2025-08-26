@@ -59,7 +59,7 @@ namespace KYS
             }
 
 
-            UpdateMoney(Manager.player.Data.Money);
+            UpdateMoney(Manager.player.Data.Money.Value);
 
 
             //UpdateLevel(1);

@@ -7,18 +7,17 @@ public class PlayerData
     // TODO : MoveSpeed 같은 값은 DataManager에서 가져오는 것으로 변경?
 
     public float MoveSpeed;
-    public ObservableProperty<int> MoveSpeedLv;
+    public ObservableProperty<int> MoveSpeedLv = new();
 
     public int MaxCapacity;
-    public ObservableProperty<int> MaxCapacityLv;
-
+    public ObservableProperty<int> MaxCapacityLv = new();
     public float ProductionSpeed;
-    public ObservableProperty<int> ProductionSpeedLv;
+    public ObservableProperty<int> ProductionSpeedLv = new();
 
     public float Nego;
-    public ObservableProperty<int> NegoLv;
+    public ObservableProperty<int> NegoLv = new();
 
-    public ObservableProperty<int> Money;
+    public ObservableProperty<int> Money = new();
 
     public PlayerData()
     {
