@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class WorkerData
@@ -27,5 +28,8 @@ public class WorkerData
         MaxCapacityLv = 1;
 
         ProductionSpeed = 2;
+
+        StunChance = 20f;
+        StunTime = 3;
     }
 }
