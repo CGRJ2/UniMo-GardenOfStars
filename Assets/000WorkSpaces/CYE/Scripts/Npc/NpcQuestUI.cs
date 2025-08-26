@@ -6,6 +6,8 @@ namespace GameNpc
 { 
     public class NpcQuestUI : MonoBehaviour
     {
+        [SerializeField] private int _slots;
+        private List<GameObject> _displayArea = new();
         void Awake()
         {
             Init();

@@ -1,35 +1,52 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ManufactureBuilding : BuildingInstance
 {
-    public ManufactureRuntimeData runtimeData;
     [HideInInspector] public ManufactureBD originData;
 
-    [Header("Àç·á¸¦ ½×¾Æ³õÀ» À§Ä¡")]
+    [Header("ì¬ë£Œë¥¼ ìŒ“ì•„ë†“ì„ ìœ„ì¹˜")]
     public Transform attachPoint;
 
-    [Header("Àç·á ÅõÀÔ ¸ğ¼Ç µô·¹ÀÌ")]
+    [Header("ì¬ë£Œ íˆ¬ì… ëª¨ì…˜ ë”œë ˆì´")]
     public float insertDelayTime = 0.2f;
 
-    [Header("È¸¼ö ¸ğ¼Ç µô·¹ÀÌ")]
+    [Header("íšŒìˆ˜ ëª¨ì…˜ ë”œë ˆì´")]
     public float prodsAbsorbDelayTime = 0.2f;
 
     [HideInInspector]
-    public float progressedTime = 0f;   // ÇöÀç ÁøÇàµµ
+    public float progressedTime = 0f;   // í˜„ì¬ ì§„í–‰ë„
 
-    [Header("ÅõÀÔ ¿µ¿ª °´Ã¼")]
+    [Header("íˆ¬ì… ì˜ì—­ ê°ì²´")]
     public InsertArea insertArea;
-    [Header("ÀÛ¾÷ ¿µ¿ª °´Ã¼")]
+    [Header("ì‘ì—… ì˜ì—­ ê°ì²´")]
     public WorkArea workArea;
     public WorkArea_SwitchType workArea_SwitchType;
-    [Header("È¸¼ö ¿µ¿ª °´Ã¼")]
+    [Header("íšŒìˆ˜ ì˜ì—­ ê°ì²´")]
     public ProdsArea prodsArea;
 
 
     public Stack<IngrediantInstance> ingrediantStack = new();
-    //public Stack<IngrediantInstance> prodsStack = new();  // È¸¼ö¿µ¿ªÀ» ½ºÅÃÃ³·³ Ç¥ÇöÇÒ ¶§ »ç¿ëÇÏ´Â°É·Î
+    //public Stack<IngrediantInstance> prodsStack = new();  // íšŒìˆ˜ì˜ì—­ì„ ìŠ¤íƒì²˜ëŸ¼ í‘œí˜„í•  ë•Œ ì‚¬ìš©í•˜ëŠ”ê±¸ë¡œ
+    
+    public float ProdTime // í˜„ì¬ ì—…ê·¸ë ˆì´ë“œ ë‹¨ê³„ì— ë”°ë¥¸ [ìƒì‚° ì†ë„]
+    {
+        get
+        {
+            int level = Manager.buildings.GetUpgradeData(originData.ID).level_ProdTime;
+            return originData.Stat_ProdTime.Values[level];
+        }
+    }
+
+    public int Capacity // í˜„ì¬ ì—…ê·¸ë ˆì´ë“œ ë‹¨ê³„ì— ë”°ë¥¸ [ì¬ë£Œ ìµœëŒ€ ë³´ìœ  ê°œìˆ˜]
+    {
+        get
+        {
+            int level = Manager.buildings.GetUpgradeData(originData.ID).level_Capacity;
+            return originData.Stat_Capacity.Values[level];
+        }
+    }
 
     private void Awake()
     {
@@ -48,39 +65,9 @@ public class ManufactureBuilding : BuildingInstance
         if (_OriginData is ManufactureBD mfBD)
         {
             originData = mfBD;
-            runtimeData = new();
-            runtimeData.SetCurLevelStatDatas(mfBD);
         }
     }
 
 
-    public void CheckUpgradable()
-    {
-        int curLevel_ProdTime = runtimeData.level_ProductionTime; 
-        int curLevel_StackCount = runtimeData.level_StackCount; 
-        int curMoney = Manager.player.Data.Money;
-
-        // µÎ ½ºÅÈ Áß ¾÷±×·¹ÀÌµå ºñ¿ëÀÌ ÃæÁ·µÉ ¶§
-        if (curMoney > originData.Stat_MaxStackableCount.cost[curLevel_StackCount] 
-            || curMoney > originData.Stat_ProductionTime.cost[curLevel_StackCount])
-        {
-            // ¹öÆ° ¸ğ¾ç ¾÷±×·¹ÀÌµå ÇüÅÂ·Î ¹Ù²Ù±â
-        }
-        //Manager.player.Data.Money
-    }
-}
-
-[Serializable]
-public class ManufactureRuntimeData
-{
-    public int level_ProductionTime;
-    public int level_StackCount;
-    public int capacity;
-    public float productionTime;
-
-    public void SetCurLevelStatDatas(ManufactureBD manufactureBD)
-    {
-        this.capacity = manufactureBD.Stat_MaxStackableCount.Values[level_StackCount];
-        this.productionTime = manufactureBD.Stat_ProductionTime.Values[level_ProductionTime];
-    }
+   
 }

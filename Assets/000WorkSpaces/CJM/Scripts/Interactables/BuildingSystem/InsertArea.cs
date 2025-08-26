@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class InsertArea : InteractableBase, IWorkStation
@@ -6,13 +6,13 @@ public class InsertArea : InteractableBase, IWorkStation
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     public bool isWorkable
-    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.runtimeData.capacity; }}
+    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.Capacity; }}
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
     public Vector3 GetPosition() { return transform.position; }
-    // µ¥ÀÌÅÍ ±¸Á¶ ¼³°èÇÒ ¶§ ¼öÁ¤
+    // ë°ì´í„° êµ¬ì¡° ì„¤ê³„í•  ë•Œ ìˆ˜ì •
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
@@ -26,22 +26,22 @@ public class InsertArea : InteractableBase, IWorkStation
             bool isStackable = false;
 
 
-            // °Ç¹°¿¡ ½ºÅÃ °¡´ÉÇÑ ÃÖ´ë ¼ö·®¸¸Å­ ½×¿©ÀÖ´Ù¸é ½ºÅÃ Ãë¼Ò
-            if (ownerInstance.runtimeData.capacity > ownerInstance.ingrediantStack.Count)
+            // ê±´ë¬¼ì— ìŠ¤íƒ ê°€ëŠ¥í•œ ìµœëŒ€ ìˆ˜ëŸ‰ë§Œí¼ ìŒ“ì—¬ìˆë‹¤ë©´ ìŠ¤íƒ ì·¨ì†Œ
+            if (ownerInstance.Capacity > ownerInstance.ingrediantStack.Count)
                 isStackable = true;
             else isStackable = false;
 
-            // ½ºÅÃ ÀÚ¸®°¡ ºô ¶§±îÁö ´ë±â
+            // ìŠ¤íƒ ìë¦¬ê°€ ë¹Œ ë•Œê¹Œì§€ ëŒ€ê¸°
             yield return new WaitUntil(() => isStackable);
 
-            // ½ºÅÃÀÌ ºñ¾úÁö¸¸ ÇÃ·¹ÀÌ¾î°¡ ³ª°¡¸é ½×Áö ¾Ê°í break;
+            // ìŠ¤íƒì´ ë¹„ì—ˆì§€ë§Œ í”Œë ˆì´ì–´ê°€ ë‚˜ê°€ë©´ ìŒ“ì§€ ì•Šê³  break;
             if (characterRD == null) yield break;
 
-            // ÇÃ·¹ÀÌ¾î ¼Õ¿¡ Àç·á°¡ ÀÖ´ÂÁö Ã¼Å©
+            // í”Œë ˆì´ì–´ ì†ì— ì¬ë£Œê°€ ìˆëŠ”ì§€ ì²´í¬
             IngrediantInstance instanceProd;
             if (characterRD.IngrediantStack.TryPeek(out instanceProd))
             {
-                // ¸Ç À§ÀÇ Àç·á¿Í ÅõÀÔ °¡´É Àç·á°¡ °°Àº Á¾·ùÀÏ ¶§ ³Ö¾îÁÖ±â
+                // ë§¨ ìœ„ì˜ ì¬ë£Œì™€ íˆ¬ì… ê°€ëŠ¥ ì¬ë£Œê°€ ê°™ì€ ì¢…ë¥˜ì¼ ë•Œ ë„£ì–´ì£¼ê¸°
                 if (instanceProd.Data.ID == ownerInstance.originData.RequireProdID)
                 {
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
@@ -49,10 +49,10 @@ public class InsertArea : InteractableBase, IWorkStation
                     ownerInstance.ingrediantStack.Push(instanceProd);
                 }
 
-                // ´ÙÀ½ ÅõÀÔ±îÁö µô·¹ÀÌ ½Ã°£ ¼³Á¤
+                // ë‹¤ìŒ íˆ¬ì…ê¹Œì§€ ë”œë ˆì´ ì‹œê°„ ì„¤ì •
                 yield return new WaitForSeconds(ownerInstance.insertDelayTime);
             }
-            // ÇÃ·¹ÀÌ¾î ¼Õ¿¡ Àç·á°¡ ¾øÀ¸¸é ¹Ù·Î return
+            // í”Œë ˆì´ì–´ ì†ì— ì¬ë£Œê°€ ì—†ìœ¼ë©´ ë°”ë¡œ return
             else
             {
                 yield return null;
@@ -63,12 +63,7 @@ public class InsertArea : InteractableBase, IWorkStation
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
-        //Debug.Log($"°Ç¹°Àç·á»ğÀÔ¿µ¿ª({buildingInstance.name}): Áï¹ßÇü »óÈ£ÀÛ¿ë ½ÇÇà");
-
-        if (characterRD is WorkerRuntimeData worker)
-        {
-            if (worker.CurWorkstation.Value != this as IWorkStation) return;
-        }
+        //Debug.Log($"ê±´ë¬¼ì¬ë£Œì‚½ì…ì˜ì—­({buildingInstance.name}): ì¦‰ë°œí˜• ìƒí˜¸ì‘ìš© ì‹¤í–‰");
 
         StartCoroutine(AutoStacking());
     }
@@ -77,7 +72,7 @@ public class InsertArea : InteractableBase, IWorkStation
     public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
         base.Exit(characterRuntimeData);
-        //Debug.Log($"°Ç¹°Àç·á»ğÀÔ¿µ¿ª({buildingInstance.name}): ÆË¾÷Çü »óÈ£ÀÛ¿ë ºñÈ°¼ºÈ­");
+        //Debug.Log($"ê±´ë¬¼ì¬ë£Œì‚½ì…ì˜ì—­({buildingInstance.name}): íŒì—…í˜• ìƒí˜¸ì‘ìš© ë¹„í™œì„±í™”");
     }
 
     public override void OnDisableAdditionalActions()
