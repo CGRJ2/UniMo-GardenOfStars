@@ -760,7 +760,7 @@ namespace KYS
         /// <summary>
         /// 자식 클래스에서 오버라이드하여 autoLocalizeKeys를 설정할 수 있습니다.
         /// </summary>
-        protected virtual string[] GetAutoLocalizeKeys()
+        public virtual string[] GetAutoLocalizeKeys()
         {
             return autoLocalizeKeys;
         }

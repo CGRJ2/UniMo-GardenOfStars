@@ -68,11 +68,9 @@ description,설명,DescriptionInfo
 questprogress,퀘스트 진행도,Quest progress
 level,레벨,Level
 money,돈,Money
-runmoenybutton,,
-rungembutton,,
-rungoalbutton,,
-runtitle,,
-rundescription,,
+moenybutton,돈 버튼,Money Button
+gembutton,보석 버튼,Gem Button
+goalbutton,목표 버튼,Goal Button
 centermessage,중앙 메시지,Center Message
 progress,진행률,Progress
 buyupgradebutton,업그레이드 구매,Buy Upgrade
@@ -80,56 +78,47 @@ buildingname,건물 이름,Building Name
 materials,재료,Materials
 buildingcount,건물 수,Building Count
 harvestbuildingtop,수확 건물 상단,Harvest Building Top
-runharvestbuildingname,,
-runharvestbuildingdesc,,
-runproductionmaterial,,
+harvestbuildingname,수확 건물 이름,Harvest Building Name
+harvestbuildingdesc,수확 건물 설명,Harvest Building Description
+productionmaterial,생산 재료,Production Material
 upgrade1,업그레이드 1,Upgrade 1
-runupgrademoneynum1,,
-runbeforeupgradenum1,,
-runafterupgradenum1,,
+upgrademoneynum1,업그레이드 비용: {0},Upgrade Cost: {0}
+beforeupgradenum1,업그레이드 전: {0},Before: {0}
+afterupgradenum1,업그레이드 후: {0},After: {0}
 changeddesc1,변경 설명 1,Change Description 1
-runhr,,
+hr,인사,HR
 manufacturebuildingtop,제조 건물 상단,Manufacture Building Top
-runmanufacturebuildingname,,
-runmanufacturebuildingdesc,,
-runinputmaterials,,
+manufacturebuildingname,제조 건물 이름,Manufacture Building Name
+manufacturebuildingdesc,제조 건물 설명,Manufacture Building Description
+inputmaterials,입력 재료,Input Materials
 upgrade2,업그레이드 2,Upgrade 2
-runbeforeupgradenum2,,
-runafterupgradenum2,,
+beforeupgradenum2,업그레이드 전: {0},Before: {0}
+afterupgradenum2,업그레이드 후: {0},After: {0}
 changeddesc2,변경 설명 2,Change Description 2
-runupgradename,,
-runbeforeupgradenum,,
-runafterupgradenum,,
+upgradename,업그레이드 이름,Upgrade Name
+beforeupgradenum,업그레이드 전: {0},Before: {0}
+afterupgradenum,업그레이드 후: {0},After: {0}
 upgrade,업그레이드,Upgrade
-runmoneynum,,
+moneynum,금액: {0},Amount: {0}
 playerupgrade,플레이어 업그레이드,Player Upgrade
 property,속성,Property
-moenybutton,돈,Money
-buybutton,구매,Buy
-runrcharactername,,
-runchoicebutton1,,
-runchoicebutton2,,
-runchoicebutton3,,
-runchoicebutton4,,
+buybutton,구매 버튼,Buy Button
+rcharactername,오른쪽 캐릭터 이름,Right Character Name
+choicebutton1,선택 버튼 1,Choice Button 1
+choicebutton2,선택 버튼 2,Choice Button 2
+choicebutton3,선택 버튼 3,Choice Button 3
+choicebutton4,선택 버튼 4,Choice Button 4
 choicequestion,선택 질문,Choice Question
-runlcaractername,,
-runchatwindow,,
-logbutton,로그,Log
-skipbutton,건너뛰기,Skip
-upgradebutton,업그레이드,Upgrade
+lcaractername,왼쪽 캐릭터 이름,Left Character Name
+chatwindow,채팅 창,Chat Window
+logbutton,로그 버튼,Log Button
+skipbutton,건너뛰기 버튼,Skip Button
+upgradebutton,업그레이드 버튼,Upgrade Button
 workername,작업자 이름,Worker Name
 workertop,작업자 상단,Worker Top
 workerlevenum,레벨: {0},Level: {0}
 workerleve,작업자 레벨,Worker Level
 productspeed,생산 속도,Production Speed
 statuseffect,상태 효과,Status Effect
-beforeupgradenum2,업그레이드 전: {0},Before: {0}
-afterupgradenum2,업그레이드 후: {0},After: {0}
-beforeupgradenum1,업그레이드 전: {0},Before: {0}
-afterupgradenum1,업그레이드 후: {0},After: {0}
 upgrademoneynum,업그레이드 비용: {0},Upgrade Cost: {0}
 itemlabel,아이템 라벨,Item Label
-runworkername,,
-runworkerlevenum,,
-runworkerleve,,
-runupgrademoneynum,,
