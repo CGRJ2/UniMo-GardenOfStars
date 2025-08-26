@@ -5,13 +5,22 @@ public class ProductGenerater : InteractableBase, IWorkStation
 {
     public bool isWorkable;
     public bool isReserved;
+    HarvestBD originData;
+
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
     public Vector3 GetPosition() { return transform.position; }
 
-    //[SerializeField] GenerateState state;
-    public float productionTime;
+    public float ProdTime // 현재 업그레이드 단계에 따른 [생산 속도]
+    {
+        get
+        {
+            int level = Manager.buildings.GetUpgradeData(originData.ID).level_ProdTime;
+            return originData.Stat_ProdTime.Values[level];
+        }
+    }
+
     public float progressedTime;
 
     ObjectPool _Pool;
@@ -19,9 +28,9 @@ public class ProductGenerater : InteractableBase, IWorkStation
     public IngrediantInstance _SpawnedProduct { get; private set; }
 
     Coroutine _CultivateRoutine;
-    public void Init(GameObject prodPrefab, float productionTime)
+    public void Init(GameObject prodPrefab, HarvestBD originData)
     {
-        this.productionTime = productionTime;
+        this.originData = originData;
 
         _Pool = Manager.pool.GetPoolBundle(prodPrefab).instancePool;
 
@@ -73,7 +82,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
             {
                 progressedTime += Time.deltaTime;
 
-                if (progressedTime > productionTime)
+                if (progressedTime > ProdTime)
                 {
                     SpawnProduct(); // 생산 완료
                 }

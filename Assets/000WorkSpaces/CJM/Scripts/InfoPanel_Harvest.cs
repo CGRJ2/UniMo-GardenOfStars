@@ -42,7 +42,6 @@ public class InfoPanel_Harvest : BaseUI
         }
 
         Init();
-
     }
 
     public void Init()  // 초기화를 어디서 해줘야 할까요?
@@ -60,11 +59,10 @@ public class InfoPanel_Harvest : BaseUI
 
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
-        Manager.player.Data.Money -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
-
     }
 
     public void SetUpgradeData(HarvestBD harvest)
@@ -72,7 +70,7 @@ public class InfoPanel_Harvest : BaseUI
         HarvestBD data = harvest;
         targetBD = data;
 
-        int curMoney = Manager.player.Data.Money;
+        int curMoney = Manager.player.Data.Money.Value;
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
 
         tmp_Name.text = data.Name;
