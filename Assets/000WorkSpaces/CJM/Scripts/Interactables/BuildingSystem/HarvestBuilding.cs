@@ -8,15 +8,6 @@ public class HarvestBuilding : BuildingInstance
     [SerializeField] Transform prodsParentTransform;
     [HideInInspector] public HarvestBD originData;
 
-    public float ProdTime // 현재 업그레이드 단계에 따른 [생산 속도]
-    {
-        get
-        {
-            int level = Manager.buildings.GetUpgradeData(originData.ID).level_ProdTime;
-            return originData.Stat_ProdTime.Values[level];
-        }
-    }
-
     ProductGenerater[] productGeneraters;
     ObjectPool _Pool;
 
@@ -48,7 +39,7 @@ public class HarvestBuilding : BuildingInstance
             _Pool = Manager.pool.GetPoolBundle(product).instancePool;
             foreach (ProductGenerater prodsGenerater in productGeneraters)
             {
-                prodsGenerater.Init(product, ProdTime);
+                prodsGenerater.Init(product, originData);
             }
         };
     }

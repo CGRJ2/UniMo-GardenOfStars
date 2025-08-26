@@ -43,7 +43,7 @@ public class ShopBuilding : BuildingInstance
 
             // 전부 투입 완료 된 후 정산 & UI활성화
             tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";
-            Manager.player.Data.Money += soldItemCount * (int)price; //long으로 해야하는지? 일단 기획에서 요구한 건 long임
+            Manager.player.Data.Money.Value += soldItemCount * (int)price; //long으로 해야하는지? 일단 기획에서 요구한 건 long임
 
 
             // 가격 정산 UI 페이드아웃 팝핑

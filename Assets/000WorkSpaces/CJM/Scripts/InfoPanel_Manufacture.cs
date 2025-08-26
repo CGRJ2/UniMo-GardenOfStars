@@ -55,7 +55,6 @@ public class InfoPanel_Manufacture : BaseUI
         }
 
         Init();
-
     }
 
 
@@ -74,7 +73,7 @@ public class InfoPanel_Manufacture : BaseUI
 
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
-        Manager.player.Data.Money -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
@@ -87,7 +86,7 @@ public class InfoPanel_Manufacture : BaseUI
 
         // 돈 차감
         int curLevel_Capacity = Manager.buildings.GetUpgradeData(targetBD.ID).level_Capacity;
-        Manager.player.Data.Money -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
@@ -97,7 +96,7 @@ public class InfoPanel_Manufacture : BaseUI
     {
         ManufactureBD data = manufacture;
         targetBD = data;
-        int curMoney = Manager.player.Data.Money;
+        int curMoney = Manager.player.Data.Money.Value;
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
         int curLevel_Capacity = Manager.buildings.GetUpgradeData(data.ID).level_Capacity;
 

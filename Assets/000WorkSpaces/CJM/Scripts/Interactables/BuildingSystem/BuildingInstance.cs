@@ -34,7 +34,7 @@ public class BuildingInstance : InteractableBase
     {
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(_OriginData.ID).level_ProdTime;
         int curLevel_StackCount = Manager.buildings.GetUpgradeData(_OriginData.ID).level_Capacity;
-        int curMoney = Manager.player.Data.Money;
+        int curMoney = Manager.player.Data.Money.Value;
 
         // 생산형 건물일 때
         if (_OriginData is HarvestBD harvest)
