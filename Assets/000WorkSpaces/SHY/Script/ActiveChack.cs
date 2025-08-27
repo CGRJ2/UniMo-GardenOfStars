@@ -18,6 +18,10 @@ public class ActiveChack : MonoBehaviour
             Debug.Log("지역 이동에 대한 대화를 진행한다는 가정 키 입력");
             panelopen.SetActive(true);
         }
+        if (Input.GetKey(KeyCode.G))
+        {
+            Manager.ui.ShowAllHUDElements();
+        }
     }
     public void chack() // 미사용할듯.
     {

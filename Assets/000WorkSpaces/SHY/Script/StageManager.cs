@@ -77,6 +77,7 @@ public class StageManager : MonoBehaviour,IQuestObserver
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"씬 로드됨: {scene.name}, 모드: {mode}");
+        Manager.ui.ShowAllHUDElements();
         SceneManager.sceneLoaded -= OnSceneLoaded; // 한 번만 실행되도록 제거
         Addressables.LoadSceneAsync($"MapScene_Stage0{Manager.scene.CurSceneID}", LoadSceneMode.Additive).Completed += task =>
         {
