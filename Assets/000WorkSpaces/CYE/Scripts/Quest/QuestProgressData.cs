@@ -13,6 +13,7 @@ namespace GameQuest
         public int _targetCount;
         // public int TargetCount { get { return _targetCount; } }
         public int _currentCount;
+        // public int CurrentCount { get { return _currentCount; } }
         public QuestProgressState _currentState;
         // public QuestProgressState CurrentState { get { return _currentState; } }
 
@@ -22,14 +23,19 @@ namespace GameQuest
         //     this._targetCount = TargetCount;
         //     this._currentCount = 0;
         // }
+        /// <summary>
+        /// 퀘스트 내용 데이터와 퀘스트 진행도 데이터를 조합하여 내부적으로 사용할 퀘스트 진행도 데이터를 만듭니다.
+        /// </summary>
+        /// <param name="rawContentData">퀘스트 내용 데이터</param>
+        /// <param name="rawProgressData">퀘스트 진행도 데이터</param>
         public QuestProgressData(CYETestQuestContentDataSO rawContentData, CYETestQuestProgressDataSO rawProgressData)
         {
+            this._questId = rawContentData._questId;
             this._targetId = rawContentData._targetId;
             this._targetCount = rawContentData._targetCount;
             this._currentCount = rawProgressData._currentCount;
             this._currentState = rawProgressData._currentState;
         }
-
 
         /// <summary>
         /// 진행 수량 및 진행 상태를 업데이트합니다.
@@ -45,7 +51,7 @@ namespace GameQuest
             }
             if (_currentCount == 0 && _currentState == QuestProgressState.BeforeStart)
             {
-                // 만일 현재 수량이 0이면서 상태가 BeforeStart면 상태를 진행중(InProgress)으로 변경함.
+                // 만일 현재 수량이 0이면서 상태가 BeforeStart면 값 업데이트시 상태를 진행중(InProgress)으로 변경함.
                 _currentState = QuestProgressState.InProgress;
             }
             _currentCount += addCount;
