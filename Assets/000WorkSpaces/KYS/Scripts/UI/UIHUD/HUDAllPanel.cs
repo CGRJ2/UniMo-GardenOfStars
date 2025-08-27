@@ -107,7 +107,7 @@ namespace KYS
             var HRRooomEventHandler = GetEventWithSFX(HRRooomButtonName, "SFX_ButtonClick");
             if (HRRooomEventHandler != null)
             {
-                HRRooomEventHandler.Click += (data) => OnPropertyButtonClicked();
+                HRRooomEventHandler.Click += (data) => OnHRRoomButtonClicked();
             }
 
             // CompossButton 설정 - 누르고 있을 때 기능
@@ -252,7 +252,6 @@ namespace KYS
                 }
             }
 
-            // 인벤토리 관련 로직 추가
 
             UIManager.Instance.ShowPanelAsync<PropertyPanel>((panel) =>
             {
@@ -283,7 +282,7 @@ namespace KYS
             var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
             foreach (var panel in existingPanels)
             {
-                if (panel is PropertyPanel)
+                if (panel is HRRoomPanel)
                 {
                     //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
@@ -292,7 +291,7 @@ namespace KYS
 
             // 인벤토리 관련 로직 추가
 
-            UIManager.Instance.ShowPanelAsync<PropertyPanel>((panel) =>
+            UIManager.Instance.ShowPanelAsync<HRRoomPanel>((panel) =>
             {
                 if (panel != null)
                 {

@@ -1030,6 +1030,7 @@ GameObject:
   - component: {fileID: 1948680426924612346}
   - component: {fileID: 5471472106850461469}
   - component: {fileID: 2043325095934349026}
+  - component: {fileID: 6050919189925995666}
   m_Layer: 5
   m_Name: PlayerUpgradePanel
   m_TagString: Untagged
@@ -1096,6 +1097,50 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6050919189925995666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8324170846611552661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a031158873e22c4bb2a21aa1bcc5425, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerType: 1
+  panelGroup: 4
+  useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
+  animationDuration: 0.3
+  showEase: 27
+  hideEase: 26
+  canCloseWithESC: 0
+  canCloseWithBackdrop: 0
+  hidePreviousUI: 0
+  disablePreviousUI: 0
+  createBackdropForPopup: 0
+  enableSFX: 1
+  defaultClickSound: SFX_ButtonClick
+  defaultBackSound: SFX_ButtonClickBack
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
+  titleTextName: TitleText
+  closeButtonName: CloseButton
+  upgradeListName: UpgradeList
+  playerLevelTextName: PlayerLevelText
+  playerExpTextName: PlayerExpText
+  playerMoneyTextName: PlayerMoneyText
+  playerLevel: 1
+  playerExp: 0
+  playerMoney: 1000
 --- !u!1 &8343844132176883501
 GameObject:
   m_ObjectHideFlags: 0
