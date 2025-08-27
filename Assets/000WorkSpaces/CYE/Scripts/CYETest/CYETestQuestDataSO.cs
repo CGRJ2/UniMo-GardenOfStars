@@ -11,10 +11,11 @@ public class CYETestQuestDataSO : ScriptableObject, IComparable
     public int _id;
     public string _name;
     public QuestType _questType;
-    // public List<CYETestQuestProgressDataSO> _questContents;
     public string _npcId;
     public int _questOrder;
     public string _description;
+
+    #region >>> IComparable
     int IComparable.CompareTo(object data)
     {
         if (data == null) return 1;
@@ -30,4 +31,5 @@ public class CYETestQuestDataSO : ScriptableObject, IComparable
         }
         return 0;
     }
+    #endregion
 }

@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Npc
+  - Missile
+  - Item
+  - Door
+  - Monster
+  - Flower
+  - Aura
   layers:
   - Default
   - TransparentFX
@@ -41,4 +47,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: ' UI'
+    uniqueID: 3162539013
     locked: 0
