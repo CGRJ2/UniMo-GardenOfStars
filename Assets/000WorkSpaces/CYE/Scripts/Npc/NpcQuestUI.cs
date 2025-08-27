@@ -7,8 +7,8 @@ namespace GameNpc
 {
     public class NpcQuestUI : MonoBehaviour
     {
-        public int _slots;
-        public List<GameObject> _displayArea = new();
+        // public int _slots;
+        // public List<GameObject> _displayArea = new();
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private GameObject _viewContent;
         public Dictionary<string, GameObject> _itemPanel = new();
@@ -42,9 +42,12 @@ namespace GameNpc
             {
                 GameObject panel = Instantiate(_cellPrefab, _viewContent.transform);
                 // panel.GetComponent<NpcProgressPanel>()?.UpdateItemImage(itemSprite);
+                panel.GetComponent<NpcProgressPanel>()?.UpdateItemId(progressData._targetId);
                 panel.GetComponent<NpcProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
                 panel.GetComponent<NpcProgressPanel>()?.UpdateTargetCountText(progressData._targetCount);
-                _itemPanel.Add(progressData._targetId, panel);
+                if (!_itemPanel.ContainsKey(progressData._targetId)) { 
+                    _itemPanel.Add(progressData._targetId, panel);
+                }
             }
         }
         private void ResetItemPanel()

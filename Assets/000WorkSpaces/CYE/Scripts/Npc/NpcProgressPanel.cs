@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class NpcProgressPanel : MonoBehaviour
 {
     public string _itemId;
+    [SerializeField] private TMP_Text _targetIdText;
     [SerializeField] private Image _itemImage;
     [SerializeField] private TMP_Text _currentCountText;
     [SerializeField] private TMP_Text _targetCountText;
@@ -14,6 +15,10 @@ public class NpcProgressPanel : MonoBehaviour
     public void UpdateItemImage(Sprite itemImage)
     {
         _itemImage.sprite = itemImage;
+    }
+    public void UpdateItemId(string itemId)
+    {
+        _targetIdText.text = itemId;
     }
     public void UpdateCurrentCountText(int currentCount)
     {
