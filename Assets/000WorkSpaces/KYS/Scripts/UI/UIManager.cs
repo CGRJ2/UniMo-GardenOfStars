@@ -187,16 +187,16 @@ namespace KYS
 
 
                 // LoadingScreen 초기화 (기존 또는 새로 생성된 LoadingCanvas에 대해)
-                if (loadingCanvas != null)
-                {
-                    await InitializeLoadingScreen();
-                }
+                //if (loadingCanvas != null)
+                //{
+                //    await InitializeLoadingScreen();
+                //}
 
                 // 게임 시작 시 로딩 화면 표시
-                if (showLoadingScreenOnStart)
-                {
-                    StartCoroutine(ShowInitialLoadingScreen());
-                }
+                //if (showLoadingScreenOnStart)
+                //{
+                //    StartCoroutine(ShowInitialLoadingScreen());
+                //}
 
 
                 ApplySafeAreaToCanvases();
