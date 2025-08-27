@@ -1,8 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 
 public class StageButton : MonoBehaviour
 {

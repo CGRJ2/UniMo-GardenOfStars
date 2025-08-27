@@ -13,6 +13,8 @@ public static class Manager
     public static SceneChanger scene => SceneChanger.Instance;
     public static UIManager ui => UIManager.Instance;
     public static LocalizationManager localization => LocalizationManager.Instance;
+    public static CameraManager camera => CameraManager.Instance;
+
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
@@ -27,5 +29,6 @@ public static class Manager
         NpcManager.CreateInstance();
         UIManager.CreateInstance();
         LocalizationManager.CreateInstance();
+        CameraManager.CreateInstance();
     }
 }

@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -19,6 +20,8 @@ public class StageManager : MonoBehaviour
         {
             // 맵 씬 로드 완료 이후에 로딩 해제
         };
+
+
     }
 
     public void TryUnlockNextStage(int curQuestIndex)

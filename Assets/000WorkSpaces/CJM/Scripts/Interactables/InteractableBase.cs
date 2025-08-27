@@ -3,7 +3,7 @@ using UnityEngine;
 public class InteractableBase : MonoBehaviour
 {
     protected CharaterRuntimeData characterRD;
-    public CharaterRuntimeData personalTaskOwner;
+    [HideInInspector] public CharaterRuntimeData personalTaskOwner;
 
     // 상호작용 범위 진입
     public virtual void Enter(CharaterRuntimeData characterRuntimeData)

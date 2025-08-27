@@ -345,20 +345,23 @@ namespace KYS
         {
             // 버튼을 누르고 있을 때 실행될 효과
             Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 시작");
-            
+
             // 여기에 카메라 이동 로직이 들어갈 예정
             // 예: 특정 NPC로 가상카메라 우선순위 이동
             // MoveCameraToTargetNPC();
+
+            Manager.camera.FocusNPC();
         }
 
         private void StopCompossButtonHoldEffect()
         {
             // 버튼을 놓았을 때 실행될 효과
             Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 종료");
-            
+
             // 여기에 카메라 원위치 로직이 들어갈 예정
             // 예: 원래 카메라 우선순위로 복원
             // RestoreOriginalCameraPriority();
+            Manager.camera.FocusPlayer();
         }
 
         // 카메라 이동 기능 (나중에 구현 예정)

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerSpawnTest : MonoBehaviour
 {
@@ -8,11 +9,11 @@ public class WorkerSpawnTest : MonoBehaviour
 
     private List<WorkerData> _workerList = new List<WorkerData>();
 
-    private void Update()
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        GetComponent<Button>().onClick.AddListener(() =>
         {
-            if(_workerList.Count >= 10)
+            if (_workerList.Count >= 10)
             {
                 Debug.Log("일꾼은 최대 10까지만 소환 가능");
                 return;
@@ -31,6 +32,9 @@ public class WorkerSpawnTest : MonoBehaviour
             {
                 Debug.Log("일꾼 소환 실패 : 잔액 부족");
             }
-        }
+        });
     }
+
+
+            
 }

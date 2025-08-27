@@ -26,7 +26,6 @@ public class GameManager : Singleton<GameManager>
         base.SingletonInit();
         StartCoroutine(Fetch());
         StageDatasInit();
-        curStageId = "Stage00";
     }
     
     void StageDatasInit()
@@ -52,18 +51,18 @@ public class GameManager : Singleton<GameManager>
         };
     }
 
-    void Update()
+    /*void Update()
     {
         if (Input.GetKeyDown(KeyCode.X))
         {
-            /*Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
+            *//*Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
             {
                 Instantiate(task.Result);
-            };*/
+            };*//*
 
             // 씬로드 테스트
         }
-    }
+    }*/
 
 
     #region Addressable Assets Storage 동기화 체크
@@ -136,4 +135,19 @@ public class GameManager : Singleton<GameManager>
 
     #endregion
 
+
+    public IEnumerator Temp_InGameLoad()
+    {
+        Manager.game.curStageId = "Stage00";
+        Manager.ui.ShowLoadingScreen();
+        yield return new WaitForSeconds(0.3f);  // 임시
+
+        var loadSceneHanlde = Addressables.LoadSceneAsync("StageScene");
+        while (loadSceneHanlde.IsDone)
+        {
+            yield return null;
+        }
+        yield return loadSceneHanlde;
+        Manager.ui.HideLoadingScreen();
+    }
 }

@@ -18,6 +18,7 @@ public class StageListPanel : BaseUI
             layerType = UILayerType.Panel;
         }
         Init();
+        btn_Exit.onClick.AddListener(() => UIManager.Instance.ClosePanel());
     }
 
     public void Init()
@@ -38,7 +39,7 @@ public class StageListPanel : BaseUI
             // 스테이지 데이터 수량보다 버튼이 더 적을 경우
             if (stageBtnList.Length < i + 1)
             {
-                Debug.LogWarning($"스테이지 버튼 수 보다 데이터 수가 더 많아서 다 표기할 수 없음. (버튼 수: {stageBtnList.Length})/(데이터 수 :{kvpList.Count})");
+                //Debug.LogWarning($"스테이지 버튼 수 보다 데이터 수가 더 많아서 다 표기할 수 없음. (버튼 수: {stageBtnList.Length})/(데이터 수 :{kvpList.Count})");
                 return;
             }
             stageBtnList[i].Init(kvpList[i].Value);
@@ -50,7 +51,7 @@ public class StageListPanel : BaseUI
             // 남은 버튼들 비활성화 해주기
             for (int i = kvpList.Count; i < stageBtnList.Length; i++)
             {
-                Debug.LogWarning($"버튼({stageBtnList[i].name})에 할당할 데이터가 없어서 비활성화 또는 잠금 상태로 변경");
+                //Debug.LogWarning($"버튼({stageBtnList[i].name})에 할당할 데이터가 없어서 비활성화 또는 잠금 상태로 변경");
                 stageBtnList[i].gameObject.SetActive(false);
             }
         }
