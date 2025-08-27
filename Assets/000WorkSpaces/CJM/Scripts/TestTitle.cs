@@ -18,6 +18,8 @@ public class TestTitle : MonoBehaviour
 
     IEnumerator TestBlockFade()
     {
+        yield return new WaitUntil(() => Manager.game.initialized);
+
         float time = 0;
         while (time < 2f)
         {

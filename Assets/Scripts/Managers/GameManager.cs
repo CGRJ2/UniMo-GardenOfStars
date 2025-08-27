@@ -7,6 +7,9 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class GameManager : Singleton<GameManager>
 {
+    //임시
+    public bool initialized;
+
     private void Awake() => Init();
 
     // 스테이지Id(key) 별, 언락여부(value) 딕셔너리 => 해당 데이터는 Firebase DB로 대체될 예정
@@ -112,14 +115,13 @@ public class GameManager : Singleton<GameManager>
             yield return downloadHandle;
             Debug.Log($"다운로드 완료:{downloadHandle.GetDownloadStatus().IsDone}");
 
-
-
             // 새로운 요소 추가 이후에 사용하지 않는 참조 캐시 삭제
             var clearCacheHandle = Addressables.CleanBundleCache();
 
             SafeRelease(ref updateCatalogHandle);
             SafeRelease(ref clearCacheHandle);
         }
+        initialized = true;
         SafeRelease(ref checkHandle);
     }
 
