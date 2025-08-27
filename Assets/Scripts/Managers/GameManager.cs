@@ -9,6 +9,8 @@ public class GameManager : Singleton<GameManager>
 {
     private void Awake() => Init();
 
+    string curStageId;
+
     void Init()
     {
         base.SingletonInit();
@@ -17,13 +19,15 @@ public class GameManager : Singleton<GameManager>
 
     void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X))
         {
-            Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
+            /*Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
             {
                 Instantiate(task.Result);
-            };
-        }*/
+            };*/
+
+            // 씬로드 테스트
+        }
     }
 
 

@@ -24,7 +24,7 @@ public class BuildingInstance : InteractableBase
         base.OnDisableAdditionalActions();
 
         if (_OriginData != null)
-            Manager.buildings.RemoveBiTransformData(transform);
+            Manager.buildings?.RemoveBiTransformData(transform);
 
         if (activatePopUI != null)
             activatePopUI.gameObject.SetActive(false);

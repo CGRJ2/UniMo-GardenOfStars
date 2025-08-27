@@ -14,15 +14,18 @@ public class StageData : ScriptableObject
     [Header("기본 정보")]
     public string StageName; //스테이지 
     public int StageId; //스테이지 번호.
-    [Header("퀘스트의 달성율")]
+
+    [Header("다음 스테이지 언락을 위한 필요 퀘스트 진행도")]
+    public int _NextUlockQuestIndex; //스테이지 패스 조건
+    [Header("언락 여부")]
+    public int _Unlock; //스테이지 패스 조건
+
+    [Header("미사용")]
     public int QuestRate; // 퀘스트 달성율.
-    [Header("스테이지 클리어 조건(값을 넣어 수정)")]
     public int condition; //스테이지 패스 조건
     //[Header("스테이지 상태")]
     //public StageState state; //스테이지 상태.
-    [Header("스테이지 언락 여부")]
     public bool Unlock; //스테이지 패스 가능여부
-    [Header("클리어 여부 넥스트스테이지 오픈관련")]
     public bool StageClear;
     public void init()
     {
