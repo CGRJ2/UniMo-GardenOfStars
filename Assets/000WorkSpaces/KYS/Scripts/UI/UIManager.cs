@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 #if DOTWEEN
 using DG.Tweening;
@@ -21,6 +23,7 @@ namespace KYS
         [SerializeField] private AssetReferenceGameObject panelCanvasReference;
         [SerializeField] private AssetReferenceGameObject popupCanvasReference;
         [SerializeField] private AssetReferenceGameObject loadingCanvasReference;
+        [SerializeField] private AssetReferenceGameObject loadingScreenPrefabReference; // LoadingScreen Prefab Reference
 
         [Header("UI Management")]
         [SerializeField] public SafeAreaManager safeAreaManager;
@@ -141,24 +144,66 @@ namespace KYS
                 }
 
                 // Loading Canvas 로드 (가장 앞에 렌더링)
-                if (loadingCanvasReference != null && loadingCanvasReference.RuntimeKeyIsValid())
+                // 첫 씬에 미리 배치된 LoadingCanvas를 찾아서 사용
+                Canvas[] existingLoadingCanvases = FindObjectsOfType<Canvas>();
+                bool hasExistingLoadingCanvas = false;
+                
+                foreach (Canvas canvas in existingLoadingCanvases)
                 {
-                    var loadingHandle = loadingCanvasReference.InstantiateAsync();
-                    await loadingHandle.Task;
-                    loadingCanvas = loadingHandle.Result.GetComponent<Canvas>();
-                    loadingCanvas.sortingOrder = 30;
-                    addressableHandles["LoadingCanvas"] = loadingHandle;
-                    DontDestroyOnLoad(loadingHandle.Result);
+                    if (canvas.name.Contains("Loading") || canvas.name.Contains("loading"))
+                    {
+                        hasExistingLoadingCanvas = true;
+                        loadingCanvas = canvas;
+                        Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
+                        
+                        // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
+                        DontDestroyOnLoad(canvas.gameObject);
+                        Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
+                        break;
+                    }
                 }
 
-                ApplySafeAreaToCanvases();
-               await InitializeHUDElements();
-                
+                if (!hasExistingLoadingCanvas)
+                {
+                    Debug.LogWarning("[UIManager] 첫 씬에 LoadingCanvas가 없습니다. Addressables에서 로드합니다.");
+                    
+                    if (loadingCanvasReference != null && loadingCanvasReference.RuntimeKeyIsValid())
+                    {
+                        var loadingHandle = loadingCanvasReference.InstantiateAsync();
+                        await loadingHandle.Task;
+                        loadingCanvas = loadingHandle.Result.GetComponent<Canvas>();
+                        loadingCanvas.sortingOrder = 30;
+                        addressableHandles["LoadingCanvas"] = loadingHandle;
+                        DontDestroyOnLoad(loadingHandle.Result);
+                    }
+                    else
+                    {
+                        Debug.LogError("[UIManager] LoadingCanvas Reference가 유효하지 않습니다.");
+                    }
+                }
+
+
+
+
+
+                // LoadingScreen 초기화 (기존 또는 새로 생성된 LoadingCanvas에 대해)
+                if (loadingCanvas != null)
+                {
+                    await InitializeLoadingScreen();
+                }
+
                 // 게임 시작 시 로딩 화면 표시
                 if (showLoadingScreenOnStart)
                 {
                     StartCoroutine(ShowInitialLoadingScreen());
                 }
+
+
+                ApplySafeAreaToCanvases();
+               await InitializeHUDElements();
+
+ 
+
             }
             catch (System.Exception e)
             {
@@ -2044,11 +2089,7 @@ namespace KYS
 
             // 로딩 화면 UI 찾기
             LoadingScreen loadingScreen = loadingCanvas.GetComponentInChildren<LoadingScreen>(true);
-            if (loadingScreen == null)
-            {
-                Debug.LogWarning("[UIManager] LoadingScreen 컴포넌트를 찾을 수 없습니다.");
-                yield break;
-            }
+            
 
             // 로딩 화면 표시
             loadingScreen.gameObject.SetActive(true);
@@ -2072,6 +2113,71 @@ namespace KYS
             // 로딩 화면 숨김
             loadingScreen.Hide();
         }
+
+        #endregion
+
+        #region LoadingScreen Management
+
+        /// <summary>
+        /// LoadingScreen 초기화 및 생성
+        /// </summary>
+        private async System.Threading.Tasks.Task InitializeLoadingScreen()
+        {
+            Debug.Log("[UIManager] InitializeLoadingScreen 시작");
+            
+            if (loadingCanvas == null)
+            {
+                Debug.LogWarning("[UIManager] LoadingCanvas가 null입니다.");
+                return;
+            }
+
+            Debug.Log($"[UIManager] LoadingCanvas 발견: {loadingCanvas.name}");
+
+            try
+            {
+                // 1단계: 첫 씬에 미리 배치된 LoadingScreen 찾기 (가장 우선)
+                LoadingScreen existingLoadingScreen = loadingCanvas.GetComponentInChildren<LoadingScreen>(true);
+                if (existingLoadingScreen != null)
+                {
+                    Debug.Log("[UIManager] 첫 씬의 기존 LoadingScreen 발견 - 사용");
+                    existingLoadingScreen.gameObject.SetActive(true);
+                    return;
+                }
+
+                Debug.Log("[UIManager] 첫 씬에 LoadingScreen이 없습니다. Addressable에서 로드...");
+                
+                // 2단계: Addressable에서 LoadingScreen Prefab 로드
+                if (loadingScreenPrefabReference != null && loadingScreenPrefabReference.RuntimeKeyIsValid())
+                {
+                    try
+                    {
+                        var loadingScreenHandle = loadingScreenPrefabReference.InstantiateAsync(loadingCanvas.transform);
+                        await loadingScreenHandle.Task;
+                        
+                        LoadingScreen newLoadingScreen = loadingScreenHandle.Result.GetComponent<LoadingScreen>();
+                        if (newLoadingScreen != null)
+                        {
+                            addressableHandles["LoadingScreen"] = loadingScreenHandle;
+                            Debug.Log("[UIManager] Addressable에서 LoadingScreen 로드 완료");
+                        }
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"[UIManager] LoadingScreen 로드 실패: {e.Message}");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[UIManager] LoadingScreen Prefab Reference가 설정되지 않았습니다.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[UIManager] LoadingScreen 초기화 중 오류: {e.Message}");
+            }
+        }
+
+
 
         #endregion
     }
