@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace GameQuest
 {
+    /// <summary>
+    /// 퀘스트 진행도 데이터 클래스
+    /// </summary>
     public class QuestProgressData
     {
         public int _questId;
@@ -17,24 +20,27 @@ namespace GameQuest
         public QuestProgressState _currentState;
         // public QuestProgressState CurrentState { get { return _currentState; } }
 
-        // public QuestProgressData(string targetId, int TargetCount)
-        // {
-        //     this._targetId = targetId;
-        //     this._targetCount = TargetCount;
-        //     this._currentCount = 0;
-        // }
         /// <summary>
         /// 퀘스트 내용 데이터와 퀘스트 진행도 데이터를 조합하여 내부적으로 사용할 퀘스트 진행도 데이터를 만듭니다.
         /// </summary>
         /// <param name="rawContentData">퀘스트 내용 데이터</param>
         /// <param name="rawProgressData">퀘스트 진행도 데이터</param>
-        public QuestProgressData(CYETestQuestContentDataSO rawContentData, CYETestQuestProgressDataSO rawProgressData)
+        public QuestProgressData(CYETestQuestContentDataSO rawContentData, CYETestQuestProgressDataSO rawProgressData = null)
         {
             this._questId = rawContentData._questId;
             this._targetId = rawContentData._targetId;
             this._targetCount = rawContentData._targetCount;
-            this._currentCount = rawProgressData._currentCount;
-            this._currentState = rawProgressData._currentState;
+            if (rawProgressData == null)
+            {
+                this._currentCount = 0;
+                this._currentState = QuestProgressState.BeforeStart;
+            }
+            else
+            {
+                this._currentCount = rawProgressData._currentCount;
+                this._currentState = (rawContentData._targetCount == rawProgressData._currentCount) ? QuestProgressState.Completed : QuestProgressState.InProgress;
+            }
+            Debug.Log($"{nameof(QuestProgressData)} -> {_questId}/{_targetId}/{_currentState}");
         }
 
         /// <summary>
@@ -53,6 +59,8 @@ namespace GameQuest
             {
                 // 만일 현재 수량이 0이면서 상태가 BeforeStart면 값 업데이트시 상태를 진행중(InProgress)으로 변경함.
                 _currentState = QuestProgressState.InProgress;
+
+                // TO DO: 이때 해당하는 퀘스트 진행도 상태 데이터를 업데이트해야함.(Firebase 연동)
             }
             _currentCount += addCount;
             if (_currentCount >= _targetCount)
@@ -62,24 +70,6 @@ namespace GameQuest
                 _currentState = QuestProgressState.Completed;
             }
         }
-        
-        // /// <summary>
-        // /// 업데이트 가능한 수량인지 확인합니다.
-        // /// </summary>
-        // /// <param name="addCount">추가하려는 수량</param>
-        // /// <param name="leftover">초과된 값(out)</param>
-        // /// <returns>true=업데이트 가능, false=업데이트 불가</returns>
-        // public bool CheckUpdatableCount(int addCount, out int leftover)
-        // {
-        //     if (_currentState != QuestProgressState.InProgress)
-        //     {
-        //         // 진행중이 아닌 항목은 수량을 업데이트할 수 없음.
-        //         leftover = 0;
-        //         return false;
-        //     }
-        //     leftover = _currentCount + addCount - _targetCount;
-        //     return true;
-        // }
     }
 
 }
