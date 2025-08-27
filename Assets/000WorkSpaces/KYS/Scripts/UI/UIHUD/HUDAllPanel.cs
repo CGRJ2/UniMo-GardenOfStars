@@ -14,6 +14,8 @@ namespace KYS
         [SerializeField] private string settingButtonName = "SettingButton";
         [SerializeField] private string PropertyButtonName = "PropertyButton";
         [SerializeField] private string questProgressTextName = "QuestProgressText";
+        [SerializeField] private string HRRooomButtonName = "HRRoomButton";
+        [SerializeField] private string compossButtonName = "CompossButton";
 
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
@@ -41,7 +43,8 @@ namespace KYS
                 // "hud_level",      // UpdateLevel()에서 수동 관리  
                 // "hud_quest_progress", // UpdateQuestProgress()에서 수동 관리
                 "hud_menu",
-                "hud_inventory"
+                "hud_inventory",
+                "hud_composs_button"
             };
         }
 
@@ -58,10 +61,12 @@ namespace KYS
                 LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
             }
 
+
+            // 초기 값 설정
+            UpdateMoney(Manager.player.Data.Money.Value);
+
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
-
-            UpdateMoney(Manager.player.Data.Money.Value);
 
             //UpdateLevel(1);
             //UpdateQuestProgress("진행 중");
@@ -87,16 +92,31 @@ namespace KYS
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var menuEventHandler = GetEventWithSFX(settingButtonName, "SFX_ButtonClick");
-            if (menuEventHandler != null)
+            var settingEventHandler = GetEventWithSFX(settingButtonName, "SFX_ButtonClick");
+            if (settingEventHandler != null)
             {
-                menuEventHandler.Click += (data) => OnSettingButtonClicked();
+                settingEventHandler.Click += (data) => OnSettingButtonClicked();
             }
 
-            var inventoryEventHandler = GetEventWithSFX(PropertyButtonName, "SFX_ButtonClick");
-            if (inventoryEventHandler != null)
+            var PropertyEventHandler = GetEventWithSFX(PropertyButtonName, "SFX_ButtonClick");
+            if (PropertyEventHandler != null)
             {
-                inventoryEventHandler.Click += (data) => OnPropertyButtonClicked();
+                PropertyEventHandler.Click += (data) => OnPropertyButtonClicked();
+            }
+
+            var HRRooomEventHandler = GetEventWithSFX(HRRooomButtonName, "SFX_ButtonClick");
+            if (HRRooomEventHandler != null)
+            {
+                HRRooomEventHandler.Click += (data) => OnPropertyButtonClicked();
+            }
+
+            // CompossButton 설정 - 누르고 있을 때 기능
+            var compossEventHandler = GetEventWithSFX(compossButtonName, "SFX_ButtonClick");
+            if (compossEventHandler != null)
+            {
+                compossEventHandler.TouchStart += (data) => OnCompossButtonPressed();
+                compossEventHandler.TouchEnd += (data) => OnCompossButtonReleased();
+                compossEventHandler.LongPress += (data) => OnCompossButtonLongPressed();
             }
         }
 
@@ -108,12 +128,6 @@ namespace KYS
             currentMoney = amount; // 현재 값 저장
             if (moneyText != null)
             {
-                // 번역된 텍스트에 동적 값 삽입
-                //string localizedText = GetLocalizedText("hud_money");
-                //if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_money")
-                //{
-                //    localizedText = "재화"; // 번역이 없으면 기본값 사용
-                //}
 
 
                 moneyText.text = $"{amount:N0}";
@@ -297,29 +311,87 @@ namespace KYS
 
         #endregion
 
+        #region CompossButton Event Handlers
+
+        private bool isCompossButtonPressed = false;
+        private float compossButtonPressStartTime = 0f;
+        private Coroutine compossButtonHoldCoroutine;
+
+        private void OnCompossButtonPressed()
+        {
+            Debug.Log("[HUDAllPanel] CompossButton 눌림");
+            isCompossButtonPressed = true;
+            compossButtonPressStartTime = Time.time;
+            
+            // 버튼을 누르고 있을 때의 효과 시작
+            StartCompossButtonHoldEffect();
+        }
+
+        private void OnCompossButtonReleased()
+        {
+            Debug.Log("[HUDAllPanel] CompossButton 해제됨");
+            isCompossButtonPressed = false;
+            
+            // 버튼을 놓았을 때의 효과 정리
+            StopCompossButtonHoldEffect();
+        }
+
+        private void OnCompossButtonLongPressed()
+        {
+            Debug.Log("[HUDAllPanel] CompossButton 길게 눌림 (롱프레스)");
+            // 롱프레스 시 추가 기능 (필요시 구현)
+        }
+
+        private void StartCompossButtonHoldEffect()
+        {
+            // 버튼을 누르고 있을 때 실행될 효과
+            Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 시작");
+            
+            // 여기에 카메라 이동 로직이 들어갈 예정
+            // 예: 특정 NPC로 가상카메라 우선순위 이동
+            // MoveCameraToTargetNPC();
+        }
+
+        private void StopCompossButtonHoldEffect()
+        {
+            // 버튼을 놓았을 때 실행될 효과
+            Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 종료");
+            
+            // 여기에 카메라 원위치 로직이 들어갈 예정
+            // 예: 원래 카메라 우선순위로 복원
+            // RestoreOriginalCameraPriority();
+        }
+
+        // 카메라 이동 기능 (나중에 구현 예정)
+        private void MoveCameraToTargetNPC()
+        {
+            // TODO: 특정 NPC로 가상카메라 우선순위 이동 로직
+            Debug.Log("[HUDAllPanel] 카메라를 특정 NPC로 이동 (구현 예정)");
+        }
+
+        private void RestoreOriginalCameraPriority()
+        {
+            // TODO: 원래 카메라 우선순위로 복원 로직
+            Debug.Log("[HUDAllPanel] 카메라 우선순위 복원 (구현 예정)");
+        }
+
+        #endregion
+
         #region Debug Methods
 
-        [ContextMenu("HUDAllPanel 상태 확인")]
-        public void CheckHUDAllPanelStatus()
-        {
-            //Debug.Log($"[HUDAllPanel] GameObject 이름: {gameObject.name}");
-            //Debug.Log($"[HUDAllPanel] 활성화 상태: {gameObject.activeInHierarchy}");
-            //Debug.Log($"[HUDAllPanel] menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
-            //Debug.Log($"[HUDAllPanel] inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
-            //Debug.Log($"[HUDAllPanel] moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            //Debug.Log($"[HUDAllPanel] levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
-            //Debug.Log($"[HUDAllPanel] questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
-        }
+
 
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
-            //Debug.Log($"[HUDAllPanel] UI 요소 정보:");
-            //Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - menuButton: {menuButtonName} -> {(menuButton != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - inventoryButton: {inventoryButtonName} -> {(inventoryButton != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            Debug.Log($"[HUDAllPanel] UI 요소 정보:");
+            Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
+            Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - PropertyButton: {PropertyButtonName} -> {(GetUI<UnityEngine.UI.Button>(PropertyButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - HRRoomButton: {HRRooomButtonName} -> {(GetUI<UnityEngine.UI.Button>(HRRooomButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
 
         #endregion

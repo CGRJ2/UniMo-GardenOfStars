@@ -242,7 +242,7 @@ namespace KYS
                         if (hudAllPanel != null)
                         {
                             //Debug.Log($"[TouchInfoManager] HUDAllPanel 컴포넌트 발견: {hudAllPanel.gameObject.name}");
-                            hudAllPanel.CheckHUDAllPanelStatus();
+                            //hudAllPanel.PrintUIElementInfo();
                         }
                         else
                         {
