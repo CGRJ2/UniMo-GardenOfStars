@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,16 +12,11 @@ public class WorkerState_Stun : WorkerStateBase
 
     public override void Enter()
     {
+        _timer = 0;
+
         if (WorkerData.CurWorkstation.Value == null) return;
 
         WorkerData.CurWorkstation.Value.SetReserveState(false);
-        if(WorkerData.CurWorkstation.Value is WorkArea)
-        {
-            (WorkerData.CurWorkstation.Value as WorkArea).curWorker = null;
-        }
-        WorkerData.CurWorkstation.Value = null;
-
-        _timer = 0;
     }
 
     public override void Update()
@@ -32,6 +27,8 @@ public class WorkerState_Stun : WorkerStateBase
         {
             StateMachine.ChangeState(WorkerStates.Idle);
         }
+
+        Debug.DrawRay(WorkerData.transform.position, Vector3.up * 10f, Color.red);
     }
 
     public override void Exit()

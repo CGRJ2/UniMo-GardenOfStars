@@ -7,6 +7,7 @@ using UnityEngine;
 public class StateMachine<T> where T : Enum
 {
     public BaseState<T> CurState;
+    public T CurStateEnum;
     private Dictionary<T, BaseState<T>> _stateDict = new Dictionary<T, BaseState<T>>();
 
     public void ChangeState(T changedStateEnum)
@@ -23,6 +24,7 @@ public class StateMachine<T> where T : Enum
 
         // 처음에 없을 수도 있으니 null 체크
         CurState?.Exit();
+        CurStateEnum = changedStateEnum;
         CurState = changedState;
         CurState.Enter();
     }

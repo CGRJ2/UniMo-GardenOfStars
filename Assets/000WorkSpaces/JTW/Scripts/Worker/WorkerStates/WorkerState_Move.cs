@@ -1,17 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class WorkerState_Move : WorkerStateBase
 {
     private NavMeshAgent _navAgent;
-    private Rigidbody _rigid;
-    private bool _isArrive;
     private IWorkStation CurWorkstation => WorkerData.CurWorkstation.Value;
+
+    private Coroutine tryCoroutine;
+
+    private bool _isRePath;
 
     public WorkerState_Move(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
         _navAgent = WorkerData.GetComponent<NavMeshAgent>();
-        _rigid = WorkerData.GetComponent<Rigidbody>();
     }
 
     public override void Enter()
@@ -33,7 +35,11 @@ public class WorkerState_Move : WorkerStateBase
 
         _navAgent.isStopped = false;
 
+        _navAgent.avoidancePriority = 10 + WorkerData.NavMeshPriority;
+
         WorkerData.IsMove.Value = true;
+
+        tryCoroutine = WorkerData.StartCoroutine(TryDetour());
     }
 
     public override void Update()
@@ -42,7 +48,7 @@ public class WorkerState_Move : WorkerStateBase
         {
             StateMachine.ChangeState(WorkerStates.Idle);
         }
-        else if (_navAgent.remainingDistance < 0.01f)
+        else if (_navAgent.remainingDistance < 0.01f && !_isRePath)
         {
             StateMachine.ChangeState(WorkerStates.Work);
         }
@@ -51,9 +57,10 @@ public class WorkerState_Move : WorkerStateBase
     public override void Exit()
     {
         _navAgent.isStopped = true;
-        _rigid.velocity = Vector3.zero;
-        _rigid.angularVelocity = Vector3.zero;
+        _navAgent.avoidancePriority = 30;
+        WorkerData.CurWorkstation.Value.SetReserveState(false);
         WorkerData.IsMove.Value = false;
+        WorkerData.StopCoroutine(tryCoroutine);
     }
 
     private bool CanWork()
@@ -77,5 +84,41 @@ public class WorkerState_Move : WorkerStateBase
         }
 
         return true;
+    }
+
+    private IEnumerator TryDetour()
+    {
+        WaitForSeconds _delay = new WaitForSeconds(2f);
+
+        while (true)
+        {
+            yield return _delay;
+
+            yield return new WaitUntil(() => _navAgent.velocity.magnitude < 0.01f);
+
+            Debug.Log("TryDetour");
+            _isRePath = true;
+
+            Vector3 destination = _navAgent.destination;
+
+            _navAgent.ResetPath();
+
+            Vector3 offset = Random.insideUnitSphere * 2.0f;
+            offset.y = 0;
+
+            NavMeshHit hit;
+
+            if (NavMesh.SamplePosition(WorkerData.transform.position + offset, out hit, 3f, NavMesh.AllAreas))
+            {
+                _navAgent.SetDestination(hit.position);
+            }
+
+            yield return new WaitForSeconds(0.5f);
+
+            _navAgent.SetDestination(destination);
+            _isRePath = false;
+        }
+
+        
     }
 }
