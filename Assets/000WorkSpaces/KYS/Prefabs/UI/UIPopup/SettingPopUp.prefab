@@ -1397,7 +1397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -2598,6 +2598,8 @@ MonoBehaviour:
   layerType: 2
   panelGroup: 4
   useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
   animationDuration: 0.3
   showEase: 27
   hideEase: 26
@@ -2619,6 +2621,8 @@ MonoBehaviour:
   BGMText: BGMText
   SFXText: SFXText
   VibrationText: VibrationText
+  closeButtonName: CloseButton
+  languageDropdownName: LanguageDropdown
 --- !u!1 &6825701894105294135
 GameObject:
   m_ObjectHideFlags: 0
@@ -2892,7 +2896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -3636,7 +3640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
