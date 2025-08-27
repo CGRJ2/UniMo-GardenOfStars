@@ -4,6 +4,8 @@ using KYS;
 public static class Manager
 {
     public static GameManager game => GameManager.Instance;
+
+    public static FirebaseManager firebase => FirebaseManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
     public static PlayerManager player => PlayerManager.Instance;
     public static BuildingManager buildings => BuildingManager.Instance;
@@ -17,6 +19,7 @@ public static class Manager
     private static void Initailize()
     {
         GameManager.CreateInstance();
+        FirebaseManager.CreateInstance();
         PoolManager.CreateInstance();
         PlayerManager.CreateInstance();
         BuildingManager.CreateInstance();
