@@ -72,7 +72,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
         });
     }
 
-    public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
+    public void SetUserDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
     {
         // 추후에 로그인 로직이 생기면 변경 예정
         if (_userRef == null)
@@ -84,8 +84,20 @@ public class FirebaseManager : Singleton<FirebaseManager>
         UserRef.Child(path).ValueChanged += func;
     }
 
+    public void SetUserDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
+    {
+        // 추후에 로그인 로직이 생기면 변경 예정
+        if (_userRef == null)
+        {
+            _database.RootReference.Child("Userdata").Child(path).ChildAdded += func;
+            return;
+        }
 
-    public void SaveData(string path, object value)
+        UserRef.Child(path).ChildAdded += func;
+    }
+
+
+    public void SaveUserData(string path, object value)
     {
         // 추후에 로그인 로직이 생기면 변경 예정
         if (_userRef == null)

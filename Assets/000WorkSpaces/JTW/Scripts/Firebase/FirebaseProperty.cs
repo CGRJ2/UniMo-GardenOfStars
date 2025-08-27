@@ -6,11 +6,11 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [System.Serializable]
-public class FirebaseProperty<T>
+public class FirebaseProperty<T> : FirebaseData
 {
     [SerializeField] private T _value;
 
-    private string _path;
+    private string Path => ParentPath != null ? $"{ParentPath}/{Id}" : Id;
 
     public T Value
     {
@@ -18,16 +18,20 @@ public class FirebaseProperty<T>
         set
         {
             if (object.Equals(_value, value)) return;
-            Manager.firebase.SaveData(_path, value);
+            Manager.firebase.SaveUserData(Path, value);
         }
     }
     private UnityEvent<T> _onValueChanged = new();
 
-    public FirebaseProperty(string path)
+    public FirebaseProperty(string id, string parentPath = null) : base(id, parentPath)
     {
-        _path = path;
+        Manager.firebase.SetUserDataEvent(Path, OnFirebaseChanged);
+    }
 
-        Manager.firebase.SetDataEvent(path, OnFirebaseChanged);
+    private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)
+    {
+        _value = (T)args.Snapshot.Value;
+        Notify();
     }
 
     public void Subscribe(UnityAction<T> action)
@@ -48,11 +52,5 @@ public class FirebaseProperty<T>
     private void Notify()
     {
         _onValueChanged?.Invoke(Value);
-    }
-
-    private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)
-    {
-        _value = (T)args.Snapshot.Value;
-        Notify();
     }
 }
