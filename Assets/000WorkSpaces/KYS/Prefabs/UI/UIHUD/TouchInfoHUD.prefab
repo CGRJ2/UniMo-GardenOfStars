@@ -708,7 +708,6 @@ GameObject:
   - component: {fileID: 536604255793768885}
   - component: {fileID: 2629248482394571072}
   - component: {fileID: 6024314543419183464}
-  - component: {fileID: 4634850521867996154}
   m_Layer: 5
   m_Name: TouchInfoHUD
   m_TagString: Untagged
@@ -834,22 +833,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &4634850521867996154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7043823615781402871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableAutoLocalization: 1
-  customKey: 
-  useCustomKey: 0
-  showDebugLogs: 0
 --- !u!1 &7383991684364214172
 GameObject:
   m_ObjectHideFlags: 0

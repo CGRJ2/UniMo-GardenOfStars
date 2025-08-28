@@ -84,11 +84,11 @@ public class SettingPopUp : BaseUI
         if (languageDropdown == null || LocalizationManager.Instance == null)
             return;
 
-        Debug.Log("[SettingPopUp] 언어 드롭다운 설정 시작");
+        //Debug.Log("[SettingPopUp] 언어 드롭다운 설정 시작");
 
         // 활성 언어 목록 가져오기
         SystemLanguage[] activeLanguages = LocalizationManager.Instance.ActiveLanguages;
-        Debug.Log($"[SettingPopUp] 활성 언어 수: {activeLanguages.Length}");
+        //Debug.Log($"[SettingPopUp] 활성 언어 수: {activeLanguages.Length}");
 
         // 각 언어의 번역 완성도 계산
         languageCompleteness.Clear();
@@ -96,7 +96,7 @@ public class SettingPopUp : BaseUI
         {
             float completeness = LocalizationManager.Instance.GetTranslationCompleteness(lang);
             languageCompleteness[lang] = completeness;
-            Debug.Log($"[SettingPopUp] {LocalizationManager.Instance.GetLocalizedLanguageName(lang)}: {completeness * 100:F1}%");
+            //Debug.Log($"[SettingPopUp] {LocalizationManager.Instance.GetLocalizedLanguageName(lang)}: {completeness * 100:F1}%");
         }
 
         // 드롭다운 옵션 설정
@@ -105,7 +105,7 @@ public class SettingPopUp : BaseUI
         {
             string languageName = LocalizationManager.Instance.GetLocalizedLanguageName(activeLanguages[i]);
             float completeness = languageCompleteness[activeLanguages[i]];
-            string optionText = $"{languageName} ({completeness * 100:F0}%)";
+            string optionText = $"{languageName}";
 
             languageDropdown.options.Add(new TMP_Dropdown.OptionData(optionText));
         }
@@ -127,7 +127,7 @@ public class SettingPopUp : BaseUI
         languageDropdown.onValueChanged.RemoveAllListeners();
         languageDropdown.onValueChanged.AddListener(OnLanguageDropdownChanged);
 
-        Debug.Log($"[SettingPopUp] 현재 언어: {LocalizationManager.Instance.GetLocalizedLanguageName(selectedLanguage)} (인덱스: {currentIndex})");
+        //Debug.Log($"[SettingPopUp] 현재 언어: {LocalizationManager.Instance.GetLocalizedLanguageName(selectedLanguage)} (인덱스: {currentIndex})");
     }
 
     /// <summary>

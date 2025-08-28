@@ -47,7 +47,7 @@ settings_close,닫기,Close
 titleText,유니모,UniMo
 ,,
 # Language Settings Panel,,
-label,라벨,Label
+label,,
 preview,미리보기,Preview
 translationcompleteness,번역 완성도,Translation Completeness
 currentlanguage,현재 언어,Current Language
@@ -85,31 +85,31 @@ buyupgradebutton,업그레이드 구매,Buy Upgrade
 buildingname,건물 이름,Building Name
 materials,재료,Materials
 buildingcount,건물 수,Building Count
-harvestbuildingtop,수확 건물 상단,Harvest Building Top
+harvestbuildingtop,수확 건물,Harvest Building
 runharvestbuildingname,,
 runharvestbuildingdesc,,
 runproductionmaterial,,
-upgrade1,업그레이드 1,Upgrade 1
+upgrade1,업그레이드,Upgrade
 runupgrademoneynum1,,
 runbeforeupgradenum1,,
 runafterupgradenum1,,
-changeddesc1,변경 설명 1,Change Description 1
+changeddesc1,생산 속도,Production Speed
 hrroom,HR 룸,HR Room
-manufacturebuildingtop,제조 건물 상단,Manufacture Building Top
+manufacturebuildingtop,제조 건물,Manufacture Building
 runmanufacturebuildingname,,
 runmanufacturebuildingdesc,,
 runinputmaterials,,
-upgrade2,업그레이드 2,Upgrade 2
+upgrade2,업그레이드,Upgrade
 runbeforeupgradenum2,,
 runafterupgradenum2,,
-changeddesc2,변경 설명 2,Change Description 2
+maxnumber,최대 개수,Max Count
 runupgradename,,
 runbeforeupgradenum,,
 runafterupgradenum,,
 upgrade,업그레이드,Upgrade
 runmoneynum,,
 playerupgrade,플레이어 업그레이드,Player Upgrade
-property,속성,Property
+property,부동산,Property
 moenybutton,돈,Money
 buybutton,구매,Buy
 runrcharactername,,
@@ -124,17 +124,12 @@ logbutton,로그,Log
 skipbutton,건너뛰기,Skip
 upgradebutton,업그레이드,Upgrade
 workername,작업자 이름,Worker Name
-workertop,작업자 상단,Worker Top
-workerlevenum,레벨: {0},Level: {0}
+workertop,작업자,Worker
+workerlevenum,,
 workerleve,작업자 레벨,Worker Level
 productspeed,생산 속도,Production Speed
 statuseffect,상태 효과,Status Effect
-beforeupgradenum2,업그레이드 전: {0},Before: {0}
-afterupgradenum2,업그레이드 후: {0},After: {0}
-beforeupgradenum1,업그레이드 전: {0},Before: {0}
-afterupgradenum1,업그레이드 후: {0},After: {0}
-upgrademoneynum,업그레이드 비용: {0},Upgrade Cost: {0}
-itemlabel,아이템 라벨,Item Label
+itemlabel,,
 runworkername,,
 runworkerlevenum,,
 runworkerleve,,
@@ -151,9 +146,15 @@ runstatuseffect,,
 setting,설정,Settings
 supportbutton,지원,Support
 emergencyescape,긴급 탈출,Emergency Escape
-bgm,배경음악,Background Music
-sfx,효과음,Sound Effects
-vibration,진동,Vibration
+bgm,배경음,BGM
+sfx,효과음,SFX
+vibration,진동,Vib
+rungoalbutton,,
+rungembutton,,
+runmoneybutton,,
+rundescription,,
+runtitle,,
+touchinfohud(clone),,
 rungoalbutton,,
 rungembutton,,
 runmoneybutton,,
