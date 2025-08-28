@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WorkerRuntimeData : CharaterRuntimeData
 {
-    private WorkerData _data = new();
+    private WorkerData _data;
 
     #region WorkerDatas
 
@@ -12,10 +12,10 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public int Rank => _data.Rank;
 
     public float MoveSpeed => _data.MoveSpeed;
-    public float MoveSpeedLv => _data.MoveSpeedLv.Value;
+    public long MoveSpeedLv => _data.MoveSpeedLv.Value;
 
     public int MaxCapacity => _data.MaxCapacity;
-    public int MaxCapacityLv => _data.MaxCapacityLv.Value;
+    public long MaxCapacityLv => _data.MaxCapacityLv.Value;
 
     public float ProductionSpeed => _data.ProductionSpeed;
 

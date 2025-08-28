@@ -23,10 +23,28 @@ public class WorkerSpawnTest : MonoBehaviour
             {
                 Manager.player.Data.Money.Value -= 500;
 
-                WorkerData data = new WorkerData();
+                Debug.Log("Space");
 
-                _workerManager.InstantiateWorker(data);
-                _workerList.Add(data);
+                WorkerData worker = Manager.firebase.UserData.WorkerList.Get("Worker_0");
+
+                if (worker == null)
+                {
+                    // 테스트를 위한 이벤트 구조.
+                    // 실제에서는 UserData가 이미 초기화 되었을테니 OnEnable 같은데서 추가하면 된다.
+                    Manager.firebase.UserData.WorkerList.OnAdded.AddListener(WorkerSpawnEvent);
+
+                    WorkerDataJson data = new WorkerDataJson();
+
+                    data.Id = $"Worker_0";
+                    data.MoveSpeedLv = 1;
+                    data.MaxCapacityLv = 1;
+
+                    Manager.firebase.UserData.WorkerList.Add(data);
+                }
+                else
+                {
+                    _workerManager.InstantiateWorker(worker);
+                }
             }
             else
             {
@@ -34,7 +52,10 @@ public class WorkerSpawnTest : MonoBehaviour
             }
         });
     }
-
-
-            
+    
+    private void WorkerSpawnEvent(WorkerData worker)
+    {
+        _workerManager.InstantiateWorker(worker);
+        Manager.firebase.UserData.WorkerList.OnAdded.RemoveListener(WorkerSpawnEvent);
+    }
 }
