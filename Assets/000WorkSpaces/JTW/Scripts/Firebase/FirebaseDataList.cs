@@ -6,8 +6,7 @@ using UnityEngine;
 
 public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 {
-    private List<T> _list;
-
+    private List<T> _list = new();
 
     private Func<string, string, T> _factory;
 

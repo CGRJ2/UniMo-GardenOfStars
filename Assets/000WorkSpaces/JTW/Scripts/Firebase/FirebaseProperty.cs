@@ -28,6 +28,8 @@ public class FirebaseProperty<T> : FirebaseData
 
     private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)
     {
+        if (args.Snapshot.Value == null) return;
+
         _value = (T)args.Snapshot.Value;
         Notify();
     }
