@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -5,9 +6,7 @@ using UnityEngine.AddressableAssets;
 public class HarvestBuilding : BuildingInstance
 {
     [SerializeField] Transform prodsParentTransform;
-    //[SerializeField] float cultivateTime;
-    public BuildingRuntimeData runtimeData;
-    [HideInInspector] HarvestBD originData;
+    [HideInInspector] public HarvestBD originData;
 
     ProductGenerater[] productGeneraters;
     ObjectPool _Pool;
@@ -16,6 +15,7 @@ public class HarvestBuilding : BuildingInstance
     {
         base.BIBaseInit();
         InitRuntimeData();
+        activatePopUI.Init(this);
 
         productGeneraters = prodsParentTransform.GetComponentsInChildren<ProductGenerater>();
         SetIngrediantToGeneraters();
@@ -26,8 +26,6 @@ public class HarvestBuilding : BuildingInstance
         if (_OriginData is HarvestBD harvestBD)
         {
             originData = harvestBD;
-            runtimeData = new();
-            runtimeData.SetCurLevelStatDatas(harvestBD);
         }
     }
 
@@ -41,7 +39,7 @@ public class HarvestBuilding : BuildingInstance
             _Pool = Manager.pool.GetPoolBundle(product).instancePool;
             foreach (ProductGenerater prodsGenerater in productGeneraters)
             {
-                prodsGenerater.Init(product, runtimeData.productionTime);
+                prodsGenerater.Init(product, originData);
             }
         };
     }

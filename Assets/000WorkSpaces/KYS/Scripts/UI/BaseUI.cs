@@ -20,7 +20,7 @@ namespace KYS
         [Header("UI Layer Settings")]
         [SerializeField] protected UILayerType layerType = UILayerType.Panel;
         [SerializeField] protected UIPanelGroup panelGroup = UIPanelGroup.Other;
-        
+
         [Header("UI Animation Settings")]
         [SerializeField] protected bool useAnimation = true;
         [SerializeField] protected float animationDuration = 0.3f;
@@ -31,17 +31,17 @@ namespace KYS
         [SerializeField] protected string showEase = "OutBack";
         [SerializeField] protected string hideEase = "InBack";
 #endif
-        
+
         [Header("UI Behavior Settings")]
         [SerializeField] protected bool canCloseWithESC = false;
         [SerializeField] protected bool canCloseWithBackdrop = false;
         [SerializeField] protected bool hidePreviousUI = false; // 이전 UI 숨김 여부 (SetActive(false))
         [SerializeField] protected bool disablePreviousUI = false; // 이전 UI 비활성화 여부 (CanvasGroup.interactable = false)
         [SerializeField] protected bool createBackdropForPopup = false; // Popup일 때 Backdrop 자동 생성
-        
+
         [Header("Backdrop Settings")]
         // Backdrop Prefab Reference는 UIManager에서 관리
-        
+
         [Header("Audio Settings")]
         [SerializeField] protected bool enableSFX = true;
         [SerializeField] protected string defaultClickSound = "SFX_ButtonClick";
@@ -55,20 +55,20 @@ namespace KYS
         // MVP Components
         protected IUIPresenter presenter;
         protected IUIModel model;
-        
+
         // UI Management
         protected CanvasGroup canvasGroup;
         protected RectTransform rectTransform;
         protected Vector3 originalScale;
         protected Vector3 originalPosition;
-        
+
         // Backdrop Management
         protected BackdropUI ownBackdrop; // 각 Popup의 고유 Backdrop
-        
+
         // Component Cache
         private Dictionary<string, GameObject> goDict;
         private Dictionary<string, Component> compDict;
-        
+
         // Properties
         public UILayerType LayerType => layerType;
         public UIPanelGroup PanelGroup => panelGroup;
@@ -105,7 +105,7 @@ namespace KYS
                 rectTransform.DOKill(); // 진행 중인 DOTween 애니메이션 중단
             }
 #endif
-            
+
             // 언어 변경 이벤트 구독 해제
             try
             {
@@ -118,7 +118,7 @@ namespace KYS
             {
                 Debug.LogWarning($"[BaseUI] OnDestroy에서 LocalizationManager 이벤트 구독 해제 중 오류: {e.Message}");
             }
-            
+
             presenter?.Cleanup();
             model?.Cleanup();
             Cleanup();
@@ -129,44 +129,45 @@ namespace KYS
         public virtual void Show()
         {
             //Debug.Log($"[BaseUI] {gameObject.name} Show() 호출됨");
-            
+
             if (!gameObject.activeInHierarchy)
             {
                 gameObject.SetActive(true);
             }
-            
+
             // Popup 타입이고 Backdrop 생성이 활성화된 경우 Backdrop 생성
             if (layerType == UILayerType.Popup && createBackdropForPopup)
             {
                 CreateBackdrop();
             }
-           
-            
+
+
             // 항상 Initialize 호출 (이미 활성화되어 있어도)
             Initialize();
-            
+
             // 애니메이션 재생
             PlayShowAnimation();
-            
+
             // UI 열기 사운드 재생
             PlayOpenSound();
-            
+
             // 이벤트 호출
             OnShow();
-            
+
             //Debug.Log($"[BaseUI] {gameObject.name} Show() 완료");
         }
 
         public virtual void Hide()
         {
             if (!IsActive) return;
-            
+
             // UI 닫기 사운드 재생
             PlayCloseSound();
-            
+
             if (useAnimation)
             {
-                PlayHideAnimation(() => {
+                PlayHideAnimation(() =>
+                {
                     // 애니메이션 완료 후 안전하게 정리
                     SafeDestroyUI();
                 });
@@ -193,10 +194,10 @@ namespace KYS
                 rectTransform.DOKill(); // 진행 중인 DOTween 애니메이션 중단
             }
 #endif
-            
+
             gameObject.SetActive(false);
             OnHide();
-            
+
             // 스택 구조에서는 항상 파괴
             if (UIManager.Instance != null)
             {
@@ -208,10 +209,10 @@ namespace KYS
         public virtual void Initialize()
         {
             ////Debug.Log($"[BaseUI] {gameObject.name}의 Initialize() 메서드 실행");
-            
+
             // 자동 로컬라이제이션 설정
             SetupAutoLocalization();
-            
+
             // Override in derived classes
         }
 
@@ -228,11 +229,11 @@ namespace KYS
         {
 #if DOTWEEN
             //Debug.Log($"[BaseUI] {gameObject.name} Show 애니메이션 시작 - Duration: {animationDuration}, Ease: {showEase}, UseAnimation: {useAnimation}");
-            
+
             // Reset to initial state
             canvasGroup.alpha = 0f;
             rectTransform.localScale = Vector3.zero;
-            
+
             // Animate in
             canvasGroup.DOFade(1f, animationDuration).SetEase(showEase);
             rectTransform.DOScale(originalScale, animationDuration).SetEase(showEase);
@@ -248,11 +249,12 @@ namespace KYS
         {
 #if DOTWEEN
             //Debug.Log($"[BaseUI] {gameObject.name} Hide 애니메이션 시작 - Duration: {animationDuration}, Ease: {hideEase}, UseAnimation: {useAnimation}");
-            
+
             // Animate out
             canvasGroup.DOFade(0f, animationDuration).SetEase(hideEase);
             rectTransform.DOScale(Vector3.zero, animationDuration).SetEase(hideEase)
-                .OnComplete(() => {
+                .OnComplete(() =>
+                {
                     // 애니메이션 완료 후 콜백 실행
                     onComplete?.Invoke();
                 })
@@ -287,7 +289,7 @@ namespace KYS
         protected virtual async void CreateBackdrop()
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
-            
+
             // 이미 Backdrop가 있는지 확인
             if (ownBackdrop != null)
             {
@@ -327,9 +329,9 @@ namespace KYS
 
                 GameObject backdropGO = handle.Result;
                 backdropGO.name = "Backdrop"; // 일관된 이름 보장
-                
+
                 //Debug.Log($"[BaseUI] Backdrop Prefab 인스턴스 생성 완료: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
-                
+
                 // RectTransform 설정 (전체 화면)
                 RectTransform backdropRect = backdropGO.GetComponent<RectTransform>();
                 if (backdropRect != null)
@@ -339,10 +341,10 @@ namespace KYS
                     backdropRect.offsetMin = Vector2.zero;
                     backdropRect.offsetMax = Vector2.zero;
                     backdropRect.localScale = Vector3.one;
-                    
+
                     //Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
                 }
-                
+
                 // BackdropUI 컴포넌트 확인 및 저장
                 ownBackdrop = backdropGO.GetComponent<BackdropUI>();
                 if (ownBackdrop == null)
@@ -350,16 +352,16 @@ namespace KYS
                     Debug.LogWarning("[BaseUI] Backdrop Prefab에 BackdropUI 컴포넌트가 없습니다. 추가합니다.");
                     ownBackdrop = backdropGO.AddComponent<BackdropUI>();
                 }
-                
+
                 // Popup을 Backdrop의 자식으로 이동
                 transform.SetParent(backdropGO.transform);
-                
+
                 // Backdrop를 PopupCanvas의 최상위로 이동 (하이어라키 순서 조정)
                 backdropGO.transform.SetAsLastSibling();
-                
+
                 // Backdrop 클릭 이벤트 설정
                 SetupBackdropClickEvent();
-                
+
                 //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
             }
             catch (System.Exception e)
@@ -375,13 +377,13 @@ namespace KYS
         private void CreateBackdropFallback(Canvas popupCanvas)
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
-            
+
             // Backdrop GameObject 생성 (PopupCanvas의 자식으로)
             GameObject backdropGO = new GameObject("Backdrop");
             backdropGO.transform.SetParent(popupCanvas.transform);
-            
+
             //Debug.Log($"[BaseUI] Backdrop GameObject 생성: {backdropGO.name}, 부모: {backdropGO.transform.parent.name}");
-            
+
             // RectTransform 설정 (전체 화면)
             RectTransform backdropRect = backdropGO.AddComponent<RectTransform>();
             backdropRect.anchorMin = Vector2.zero;
@@ -389,21 +391,21 @@ namespace KYS
             backdropRect.offsetMin = Vector2.zero;
             backdropRect.offsetMax = Vector2.zero;
             backdropRect.localScale = Vector3.one;
-            
+
             //Debug.Log($"[BaseUI] Backdrop RectTransform 설정 완료 - Anchors: ({backdropRect.anchorMin}, {backdropRect.anchorMax})");
-            
+
             // BackdropUI 컴포넌트 추가 및 저장
             ownBackdrop = backdropGO.AddComponent<BackdropUI>();
-            
+
             // Popup을 Backdrop의 자식으로 이동
             transform.SetParent(backdropGO.transform);
-            
+
             // Backdrop를 PopupCanvas의 최상위로 이동 (하이어라키 순서 조정)
             backdropGO.transform.SetAsLastSibling();
-            
+
             // Backdrop 클릭 이벤트 설정
             SetupBackdropClickEvent();
-            
+
             //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
         }
 
@@ -413,10 +415,10 @@ namespace KYS
         protected virtual void SetupBackdropClickEvent()
         {
             if (ownBackdrop == null) return;
-            
+
             // Backdrop 클릭 가능 여부 설정
             ownBackdrop.SetBackdropClickable(canCloseWithBackdrop);
-            
+
             if (canCloseWithBackdrop)
             {
                 ownBackdrop.OnBackdropClicked += () =>
@@ -424,7 +426,7 @@ namespace KYS
                     //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
                     UIManager.Instance?.ClosePopup();
                 };
-                
+
                 //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 이벤트 설정 완료");
             }
             else
@@ -488,7 +490,7 @@ namespace KYS
             {
                 canvasGroup = gameObject.AddComponent<CanvasGroup>();
             }
-            
+
             rectTransform = GetComponent<RectTransform>();
             originalScale = rectTransform.localScale;
             originalPosition = rectTransform.localPosition;
@@ -623,7 +625,7 @@ namespace KYS
             }
 
             string key = $"{name}_{typeof(T).Name}";
-            
+
             // 캐시에서 먼저 검색
             if (compDict.TryGetValue(key, out Component comp) && comp != null)
             {
@@ -760,7 +762,7 @@ namespace KYS
         /// <summary>
         /// 자식 클래스에서 오버라이드하여 autoLocalizeKeys를 설정할 수 있습니다.
         /// </summary>
-        protected virtual string[] GetAutoLocalizeKeys()
+        public virtual string[] GetAutoLocalizeKeys()
         {
             return autoLocalizeKeys;
         }
@@ -768,7 +770,7 @@ namespace KYS
         private List<TextMeshProUGUI> autoLocalizedTexts = new List<TextMeshProUGUI>();
         private List<string> autoLocalizeKeyList = new List<string>();
 
-                protected virtual void SetupAutoLocalization()
+        protected virtual void SetupAutoLocalization()
         {
             if (!enableAutoLocalization) return;
 
@@ -783,10 +785,10 @@ namespace KYS
         private void SetupAutoLocalizedTextComponents()
         {
             ////Debug.Log($"[{GetType().Name}] AutoLocalizedText 컴포넌트 기반 자동 로컬라이제이션 설정");
-            
+
             // 모든 TextMeshProUGUI 컴포넌트 찾기
             var allTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
-            
+
             foreach (var text in allTexts)
             {
                 // AutoLocalizedText 컴포넌트가 없으면 추가
@@ -813,7 +815,7 @@ namespace KYS
                 // UI 이름과 매칭되는 키 찾기
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    if (text.name.Contains(keys[i]) || 
+                    if (text.name.Contains(keys[i]) ||
                         keys[i].Contains(text.name))
                     {
                         return keys[i];
@@ -950,7 +952,8 @@ namespace KYS
             PointerHandler handler = GetEvent(name);
             if (handler != null)
             {
-                handler.Click += (data) => {
+                handler.Click += (data) =>
+                {
                     Button button = handler.GetComponent<Button>();
                     if (button != null && !button.interactable)
                     {
@@ -1120,7 +1123,7 @@ namespace KYS
         /// <summary>
         /// 복합 터치 이벤트 설정 (클릭 + 롱프레스 + 더블탭)
         /// </summary>
-        public PointerHandler GetAdvancedTouchEvent(string name, 
+        public PointerHandler GetAdvancedTouchEvent(string name,
             System.Action<PointerEventData> onClick = null,
             System.Action<PointerEventData> onLongPress = null,
             System.Action<PointerEventData> onDoubleTap = null)
@@ -1165,7 +1168,7 @@ namespace KYS
         /// <summary>
         /// 터치 피드백이 포함된 이벤트 핸들러
         /// </summary>
-        public PointerHandler GetTouchFeedbackEvent(string name, 
+        public PointerHandler GetTouchFeedbackEvent(string name,
             System.Action<PointerEventData> onClick = null,
             bool enableHaptic = true)
         {
@@ -1179,10 +1182,10 @@ namespace KYS
                     {
                         // HapticFeedback.PlayLightImpact(); // 하드웨어 진동
                     }
-                    
+
                     // 시각적 피드백
                     StartCoroutine(TouchFeedbackCoroutine(handler.gameObject));
-                    
+
                     onClick?.Invoke(data);
                 };
             }
@@ -1198,12 +1201,12 @@ namespace KYS
 
             // 원래 스케일 저장
             Vector3 originalScale = target.transform.localScale;
-            
+
             // 터치 효과 (스케일 축소)
             target.transform.localScale = originalScale * 0.95f;
-            
+
             yield return new WaitForSeconds(0.1f);
-            
+
             // 원래 스케일로 복원
             target.transform.localScale = originalScale;
         }

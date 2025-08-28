@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // T에는 각 상태를 표현할 Enum 클래스를 넣어주면 됩니다.
-public class StateMachine<T>
+public class StateMachine<T> where T : Enum
 {
     public BaseState<T> CurState;
+    public T CurStateEnum;
     private Dictionary<T, BaseState<T>> _stateDict = new Dictionary<T, BaseState<T>>();
 
     public void ChangeState(T changedStateEnum)
@@ -23,6 +24,7 @@ public class StateMachine<T>
 
         // 처음에 없을 수도 있으니 null 체크
         CurState?.Exit();
+        CurStateEnum = changedStateEnum;
         CurState = changedState;
         CurState.Enter();
     }
