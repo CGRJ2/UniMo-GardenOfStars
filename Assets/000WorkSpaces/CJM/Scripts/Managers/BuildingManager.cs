@@ -8,8 +8,6 @@ using UnityEngine;
 
 public class BuildingManager : Singleton<BuildingManager>
 {
-    // 위치 정보 저장용
-    //public List<BuildingInstance> ActivatedBIList = new();
     public WorkStatoinLists workStatinLists = new ();
 
     // 건물id(string)에 해당하는 업그레이드 정보를 저장
@@ -17,11 +15,6 @@ public class BuildingManager : Singleton<BuildingManager>
 
     // 스테이지id(string) 별, 건물들의 배치 정보를 저장
     Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
-
-    // 임시. 스테이지 매니저에서 현재 스테이지 인덱스로 사용해야함
-    string temp_stageId = "테스트 스테이지 id";
-
-    public Action buildingUpgraded;
 
     private void Awake() => Init();
     void Init()
@@ -33,7 +26,7 @@ public class BuildingManager : Singleton<BuildingManager>
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            foreach(var kvp in biPlacementDataDic[temp_stageId])
+            foreach(var kvp in biPlacementDataDic[Manager.game.curStageId])
             {
                 Debug.Log($"건물ID:{kvp.Value.buildingId} & 좌표:{kvp.Key}");
             }
@@ -44,16 +37,16 @@ public class BuildingManager : Singleton<BuildingManager>
     public void AddBiTransformData(Transform biTransform, string buildingId)
     {
         // 현재 스테이지에 건물 배치 정보가 없다면 빈 리스트 만들어주기
-        if (!biPlacementDataDic.ContainsKey(temp_stageId))
+        if (!biPlacementDataDic.ContainsKey(Manager.game.curStageId))
         {
-            biPlacementDataDic[temp_stageId] = new();
+            biPlacementDataDic[Manager.game.curStageId] = new();
         }
 
         Vector3Int pos = Vector3Int.RoundToInt(biTransform.position);
 
         if (CanPlaceBuilding(pos))
         {
-            biPlacementDataDic[temp_stageId][pos] = new BiPlacementData(biTransform, buildingId);
+            biPlacementDataDic[Manager.game.curStageId][pos] = new BiPlacementData(biTransform, buildingId);
             Debug.Log("건물 배치 완료/biPlacementDataDic에 해당 건물 위치정보 저장");
         }
         else
@@ -64,18 +57,18 @@ public class BuildingManager : Singleton<BuildingManager>
     }
     public void RemoveBiTransformData(Transform biTransform)
     {
-        if (biPlacementDataDic.ContainsKey(temp_stageId))
+        if (biPlacementDataDic.ContainsKey(Manager.game.curStageId))
         {
             Vector3Int pos = Vector3Int.RoundToInt(biTransform.position);
 
-            if (biPlacementDataDic[temp_stageId].ContainsKey(pos))
-                biPlacementDataDic[temp_stageId].Remove(pos);
+            if (biPlacementDataDic[Manager.game.curStageId].ContainsKey(pos))
+                biPlacementDataDic[Manager.game.curStageId].Remove(pos);
         }
     }
     public bool CanPlaceBuilding(Vector3Int pos)
     {
         // 현재 스테이지에 해당 좌표에 이미 건물이 있으면 false
-        if (biPlacementDataDic[temp_stageId].ContainsKey(pos))
+        if (biPlacementDataDic[Manager.game.curStageId].ContainsKey(pos))
         {
             return false;
         }
