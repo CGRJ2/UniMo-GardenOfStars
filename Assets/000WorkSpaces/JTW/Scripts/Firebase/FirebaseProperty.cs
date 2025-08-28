@@ -21,7 +21,7 @@ public class FirebaseProperty<T> : FirebaseData
     }
     private UnityEvent<T> _onValueChanged = new();
 
-    public FirebaseProperty(string id, string parentPath = null) : base(id, parentPath)
+    public FirebaseProperty(string id, string parentPath) : base(id, parentPath)
     {
         Manager.firebase.SetDataEvent(Path, OnFirebaseChanged);
     }

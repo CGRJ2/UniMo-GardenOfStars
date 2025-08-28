@@ -12,7 +12,7 @@ public abstract class FirebaseData : IUsableId
         return Id;
     }
 
-    public FirebaseData(string id, string parentPath = null)
+    public FirebaseData(string id, string parentPath)
     {
         Id = id;
         ParentPath = parentPath;

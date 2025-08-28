@@ -11,7 +11,8 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
     private Func<string, string, T> _factory;
 
-    public FirebaseDataList(string id, Func<string, string, T> factory, string parentPath = null) : base(id, parentPath)
+
+    public FirebaseDataList(string id, string parentPath, Func<string, string, T> factory) : base(id, parentPath)
     {
         _factory = factory;
 
