@@ -4,9 +4,9 @@ using UnityEngine;
 
 public abstract class FirebaseData : IUsableId
 {
-    protected string Id;
+    public string Id;
     protected string ParentPath;
-
+    protected string Path => string.IsNullOrEmpty(ParentPath) ? Id : $"{ParentPath}/{Id}";
     public string GetId()
     {
         return Id;

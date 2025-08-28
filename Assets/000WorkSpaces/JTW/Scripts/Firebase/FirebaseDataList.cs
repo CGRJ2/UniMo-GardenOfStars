@@ -8,7 +8,6 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 {
     private List<T> _list;
 
-    private string Path => ParentPath != null ? $"{ParentPath}/{Id}" : Id;
 
     private Func<string, string, T> _factory;
 

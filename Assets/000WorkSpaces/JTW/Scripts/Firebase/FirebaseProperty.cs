@@ -10,8 +10,6 @@ public class FirebaseProperty<T> : FirebaseData
 {
     [SerializeField] private T _value;
 
-    private string Path => ParentPath != null ? $"{ParentPath}/{Id}" : Id;
-
     public T Value
     {
         get => _value;
