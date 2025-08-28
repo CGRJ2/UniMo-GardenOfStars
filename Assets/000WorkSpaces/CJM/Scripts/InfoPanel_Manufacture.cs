@@ -68,12 +68,12 @@ public class InfoPanel_Manufacture : BaseUI
 
     void UpgradeProdTime()
     {
-        // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
-
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+
+        // 업그레이드 스탯 적용
+        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);

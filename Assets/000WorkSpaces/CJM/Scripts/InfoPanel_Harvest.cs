@@ -53,13 +53,12 @@ public class InfoPanel_Harvest : BaseUI
 
     void UpgradeProdTime()
     {
-        Debug.Log("생산 속도 업그레이드 버튼 클릭");
-        // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
-
         // 돈 차감
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+
+        // 업그레이드 스탯 적용
+        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
