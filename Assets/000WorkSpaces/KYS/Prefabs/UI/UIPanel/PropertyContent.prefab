@@ -769,7 +769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -920,7 +920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -1509,6 +1509,7 @@ GameObject:
   - component: {fileID: 2046044047473514176}
   - component: {fileID: 9137157873038959507}
   - component: {fileID: 7594488780585775292}
+  - component: {fileID: 8736260846785020328}
   m_Layer: 5
   m_Name: PropertyContent
   m_TagString: Untagged
@@ -1625,6 +1626,18 @@ MonoBehaviour:
   buildingName: 
   buildingCost: 100
   buildingLevel: 1
+--- !u!225 &8736260846785020328
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7514967004175558482}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7523394438305778669
 GameObject:
   m_ObjectHideFlags: 0

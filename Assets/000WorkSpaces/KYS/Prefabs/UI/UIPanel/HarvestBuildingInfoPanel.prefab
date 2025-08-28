@@ -796,8 +796,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: MoneyNum
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
+  m_sharedMaterial: {fileID: -3859960208976514627, guid: 09b067a071911144bbc0792c4cdd9576, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1348,6 +1348,7 @@ GameObject:
   - component: {fileID: 3366016247280232928}
   - component: {fileID: 5886472211161680467}
   - component: {fileID: -5531051463314697699}
+  - component: {fileID: 7504119835767982079}
   m_Layer: 5
   m_Name: HarvestBuildingInfoPanel
   m_TagString: Untagged
@@ -1429,6 +1430,8 @@ MonoBehaviour:
   layerType: 1
   panelGroup: 4
   useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
   animationDuration: 0.3
   showEase: 27
   hideEase: 26
@@ -1456,6 +1459,18 @@ MonoBehaviour:
   tmp_ProdTimeUpCost: {fileID: 1700982320302135055}
   btn_ProdTimeUpgrade: {fileID: 5540651467473761534}
   btn_Close: {fileID: 4019128484504739058}
+--- !u!225 &7504119835767982079
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5290208632891818605}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5520684178148189352
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,7 +1851,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -2364,7 +2379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0

@@ -792,6 +792,8 @@ MonoBehaviour:
   layerType: 0
   panelGroup: 4
   useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
   animationDuration: 0.3
   showEase: 27
   hideEase: 26
@@ -810,8 +812,8 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  titleTextName: titleText
-  descriptionTextName: descriptionText
+  titleTextName: RunTitleText
+  descriptionTextName: RundescriptionText
   iconImageName: iconImage
   closeButtonName: closeButton
   actionButtonName: actionButton

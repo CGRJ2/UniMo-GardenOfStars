@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 582460955569694291}
   - component: {fileID: 3005171858480882901}
   - component: {fileID: 4322913186473430321}
+  - component: {fileID: 4163166496937365672}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -120,6 +121,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4163166496937365672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 321616267910993769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 612b9a563f8eea0498d14c5839bf9dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableTouchFeedback: 1
+  enableMultiTouch: 1
+  enableGestureDetection: 1
+  longPressDuration: 1
+  doubleTapTimeWindow: 0.3
+  tapThreshold: 0.1
 --- !u!1 &1186797697836318154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,6 +1050,7 @@ GameObject:
   - component: {fileID: 5471472106850461469}
   - component: {fileID: 2043325095934349026}
   - component: {fileID: -8450008576792476650}
+  - component: {fileID: 701676880352802668}
   m_Layer: 5
   m_Name: PropertyPanel
   m_TagString: Untagged
@@ -1112,6 +1132,8 @@ MonoBehaviour:
   layerType: 1
   panelGroup: 4
   useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
   animationDuration: 0.3
   showEase: 27
   hideEase: 26
@@ -1132,6 +1154,18 @@ MonoBehaviour:
   autoLocalizeKeys: []
   propertyTextName: PropertyText
   closeButtonName: CloseButton
+--- !u!225 &701676880352802668
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8324170846611552661}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8343844132176883501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,7 +1313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
