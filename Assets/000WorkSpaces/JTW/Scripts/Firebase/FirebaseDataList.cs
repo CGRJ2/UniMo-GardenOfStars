@@ -25,9 +25,11 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         _list.Add(child);
     }
 
-    public void Add(T value)
+    public void Add(IUsableId value)
     {
-        Manager.firebase.SaveUserData($"{Path}/{value.GetId()}", new Dictionary<string, object>());
+        string json = JsonUtility.ToJson(value);
+
+        Manager.firebase.SaveJsonData($"{Path}/{value.GetId()}", json);
     }
 
     public T Get(string id)
