@@ -19,6 +19,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private static FirebaseDatabase _database;
     public static FirebaseDatabase Database => _database;
 
+    public UserData UserData;
+
     private void Awake()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -29,6 +31,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _auth = FirebaseAuth.DefaultInstance;
                 _database = FirebaseDatabase.DefaultInstance;
                 Debug.Log("파이어베이스 연결 성공");
+
+                UserData = new UserData("UserData", "");
             }
             else
             {
