@@ -77,7 +77,7 @@ namespace KYS
         public override void Cleanup()
         {
             // ObservableProperty 구독 해제
-            Manager.player.Data.Money.Unsubscribe(OnMoneyChanged);
+            Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
 
             // 언어 변경 이벤트 구독 해제
             if (LocalizationManager.Instance != null)
