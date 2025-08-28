@@ -18,14 +18,14 @@ public class FirebaseProperty<T> : FirebaseData
         set
         {
             if (object.Equals(_value, value)) return;
-            Manager.firebase.SaveUserData(Path, value);
+            Manager.firebase.SaveData(Path, value);
         }
     }
     private UnityEvent<T> _onValueChanged = new();
 
     public FirebaseProperty(string id, string parentPath = null) : base(id, parentPath)
     {
-        Manager.firebase.SetUserDataEvent(Path, OnFirebaseChanged);
+        Manager.firebase.SetDataEvent(Path, OnFirebaseChanged);
     }
 
     private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)

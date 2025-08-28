@@ -16,7 +16,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     {
         _factory = factory;
 
-        Manager.firebase.SetUserDataListEvent(Path, OnFirebaseChanged);
+        Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
     }
 
     private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)

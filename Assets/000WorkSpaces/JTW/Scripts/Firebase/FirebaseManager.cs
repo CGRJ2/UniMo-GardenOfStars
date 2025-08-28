@@ -19,37 +19,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private static FirebaseDatabase _database;
     public static FirebaseDatabase Database => _database;
 
-    private DatabaseReference _userRef;
-
-    private DatabaseReference UserRef 
-    { 
-        get
-        {
-            if(_userRef == null)
-            {
-                _userRef = _database.RootReference.Child($"UserData/{_auth.CurrentUser.UserId}");
-            }
-
-            return _userRef;
-        }
-    }
-
-    private DatabaseReference _stageRef;
-
-    private DatabaseReference StageRef
-    {
-        get
-        {
-            if (_stageRef == null)
-            {
-                // TODO : 이후에 GameManager.CurStage로 변경.
-                _stageRef = _userRef.Child($"StageData/StageId");
-            }
-
-            return _stageRef;
-        }
-    }
-
     private void Awake()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
@@ -72,60 +41,24 @@ public class FirebaseManager : Singleton<FirebaseManager>
         });
     }
 
-    public void SetUserDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
+    public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
     {
-        // 추후에 로그인 로직이 생기면 변경 예정
-        if (_userRef == null)
-        {
-            _database.RootReference.Child("Userdata").Child(path).ValueChanged += func;
-            return;
-        }
-
-        UserRef.Child(path).ValueChanged += func;
+        _database.RootReference.Child(path).ValueChanged += func;
     }
 
-    public void SetUserDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
+    public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
     {
-        // 추후에 로그인 로직이 생기면 변경 예정
-        if (_userRef == null)
-        {
-            _database.RootReference.Child("Userdata").Child(path).ChildAdded += func;
-            return;
-        }
-
-        UserRef.Child(path).ChildAdded += func;
+        _database.RootReference.Child(path).ChildAdded += func;
     }
 
 
-    public void SaveUserData(string path, object value)
+    public void SaveData(string path, object value)
     {
-        // 추후에 로그인 로직이 생기면 변경 예정
-        if (_userRef == null)
-        {
-            _database.RootReference.Child("Userdata").Child(path).SetValueAsync(value);
-            return;
-        }
-
-        UserRef.Child(path).SetValueAsync(value);
-    }
-
-    public void SaveStageData(string path, object value)
-    {
-        // StageID도 통합 진행.
-        // path = $"{Manager.game.CurStageId}/{path}";
-
-        StageRef.Child(path).SetValueAsync(value);
+        _database.RootReference.Child(path).SetValueAsync(value);
     }
 
     public void SaveJsonData(string path, string json)
     {
-        UserRef.Child(path).SetRawJsonValueAsync(json);
-    }
-    public void SaveStageJsonData(string path, string json)
-    {
-        // StageID도 통합 진행.
-        // path = $"{Manager.game.CurStageId}/{path}";
-
-        StageRef.Child(path).SetRawJsonValueAsync(json);
+        _database.RootReference.Child(path).SetRawJsonValueAsync(json);
     }
 }
