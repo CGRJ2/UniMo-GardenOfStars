@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 526754675017632675}
   - component: {fileID: 1405371758711587021}
   - component: {fileID: 1019408056982116548}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ConstellationBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,7 +112,7 @@ GameObject:
   - component: {fileID: 7923343890954126615}
   - component: {fileID: 8886597461215792448}
   - component: {fileID: 1040283348607423830}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 2525383580313191519}
   - component: {fileID: 3037874047689530503}
   - component: {fileID: 7207778602852924812}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas_ActiveAreaPop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -368,7 +368,7 @@ GameObject:
   - component: {fileID: 7431009007475131309}
   - component: {fileID: 593516122650838985}
   - component: {fileID: 4408576904606175413}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -488,7 +488,7 @@ GameObject:
   - component: {fileID: 4865485776869987786}
   - component: {fileID: 6038564950737192463}
   - component: {fileID: 6293654418227355964}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -625,7 +625,7 @@ GameObject:
   - component: {fileID: 4307713113182379239}
   - component: {fileID: 6750212539036220692}
   - component: {fileID: 2277722054002090627}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -765,13 +765,49 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8695448737171651276}
     m_Modifications:
+    - target: {fileID: 740432098734129188, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2589512027353981875, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779446941725532297, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060376377377023761, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119050968661059932, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3878609766344779245, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4485943314475559493, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 8695448737171651276}
+    - target: {fileID: 4762610549549827428, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5522489947844770795, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 6371479456462524165, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: m_Name
       value: QuestProgressUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371479456462524165, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6371479456462524165, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: m_IsActive
@@ -856,6 +892,10 @@ PrefabInstance:
     - target: {fileID: 6782152535141514229, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423204094581146573, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
