@@ -765,6 +765,34 @@ namespace KYS
             return key;
         }
 
+        /// <summary>
+        /// 번역된 텍스트 가져오기 (폴백 텍스트 지원)
+        /// 번역이 없으면 폴백 텍스트를 반환합니다.
+        /// </summary>
+        protected string GetLocalizedText(string key, string fallbackText)
+        {
+            if (LocalizationManager.Instance != null)
+            {
+                string translatedText = LocalizationManager.Instance.GetText(key);
+                // 번역이 성공했으면 번역된 텍스트 반환, 실패했으면 폴백 텍스트 반환
+                return (translatedText != key) ? translatedText : fallbackText;
+            }
+            return fallbackText;
+        }
+
+        /// <summary>
+        /// 번역된 텍스트 가져오기 (폴백 텍스트 + 특정 언어 지원)
+        /// </summary>
+        protected string GetLocalizedText(string key, string fallbackText, SystemLanguage language)
+        {
+            if (LocalizationManager.Instance != null)
+            {
+                string translatedText = LocalizationManager.Instance.GetText(key, language);
+                return (translatedText != key) ? translatedText : fallbackText;
+            }
+            return fallbackText;
+        }
+
         #endregion
 
         #region Localization Auto-System

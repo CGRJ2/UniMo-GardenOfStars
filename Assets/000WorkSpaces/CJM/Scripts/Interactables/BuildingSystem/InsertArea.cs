@@ -25,17 +25,17 @@ public class InsertArea : InteractableBase, IWorkStation
         {
             bool isStackable = false;
 
-
             // 건물에 스택 가능한 최대 수량만큼 쌓여있다면 스택 취소
             if (ownerInstance.Capacity > ownerInstance.ingrediantStack.Count)
                 isStackable = true;
             else isStackable = false;
 
             // 스택 자리가 빌 때까지 대기
-            yield return new WaitUntil(() => isStackable);
-
-            // 스택이 비었지만 플레이어가 나가면 쌓지 않고 break;
-            if (characterRD == null) yield break;
+            if (!isStackable)
+            {
+                yield return null;
+                continue;
+            }
 
             // 플레이어 손에 재료가 있는지 체크
             IngrediantInstance instanceProd;

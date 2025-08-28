@@ -158,7 +158,7 @@ namespace KYS
         {
             if (isLoadingScene) return;
 
-            StartCoroutine(LoadAddressableSceneCoroutine(sceneReference, showLoading));
+            StartCoroutine(LoadSceneWithLoadingScreen(sceneReference, showLoading));
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace KYS
         {
             if (isLoadingScene) return;
 
-            StartCoroutine(LoadAddressableSceneByNameCoroutine(sceneName, showLoading));
+            StartCoroutine(LoadSceneWithLoadingScreen(sceneName, showLoading));
         }
 
         /// <summary>
@@ -182,9 +182,9 @@ namespace KYS
         }
 
         /// <summary>
-        /// Addressable 씬 로딩 코루틴 (AssetReference)
+        /// 씬 로드와 LoadingScreen 동작을 분리한 메서드 (AssetReference)
         /// </summary>
-        private IEnumerator LoadAddressableSceneCoroutine(AssetReference sceneReference, bool showLoading)
+        private IEnumerator LoadSceneWithLoadingScreen(AssetReference sceneReference, bool showLoading)
         {
             isLoadingScene = true;
             
@@ -200,26 +200,8 @@ namespace KYS
 
             if (showLoading)
             {
-                // 씬 전환 중 Addressable 시스템 안정성을 위한 추가 대기
-                yield return new WaitForSeconds(0.2f);
-                
-                // 로딩 화면 표시 (UIManager의 전용 메서드 사용)
-                string initialMessage = useCustomMessages ? sceneLoadingMessages[0] : null;
-                UIManager.Instance.ShowLoadingScreen(initialMessage);
-                
-                // 로딩 화면 초기화 대기 (UI 컴포넌트들이 준비될 때까지)
-                yield return new WaitForSeconds(loadingScreenInitDelay);
-
-                currentLoadingScreen = UIManager.Instance.GetCurrentLoadingScreen();
-                if (currentLoadingScreen != null)
-                {
-                    currentLoadingScreen.OnLoadingComplete += OnLoadingComplete;
-                    //Debug.Log("[AddressableSceneLoadingManager] 로딩 화면 초기화 완료");
-                }
-                else
-                {
-                    Debug.LogWarning("[AddressableSceneLoadingManager] LoadingScreen을 찾을 수 없습니다.");
-                }
+                // LoadingScreen 동작 시작
+                yield return StartCoroutine(StartLoadingScreenOperation());
             }
 
             float startTime = Time.time;
@@ -243,33 +225,8 @@ namespace KYS
                 {
                     //Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
                     
-                    // 진행률 시뮬레이션
-                    float displayProgress;
-                    if (simulateProgress)
-                    {
-                        displayProgress = Mathf.Lerp(0f, 0.9f, progress);
-                        //Debug.Log($"[AddressableSceneLoadingManager] 시뮬레이션 진행률: {displayProgress * 100}%");
-                    }
-                    else
-                    {
-                        displayProgress = Mathf.Lerp(0f, 0.95f, progress);
-                        //Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
-                    }
-                    
-                    currentLoadingScreen.SetProgress(displayProgress);
-
-                    // 메시지 업데이트 (커스텀 메시지 사용 시에만)
-                    if (useCustomMessages)
-                    {
-                        int messageIndex = Mathf.FloorToInt(progress * (sceneLoadingMessages.Length - 1));
-                        if (messageIndex < sceneLoadingMessages.Length)
-                        {
-                            string message = sceneLoadingMessages[messageIndex];
-                            CurrentMessage = message;
-                            currentLoadingScreen.SetCenterMessage(message);
-                            OnMessageUpdated?.Invoke(message); // 이벤트 발생
-                        }
-                    }
+                    // LoadingScreen 진행률 업데이트
+                    yield return StartCoroutine(UpdateLoadingScreenProgress(progress));
                 }
                 else
                 {
@@ -298,10 +255,7 @@ namespace KYS
                 // 로딩 완료 처리
                 if (showLoading && currentLoadingScreen != null)
                 {
-                    currentLoadingScreen.SetProgress(1f);
-                    yield return new WaitForSeconds(0.5f);
-                    
-                    //Debug.Log("[AddressableSceneLoadingManager] 로딩 완료 처리 완료 - 씬 활성화 대기");
+                    yield return StartCoroutine(CompleteLoadingScreenOperation());
                 }
 
                 // 씬 활성화
@@ -323,24 +277,16 @@ namespace KYS
         }
 
         /// <summary>
-        /// Addressable 씬 로딩 코루틴 (씬 이름)
+        /// 씬 로드와 LoadingScreen 동작을 분리한 메서드 (씬 이름)
         /// </summary>
-        private IEnumerator LoadAddressableSceneByNameCoroutine(string sceneName, bool showLoading)
+        private IEnumerator LoadSceneWithLoadingScreen(string sceneName, bool showLoading)
         {
             isLoadingScene = true;
 
             if (showLoading)
             {
-                // 로딩 화면 표시 (UIManager의 전용 메서드 사용)
-                string initialMessage = useCustomMessages ? sceneLoadingMessages[0] : null;
-                UIManager.Instance.ShowLoadingScreen(initialMessage);
-                yield return new WaitForSeconds(0.1f);
-
-                currentLoadingScreen = UIManager.Instance.GetCurrentLoadingScreen();
-                if (currentLoadingScreen != null)
-                {
-                    currentLoadingScreen.OnLoadingComplete += OnLoadingComplete;
-                }
+                // LoadingScreen 동작 시작
+                yield return StartCoroutine(StartLoadingScreenOperation());
             }
 
             float startTime = Time.time;
@@ -352,10 +298,8 @@ namespace KYS
             {
                 float progress = currentSceneHandle.PercentComplete;
 
-                if (showLoading && currentLoadingScreen != null)
+                if (showLoading)
                 {
-                    //Debug.Log($"[AddressableSceneLoadingManager] 진행률 업데이트: {progress * 100}%");
-                    
                     // 실제 로딩 시에도 시뮬레이션 적용 (사용자 경험 개선)
                     float displayProgress;
                     if (simulateProgress)
@@ -370,17 +314,18 @@ namespace KYS
                         //Debug.Log($"[AddressableSceneLoadingManager] 실제 진행률 (표시): {displayProgress * 100}%");
                     }
                     
-                    currentLoadingScreen.SetProgress(displayProgress);
-
                     // 메시지 업데이트 (커스텀 메시지 사용 시에만)
+                    string progressMessage = null;
                     if (useCustomMessages)
                     {
                         int messageIndex = Mathf.FloorToInt(progress * (sceneLoadingMessages.Length - 1));
                         if (messageIndex < sceneLoadingMessages.Length)
                         {
-                            currentLoadingScreen.SetCenterMessage(sceneLoadingMessages[messageIndex]);
+                            progressMessage = sceneLoadingMessages[messageIndex];
                         }
                     }
+                    
+                    yield return StartCoroutine(UpdateLoadingScreenProgress(displayProgress, progressMessage));
                 }
                 else
                 {
@@ -398,10 +343,9 @@ namespace KYS
                     yield return new WaitForSeconds(minLoadingTime - elapsedTime);
                 }
 
-                if (showLoading && currentLoadingScreen != null)
+                if (showLoading)
                 {
-                    currentLoadingScreen.SetProgress(1f);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return StartCoroutine(CompleteLoadingScreenOperation());
                 }
 
                 var sceneInstance = currentSceneHandle.Result;
@@ -542,6 +486,148 @@ namespace KYS
             {
                 Addressables.UnloadSceneAsync(currentSceneHandle);
                 currentSceneHandle = default;
+            }
+        }
+
+        /// <summary>
+        /// 외부에서 씬 로드 시작 (AssetReference)
+        /// </summary>
+        public void StartSceneLoad(AssetReference sceneReference, bool showLoading = true)
+        {
+            if (isLoadingScene) return;
+            StartCoroutine(LoadSceneWithLoadingScreen(sceneReference, showLoading));
+        }
+
+        /// <summary>
+        /// 외부에서 씬 로드 시작 (씬 이름)
+        /// </summary>
+        public void StartSceneLoad(string sceneName, bool showLoading = true)
+        {
+            if (isLoadingScene) return;
+            StartCoroutine(LoadSceneWithLoadingScreen(sceneName, showLoading));
+        }
+
+        /// <summary>
+        /// 외부에서 씬 로드 시작 (인덱스)
+        /// </summary>
+        public void StartSceneLoad(int sceneIndex, bool showLoading = true)
+        {
+            if (isLoadingScene || sceneIndex < 0 || sceneIndex >= sceneReferences.Length) return;
+            StartSceneLoad(sceneReferences[sceneIndex], showLoading);
+        }
+
+        /// <summary>
+        /// LoadingScreen만 표시 (씬 로드 없이)
+        /// </summary>
+        public void ShowLoadingScreenOnly(string message = null)
+        {
+            StartCoroutine(ShowLoadingScreenOnlyCoroutine(message));
+        }
+
+        /// <summary>
+        /// LoadingScreen만 숨기기
+        /// </summary>
+        public void HideLoadingScreenOnly()
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.HideLoadingScreen();
+            }
+            else
+            {
+                LoadingScreen.HideLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 진행률 업데이트 (외부에서 호출 가능)
+        /// </summary>
+        public void UpdateLoadingProgress(float progress, string message = null)
+        {
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.SetProgress(progress);
+                if (!string.IsNullOrEmpty(message))
+                {
+                    currentLoadingScreen.SetCenterMessage(message);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private Helper Methods
+
+        /// <summary>
+        /// LoadingScreen 동작 시작
+        /// </summary>
+        private IEnumerator StartLoadingScreenOperation()
+        {
+            // 로딩 화면 표시 (UIManager의 전용 메서드 사용)
+            string initialMessage = useCustomMessages ? sceneLoadingMessages[0] : null;
+            UIManager.Instance.ShowLoadingScreen(initialMessage);
+            yield return new WaitForSeconds(0.1f);
+
+            currentLoadingScreen = UIManager.Instance.GetCurrentLoadingScreen();
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.OnLoadingComplete += OnLoadingComplete;
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 진행률 업데이트
+        /// </summary>
+        private IEnumerator UpdateLoadingScreenProgress(float progress, string message = null)
+        {
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.SetProgress(progress);
+                if (!string.IsNullOrEmpty(message))
+                {
+                    currentLoadingScreen.SetCenterMessage(message);
+                }
+            }
+            yield return null;
+        }
+
+        /// <summary>
+        /// LoadingScreen 완료 처리
+        /// </summary>
+        private IEnumerator CompleteLoadingScreenOperation()
+        {
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.SetProgress(1f);
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 에러 처리
+        /// </summary>
+        private IEnumerator HandleLoadingScreenError()
+        {
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.SetCenterMessage("로딩 실패!");
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen만 표시하는 코루틴
+        /// </summary>
+        private IEnumerator ShowLoadingScreenOnlyCoroutine(string message)
+        {
+            // 로딩 화면 표시
+            UIManager.Instance.ShowLoadingScreen(message);
+            yield return new WaitForSeconds(loadingScreenInitDelay);
+
+            currentLoadingScreen = UIManager.Instance.GetCurrentLoadingScreen();
+            if (currentLoadingScreen != null)
+            {
+                currentLoadingScreen.OnLoadingComplete += OnLoadingComplete;
             }
         }
 
