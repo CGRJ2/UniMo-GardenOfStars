@@ -57,6 +57,8 @@ public class BuildingManager : Singleton<BuildingManager>
     }
     public void RemoveBiTransformData(Transform biTransform)
     {
+        if (Manager.game == null) return;
+
         if (biPlacementDataDic.ContainsKey(Manager.game.curStageId))
         {
             Vector3Int pos = Vector3Int.RoundToInt(biTransform.position);
