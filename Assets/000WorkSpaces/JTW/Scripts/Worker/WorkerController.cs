@@ -11,7 +11,7 @@ public enum WorkerStates
 
 public class WorkerController : MonoBehaviour
 {
-    [SerializeField] private TextMeshPro _text;
+    [SerializeField] private TextMeshProUGUI _text;
 
     private StateMachine<WorkerStates> _stateMachine = new StateMachine<WorkerStates>();
 
@@ -31,9 +31,20 @@ public class WorkerController : MonoBehaviour
     {
         _stateMachine.Update();
 
-        if(_text != null)
+        if (_text != null)
         {
-            _text.text = _stateMachine.CurState.ToString();
+            string text = _stateMachine.CurStateEnum.ToString();
+
+            if (text == "Stun")
+            {
+                _text.color = Color.red;
+            }
+            else
+            {
+                _text.color = Color.black;
+            }
+
+            _text.text = text;
         }
     }
 
