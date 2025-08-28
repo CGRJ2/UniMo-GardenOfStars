@@ -11,10 +11,10 @@ public static class Manager
     public static BuildingManager buildings => BuildingManager.Instance;
     public static QuestManager quest => QuestManager.Instance;
     public static NpcManager npc => NpcManager.Instance;
-    //public static StageManager stage => StageManager.Instance;
-    public static SceneChanger scene => SceneChanger.Instance;
     public static UIManager ui => UIManager.Instance;
     public static LocalizationManager localization => LocalizationManager.Instance;
+    public static CameraManager camera => CameraManager.Instance;
+
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
@@ -24,11 +24,10 @@ public static class Manager
         PoolManager.CreateInstance();
         PlayerManager.CreateInstance();
         BuildingManager.CreateInstance();
-        //StageManager.CreateInstance();
-        SceneChanger.CreateInstance();
         QuestManager.CreateInstance();
         NpcManager.CreateInstance();
         UIManager.CreateInstance();
         LocalizationManager.CreateInstance();
+        CameraManager.CreateInstance();
     }
 }

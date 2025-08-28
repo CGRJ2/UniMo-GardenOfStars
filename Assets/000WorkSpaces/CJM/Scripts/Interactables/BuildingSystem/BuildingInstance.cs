@@ -1,12 +1,10 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class BuildingInstance : InteractableBase
 {
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
     [SerializeField] protected BuildingActivePopUI activatePopUI;
-    
+
     protected void BIBaseInit()
     {
         if (_OriginData != null)
@@ -24,7 +22,7 @@ public class BuildingInstance : InteractableBase
         base.OnDisableAdditionalActions();
 
         if (_OriginData != null)
-            Manager.buildings.RemoveBiTransformData(transform);
+            Manager.buildings?.RemoveBiTransformData(transform);
 
         if (activatePopUI != null)
             activatePopUI.gameObject.SetActive(false);
@@ -39,7 +37,15 @@ public class BuildingInstance : InteractableBase
         // 생산형 건물일 때
         if (_OriginData is HarvestBD harvest)
         {
-            if (curMoney > harvest.Stat_ProdTime.cost[curLevel_ProdTime])
+            bool upgradable = false;
+
+            if (harvest.Stat_ProdTime.MaxLevel > curLevel_ProdTime)
+            {
+                if (curMoney > harvest.Stat_ProdTime.cost[curLevel_ProdTime])
+                    upgradable = true;
+            }
+
+            if (upgradable)
             {
                 // 상호작용 버튼을 업그레이드 모양으로 바꾸기
                 activatePopUI.ActiveUpgradeBtnView();
@@ -52,9 +58,20 @@ public class BuildingInstance : InteractableBase
         }
         else if (_OriginData is ManufactureBD mnfct)
         {
+            bool upgradable = false;
             // 두 스탯 중 업그레이드 비용이 충족될 때
-            if (curMoney > mnfct.Stat_Capacity.cost[curLevel_StackCount]
-                || curMoney > mnfct.Stat_ProdTime.cost[curLevel_ProdTime])
+            if (mnfct.Stat_Capacity.MaxLevel > curLevel_StackCount)
+            {
+                if (curMoney > mnfct.Stat_Capacity.cost[curLevel_StackCount])
+                    upgradable = true;
+            }
+            if (mnfct.Stat_ProdTime.MaxLevel > curLevel_ProdTime)
+            {
+                if (curMoney > mnfct.Stat_ProdTime.cost[curLevel_ProdTime])
+                    upgradable = true;
+            }
+
+            if (upgradable)
             {
                 // 상호작용 버튼을 업그레이드 모양으로 바꾸기
                 activatePopUI.ActiveUpgradeBtnView();
@@ -71,7 +88,7 @@ public class BuildingInstance : InteractableBase
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
-        
+
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {

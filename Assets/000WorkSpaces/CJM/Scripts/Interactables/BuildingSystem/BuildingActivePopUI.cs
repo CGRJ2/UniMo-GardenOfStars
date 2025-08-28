@@ -93,8 +93,6 @@ public class BuildingActivePopUI : MonoBehaviour
         });
     }
 
-    
-
     public void ActiveUpgradeBtnView()
     {
         tmp_BtnState.text = "UP"; // 임시

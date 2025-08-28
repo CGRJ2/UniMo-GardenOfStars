@@ -19,6 +19,10 @@ namespace KYS.Editor
         private bool showOnlyUIPrefabs = true;
         private List<string> extractedKeys = new List<string>();
         private Dictionary<string, List<string>> prefabKeysMap = new Dictionary<string, List<string>>();
+        
+        // 폰트 변경 관련 변수들
+        private TMP_FontAsset targetFontAsset = null;
+        private bool showFontChangeSection = false;
 
         [MenuItem("KYS/프리팹 키 추출기")]
         public static void ShowWindow()
@@ -99,6 +103,71 @@ namespace KYS.Editor
             }
             
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.Space();
+            
+            // 폰트 변경 섹션
+            EditorGUILayout.BeginVertical("box");
+            showFontChangeSection = EditorGUILayout.Foldout(showFontChangeSection, "🔤 TMP 폰트 일괄 변경", true);
+            
+            if (showFontChangeSection)
+            {
+                EditorGUILayout.Space();
+                
+                // 대상 폰트 선택
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("대상 폰트:", GUILayout.Width(80));
+                targetFontAsset = (TMP_FontAsset)EditorGUILayout.ObjectField(targetFontAsset, typeof(TMP_FontAsset), false);
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.Space();
+                
+                // 폰트 변경 버튼들
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("선택된 프리팹 폰트 변경"))
+                {
+                    ChangeFontInSelectedPrefab();
+                }
+                
+                if (GUILayout.Button("모든 추출된 프리팹 폰트 변경"))
+                {
+                    ChangeFontInAllExtractedPrefabs();
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.BeginHorizontal();
+                
+                if (GUILayout.Button("특정 키의 폰트만 변경"))
+                {
+                    ChangeFontForSpecificKeys();
+                }
+                
+                if (GUILayout.Button("폰트 변경 미리보기"))
+                {
+                    PreviewFontChanges();
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.Space();
+                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             // 폰트 변경 정보 표시
+                 if (targetFontAsset != null)
+                 {
+                     EditorGUILayout.HelpBox($"🎯 선택된 폰트: {targetFontAsset.name}\n" +
+                                           $"📁 폰트 타입: {targetFontAsset.GetType().Name}\n" +
+                                           $"🔑 총 추출된 키: {extractedKeys.Count}개\n" +
+                                           $"📦 총 프리팹: {prefabKeysMap.Count}개", MessageType.Info);
+                 }
+                 else
+                 {
+                     EditorGUILayout.HelpBox("⚠️ 폰트를 선택해주세요.", MessageType.Warning);
+                 }
+            }
+            
+            EditorGUILayout.EndVertical();
             
             EditorGUILayout.Space();
             
@@ -1246,6 +1315,549 @@ namespace KYS.Editor
                  }
              }
          }
+         
+         #region 폰트 변경 기능들
+         
+         /// <summary>
+         /// 선택된 프리팹의 폰트를 변경하는 메서드
+         /// </summary>
+         private void ChangeFontInSelectedPrefab()
+         {
+             if (targetFontAsset == null)
+             {
+                 EditorUtility.DisplayDialog("알림", "대상 폰트를 선택해주세요.", "확인");
+                 return;
+             }
+             
+             if (Selection.activeObject == null)
+             {
+                 EditorUtility.DisplayDialog("알림", "프리팹을 선택해주세요.", "확인");
+                 return;
+             }
+             
+             string prefabPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+             if (!prefabPath.EndsWith(".prefab"))
+             {
+                 EditorUtility.DisplayDialog("알림", "선택된 오브젝트가 프리팹이 아닙니다.", "확인");
+                 return;
+             }
+             
+             int changedCount = ChangeFontInPrefab(prefabPath);
+             
+             AssetDatabase.Refresh();
+             
+             string resultMessage = $"🔤 선택된 프리팹 폰트 변경 완료!\n\n" +
+                                   $"📊 처리 결과:\n" +
+                                   $"• 프리팹: {Path.GetFileNameWithoutExtension(prefabPath)}\n" +
+                                   $"• 변경된 TextMeshProUGUI: {changedCount}개\n" +
+                                   $"• 대상 폰트: {targetFontAsset.name}";
+             
+             EditorUtility.DisplayDialog("폰트 변경 완료", resultMessage, "확인");
+         }
+         
+         /// <summary>
+         /// 모든 추출된 프리팹의 폰트를 변경하는 메서드
+         /// </summary>
+         private void ChangeFontInAllExtractedPrefabs()
+         {
+             if (targetFontAsset == null)
+             {
+                 EditorUtility.DisplayDialog("알림", "대상 폰트를 선택해주세요.", "확인");
+                 return;
+             }
+             
+             if (prefabKeysMap.Count == 0)
+             {
+                 EditorUtility.DisplayDialog("알림", "먼저 프리팹에서 키를 추출해주세요.", "확인");
+                 return;
+             }
+             
+             // 사용자에게 확인
+             bool confirm = EditorUtility.DisplayDialog("확인", 
+                 $"모든 추출된 프리팹 ({prefabKeysMap.Count}개)의 TextMeshProUGUI 폰트를 '{targetFontAsset.name}'로 변경하시겠습니까?\n\n" +
+                 "⚠️ 이 작업은 되돌릴 수 없습니다. 필요시 프리팹을 백업하세요.", 
+                 "확인", "취소");
+             
+             if (!confirm) return;
+             
+             // 백업 생성 옵션 제공
+             bool createBackup = EditorUtility.DisplayDialog("백업 생성", 
+                 "프리팹 변경 전에 백업을 생성하시겠습니까?", 
+                 "백업 생성", "백업 없이 진행");
+             
+             int totalProcessed = 0;
+             int totalChanged = 0;
+             var changedPrefabs = new List<string>();
+             
+             int currentIndex = 0;
+             foreach (var kvp in prefabKeysMap)
+             {
+                 currentIndex++;
+                 string prefabName = kvp.Key;
+                 string[] guids = AssetDatabase.FindAssets($"{prefabName} t:Prefab");
+                 
+                 if (guids.Length > 0)
+                 {
+                     string prefabPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                     
+                     // 진행률 표시
+                     float progress = (float)currentIndex / prefabKeysMap.Count;
+                     EditorUtility.DisplayProgressBar("폰트 변경 진행 중", 
+                         $"프리팹 처리 중: {prefabName} ({currentIndex}/{prefabKeysMap.Count})", progress);
+                     
+                     // 백업 생성
+                     if (createBackup)
+                     {
+                         CreatePrefabBackup(prefabPath);
+                     }
+                     
+                     int changed = ChangeFontInPrefab(prefabPath);
+                     if (changed > 0)
+                     {
+                         changedPrefabs.Add(prefabName);
+                         totalChanged += changed;
+                     }
+                 }
+                 totalProcessed++;
+             }
+             
+             // 진행률 표시 제거
+             EditorUtility.ClearProgressBar();
+             
+             AssetDatabase.Refresh();
+             
+             // 결과 표시
+             string resultMessage = $"🔤 폰트 변경 완료!\n\n" +
+                                   $"📊 처리 통계:\n" +
+                                   $"• 처리된 프리팹: {totalProcessed}개\n" +
+                                   $"• 변경된 프리팹: {changedPrefabs.Count}개\n" +
+                                   $"• 변경된 TextMeshProUGUI: {totalChanged}개\n" +
+                                   $"• 대상 폰트: {targetFontAsset.name}\n\n";
+             
+             if (changedPrefabs.Count > 0)
+             {
+                 resultMessage += "📝 변경된 프리팹 목록:\n";
+                 foreach (var prefabName in changedPrefabs.Take(10))
+                 {
+                     resultMessage += $"• {prefabName}\n";
+                 }
+                 
+                 if (changedPrefabs.Count > 10)
+                 {
+                     resultMessage += $"... 외 {changedPrefabs.Count - 10}개\n";
+                 }
+                 
+                 resultMessage += "\n💾 백업이 생성되었습니다: Assets/000WorkSpaces/KYS/Prefabs/UI/Backup/";
+             }
+             else
+             {
+                 resultMessage += "ℹ️ 변경할 폰트가 있는 프리팹이 없습니다.";
+             }
+             
+             EditorUtility.DisplayDialog("폰트 변경 완료", resultMessage, "확인");
+         }
+         
+         /// <summary>
+         /// 특정 키의 폰트만 변경하는 메서드
+         /// </summary>
+         private void ChangeFontForSpecificKeys()
+         {
+             if (targetFontAsset == null)
+             {
+                 EditorUtility.DisplayDialog("알림", "대상 폰트를 선택해주세요.", "확인");
+                 return;
+             }
+             
+             if (extractedKeys.Count == 0)
+             {
+                 EditorUtility.DisplayDialog("알림", "먼저 프리팹에서 키를 추출해주세요.", "확인");
+                 return;
+             }
+             
+             // 키 선택 창 표시
+             var selectedKeys = ShowKeySelectionWindow();
+             if (selectedKeys == null || selectedKeys.Count == 0) return;
+             
+             int totalChanged = 0;
+             
+             foreach (var kvp in prefabKeysMap)
+             {
+                 string prefabName = kvp.Key;
+                 string[] guids = AssetDatabase.FindAssets($"{prefabName} t:Prefab");
+                 
+                 if (guids.Length > 0)
+                 {
+                     string prefabPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                     int changed = ChangeFontInPrefabForSpecificKeys(prefabPath, selectedKeys);
+                     totalChanged += changed;
+                 }
+             }
+             
+             AssetDatabase.Refresh();
+             
+             string resultMessage = $"🔤 선택된 키의 폰트 변경 완료!\n\n" +
+                                   $"📊 처리 결과:\n" +
+                                   $"• 선택된 키: {selectedKeys.Count}개\n" +
+                                   $"• 변경된 TextMeshProUGUI: {totalChanged}개\n" +
+                                   $"• 대상 폰트: {targetFontAsset.name}\n\n";
+             
+             if (selectedKeys.Count > 0)
+             {
+                 resultMessage += "🔑 선택된 키 목록:\n";
+                 foreach (var key in selectedKeys.Take(10))
+                 {
+                     resultMessage += $"• {key}\n";
+                 }
+                 
+                 if (selectedKeys.Count > 10)
+                 {
+                     resultMessage += $"... 외 {selectedKeys.Count - 10}개\n";
+                 }
+             }
+             
+             EditorUtility.DisplayDialog("폰트 변경 완료", resultMessage, "확인");
+         }
+         
+         /// <summary>
+         /// 폰트 변경 미리보기 메서드
+         /// </summary>
+         private void PreviewFontChanges()
+         {
+             if (targetFontAsset == null)
+             {
+                 EditorUtility.DisplayDialog("알림", "대상 폰트를 선택해주세요.", "확인");
+                 return;
+             }
+             
+             if (prefabKeysMap.Count == 0)
+             {
+                 EditorUtility.DisplayDialog("알림", "먼저 프리팹에서 키를 추출해주세요.", "확인");
+                 return;
+             }
+             
+             var previewData = new List<string>();
+             
+             foreach (var kvp in prefabKeysMap)
+             {
+                 string prefabName = kvp.Key;
+                 string[] guids = AssetDatabase.FindAssets($"{prefabName} t:Prefab");
+                 
+                 if (guids.Length > 0)
+                 {
+                     string prefabPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+                     var prefabPreview = GetFontChangePreview(prefabPath);
+                     previewData.AddRange(prefabPreview);
+                 }
+             }
+             
+             ShowFontChangePreviewWindow(previewData);
+         }
+         
+         /// <summary>
+         /// 특정 프리팹에서 폰트를 변경하는 메서드
+         /// </summary>
+         private int ChangeFontInPrefab(string prefabPath)
+         {
+             // 프리팹 로드
+             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+             if (prefab == null)
+             {
+                 Debug.LogError($"프리팹을 로드할 수 없습니다: {prefabPath}");
+                 return 0;
+             }
+             
+             // 프리팹 인스턴스 생성
+             GameObject prefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+             if (prefabInstance == null)
+             {
+                 Debug.LogError($"프리팹 인스턴스를 생성할 수 없습니다: {prefabPath}");
+                 return 0;
+             }
+             
+             int changedCount = 0;
+             int totalTextComponents = 0;
+             bool hasChanges = false;
+             var changedComponents = new List<string>();
+             
+             try
+             {
+                 // 모든 TextMeshProUGUI 컴포넌트 찾기
+                 var textComponents = prefabInstance.GetComponentsInChildren<TextMeshProUGUI>(true);
+                 totalTextComponents = textComponents.Length;
+                 
+                 Debug.Log($"프리팹 '{prefab.name}'에서 {totalTextComponents}개의 TextMeshProUGUI 컴포넌트 발견");
+                 
+                 foreach (var textComponent in textComponents)
+                 {
+                     string currentFont = textComponent.font != null ? textComponent.font.name : "None";
+                     string targetFont = targetFontAsset != null ? targetFontAsset.name : "None";
+                     
+                     // 폰트가 다른 경우에만 변경
+                     if (textComponent.font != targetFontAsset)
+                     {
+                         textComponent.font = targetFontAsset;
+                         changedCount++;
+                         hasChanges = true;
+                         changedComponents.Add($"{textComponent.gameObject.name} ({currentFont} → {targetFont})");
+                         
+                         Debug.Log($"폰트 변경됨: {textComponent.gameObject.name} ({currentFont} → {targetFont})");
+                     }
+                 }
+                 
+                 // 변경사항이 있으면 프리팹에 적용
+                 if (hasChanges)
+                 {
+                     PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
+                     Debug.Log($"프리팹 업데이트 완료: {prefabPath} (변경된 컴포넌트: {changedCount}/{totalTextComponents})");
+                     
+                     // 변경된 컴포넌트 목록 출력
+                     if (changedComponents.Count > 0)
+                     {
+                         Debug.Log($"변경된 컴포넌트 목록 ({prefab.name}):");
+                         foreach (var component in changedComponents)
+                         {
+                             Debug.Log($"  - {component}");
+                         }
+                     }
+                 }
+                 else
+                 {
+                     Debug.Log($"프리팹 '{prefab.name}'에서 변경할 폰트가 없습니다.");
+                 }
+             }
+             finally
+             {
+                 // 인스턴스 정리
+                 if (prefabInstance != null)
+                 {
+                     DestroyImmediate(prefabInstance);
+                 }
+             }
+             
+             return changedCount;
+         }
+         
+         /// <summary>
+         /// 특정 프리팹에서 특정 키에 해당하는 TextMeshProUGUI의 폰트만 변경
+         /// </summary>
+         private int ChangeFontInPrefabForSpecificKeys(string prefabPath, List<string> targetKeys)
+         {
+             // 프리팹 로드
+             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+             if (prefab == null) return 0;
+             
+             // 프리팹 인스턴스 생성
+             GameObject prefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+             if (prefabInstance == null) return 0;
+             
+             int changedCount = 0;
+             bool hasChanges = false;
+             
+             try
+             {
+                 // 모든 AutoLocalizedText 컴포넌트 찾기
+                 var autoLocalizedComponents = prefabInstance.GetComponentsInChildren<AutoLocalizedText>(true);
+                 
+                 foreach (var autoLocalized in autoLocalizedComponents)
+                 {
+                     string currentKey = autoLocalized.GetLocalizationKey();
+                     
+                     if (!string.IsNullOrEmpty(currentKey) && targetKeys.Contains(currentKey))
+                     {
+                         var textComponent = autoLocalized.GetComponent<TextMeshProUGUI>();
+                         if (textComponent != null && textComponent.font != targetFontAsset)
+                         {
+                             textComponent.font = targetFontAsset;
+                             changedCount++;
+                             hasChanges = true;
+                             Debug.Log($"특정 키 폰트 변경됨: {autoLocalized.gameObject.name} (키: {currentKey}) -> {targetFontAsset.name}");
+                         }
+                     }
+                 }
+                 
+                 // 변경사항이 있으면 프리팹에 적용
+                 if (hasChanges)
+                 {
+                     PrefabUtility.SaveAsPrefabAsset(prefabInstance, prefabPath);
+                 }
+             }
+             finally
+             {
+                 // 인스턴스 정리
+                 if (prefabInstance != null)
+                 {
+                     DestroyImmediate(prefabInstance);
+                 }
+             }
+             
+             return changedCount;
+         }
+         
+         /// <summary>
+         /// 폰트 변경 미리보기 데이터를 가져오는 메서드
+         /// </summary>
+         private List<string> GetFontChangePreview(string prefabPath)
+         {
+             var previewData = new List<string>();
+             
+             // 프리팹 로드
+             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+             if (prefab == null) return previewData;
+             
+             // 프리팹 인스턴스 생성
+             GameObject prefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+             if (prefabInstance == null) return previewData;
+             
+             try
+             {
+                 // 모든 TextMeshProUGUI 컴포넌트 찾기
+                 var textComponents = prefabInstance.GetComponentsInChildren<TextMeshProUGUI>(true);
+                 
+                 foreach (var textComponent in textComponents)
+                 {
+                     string currentFont = textComponent.font != null ? textComponent.font.name : "None";
+                     string targetFont = targetFontAsset != null ? targetFontAsset.name : "None";
+                     
+                     if (currentFont != targetFont)
+                     {
+                         previewData.Add($"{prefab.name} | {textComponent.gameObject.name} | {currentFont} → {targetFont}");
+                     }
+                 }
+             }
+             finally
+             {
+                 // 인스턴스 정리
+                 if (prefabInstance != null)
+                 {
+                     DestroyImmediate(prefabInstance);
+                 }
+             }
+             
+             return previewData;
+         }
+         
+         /// <summary>
+         /// 키 선택 창을 표시하는 메서드
+         /// </summary>
+         private List<string> ShowKeySelectionWindow()
+         {
+             // 간단한 키 선택을 위해 첫 20개 키만 표시
+             var availableKeys = extractedKeys.Take(20).ToList();
+             
+             // 키 선택 다이얼로그 표시
+             string message = "변경할 키를 선택하세요:\n\n";
+             foreach (var key in availableKeys)
+             {
+                 message += $"• {key}\n";
+             }
+             
+             message += "\n모든 키를 선택하시겠습니까?";
+             
+             bool selectAll = EditorUtility.DisplayDialog("키 선택", message, "모든 키 선택", "취소");
+             
+             if (selectAll)
+             {
+                 return availableKeys;
+             }
+             
+             return null;
+         }
+         
+         /// <summary>
+         /// 폰트 변경 미리보기 창을 표시하는 메서드
+         /// </summary>
+         private void ShowFontChangePreviewWindow(List<string> previewData)
+         {
+             string previewText = $"📋 폰트 변경 미리보기\n\n";
+             previewText += $"🎯 대상 폰트: {targetFontAsset.name}\n";
+             previewText += $"📊 총 변경 예정: {previewData.Count}개\n";
+             previewText += $"📁 처리할 프리팹: {prefabKeysMap.Count}개\n\n";
+             
+             if (previewData.Count > 0)
+             {
+                 previewText += "🔄 변경 예정 목록:\n";
+                 
+                 // 프리팹별로 그룹화
+                 var groupedData = previewData.GroupBy(item => item.Split('|')[0].Trim()).ToList();
+                 
+                 foreach (var group in groupedData.Take(10)) // 최대 10개 프리팹만 표시
+                 {
+                     previewText += $"\n📦 {group.Key}:\n";
+                     foreach (var item in group.Take(5)) // 프리팹당 최대 5개만 표시
+                     {
+                         string[] parts = item.Split('|');
+                         if (parts.Length >= 3)
+                         {
+                             string componentName = parts[1].Trim();
+                             string fontChange = parts[2].Trim();
+                             previewText += $"  • {componentName} | {fontChange}\n";
+                         }
+                     }
+                     
+                     if (group.Count() > 5)
+                     {
+                         previewText += $"  ... 외 {group.Count() - 5}개\n";
+                     }
+                 }
+                 
+                 if (groupedData.Count > 10)
+                 {
+                     previewText += $"\n... 외 {groupedData.Count - 10}개 프리팹\n";
+                 }
+                 
+                 previewText += $"\n⚠️ 이 작업은 되돌릴 수 없습니다. 필요시 백업을 생성하세요.";
+             }
+             else
+             {
+                 previewText += "ℹ️ 변경할 폰트가 있는 TextMeshProUGUI가 없습니다.";
+             }
+             
+             EditorUtility.DisplayDialog("폰트 변경 미리보기", previewText, "확인");
+         }
+         
+         /// <summary>
+         /// 프리팹 백업을 생성하는 메서드
+         /// </summary>
+         private void CreatePrefabBackup(string prefabPath)
+         {
+             try
+             {
+                 // 백업 폴더 생성
+                 string backupFolder = "Assets/000WorkSpaces/KYS/Prefabs/UI/Backup";
+                 if (!AssetDatabase.IsValidFolder(backupFolder))
+                 {
+                     string[] folders = backupFolder.Split('/');
+                     string currentPath = folders[0];
+                     
+                     for (int i = 1; i < folders.Length; i++)
+                     {
+                         string newPath = currentPath + "/" + folders[i];
+                         if (!AssetDatabase.IsValidFolder(newPath))
+                         {
+                             AssetDatabase.CreateFolder(currentPath, folders[i]);
+                         }
+                         currentPath = newPath;
+                     }
+                 }
+                 
+                 // 백업 파일명 생성 (타임스탬프 포함)
+                 string prefabName = Path.GetFileNameWithoutExtension(prefabPath);
+                 string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                 string backupFileName = $"{prefabName}_backup_{timestamp}.prefab";
+                 string backupPath = Path.Combine(backupFolder, backupFileName);
+                 
+                 // 프리팹 복사
+                 AssetDatabase.CopyAsset(prefabPath, backupPath);
+                 
+                 Debug.Log($"프리팹 백업 생성됨: {backupPath}");
+             }
+             catch (System.Exception e)
+             {
+                 Debug.LogError($"프리팹 백업 생성 실패: {e.Message}");
+             }
+         }
+         
+         #endregion
      }
  }
  #endif
