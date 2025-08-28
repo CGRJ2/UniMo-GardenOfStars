@@ -12,10 +12,10 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public int Rank => _data.Rank;
 
     public float MoveSpeed => _data.MoveSpeed;
-    public float MoveSpeedLv => _data.MoveSpeedLv;
+    public float MoveSpeedLv => _data.MoveSpeedLv.Value;
 
     public int MaxCapacity => _data.MaxCapacity;
-    public int MaxCapacityLv => _data.MaxCapacityLv;
+    public int MaxCapacityLv => _data.MaxCapacityLv.Value;
 
     public float ProductionSpeed => _data.ProductionSpeed;
 
@@ -27,10 +27,21 @@ public class WorkerRuntimeData : CharaterRuntimeData
     private WorkerManager _workerManager;
     public WorkerManager WorkerManager => _workerManager;
 
+    private WorkerController _workerController;
+    public WorkerController WorkerController => _workerController;
+
+
     public ObservableProperty<IWorkStation> CurWorkstation = new ObservableProperty<IWorkStation>();
+
+    public int NavMeshPriority;
 
 
     public bool IsHarvest;
+
+    private void Awake()
+    {
+        _workerController = GetComponent<WorkerController>();
+    }
 
     public void SetWorkerManager(WorkerManager manager)
     {
@@ -46,7 +57,6 @@ public class WorkerRuntimeData : CharaterRuntimeData
     {
         workstation.SetReserveState(true);
         CurWorkstation.Value = workstation;
-        Debug.Log(workstation);
     }
 
     public override int GetMaxCapacity()

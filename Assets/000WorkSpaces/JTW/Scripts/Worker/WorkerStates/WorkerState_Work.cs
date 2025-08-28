@@ -1,13 +1,27 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class WorkerState_Work : WorkerStateBase
 {
+    private NavMeshAgent _navAgent;
+
     public WorkerState_Work(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
+        _navAgent = WorkerData.GetComponent<NavMeshAgent>();
     }
 
     public override void Enter()
     {
+        _navAgent.avoidancePriority = 1;
+
+        InteractableBase interact = (WorkerData.CurWorkstation.Value as InteractableBase);
+
+        interact.Enter(WorkerData);
+        if(interact.personalTaskOwner == null)
+        {
+            interact.Enter_PersonalTask(WorkerData);
+        }
     }
 
     public override void Update()
@@ -20,6 +34,14 @@ public class WorkerState_Work : WorkerStateBase
 
     public override void Exit()
     {
+        InteractableBase interact = (WorkerData.CurWorkstation.Value as InteractableBase);
+
+        interact.Exit(WorkerData);
+        if (interact.personalTaskOwner == WorkerData)
+        {
+            interact.Exit_PersonalTask(WorkerData);
+        }
+        _navAgent.avoidancePriority = 30;
         // 시작할 때는 작업영역이 아닐 수도 있어서 true로 만들지는 않음.
         WorkerData.IsWork.Value = false;
     }
