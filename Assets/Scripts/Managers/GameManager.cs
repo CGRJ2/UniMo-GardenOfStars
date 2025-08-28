@@ -37,17 +37,17 @@ public class GameManager : Singleton<GameManager>
         {
             foreach(var value in csv.Result.stageDataColumns)
             {
-                if (!stageUnlockDic.ContainsKey(value.StageId))
+                if (!stageUnlockDic.ContainsKey(value.stageId))
                 {
                     // 첫 스테이지면 언락 항상 true /// for문으로 바꿔서 인덱스 0인걸로 처리해두면 키값 상관없이 가능할듯?
-                    if (value.StageId == "Stage00")
-                        stageUnlockDic.Add(value.StageId, true);
+                    if (value.stageId == "Stage00")
+                        stageUnlockDic.Add(value.stageId, true);
                     else
-                        stageUnlockDic.Add(value.StageId, false);
+                        stageUnlockDic.Add(value.stageId, false);
                 }
 
                 // 스테이지 별 다음단계 언락 조건도 저장
-                stageDataDic.TryAdd(value.StageId, value);
+                stageDataDic.TryAdd(value.stageId, value);
 
                 // 데이터 베이스에서 로드 시엔 키 체크 후 해당 bool값으로 할당
             }

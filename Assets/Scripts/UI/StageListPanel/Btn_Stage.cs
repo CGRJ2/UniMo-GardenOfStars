@@ -18,24 +18,24 @@ public class Btn_Stage : MonoBehaviour
     public void Init(StageData stageData)
     {
         this.stageData = stageData;
-        tmp_StageName.text = stageData.StageName;
+        tmp_StageName.text = stageData.stageName;
     }
 
     void OnClickSelf()
     {
-        if (Manager.game.curStageId == stageData.StageId)
+        if (Manager.game.curStageId == stageData.stageId)
         {
             Debug.Log("이미 해당 스테이지에 위치함");
             return;
         }
 
-        Manager.game.curStageId = stageData.StageId;
+        Manager.game.curStageId = stageData.stageId;
         Addressables.LoadSceneAsync("StageScene");
     }
 
     public void UpdateView()
     {
-        bool isUnlock = Manager.game.GetStageUnlockCheck(stageData.StageId);
+        bool isUnlock = Manager.game.GetStageUnlockCheck(stageData.stageId);
 
         if (isUnlock)
         {
