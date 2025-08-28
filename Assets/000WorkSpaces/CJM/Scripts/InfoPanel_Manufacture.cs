@@ -81,12 +81,12 @@ public class InfoPanel_Manufacture : BaseUI
     }
     void UpgradeCapacity()
     {
-        // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 0, 1);
-
         // 돈 차감
         int curLevel_Capacity = Manager.buildings.GetUpgradeData(targetBD.ID).level_Capacity;
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
+
+        // 업그레이드 스탯 적용
+        Manager.buildings.UpdateUpgradedData(targetBD.ID, 0, 1);
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
@@ -146,9 +146,9 @@ public class InfoPanel_Manufacture : BaseUI
         if (curLevel_Capacity < data.Stat_Capacity.MaxLevel)
         {
             //tmp_CapacityLevel.text = $"{curLevel_Capacity}";
-            tmp_CapacityUpCost.text = $"{data.Stat_ProdTime.cost[curLevel_Capacity]}";
+            tmp_CapacityUpCost.text = $"{data.Stat_Capacity.cost[curLevel_Capacity]}";
             tmp_CurCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity]}";
-            tmp_AfterUpCapacity.text = $"{data.Stat_ProdTime.Values[curLevel_Capacity + 1]}";
+            tmp_AfterUpCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity + 1]}";
 
             // 업그레이드 버튼 활성화/비활성화 여부
             if (curMoney > data.Stat_Capacity.cost[curLevel_Capacity])
