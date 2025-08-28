@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 
 namespace KYS
@@ -10,7 +10,7 @@ namespace KYS
         [SerializeField] private bool showMenuOnStart = true;
         [SerializeField] private bool showTitleOnStart = false;
         [SerializeField] private float delayBeforeShow = 0.5f;
-        
+
         [Header("디버그 설정")]
         [SerializeField] private bool enableDebugLog = true;
 
@@ -18,8 +18,8 @@ namespace KYS
         {
             if (enableDebugLog)
                 ////Debug.Log("[UIInitializer] UI 초기화 시작");
-                
-            StartCoroutine(ShowInitialUI());
+
+                StartCoroutine(ShowInitialUI());
         }
 
         private IEnumerator ShowInitialUI()
@@ -27,112 +27,115 @@ namespace KYS
             if (enableDebugLog)
                 ////Debug.Log("[UIInitializer] UIManager 초기화 대기 중...");
 
-            // UIManager 초기화 대기
-            while (UIManager.Instance == null)
-            {
-                yield return null;
-            }
+                // UIManager 초기화 대기
+                while (UIManager.Instance == null)
+                {
+                    yield return null;
+                }
 
             if (enableDebugLog)
                 ////Debug.Log("[UIInitializer] UIManager 인스턴스 발견. Canvas 초기화 대기 중...");
 
-            // Canvas 초기화 완료 대기
-            while (!UIManager.Instance.AreCanvasesInitialized)
-            {
-                yield return null;
-            }
+                // Canvas 초기화 완료 대기
+                while (!UIManager.Instance.AreCanvasesInitialized)
+                {
+                    yield return null;
+                }
 
             if (enableDebugLog)
                 ////Debug.Log("[UIInitializer] Canvas 초기화 완료. 추가 대기 시간...");
 
-            // 추가 대기 시간
-            yield return new WaitForSeconds(delayBeforeShow);
+                // 추가 대기 시간
+                yield return new WaitForSeconds(delayBeforeShow);
 
             if (enableDebugLog)
                 ////Debug.Log("[UIInitializer] UI 표시 시작...");
 
-            // 시작 UI 표시
-            if (showMenuOnStart)
-            {
-                if (enableDebugLog)
-                    ////Debug.Log("[UIInitializer] SettingPopUp 표시 시도...");
-UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
-    if (popup != null)
-    {
-        ////Debug.Log("[UIInitializer] SettingPopUp 생성 완료");
-    }
-    else
-    {
-        Debug.LogError("[UIInitializer] SettingPopUp 생성 실패");
-    }
-});
-            }
-            
+                // 시작 UI 표시
+                if (showMenuOnStart)
+                {
+                    if (enableDebugLog)
+                        ////Debug.Log("[UIInitializer] SettingPopUp 표시 시도...");
+                        UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) =>
+                        {
+                            if (popup != null)
+                            {
+                                ////Debug.Log("[UIInitializer] SettingPopUp 생성 완료");
+                            }
+                            else
+                            {
+                                Debug.LogError("[UIInitializer] SettingPopUp 생성 실패");
+                            }
+                        });
+                }
+
             if (showTitleOnStart)
             {
                 if (enableDebugLog)
                     //Debug.Log("[UIInitializer] TitlePanel 표시 시도...");
 
-                if (UIManager.Instance == null)
-                {
-                    Debug.LogError("[UIInitializer] UIManager.Instance가 null입니다!");
-                }
-                else
-                {
-                    // 이미 TitlePanel이 열려있는지 확인
-                    var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
-                    bool titlePanelExists = false;
-                    foreach (var panel in existingPanels)
+                    if (UIManager.Instance == null)
                     {
-                        if (panel is TitlePanel)
-                        {
-                            titlePanelExists = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!titlePanelExists)
-                    {
-                        UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
-                            if (panel != null)
-                            {
-                                //Debug.Log("[UIInitializer] TitlePanel 생성 완료");
-                            }
-                            else
-                            {
-                                Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
-                            }
-                        });
+                        Debug.LogError("[UIInitializer] UIManager.Instance가 null입니다!");
                     }
                     else
                     {
-                        //Debug.Log("[UIInitializer] 이미 TitlePanel이 존재하므로 생성하지 않습니다.");
+                        // 이미 TitlePanel이 열려있는지 확인
+                        var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+                        bool titlePanelExists = false;
+                        foreach (var panel in existingPanels)
+                        {
+                            if (panel is TitlePanel)
+                            {
+                                titlePanelExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!titlePanelExists)
+                        {
+                            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) =>
+                            {
+                                if (panel != null)
+                                {
+                                    //Debug.Log("[UIInitializer] TitlePanel 생성 완료");
+                                }
+                                else
+                                {
+                                    Debug.LogError("[UIInitializer] TitlePanel 생성 실패");
+                                }
+                            });
+                        }
+                        else
+                        {
+                            //Debug.Log("[UIInitializer] 이미 TitlePanel이 존재하므로 생성하지 않습니다.");
+                        }
                     }
-                }
             }
 
             if (enableDebugLog) { }
-                ////Debug.Log("[UIInitializer] UI 초기화 완료");
+            ////Debug.Log("[UIInitializer] UI 초기화 완료");
         }
 
         // 테스트용 버튼 메서드들
         [ContextMenu("테스트 - 설정 팝업 표시")]
-public void TestShowSettingPopUp()
-{
-    if (UIManager.Instance != null)
-    {
-        UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) => {
-            if (popup != null)
+        public void TestShowSettingPopUp()
+        {
+            if (UIManager.Instance != null)
             {
-                ////Debug.Log("[UIInitializer] 테스트: 설정 팝업 생성 완료");
+                UIManager.Instance.ShowPopUpAsync<SettingPopUp>((popup) =>
+                {
+                    if (popup != null)
+                    {
+                        ////Debug.Log("[UIInitializer] 테스트: 설정 팝업 생성 완료");
+                    }
+                    else
+                    {
+                        Debug.LogError("[UIInitializer] 테스트: 설정 팝업 생성 실패");
+                    }
+                });
             }
-            else
-            {
-                Debug.LogError("[UIInitializer] 테스트: 설정 팝업 생성 실패");
-            }
-        });
-    }
-}
+        }
 
         [ContextMenu("테스트 - 타이틀 패널 표시")]
         public void TestShowTitlePanel()
@@ -154,7 +157,8 @@ public void TestShowSettingPopUp()
                 }
             }
 
-            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+            UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) =>
+            {
                 if (panel != null)
                 {
                     //Debug.Log("[UIInitializer] 테스트: 타이틀 패널 생성 완료");
@@ -288,7 +292,7 @@ public void TestShowSettingPopUp()
             if (UIManager.Instance != null)
             {
                 ////Debug.Log("[UIInitializer] === 터치 차단 상태 확인 ===");
-                
+
                 // HUD Canvas 터치 상태 확인
                 if (UIManager.Instance.HUDCanvas != null)
                 {
@@ -298,7 +302,7 @@ public void TestShowSettingPopUp()
                         ////Debug.Log($"[UIInitializer] HUD Canvas 터치 상태: interactable={hudCanvasGroup.interactable}, blocksRaycasts={hudCanvasGroup.blocksRaycasts}");
                     }
                 }
-                
+
                 // Panel Canvas 터치 상태 확인
                 if (UIManager.Instance.PanelCanvas != null)
                 {
@@ -308,7 +312,7 @@ public void TestShowSettingPopUp()
                         ////Debug.Log($"[UIInitializer] Panel Canvas 터치 상태: interactable={panelCanvasGroup.interactable}, blocksRaycasts={panelCanvasGroup.blocksRaycasts}");
                     }
                 }
-                
+
                 // Popup Canvas 터치 상태 확인
                 if (UIManager.Instance.PopupCanvas != null)
                 {
@@ -329,7 +333,7 @@ public void TestShowSettingPopUp()
         public async void TestCreateHUD()
         {
             ////Debug.Log("[UIInitializer] === HUD 생성 테스트 ===");
-            
+
             if (UIManager.Instance != null)
             {
                 // HUD Canvas 상태 확인
@@ -339,7 +343,7 @@ public void TestShowSettingPopUp()
                     ////Debug.Log($"[UIInitializer] HUD Canvas 이름: {UIManager.Instance.HUDCanvas.name}");
                     ////Debug.Log($"[UIInitializer] HUD Canvas 자식 수: {UIManager.Instance.HUDCanvas.transform.childCount}");
                 }
-                
+
                 try
                 {
                     // 다양한 Addressable 키 시도
@@ -350,10 +354,10 @@ public void TestShowSettingPopUp()
                         "HUDAllPanel",
                         "UI/HUDAllPanel"
                     };
-                    
+
                     HUDAllPanel hud = null;
                     string successfulKey = null;
-                    
+
                     foreach (string key in possibleKeys)
                     {
                         ////Debug.Log($"[UIInitializer] 키 '{key}'로 HUD 생성 시도...");
@@ -365,11 +369,11 @@ public void TestShowSettingPopUp()
                             break;
                         }
                     }
-                    
+
                     if (hud != null)
                     {
                         ////Debug.Log($"[UIInitializer] HUD 생성 성공: {hud.name} (키: {successfulKey})");
-                        
+
                         // HUD 표시
                         UIManager.Instance.ShowHUDUI<HUDAllPanel>();
                     }
@@ -393,7 +397,7 @@ public void TestShowSettingPopUp()
         public void TestHideHUD()
         {
             ////Debug.Log("[UIInitializer] === HUD 숨기기 테스트 ===");
-            
+
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.HideHUDUI<HUDAllPanel>();
@@ -409,7 +413,7 @@ public void TestShowSettingPopUp()
         public void TestShowAllHUD()
         {
             ////Debug.Log("[UIInitializer] === 모든 HUD 표시 테스트 ===");
-            
+
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.ShowAllHUDElements();
@@ -425,18 +429,18 @@ public void TestShowSettingPopUp()
         public void TestHUDCanvasStatus()
         {
             ////Debug.Log("[UIInitializer] === HUD Canvas 상태 확인 ===");
-            
+
             if (UIManager.Instance != null)
             {
                 ////Debug.Log($"[UIInitializer] UIManager 초기화 상태: {UIManager.Instance.AreCanvasesInitialized}");
                 ////Debug.Log($"[UIInitializer] HUD Canvas: {(UIManager.Instance.HUDCanvas != null ? "로드됨" : "null")}");
-                
+
                 if (UIManager.Instance.HUDCanvas != null)
                 {
                     ////Debug.Log($"[UIInitializer] HUD Canvas 이름: {UIManager.Instance.HUDCanvas.name}");
                     ////Debug.Log($"[UIInitializer] HUD Canvas 활성화: {UIManager.Instance.HUDCanvas.gameObject.activeInHierarchy}");
                     ////Debug.Log($"[UIInitializer] HUD Canvas 자식 수: {UIManager.Instance.HUDCanvas.transform.childCount}");
-                    
+
                     // HUD Canvas의 모든 자식들 확인
                     for (int i = 0; i < UIManager.Instance.HUDCanvas.transform.childCount; i++)
                     {

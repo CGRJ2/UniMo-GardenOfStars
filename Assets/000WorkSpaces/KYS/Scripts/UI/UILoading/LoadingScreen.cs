@@ -74,6 +74,23 @@ namespace KYS
         {
             base.Awake();
 
+            // 메시지와 Progress 요소들을 초기에 숨김
+            if (centerMessageText != null)
+            {
+                centerMessageText.gameObject.SetActive(false);
+            }
+            if (progressText != null)
+            {
+                progressText.gameObject.SetActive(false);
+            }
+            if (loadingProgressBar != null)
+            {
+                loadingProgressBar.gameObject.SetActive(false);
+            }
+            if (fillProgressImage != null)
+            {
+                fillProgressImage.gameObject.SetActive(false);
+            }
         }
         
         public override void Initialize()
@@ -251,6 +268,7 @@ namespace KYS
             {
                 float previousFillAmount = fillProgressImage.fillAmount;
                 fillProgressImage.fillAmount = progress;
+                fillProgressImage.gameObject.SetActive(true); // Progress 이미지 활성화
                 //Debug.Log($"[LoadingScreen] Image Fill 진행률 업데이트: {previousFillAmount:F3} → {progress:F3} ({progress * 100:F1}%)");
             }
             else if (useImageFill && fillProgressImage == null)
@@ -262,6 +280,7 @@ namespace KYS
             if (useSlider && loadingProgressBar != null)
             {
                 loadingProgressBar.value = progress;
+                loadingProgressBar.gameObject.SetActive(true); // Progress 바 활성화
                 //Debug.Log($"[LoadingScreen] Slider 진행률 업데이트: {progress}");
             }
             else if (useSlider && loadingProgressBar == null)
@@ -272,6 +291,7 @@ namespace KYS
             if (progressText != null)
             {
                 progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+                progressText.gameObject.SetActive(true); // Progress 텍스트 활성화
                 //Debug.Log($"[LoadingScreen] Progress Text 업데이트: {Mathf.RoundToInt(progress * 100)}%");
             }
             else
@@ -297,6 +317,7 @@ namespace KYS
             if (centerMessageText != null)
             {
                 centerMessageText.text = message;
+                centerMessageText.gameObject.SetActive(true); // 메시지 표시
             }
         }
 

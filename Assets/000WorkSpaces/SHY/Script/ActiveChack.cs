@@ -18,10 +18,14 @@ public class ActiveChack : MonoBehaviour
             Debug.Log("지역 이동에 대한 대화를 진행한다는 가정 키 입력");
             panelopen.SetActive(true);
         }
+        if (Input.GetKey(KeyCode.G))
+        {
+            Manager.ui.ShowAllHUDElements();
+        }
     }
     public void chack() // 미사용할듯.
     {
-        List<bool> get = StageManager.instance.GetUnlockStates();
+        List<bool> get = SHY.StageManager.instance.GetUnlockStates();
         for (int i = 0; i < active.Length; i++)
         {
             active[i+1].SetActive(get[i]);// 기초 값은 항상 언락중이어야함 그러니 스테이지0 은 항상 열려있음으로 제외

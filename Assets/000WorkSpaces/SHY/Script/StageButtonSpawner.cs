@@ -23,7 +23,7 @@ public class StageButtonSpawner : MonoBehaviour
     void SpawnStageButtons()
     {
         
-        var stages = StageManager.instance.GetStages();
+        var stages = SHY.StageManager.instance.GetStages();
         Debug.Log($"{stages.Count}");
         for (int i = 0; i < stages.Count; i++)
         {

@@ -1,9 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
-
 
 public class StageButton : MonoBehaviour
 {
@@ -14,16 +10,16 @@ public class StageButton : MonoBehaviour
     [Header("UI 요소")]
     public TextMeshProUGUI label;
 
-    private StageData stageData;
+    private SHY.StageData stageData;
 
     void Start()  //프리펩 안쓸때
     {
         // StageManager에서 해당 스테이지 데이터 가져오기
-        stageData = StageManager.instance.GetStages()[stageIndex];
+        stageData = SHY.StageManager.instance.GetStages()[stageIndex];
 
         UpdateVisual();
     }
-    public void Initialize(StageData data) //프리펩화된거 쓸때.
+    public void Initialize(SHY.StageData data) //프리펩화된거 쓸때.
     {
         stageData = data;
         UpdateVisual();

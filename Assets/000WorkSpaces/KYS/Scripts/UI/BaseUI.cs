@@ -23,6 +23,8 @@ namespace KYS
 
         [Header("UI Animation Settings")]
         [SerializeField] protected bool useAnimation = true;
+        [SerializeField] protected bool useShowAnimation = true; // 등장 애니메이션 사용 여부
+        [SerializeField] protected bool useHideAnimation = true; // 사라짐 애니메이션 사용 여부
         [SerializeField] protected float animationDuration = 0.3f;
 #if DOTWEEN
         [SerializeField] protected Ease showEase = Ease.OutBack;
@@ -145,8 +147,17 @@ namespace KYS
             // 항상 Initialize 호출 (이미 활성화되어 있어도)
             Initialize();
 
-            // 애니메이션 재생
-            PlayShowAnimation();
+            // 애니메이션 재생 (설정에 따라)
+            if (useAnimation && useShowAnimation)
+            {
+                PlayShowAnimation();
+            }
+            else
+            {
+                // 애니메이션 없이 즉시 표시
+                if (canvasGroup != null) canvasGroup.alpha = 1f;
+                if (rectTransform != null) rectTransform.localScale = originalScale;
+            }
 
             // UI 열기 사운드 재생
             PlayOpenSound();
@@ -164,7 +175,7 @@ namespace KYS
             // UI 닫기 사운드 재생
             PlayCloseSound();
 
-            if (useAnimation)
+            if (useAnimation && useHideAnimation)
             {
                 PlayHideAnimation(() =>
                 {
@@ -174,6 +185,9 @@ namespace KYS
             }
             else
             {
+                // 애니메이션 없이 즉시 숨김
+                if (canvasGroup != null) canvasGroup.alpha = 0f;
+                if (rectTransform != null) rectTransform.localScale = Vector3.zero;
                 SafeDestroyUI();
             }
         }
