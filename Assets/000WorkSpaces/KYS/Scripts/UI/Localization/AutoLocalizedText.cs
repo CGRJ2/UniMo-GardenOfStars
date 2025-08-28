@@ -104,7 +104,10 @@ namespace KYS
             
             if (showDebugLogs)
             {
-                Debug.Log($"[AutoLocalizedText] {gameObject.name} 자동 로컬라이제이션 초기화 - 키: {localizationKey}");
+                Debug.Log($"[AutoLocalizedText] {gameObject.name} 자동 로컬라이제이션 초기화:");
+                Debug.Log($"  - 키: {localizationKey}");
+                Debug.Log($"  - LocalizationManager 초기화 상태: {LocalizationManager.Instance?.IsInitialized}");
+                Debug.Log($"  - 현재 언어: {LocalizationManager.Instance?.CurrentLanguage}");
             }
             
             // 초기 텍스트 설정
@@ -133,10 +136,13 @@ namespace KYS
             else
             {
                 // UI 이름을 기반으로 키 생성
-                localizationKey = GenerateKeyFromName(gameObject.name);
+                string originalName = gameObject.name;
+                localizationKey = GenerateKeyFromName(originalName);
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[AutoLocalizedText] {gameObject.name} 이름 기반 키 생성: {localizationKey}");
+                    Debug.Log($"[AutoLocalizedText] {gameObject.name} 이름 기반 키 생성:");
+                    Debug.Log($"  - 원본 이름: {originalName}");
+                    Debug.Log($"  - 생성된 키: {localizationKey}");
                 }
             }
         }
@@ -149,24 +155,37 @@ namespace KYS
             if (string.IsNullOrEmpty(uiName))
                 return "";
             
+            string key;
+            
             // LocalizationManager의 키 생성 메서드 사용
             if (LocalizationManager.Instance != null)
             {
-                return LocalizationManager.Instance.GenerateKeyFromUIName(uiName, false); // 중복 검사 비활성화
+                key = LocalizationManager.Instance.GenerateKeyFromUIName(uiName, false); // 중복 검사 비활성화
+                if (showDebugLogs)
+                {
+                    Debug.Log($"[AutoLocalizedText] LocalizationManager 키 생성: {uiName} -> {key}");
+                }
             }
-            
-            // LocalizationManager가 없는 경우 기본 처리
-            string key = uiName.ToLower()
-                .Replace("text", "")
-                .Replace("_", "")
-                .Replace("-", "")
-                .Replace(" ", "")
-                .Trim();
-            
-            // 빈 문자열이면 원본 이름 사용
-            if (string.IsNullOrEmpty(key))
+            else
             {
-                key = uiName.ToLower().Replace(" ", "").Replace("_", "").Replace("-", "");
+                // LocalizationManager가 없는 경우 기본 처리
+                key = uiName.ToLower()
+                    .Replace("text", "")
+                    .Replace("_", "")
+                    .Replace("-", "")
+                    .Replace(" ", "")
+                    .Trim();
+                
+                // 빈 문자열이면 원본 이름 사용
+                if (string.IsNullOrEmpty(key))
+                {
+                    key = uiName.ToLower().Replace(" ", "").Replace("_", "").Replace("-", "");
+                }
+                
+                if (showDebugLogs)
+                {
+                    Debug.Log($"[AutoLocalizedText] 기본 키 생성: {uiName} -> {key}");
+                }
             }
             
             return key;
@@ -178,9 +197,22 @@ namespace KYS
         private void UpdateText()
         {
             if (!enableAutoLocalization || string.IsNullOrEmpty(localizationKey))
+            {
+                if (showDebugLogs)
+                {
+                    Debug.LogWarning($"[AutoLocalizedText] {gameObject.name} 텍스트 업데이트 건너뜀 - enableAutoLocalization: {enableAutoLocalization}, 키: {localizationKey}");
+                }
                 return;
+            }
             
             string translatedText = GetTranslatedText();
+            
+            if (showDebugLogs)
+            {
+                Debug.Log($"[AutoLocalizedText] {gameObject.name} 텍스트 업데이트 시작:");
+                Debug.Log($"  - 키: {localizationKey}");
+                Debug.Log($"  - 번역된 텍스트: {translatedText}");
+            }
             
             // TextMeshProUGUI
             if (tmpText != null)
@@ -188,7 +220,7 @@ namespace KYS
                 tmpText.text = translatedText;
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[AutoLocalizedText] {gameObject.name} TextMeshProUGUI 업데이트: {translatedText}");
+                    Debug.Log($"[AutoLocalizedText] {gameObject.name} TextMeshProUGUI 업데이트 완료: {translatedText}");
                 }
             }
             
@@ -198,7 +230,7 @@ namespace KYS
                 legacyText.text = translatedText;
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[AutoLocalizedText] {gameObject.name} Legacy Text 업데이트: {translatedText}");
+                    Debug.Log($"[AutoLocalizedText] {gameObject.name} Legacy Text 업데이트 완료: {translatedText}");
                 }
             }
             
@@ -208,7 +240,7 @@ namespace KYS
                 tmpInputField.text = translatedText;
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[AutoLocalizedText] {gameObject.name} TMP_InputField 업데이트: {translatedText}");
+                    Debug.Log($"[AutoLocalizedText] {gameObject.name} TMP_InputField 업데이트 완료: {translatedText}");
                 }
             }
             
@@ -218,7 +250,7 @@ namespace KYS
                 legacyInputField.text = translatedText;
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[AutoLocalizedText] {gameObject.name} Legacy InputField 업데이트: {translatedText}");
+                    Debug.Log($"[AutoLocalizedText] {gameObject.name} Legacy InputField 업데이트 완료: {translatedText}");
                 }
             }
         }
@@ -246,11 +278,25 @@ namespace KYS
                 return localizationKey;
             }
             
+            // 키 존재 여부 확인
+            bool hasKey = LocalizationManager.Instance.HasKey(localizationKey);
+            if (showDebugLogs)
+            {
+                Debug.Log($"[AutoLocalizedText] 키 존재 여부 확인 - 키: {localizationKey}, 존재: {hasKey}");
+            }
+            
             string result = LocalizationManager.Instance.GetText(localizationKey);
             if (showDebugLogs)
             {
                 Debug.Log($"[AutoLocalizedText] 번역 결과 - 키: {localizationKey}, 결과: {result}");
             }
+            
+            // 키가 존재하지 않으면 경고 로그
+            if (!hasKey)
+            {
+                Debug.LogWarning($"[AutoLocalizedText] 키가 CSV 파일에 존재하지 않습니다: {localizationKey}");
+            }
+            
             return result;
         }
         
@@ -349,5 +395,48 @@ namespace KYS
         {
             showDebugLogs = enabled;
         }
+        
+        /// <summary>
+        /// 현재 상태 정보 출력 (디버그용)
+        /// </summary>
+        [ContextMenu("Print Debug Info")]
+        public void PrintDebugInfo()
+        {
+            Debug.Log($"[AutoLocalizedText] {gameObject.name} 디버그 정보:");
+            Debug.Log($"  - 활성화 상태: {enableAutoLocalization}");
+            Debug.Log($"  - 커스텀 키 사용: {useCustomKey}");
+            Debug.Log($"  - 커스텀 키: {customKey}");
+            Debug.Log($"  - 현재 키: {localizationKey}");
+            Debug.Log($"  - LocalizationManager 초기화: {LocalizationManager.Instance?.IsInitialized}");
+            Debug.Log($"  - 키 존재 여부: {LocalizationManager.Instance?.HasKey(localizationKey)}");
+            Debug.Log($"  - 현재 텍스트: {GetCurrentText()}");
+            
+            // 키가 존재하지 않으면 CSV에 추가 제안
+            if (LocalizationManager.Instance != null && !LocalizationManager.Instance.HasKey(localizationKey))
+            {
+                Debug.LogWarning($"[AutoLocalizedText] 키 '{localizationKey}'가 CSV 파일에 존재하지 않습니다.");
+                Debug.LogWarning($"[AutoLocalizedText] CSV 파일에 다음 라인을 추가하세요:");
+                Debug.LogWarning($"[AutoLocalizedText] {localizationKey},, ");
+            }
+        }
+        
+        /// <summary>
+        /// 키를 CSV에 자동 추가 (디버그용)
+        /// </summary>
+        [ContextMenu("Add Key to CSV")]
+        public void AddKeyToCSV()
+        {
+            if (LocalizationManager.Instance != null && !string.IsNullOrEmpty(localizationKey))
+            {
+                LocalizationManager.Instance.UpdateTranslationInCSV(localizationKey, SystemLanguage.Korean, "");
+                Debug.Log($"[AutoLocalizedText] 키 '{localizationKey}'를 CSV에 추가했습니다.");
+                
+                // 텍스트 업데이트
+                UpdateText();
+                Debug.Log($"[AutoLocalizedText] 텍스트를 업데이트했습니다.");
+            }
+        }
+        
+  
     }
 }

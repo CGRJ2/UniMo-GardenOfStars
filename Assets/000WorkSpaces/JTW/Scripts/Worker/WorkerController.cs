@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum WorkerStates
@@ -9,22 +11,41 @@ public enum WorkerStates
 
 public class WorkerController : MonoBehaviour
 {
-    private InteractableBase _curWorkstation;
-    private StateMachine<WorkerStates> _stateMachine;
-    
-    private WorkerData _workerData;
-    public WorkerData WorkData => _workerData;
+    [SerializeField] private TextMeshProUGUI _text;
 
-    public bool IsSetWorkstation => _curWorkstation != null;
+    private StateMachine<WorkerStates> _stateMachine = new StateMachine<WorkerStates>();
 
     private void Awake()
     {
-        // TODO : _stateMachine에 상태 추가 및 기본 상태로 설정.
+        WorkerRuntimeData data = GetComponent<WorkerRuntimeData>();
+
+        _stateMachine.AddState(WorkerStates.Idle, new WorkerState_Idle(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Move, new WorkerState_Move(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Work, new WorkerState_Work(_stateMachine, data));
+        _stateMachine.AddState(WorkerStates.Stun, new WorkerState_Stun(_stateMachine, data));
+
+        _stateMachine.ChangeState(WorkerStates.Idle);
     }
 
     private void Update()
     {
         _stateMachine.Update();
+
+        if (_text != null)
+        {
+            string text = _stateMachine.CurStateEnum.ToString();
+
+            if (text == "Stun")
+            {
+                _text.color = Color.red;
+            }
+            else
+            {
+                _text.color = Color.black;
+            }
+
+            _text.text = text;
+        }
     }
 
     private void FixedUpdate()
@@ -32,13 +53,13 @@ public class WorkerController : MonoBehaviour
         _stateMachine.FixedUpdate();
     }
 
-    public void SetWorkerData(WorkerData data)
+    public WorkerStates GetCurState()
     {
-        _workerData = data;
+        return _stateMachine.CurStateEnum;
     }
 
-    public void SetWorkstation(InteractableBase workstation)
+    public void Stun()
     {
-        _curWorkstation = workstation;
+        _stateMachine.ChangeState(WorkerStates.Stun);
     }
 }

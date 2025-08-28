@@ -60,7 +60,7 @@ namespace KYS
 
         }
         
-        protected override string[] GetAutoLocalizeKeys()
+        public override string[] GetAutoLocalizeKeys()
         {
             return new string[] {
                 titleTextName,      // titleText -> info_hud_title

@@ -220,8 +220,8 @@ MonoBehaviour:
   panelGroup: 4
   useAnimation: 1
   animationDuration: 0.3
-  showEase: OutBack
-  hideEase: InBack
+  showEase: 0
+  hideEase: 0
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
   hidePreviousUI: 1
@@ -290,6 +290,7 @@ GameObject:
   - component: {fileID: 8034683179952403478}
   - component: {fileID: 3569242047766724120}
   - component: {fileID: 4468617211536804543}
+  - component: {fileID: 5010953488456598359}
   m_Layer: 5
   m_Name: ProgressText
   m_TagString: Untagged
@@ -413,6 +414,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5010953488456598359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6536835111890783470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &7010187478299982362
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,6 +441,7 @@ GameObject:
   - component: {fileID: 7585463609715067717}
   - component: {fileID: 97695922497571127}
   - component: {fileID: 5378705349881550902}
+  - component: {fileID: 5730694327468761812}
   m_Layer: 5
   m_Name: CenterMessageText
   m_TagString: Untagged
@@ -547,6 +565,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5730694327468761812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7010187478299982362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 0
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &7826957107559097381
 GameObject:
   m_ObjectHideFlags: 0

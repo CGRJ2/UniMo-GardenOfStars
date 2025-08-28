@@ -104,7 +104,7 @@ namespace KYS
         private void OnConfirmClicked(PointerEventData data)
         {
             //Debug.Log("[TitlePanel] 확인 버튼 클릭");
-            UIManager.Instance.ShowPopUpAsync<MenuPopUp>();
+            UIManager.Instance.ShowPopUpAsync<SettingPopUp>();
            
         }
 

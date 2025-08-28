@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
-public class SceneChanger : MonoBehaviour
+public class SceneChanger : Singleton<SceneChanger>
 {
     //public static SceneChanger instance; //임시 사용.
     public int CurSceneID { get; private set; }
@@ -18,6 +18,7 @@ public class SceneChanger : MonoBehaviour
         //{
         //   Destroy(gameObject);
         //}
+        base.SingletonInit();
     }
 
     public void LoadSceneByName(string sceneName)
@@ -33,13 +34,19 @@ public class SceneChanger : MonoBehaviour
     {
 
         //SceneManager.LoadScene(sceneIndex);
-        Addressables.LoadSceneAsync($"stage{sceneIndex}").Completed += task =>
+        Addressables.LoadSceneAsync($"MapScene_Stage0{sceneIndex}").Completed += task =>
         {
             CurSceneID = sceneIndex;
         };
-
-
     }
-
-
+    public void GoBaseScene()
+    {
+        Addressables.LoadSceneAsync("StageScene");
+        
+    }
+    public void SetTarget(int id ,string name)
+    {
+        CurSceneID = id;
+        CurSceneName = name;
+    }
 }

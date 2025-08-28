@@ -108,12 +108,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   personalTaskOwner: {fileID: 0}
   _OriginData: {fileID: 11400000, guid: 9de062aad5469914195d49243e4c6285, type: 2}
-  activateAreaPopUI: {fileID: 555364940453386928}
+  activatePopUI: {fileID: 8074340466286038970}
   prodsParentTransform: {fileID: 3806669960653268016}
-  runtimeData:
-    level: 0
-    maxStackableCount: 0
-    productionTime: 0
+  originData: {fileID: 0}
 --- !u!1 &3314702754178659697
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,6 +123,7 @@ GameObject:
   - component: {fileID: 4773355648830099687}
   - component: {fileID: 8287082747897552623}
   - component: {fileID: 346907911817631485}
+  - component: {fileID: 852240350772371172}
   m_Layer: 0
   m_Name: View
   m_TagString: Untagged
@@ -219,6 +217,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &852240350772371172
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3314702754178659697}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &5104311126710464214
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +384,7 @@ GameObject:
   - component: {fileID: 555364940453386928}
   - component: {fileID: 5770093370388139468}
   - component: {fileID: 8152453911410932397}
+  - component: {fileID: 8074340466286038970}
   m_Layer: 5
   m_Name: Canvas_ActiveAreaPop
   m_TagString: Untagged
@@ -460,6 +475,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8074340466286038970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966022679259488233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a694ac7b3541a43835fd80737fb1d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btn_Info: {fileID: 9192145307838559057}
+  tmp_BtnState: {fileID: 983025394400167137}
 --- !u!1 &6090195700523916311
 GameObject:
   m_ObjectHideFlags: 0

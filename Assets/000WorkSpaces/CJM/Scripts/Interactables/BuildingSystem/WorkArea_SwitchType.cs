@@ -1,19 +1,24 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorkArea_SwitchType : InteractableBase
+public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return (curWorker == null & ownerInstance.ingrediantStack.Count > 0 && !isOperating); } }
+    public bool isReserved;
+    public bool GetWorkableState() { return isWorkable; }
+    public bool GetReserveState() { return isReserved; }
+    public void SetReserveState(bool reserve) { isReserved = reserve; }
+    public Vector3 GetPosition() { return transform.position; }
 
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
-    CharaterRuntimeData curWorker; // ÀÓ½Ã. ÀÏ²Û±îÁö Æ÷ÇÔÇÑ º¯¼ö·Î ¼öÁ¤ ÇÊ¿ä
+    CharaterRuntimeData curWorker; // ì„ì‹œ. ì¼ê¾¼ê¹Œì§€ í¬í•¨í•œ ë³€ìˆ˜ë¡œ ìˆ˜ì • í•„ìš”
     [SerializeField] Slider progressBar;
     [SerializeField] Slider temp_PrepareBar;
-    [Header("ÀÛ¾÷À» È°¼ºÈ­½ÃÅ°´Â ½Ã°£")]
+    [Header("ì‘ì—…ì„ í™œì„±í™”ì‹œí‚¤ëŠ” ì‹œê°„")]
     [SerializeField] float prepareTime = 3f;
-    float prepareProgressedTime = 0f;   // ÁØºñ ´Ü°è ÁøÇàµµ
+    float prepareProgressedTime = 0f;   // ì¤€ë¹„ ë‹¨ê³„ ì§„í–‰ë„
 
 
     [SerializeField] bool isOperating;
@@ -23,59 +28,61 @@ public class WorkArea_SwitchType : InteractableBase
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
-        //Manager.buildings.workStatinLists.workAreas.Add(this);
+        Manager.buildings.workStatinLists.workAreas_SwitchType.Add(this);
         temp_PrepareBar.gameObject.SetActive(false);
         progressBar.gameObject.SetActive(false);
     }
 
-    // ÀÛ¾÷ ÁØºñ ´Ü°è
+    // ì‘ì—… ì¤€ë¹„ ë‹¨ê³„
     IEnumerator PrepareTask()
     {
-        curWorker = characterRD; // ÀÓ½Ã. ÀÏ²Û±îÁö Æ÷ÇÔÇÑ º¯¼ö·Î ¼öÁ¤ ÇÊ¿ä
+        isReserved = false;
+
+        curWorker = characterRD; // ì„ì‹œ. ì¼ê¾¼ê¹Œì§€ í¬í•¨í•œ ë³€ìˆ˜ë¡œ ìˆ˜ì • í•„ìš”
         curWorker.IsWork.Value = true;
 
-        // Á¤Áö »óÅÂ && ±âÁ¸ÀÛ¾÷ ¿Ï·á »óÅÂ±îÁö ´ë±âÇß´Ù°¡ ÀÛ¾÷ ½ÇÇà
+        // ì •ì§€ ìƒíƒœ && ê¸°ì¡´ì‘ì—… ì™„ë£Œ ìƒíƒœê¹Œì§€ ëŒ€ê¸°í–ˆë‹¤ê°€ ì‘ì—… ì‹¤í–‰
         yield return new WaitUntil(() => !curWorker.IsMove.Value && !isOperating);
 
-        while (curWorker == characterRD) // ÇöÀç ÀÛ¾÷ÀÚ°¡ ÀÖ´Â µ¿¾È °è¼Ó ½ÇÇà
+        while (curWorker == characterRD) // í˜„ì¬ ì‘ì—…ìê°€ ìˆëŠ” ë™ì•ˆ ê³„ì† ì‹¤í–‰
         {
             yield return new WaitUntil(() => !isOperating);
             
-            // ÁØºñ ½ÃÀÛ ½Ã, ÁøÇàµµ Ç¥±â
+            // ì¤€ë¹„ ì‹œì‘ ì‹œ, ì§„í–‰ë„ í‘œê¸°
             temp_PrepareBar.gameObject.SetActive(true);
 
-            // ÀÛ¾÷ ÁøÇà Áß, ¿µ¿ª ³»¿¡¼­ ¿òÁ÷ÀÎ °æ¿ì ´ë±â
+            // ì‘ì—… ì§„í–‰ ì¤‘, ì˜ì—­ ë‚´ì—ì„œ ì›€ì§ì¸ ê²½ìš° ëŒ€ê¸°
             if (curWorker.IsMove.Value)
             {
-                prepareProgressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                prepareProgressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 temp_PrepareBar.gameObject.SetActive(false);
                 yield return new WaitUntil(() => !curWorker.IsMove.Value);
                 temp_PrepareBar.gameObject.SetActive(true);
             }
 
-            // Àç·á ¼ÒÁø ½Ã, Àç·á°¡ Ã¤¿öÁú ¶§ ±îÁö ´ë±â
+            // ì¬ë£Œ ì†Œì§„ ì‹œ, ì¬ë£Œê°€ ì±„ì›Œì§ˆ ë•Œ ê¹Œì§€ ëŒ€ê¸°
             if (ownerInstance.ingrediantStack.Count <= 0)
                 yield return new WaitUntil(() => ownerInstance.ingrediantStack.Count > 0);
 
-            // ÀÛ¾÷ ¿µ¿ª ¹ÛÀ¸·Î ³ª°¡´Â °æ¿ì
+            // ì‘ì—… ì˜ì—­ ë°–ìœ¼ë¡œ ë‚˜ê°€ëŠ” ê²½ìš°
             if (curWorker != characterRD) break;
 
-            // ½×¿©ÀÖ´Â Àç·á°¡ ÀÖÀ»¶§¸¸ ½ÇÇà
+            // ìŒ“ì—¬ìˆëŠ” ì¬ë£Œê°€ ìˆì„ë•Œë§Œ ì‹¤í–‰
             if (ownerInstance.ingrediantStack.Count > 0)
             {
                 prepareProgressedTime += Time.deltaTime;
 
                 if (prepareTime < prepareProgressedTime)
                 {
-                    //CompleteTask(); // °á°ú¹° »ı¼º
+                    //CompleteTask(); // ê²°ê³¼ë¬¼ ìƒì„±
                     StartCoroutine(ProgressingTask());
                     isOperating = true;
-                    prepareProgressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
-                    temp_PrepareBar.gameObject.SetActive(false); // ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+                    prepareProgressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
+                    temp_PrepareBar.gameObject.SetActive(false); // ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
                     continue;
                 }
 
-                // ÁøÇàµµ °ÔÀÌÁö ¾÷µ¥ÀÌÆ®
+                // ì§„í–‰ë„ ê²Œì´ì§€ ì—…ë°ì´íŠ¸
                 temp_PrepareBar.value = prepareProgressedTime / prepareTime;
 
                 yield return null;
@@ -83,51 +90,53 @@ public class WorkArea_SwitchType : InteractableBase
             else yield return null;
         }
 
-        // ÀÛ¾÷ Á¾·á ½Ã, ÇöÀç ÀÛ¾÷ÀÚ Á¤º¸ ÃÊ±âÈ­
+        // ì‘ì—… ì¢…ë£Œ ì‹œ, í˜„ì¬ ì‘ì—…ì ì •ë³´ ì´ˆê¸°í™”
         yield return null;
-        curWorker.IsWork.Value = false;
+        
+        if (curWorker != null)
+            curWorker.IsWork.Value = false;
         curWorker = null;
 
-        // ÁØºñ ÀÛ¾÷ Á¾·á ½Ã, ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+        // ì¤€ë¹„ ì‘ì—… ì¢…ë£Œ ì‹œ, ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
         temp_PrepareBar.gameObject.SetActive(false);
     }
     IEnumerator ProgressingTask()
     {
-        // ÀÛ¾÷ÀÌ °¡µ¿µÉ ¶§ ±îÁö ´ë±â
+        // ì‘ì—…ì´ ê°€ë™ë  ë•Œ ê¹Œì§€ ëŒ€ê¸°
         yield return new WaitUntil(() => isOperating);
 
-        // ÀÛ¾÷ ½ÃÀÛ ½Ã, ÁøÇàµµ Ç¥±â
+        // ì‘ì—… ì‹œì‘ ì‹œ, ì§„í–‰ë„ í‘œê¸°
         progressBar.gameObject.SetActive(true);
 
         while (isOperating)
         {
             ownerInstance.progressedTime += Time.deltaTime;
 
-            if (ownerInstance.runtimeData.productionTime < ownerInstance.progressedTime)
+            if (ownerInstance.ProdTime < ownerInstance.progressedTime)
             {
-                CompleteTask(); // °á°ú¹° »ı¼º
-                ownerInstance.progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
-                isOperating = false; // ÀÛ¾÷ Ã³¸® Á¤Áö
+                CompleteTask(); // ê²°ê³¼ë¬¼ ìƒì„±
+                ownerInstance.progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
+                isOperating = false; // ì‘ì—… ì²˜ë¦¬ ì •ì§€
             }
 
-            // ÁøÇàµµ °ÔÀÌÁö ¾÷µ¥ÀÌÆ®
-            progressBar.value = ownerInstance.progressedTime / ownerInstance.runtimeData.productionTime;
+            // ì§„í–‰ë„ ê²Œì´ì§€ ì—…ë°ì´íŠ¸
+            progressBar.value = ownerInstance.progressedTime / ownerInstance.ProdTime;
             yield return null;
         }
 
-        // ÀÛ¾÷ ¿Ï·á ½Ã, ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+        // ì‘ì—… ì™„ë£Œ ì‹œ, ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
         progressBar.gameObject.SetActive(false);
     }
 
     public void CompleteTask()
     {
-        // °á°ú¹° ÀÎ½ºÅÏ½º »ı¼º(È°¼ºÈ­) ----> ÀÌ°Å¸¦ ´ÜÀÏ °³Ã¼¿¡ ½×ÀÓ ÇüÅÂ·Î ÇÒ°ÇÁö ¾ÆÁ÷ ¹ÌÁ¤ÀÓ
+        // ê²°ê³¼ë¬¼ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±(í™œì„±í™”) ----> ì´ê±°ë¥¼ ë‹¨ì¼ ê°œì²´ì— ìŒ“ì„ í˜•íƒœë¡œ í• ê±´ì§€ ì•„ì§ ë¯¸ì •ì„
         //GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
-        // È¸¼ö¿µ¿ª¿¡ °³¼ö ´Ã·ÁÁÖ±â
+        // íšŒìˆ˜ì˜ì—­ì— ê°œìˆ˜ ëŠ˜ë ¤ì£¼ê¸°
         ownerInstance.prodsArea.ProdsCount += 1;
 
-        // Àç·á ¼Ò¸ğ
+        // ì¬ë£Œ ì†Œëª¨
         ownerInstance.ingrediantStack.Pop().Despawn();
     }
 
@@ -144,6 +153,6 @@ public class WorkArea_SwitchType : InteractableBase
     public override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
-        //Manager.buildings?.workStatinLists.workAreas?.Remove(this);
+        Manager.buildings?.workStatinLists.workAreas_SwitchType?.Remove(this);
     }
 }
