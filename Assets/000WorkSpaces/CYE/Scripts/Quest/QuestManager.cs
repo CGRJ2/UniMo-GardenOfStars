@@ -80,8 +80,6 @@ public class QuestManager : Singleton<QuestManager>
                 Array.FindAll(_questProgressDataList, item => item._questId == temp[idx]._id)
                 );
         }
-        // // DataSo를 Quest array에 대입
-        // ConvertDataSOToClass(_questDataList);
         // 현재 진행중인 퀘스트 진행도의 index를 가져옴
         CurrentQuestIndex.Value = GetCurrentQuestIndex();
     }
@@ -109,6 +107,10 @@ public class QuestManager : Singleton<QuestManager>
     //     }
     // }
 
+    /// <summary>
+    /// 현재 진행중인 퀘스트의 index를 가져옵니다.
+    /// </summary>
+    /// <returns>현재 진행중인 퀘스트 index</returns>
     private int GetCurrentQuestIndex()
     {
         int questIdx = -1;
@@ -134,18 +136,31 @@ public class QuestManager : Singleton<QuestManager>
         }
         return questIdx;
     }
-
+    /// <summary>
+    /// 현재 퀘스트의 진행도를 갱신합니다.
+    /// </summary>
+    /// <param name="targetId">갱신하려는 목표 데이터 id</param>
+    /// <param name="count">갱신하려는 수치</param>
     public void UpdateCurrentQuestProgress(string targetId, int count)
     {
+        // 퀘스트 진행도 갱신
         bool isUpdateSuccess = CurrentQuest.UpdateProgress(targetId, count);
+        // 퀘스트 진행도 갱신시 발생하는 event 실행
         OnQuestProgressUpdate?.Invoke();
-        if (CurrentQuest.CheckProgressComplete())
+        // 현재 퀘스트의 진행도가 모두 완료되었다면
+        if (CurrentQuest.CheckState() == QuestState.Completed)
         {
+            // 현재 퀘스트의 상태를 완료로 변경
             CurrentQuest.UpdateQuestState(QuestState.Completed);
+            // 현재 퀘스트를 다음 퀘스트로 변경
             ChangeToNextQuest();
         }
     }
 
+    /// <summary>
+    /// 퀘스트 목록의 퀘스트가 전부 완료되었는지 확인합니다.
+    /// </summary>
+    /// <returns>true=완료, false=미완</returns>
     private bool CheckQuestsCompleted()
     {
         bool isCompleted = true;
@@ -159,15 +174,23 @@ public class QuestManager : Singleton<QuestManager>
         }
         return isCompleted;
     }
-
+    
+    /// <summary>
+    /// 현재 퀘스트를 다음 퀘스트로 변경합니다.
+    /// </summary>
     public void ChangeToNextQuest()
     {
+        // 다음 퀘스트 index를 가져옴
         int nextQuestIndex = CurrentQuestIndex.Value + 1;
-        if (nextQuestIndex != _currentQuestList.Length)
+        // 만일 다음 퀘스트 index가 오버되지 않았다면
+        if (nextQuestIndex < _currentQuestList.Length)
         {
+            // 현재 퀘스트의 index를 다음 퀘스트의 index로 지정
             CurrentQuestIndex.Value = nextQuestIndex;
+            // 현재 퀘스트를 수락상태로 변경
             CurrentQuest.AcceptQuest();
         }
+        // QuestEventBus를 통해 다음 퀘스트 index를 넘겨줌
         QuestEventBus.Publish(0, nextQuestIndex);
     }
     #endregion
