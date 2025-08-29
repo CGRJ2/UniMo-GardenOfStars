@@ -8,6 +8,8 @@ public static class Manager
     public static FirebaseManager firebase => FirebaseManager.Instance;
     public static PoolManager pool => PoolManager.Instance;
     public static PlayerManager player => PlayerManager.Instance;
+
+    public static DataManager data => DataManager.Instance;
     public static BuildingManager buildings => BuildingManager.Instance;
     public static QuestManager quest => QuestManager.Instance;
     public static NpcManager npc => NpcManager.Instance;
@@ -23,6 +25,7 @@ public static class Manager
         FirebaseManager.CreateInstance();
         PoolManager.CreateInstance();
         PlayerManager.CreateInstance();
+        DataManager.CreateInstance();
         BuildingManager.CreateInstance();
         QuestManager.CreateInstance();
         NpcManager.CreateInstance();
