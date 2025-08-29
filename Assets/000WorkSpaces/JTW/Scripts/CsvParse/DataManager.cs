@@ -13,13 +13,14 @@ public partial class DataManager : Singleton<DataManager>
 
     public void Init()
     {
+        WorkerRoutine();
     }
 
-    private async Task<string> GetDataString(bool isAdressable)
+    private async Task<string> GetDataString(bool isAdressable, string address)
     {
         if (isAdressable)
         {
-            AsyncOperationHandle<TextAsset> handle = Addressables.LoadAssetAsync<TextAsset>(_workerAdress);
+            AsyncOperationHandle<TextAsset> handle = Addressables.LoadAssetAsync<TextAsset>(address);
             try
             {
                 TextAsset asset = await handle.Task;
@@ -40,7 +41,7 @@ public partial class DataManager : Singleton<DataManager>
         {
             var tcs = new TaskCompletionSource<UnityWebRequestAsyncOperation>();
 
-            UnityWebRequest request = UnityWebRequest.Get(_workerDataTableURL);
+            UnityWebRequest request = UnityWebRequest.Get(address);
             UnityWebRequestAsyncOperation operation = request.SendWebRequest();
 
             operation.completed += _ => tcs.SetResult(operation);
