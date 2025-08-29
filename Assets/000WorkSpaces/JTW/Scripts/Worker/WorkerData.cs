@@ -68,13 +68,15 @@ public partial class DataManager
     public DataTableParser<WorkerDataCsv> Worker;
     private async void WorkerRoutine()
     {
+        string dataCsv;
+
         if (_isWorkerAdressable)
         {
-            string dataCsv = await GetDataString(_isWorkerAdressable, _workerAdress);
+            dataCsv = await GetDataString(_isWorkerAdressable, _workerAdress);
         }
         else
         {
-            string dataCsv = await GetDataString(_isWorkerAdressable, _workerDataTableURL);
+            dataCsv = await GetDataString(_isWorkerAdressable, _workerDataTableURL);
         }
 
         Worker = new DataTableParser<WorkerDataCsv>((words, dict) =>
