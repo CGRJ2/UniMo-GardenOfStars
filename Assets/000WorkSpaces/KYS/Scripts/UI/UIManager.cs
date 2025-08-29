@@ -186,17 +186,17 @@ namespace KYS
 
 
 
-                // LoadingScreen 초기화 (기존 또는 새로 생성된 LoadingCanvas에 대해)
-                //if (loadingCanvas != null)
-                //{
-                //    await InitializeLoadingScreen();
-                //}
+                 // LoadingScreen 초기화 (새로운 패턴)
+                if (loadingCanvas != null)
+                {
+                    InitializeLoadingScreen();
+                }
 
                 // 게임 시작 시 로딩 화면 표시
-                //if (showLoadingScreenOnStart)
-                //{
-                //    StartCoroutine(ShowInitialLoadingScreen());
-                //}
+                if (showLoadingScreenOnStart)
+                {
+                    StartCoroutine(ShowInitialLoadingScreen());
+                }
 
 
                 ApplySafeAreaToCanvases();
@@ -1049,16 +1049,373 @@ namespace KYS
 
         #region Loading Screen Methods
 
+        // LoadingScreen 인스턴스 관리
+        private LoadingScreen loadingScreenInstance = null;
+        private bool isLoadingScreenInitialized = false;
+
         /// <summary>
-        /// LoadingScreen 표시
+        /// LoadingScreen 표시 (기본 메서드)
         /// </summary>
         public void ShowLoadingScreen(string message = "로딩 중...")
         {
             StartCoroutine(ShowLoadingScreenCoroutine(message));
         }
 
+        /// <summary>
+        /// LoadingScreen 표시 (로컬라이제이션 키 사용)
+        /// </summary>
+        public void ShowLoadingScreenByKey(string localizationKey, string fallbackMessage = null)
+        {
+            string message = GetLocalizedMessage(localizationKey, fallbackMessage);
+            ShowLoadingScreen(message);
+        }
+
+        /// <summary>
+        /// LoadingScreen 표시 (비동기 버전)
+        /// </summary>
+        public System.Threading.Tasks.Task<LoadingScreen> ShowLoadingScreenAsync(string message = "로딩 중...")
+        {
+            ShowLoadingScreen(message);
+            return System.Threading.Tasks.Task.FromResult(GetCurrentLoadingScreen());
+        }
+
+        /// <summary>
+        /// LoadingScreen 표시 (로컬라이제이션 키 + 비동기)
+        /// </summary>
+        public System.Threading.Tasks.Task<LoadingScreen> ShowLoadingScreenByKeyAsync(string localizationKey, string fallbackMessage = null)
+        {
+            string message = GetLocalizedMessage(localizationKey, fallbackMessage);
+            ShowLoadingScreen(message);
+            return System.Threading.Tasks.Task.FromResult(GetCurrentLoadingScreen());
+        }
+
+        /// <summary>
+        /// 간단한 로딩 시작
+        /// </summary>
+        public void StartLoading(string message = "로딩 중...")
+        {
+            ShowLoadingScreen(message);
+            SetLoadingProgress(0f);
+        }
+
+        /// <summary>
+        /// 간단한 로딩 시작 (로컬라이제이션 키)
+        /// </summary>
+        public void StartLoadingByKey(string localizationKey, string fallbackMessage = "로딩 중...")
+        {
+            ShowLoadingScreenByKey(localizationKey, fallbackMessage);
+            SetLoadingProgress(0f);
+        }
+
+        /// <summary>
+        /// 로딩 완료 처리
+        /// </summary>
+        public void FinishLoading()
+        {
+            SetLoadingProgress(1f);
+            HideLoadingScreen();
+        }
+
+        /// <summary>
+        /// 로딩 진행률 설정 (0.0 ~ 1.0)
+        /// </summary>
+        public void SetLoadingProgress(float progress)
+        {
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading != null)
+            {
+                currentLoading.SetProgress(progress);
+                Debug.Log($"[UIManager] 진행률 설정: {progress * 100:F1}%");
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] SetLoadingProgress: LoadingScreen이 활성화되지 않았습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 부드러운 진행률 애니메이션 (LoadingScreen의 애니메이션 사용)
+        /// </summary>
+        public void SetLoadingProgressAnimated(float progress, float duration = 0.5f)
+        {
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading != null)
+            {
+                currentLoading.SetProgressAnimated(progress, duration);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] LoadingScreen이 활성화되지 않아 애니메이션을 적용할 수 없습니다.");
+                SetLoadingProgress(progress);
+            }
+        }
+
+        /// <summary>
+        /// 로딩 진행률 설정 (퍼센트)
+        /// </summary>
+        public void SetLoadingProgressPercent(int percent)
+        {
+            float progress = Mathf.Clamp01(percent / 100f);
+            SetLoadingProgress(progress);
+        }
+
+        /// <summary>
+        /// 로딩 진행률 설정 (단계별)
+        /// </summary>
+        public void SetLoadingProgressStep(int step)
+        {
+            float progress = Mathf.Clamp01(step * 0.25f);
+            SetLoadingProgress(progress);
+        }
+
+        /// <summary>
+        /// 로딩 메시지 설정
+        /// </summary>
+        public void SetLoadingMessage(string message)
+        {
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading != null)
+            {
+                currentLoading.SetCenterMessage(message);
+                Debug.Log($"[UIManager] 메시지 설정: {message}");
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] SetLoadingMessage: LoadingScreen이 활성화되지 않았습니다. 메시지: {message}");
+            }
+        }
+
+        /// <summary>
+        /// 로딩 메시지 설정 (로컬라이제이션 키)
+        /// </summary>
+        public void SetLoadingMessageByKey(string localizationKey, string fallbackMessage = null)
+        {
+            string message = GetLocalizedMessage(localizationKey, fallbackMessage);
+            SetLoadingMessage(message);
+        }
+
+        /// <summary>
+        /// LoadingScreen 숨기기 (비활성화만 하고 파괴하지 않음)
+        /// </summary>
+        public void HideLoadingScreen()
+        {
+            Debug.Log("[UIManager] HideLoadingScreen 호출됨");
+            
+            if (loadingScreenInstance != null && loadingScreenInstance.gameObject.activeInHierarchy)
+            {
+                Debug.Log("[UIManager] LoadingScreen 인스턴스가 활성화되어 있음 - Hide() 호출");
+                loadingScreenInstance.Hide();
+                // 완전히 숨긴 후 비활성화
+                StartCoroutine(HideLoadingScreenCoroutine());
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] HideLoadingScreen: LoadingScreen 인스턴스가 null이거나 비활성화 상태입니다.");
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 숨기기 코루틴 (애니메이션 완료 후 비활성화)
+        /// </summary>
+        private IEnumerator HideLoadingScreenCoroutine()
+        {
+            Debug.Log("[UIManager] HideLoadingScreenCoroutine 시작 - 0.3초 대기");
+            
+            // Hide 애니메이션이 완료될 때까지 대기
+            yield return new WaitForSeconds(0.3f);
+            
+            if (loadingScreenInstance != null)
+            {
+                Debug.Log("[UIManager] LoadingScreen GameObject 비활성화");
+                loadingScreenInstance.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] HideLoadingScreenCoroutine: loadingScreenInstance가 null입니다.");
+            }
+        }
+
+        /// <summary>
+        /// 현재 활성화된 LoadingScreen 가져오기
+        /// </summary>
+        public LoadingScreen GetCurrentLoadingScreen()
+        {
+            if (loadingScreenInstance != null && loadingScreenInstance.gameObject.activeInHierarchy)
+            {
+                return loadingScreenInstance;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// LoadingScreen이 활성화되어 있는지 확인
+        /// </summary>
+        public bool IsLoadingScreenActive()
+        {
+            return loadingScreenInstance != null && loadingScreenInstance.gameObject.activeInHierarchy;
+        }
+
+        /// <summary>
+        /// LoadingScreen 인스턴스가 존재하는지 확인 (활성화 여부와 관계없이)
+        /// </summary>
+        public bool HasLoadingScreenInstance()
+        {
+            return loadingScreenInstance != null;
+        }
+
+        /// <summary>
+        /// LoadingScreen 상태 초기화 (재사용을 위해)
+        /// </summary>
+        public void ResetLoadingScreen()
+        {
+            if (loadingScreenInstance != null)
+            {
+                loadingScreenInstance.ResetLoadingScreen();
+                isLoadingScreenInitialized = false;
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 강제 재생성 (문제가 있을 때 사용)
+        /// </summary>
+        public void RecreateLoadingScreen()
+        {
+            if (loadingScreenInstance != null)
+            {
+                Destroy(loadingScreenInstance.gameObject);
+                loadingScreenInstance = null;
+                isLoadingScreenInitialized = false;
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 즉시 활성화 (초기화 없이)
+        /// </summary>
+        public void ActivateLoadingScreen(string message = null)
+        {
+            if (loadingScreenInstance != null)
+            {
+                loadingScreenInstance.gameObject.SetActive(true);
+                if (!string.IsNullOrEmpty(message))
+                {
+                    loadingScreenInstance.SetCenterMessage(message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 즉시 비활성화 (애니메이션 없이)
+        /// </summary>
+        public void DeactivateLoadingScreen()
+        {
+            if (loadingScreenInstance != null)
+            {
+                loadingScreenInstance.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 현재 로딩 진행률 가져오기
+        /// </summary>
+        public float GetCurrentLoadingProgress()
+        {
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading != null)
+            {
+                return currentLoading.GetCurrentProgress();
+            }
+            return 0f;
+        }
+
+        /// <summary>
+        /// 로컬라이제이션된 메시지 가져오기
+        /// </summary>
+        private string GetLocalizedMessage(string key, string fallback = null)
+        {
+            if (LocalizationManager.Instance != null && LocalizationManager.Instance.IsInitialized)
+            {
+                string localizedText = LocalizationManager.Instance.GetText(key);
+                if (!string.IsNullOrEmpty(localizedText) && localizedText != key)
+                {
+                    return localizedText;
+                }
+            }
+            
+            return fallback ?? key;
+        }
+
+        /// <summary>
+        /// LoadingScreen 표시 코루틴 (내부 구현)
+        /// </summary>
         private IEnumerator ShowLoadingScreenCoroutine(string message)
         {
+            Debug.Log($"[UIManager] ShowLoadingScreenCoroutine 시작 - 메시지: {message}");
+            
+            // 이미 LoadingScreen이 활성화되어 있다면 초기화 후 메시지 업데이트
+            if (loadingScreenInstance != null && loadingScreenInstance.gameObject.activeInHierarchy)
+            {
+                Debug.Log("[UIManager] LoadingScreen이 이미 활성화되어 있음 - 초기화 후 메시지 업데이트");
+                // 진행률 초기화를 위해 ResetLoadingScreen 호출
+                loadingScreenInstance.ResetLoadingScreen();
+                if (!string.IsNullOrEmpty(message))
+                {
+                    loadingScreenInstance.SetCenterMessage(message);
+                }
+                yield break;
+            }
+
+            // LoadingScreen 인스턴스가 없다면 생성
+            if (loadingScreenInstance == null)
+            {
+                Debug.Log("[UIManager] LoadingScreen 인스턴스가 없음 - 생성 시작");
+                yield return StartCoroutine(CreateLoadingScreenInstance());
+            }
+
+            // LoadingScreen이 성공적으로 생성되었다면 활성화
+            if (loadingScreenInstance != null)
+            {
+                Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료 - 활성화 시작");
+                
+                // 활성화 (Initialize 전에 활성화해야 함)
+                loadingScreenInstance.gameObject.SetActive(true);
+                
+                // 초기화가 필요하다면 초기화
+                if (!isLoadingScreenInitialized)
+                {
+                    Debug.Log("[UIManager] LoadingScreen 초기화 실행");
+                    loadingScreenInstance.Initialize();
+                    isLoadingScreenInitialized = true;
+                }
+                else
+                {
+                    // 이미 초기화된 경우 재사용을 위해 ResetLoadingScreen 호출
+                    Debug.Log("[UIManager] LoadingScreen 재사용을 위해 ResetLoadingScreen 호출");
+                    loadingScreenInstance.ResetLoadingScreen();
+                }
+
+                // 메시지 설정
+                if (!string.IsNullOrEmpty(message))
+                {
+                    loadingScreenInstance.SetCenterMessage(message);
+                }
+
+                // Show 애니메이션 시작
+                loadingScreenInstance.Show();
+                Debug.Log("[UIManager] LoadingScreen 활성화 완료");
+            }
+            else
+            {
+                Debug.LogError("[UIManager] LoadingScreen 인스턴스 생성 실패");
+            }
+        }
+
+        /// <summary>
+        /// LoadingScreen 인스턴스 생성
+        /// </summary>
+        private IEnumerator CreateLoadingScreenInstance()
+        {
+            Debug.Log("[UIManager] CreateLoadingScreenInstance 시작");
+            
             // 씬 전환 중 Addressable 시스템 안정성을 위한 대기
             yield return new WaitForSeconds(0.1f);
 
@@ -1074,6 +1431,7 @@ namespace KYS
 
             foreach (string key in possibleKeys)
             {
+                Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 시도: {key}");
                 AsyncOperationHandle<GameObject> handle = default;
                 bool loadSuccess = false;
 
@@ -1095,6 +1453,7 @@ namespace KYS
                     {
                         loadingScreenPrefab = handle.Result;
                         loadSuccess = true;
+                        Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 성공: {key}");
                         break;
                     }
                     else
@@ -1114,17 +1473,18 @@ namespace KYS
 
             if (loadingScreenPrefab != null)
             {
+                Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 시작");
+                
                 // LoadingCanvas에 인스턴스 생성
                 GameObject instance = Instantiate(loadingScreenPrefab, loadingCanvas.transform);
-                LoadingScreen loadingScreen = instance.GetComponent<LoadingScreen>();
+                loadingScreenInstance = instance.GetComponent<LoadingScreen>();
 
-                if (loadingScreen != null)
+                if (loadingScreenInstance != null)
                 {
-                    loadingScreen.Initialize();
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        loadingScreen.SetCenterMessage(message);
-                    }
+                    // 초기에는 비활성화 상태로 생성
+                    loadingScreenInstance.gameObject.SetActive(false);
+                    isLoadingScreenInitialized = false;
+                    Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료");
                 }
                 else
                 {
@@ -1145,10 +1505,9 @@ namespace KYS
                     if (loadingScreen != null)
                     {
                         loadingScreen.Initialize();
-                        if (!string.IsNullOrEmpty(message))
-                        {
-                            loadingScreen.SetCenterMessage(message);
-                        }
+                        loadingScreenInstance = loadingScreen;
+                        loadingScreenInstance.gameObject.SetActive(false);
+                        isLoadingScreenInitialized = false;
                     }
                 }
                 else
@@ -1158,28 +1517,325 @@ namespace KYS
             }
         }
 
+
+
+        #endregion
+
+        #region LoadingScreen Extension Methods
+
         /// <summary>
-        /// LoadingScreen 숨기기 (Popup 스택과 무관하게 처리)
+        /// 게임 로딩 시나리오 실행 (편의 메서드)
         /// </summary>
-        public void HideLoadingScreen()
+        public async System.Threading.Tasks.Task ExecuteGameLoadingScenario()
         {
-            LoadingScreen.HideLoadingScreen();
+            // 1. 게임 시작 로딩
+            await ShowLoadingScreenByKeyAsync("loading_game_start", "게임을 시작합니다...");
+            await System.Threading.Tasks.Task.Delay(1000);
+            
+            // 2. 데이터 로딩
+            SetLoadingMessageByKey("loading_data", "데이터를 불러오는 중...");
+            SetLoadingProgress(0.2f);
+            await System.Threading.Tasks.Task.Delay(1000);
+            
+            // 3. 리소스 로딩
+            SetLoadingMessageByKey("loading_resources", "리소스를 불러오는 중...");
+            SetLoadingProgress(0.4f);
+            await System.Threading.Tasks.Task.Delay(1000);
+            
+            // 4. 씬 로딩
+            SetLoadingMessageByKey("loading_scene", "씬을 불러오는 중...");
+            SetLoadingProgress(0.6f);
+            await System.Threading.Tasks.Task.Delay(1000);
+            
+            // 5. 초기화
+            SetLoadingMessageByKey("loading_initialization", "초기화 중...");
+            SetLoadingProgress(0.8f);
+            await System.Threading.Tasks.Task.Delay(1000);
+            
+            // 6. 완료
+            SetLoadingMessageByKey("loading_complete", "완료!");
+            SetLoadingProgress(1f);
+            await System.Threading.Tasks.Task.Delay(500);
+            
+            // 7. 로딩 화면 숨기기
+            HideLoadingScreen();
         }
 
         /// <summary>
-        /// 현재 활성화된 LoadingScreen 가져오기
+        /// 단계별 로딩 진행 (편의 메서드)
         /// </summary>
-        public LoadingScreen GetCurrentLoadingScreen()
+        public async System.Threading.Tasks.Task ExecuteStepLoading(string[] messages, float[] progressValues, int[] delays = null)
         {
-            LoadingScreen[] loadingScreens = FindObjectsOfType<LoadingScreen>();
-            foreach (var loadingScreen in loadingScreens)
+            Debug.Log("[UIManager] ExecuteStepLoading 시작");
+            
+            if (messages == null || progressValues == null || messages.Length != progressValues.Length)
             {
-                if (loadingScreen != null && loadingScreen.gameObject.activeInHierarchy)
+                Debug.LogError("[UIManager] 메시지와 진행률 배열의 길이가 일치하지 않습니다.");
+                return;
+            }
+
+            // LoadingScreen 상태 확인 및 자동 활성화
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading == null)
+            {
+                Debug.Log("[UIManager] LoadingScreen이 활성화되지 않았습니다. 자동으로 표시합니다.");
+                ShowLoadingScreen(messages.Length > 0 ? messages[0] : "로딩 중...");
+                
+                // LoadingScreen이 준비될 때까지 대기
+                int maxWaitTime = 5000; // 최대 5초 대기
+                int waitTime = 0;
+                while (GetCurrentLoadingScreen() == null && waitTime < maxWaitTime)
                 {
-                    return loadingScreen;
+                    await System.Threading.Tasks.Task.Delay(100);
+                    waitTime += 100;
+                }
+                
+                currentLoading = GetCurrentLoadingScreen();
+                if (currentLoading == null)
+                {
+                    Debug.LogError("[UIManager] LoadingScreen을 활성화할 수 없습니다.");
+                    return;
                 }
             }
-            return null;
+
+            Debug.Log($"[UIManager] LoadingScreen 확인됨: {currentLoading.name}");
+
+            // 기본 지연 시간 설정 (1초)
+            if (delays == null)
+            {
+                delays = new int[messages.Length];
+                for (int i = 0; i < delays.Length; i++)
+                {
+                    delays[i] = 1000;
+                }
+            }
+
+            for (int i = 0; i < messages.Length; i++)
+            {
+                Debug.Log($"[UIManager] 단계 {i + 1}/{messages.Length}: {messages[i]} (진행률: {progressValues[i] * 100:F1}%)");
+                
+                SetLoadingMessage(messages[i]);
+                SetLoadingProgress(progressValues[i]);
+                
+                Debug.Log($"[UIManager] {delays[i]}ms 대기 시작");
+                await System.Threading.Tasks.Task.Delay(delays[i]);
+                Debug.Log($"[UIManager] {delays[i]}ms 대기 완료");
+            }
+            
+            Debug.Log("[UIManager] ExecuteStepLoading 완료");
+        }
+
+        /// <summary>
+        /// 단계별 로딩 진행 (로컬라이제이션 키 사용) - 완전체 버전 (코루틴)
+        /// </summary>
+        public IEnumerator ExecuteStepLoadingByKeys(string[] localizationKeys, string[] fallbackMessages, float[] progressValues, int[] delays = null, float animationDuration = 0.5f, bool autoHide = true, string completionKey = null, string completionFallback = "완료!")
+        {
+            if (localizationKeys == null || progressValues == null || localizationKeys.Length != progressValues.Length)
+            {
+                Debug.LogError("[UIManager] 로컬라이제이션 키와 진행률 배열의 길이가 일치하지 않습니다.");
+                yield break;
+            }
+
+            // LoadingScreen 상태 확인 및 자동 활성화
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading == null)
+            {
+                Debug.Log("[UIManager] LoadingScreen이 활성화되지 않았습니다. 자동으로 표시합니다.");
+                string initialMessage = fallbackMessages != null && fallbackMessages.Length > 0 ? fallbackMessages[0] : "로딩 중...";
+                ShowLoadingScreen(initialMessage);
+                
+                // LoadingScreen이 준비될 때까지 대기
+                int maxWaitTime = 5000; // 최대 5초 대기
+                int waitTime = 0;
+                while (GetCurrentLoadingScreen() == null && waitTime < maxWaitTime)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    waitTime += 100;
+                }
+                
+                currentLoading = GetCurrentLoadingScreen();
+                if (currentLoading == null)
+                {
+                    Debug.LogError("[UIManager] LoadingScreen을 활성화할 수 없습니다.");
+                    yield break;
+                }
+            }
+
+            // 기본 지연 시간 설정 (1초)
+            if (delays == null)
+            {
+                delays = new int[localizationKeys.Length];
+                for (int i = 0; i < delays.Length; i++)
+                {
+                    delays[i] = 1000;
+                }
+            }
+
+            for (int i = 0; i < localizationKeys.Length; i++)
+            {
+                string fallback = fallbackMessages != null && i < fallbackMessages.Length ? fallbackMessages[i] : null;
+                SetLoadingMessageByKey(localizationKeys[i], fallback);
+                
+                // 부드러운 애니메이션으로 진행률 설정
+                float stepAnimationDuration = Mathf.Min(animationDuration, delays[i] * 0.001f * 0.8f); // 지연 시간의 80%를 애니메이션에 사용
+                SetLoadingProgressAnimated(progressValues[i], stepAnimationDuration);
+                
+                // 애니메이션 완료까지 대기
+                yield return new WaitForSeconds(stepAnimationDuration);
+                
+                // 추가 지연 시간 대기
+                if (delays[i] > stepAnimationDuration * 1000)
+                {
+                    yield return new WaitForSeconds((delays[i] - stepAnimationDuration * 1000) * 0.001f);
+                }
+            }
+
+            // 완료 처리
+            if (autoHide)
+            {
+                // 완료 메시지 설정 (있는 경우)
+                if (!string.IsNullOrEmpty(completionKey))
+                {
+                    SetLoadingMessageByKey(completionKey, completionFallback);
+                }
+                
+                // 잠시 대기 후 자동 숨기기
+                yield return new WaitForSeconds(0.5f);
+                HideLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// 단계별 로딩 진행 (로컬라이제이션 키 사용) - 완전체 버전 (비동기)
+        /// </summary>
+        public async System.Threading.Tasks.Task ExecuteStepLoadingByKeysAsync(string[] localizationKeys, string[] fallbackMessages, float[] progressValues, int[] delays = null, float animationDuration = 0.5f, bool autoHide = true, string completionKey = null, string completionFallback = "완료!")
+        {
+            if (localizationKeys == null || progressValues == null || localizationKeys.Length != progressValues.Length)
+            {
+                Debug.LogError("[UIManager] 로컬라이제이션 키와 진행률 배열의 길이가 일치하지 않습니다.");
+                return;
+            }
+
+            // LoadingScreen 상태 확인 및 자동 활성화
+            LoadingScreen currentLoading = GetCurrentLoadingScreen();
+            if (currentLoading == null)
+            {
+                Debug.Log("[UIManager] LoadingScreen이 활성화되지 않았습니다. 자동으로 표시합니다.");
+                string initialMessage = fallbackMessages != null && fallbackMessages.Length > 0 ? fallbackMessages[0] : "로딩 중...";
+                ShowLoadingScreen(initialMessage);
+                
+                // LoadingScreen이 준비될 때까지 대기
+                int maxWaitTime = 5000; // 최대 5초 대기
+                int waitTime = 0;
+                while (GetCurrentLoadingScreen() == null && waitTime < maxWaitTime)
+                {
+                    await System.Threading.Tasks.Task.Delay(100);
+                    waitTime += 100;
+                }
+                
+                currentLoading = GetCurrentLoadingScreen();
+                if (currentLoading == null)
+                {
+                    Debug.LogError("[UIManager] LoadingScreen을 활성화할 수 없습니다.");
+                    return;
+                }
+            }
+
+            // 기본 지연 시간 설정 (1초)
+            if (delays == null)
+            {
+                delays = new int[localizationKeys.Length];
+                for (int i = 0; i < delays.Length; i++)
+                {
+                    delays[i] = 1000;
+                }
+            }
+
+            for (int i = 0; i < localizationKeys.Length; i++)
+            {
+                string fallback = fallbackMessages != null && i < fallbackMessages.Length ? fallbackMessages[i] : null;
+                SetLoadingMessageByKey(localizationKeys[i], fallback);
+                
+                // 부드러운 애니메이션으로 진행률 설정
+                float stepAnimationDuration = Mathf.Min(animationDuration, delays[i] * 0.001f * 0.8f); // 지연 시간의 80%를 애니메이션에 사용
+                SetLoadingProgressAnimated(progressValues[i], stepAnimationDuration);
+                
+                // 애니메이션 완료까지 대기
+                await System.Threading.Tasks.Task.Delay((int)(stepAnimationDuration * 1000));
+                
+                // 추가 지연 시간 대기
+                if (delays[i] > stepAnimationDuration * 1000)
+                {
+                    await System.Threading.Tasks.Task.Delay(delays[i] - (int)(stepAnimationDuration * 1000));
+                }
+            }
+
+            // 완료 처리
+            if (autoHide)
+            {
+                // 완료 메시지 설정 (있는 경우)
+                if (!string.IsNullOrEmpty(completionKey))
+                {
+                    SetLoadingMessageByKey(completionKey, completionFallback);
+                }
+                
+                // 잠시 대기 후 자동 숨기기
+                await System.Threading.Tasks.Task.Delay(500);
+                HideLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// 진행률 애니메이션 (편의 메서드)
+        /// </summary>
+        public async System.Threading.Tasks.Task AnimateLoadingProgress(float targetProgress, float duration = 1f, int steps = 60)
+        {
+            float startProgress = GetCurrentLoadingProgress();
+            float progressDiff = targetProgress - startProgress;
+            float stepTime = duration / steps;
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                float currentProgress = startProgress + (progressDiff * t);
+                SetLoadingProgress(currentProgress);
+                await System.Threading.Tasks.Task.Delay((int)(stepTime * 1000));
+            }
+
+            // 최종값으로 정확히 설정
+            SetLoadingProgress(targetProgress);
+        }
+
+        /// <summary>
+        /// 로딩 완료 애니메이션 (편의 메서드)
+        /// </summary>
+        public async System.Threading.Tasks.Task AnimateLoadingComplete(string completionMessage = "완료!", float animationDuration = 0.5f)
+        {
+            // 100%까지 애니메이션
+            await AnimateLoadingProgress(1f, animationDuration);
+            
+            // 완료 메시지 설정
+            SetLoadingMessage(completionMessage);
+            
+            // 잠시 대기 후 숨기기
+            await System.Threading.Tasks.Task.Delay(500);
+            HideLoadingScreen();
+        }
+
+        /// <summary>
+        /// 로딩 완료 애니메이션 (로컬라이제이션 키 사용)
+        /// </summary>
+        public async System.Threading.Tasks.Task AnimateLoadingCompleteByKey(string localizationKey, string fallbackMessage = "완료!", float animationDuration = 0.5f)
+        {
+            // 100%까지 애니메이션
+            await AnimateLoadingProgress(1f, animationDuration);
+            
+            // 완료 메시지 설정
+            SetLoadingMessageByKey(localizationKey, fallbackMessage);
+            
+            // 잠시 대기 후 숨기기
+            await System.Threading.Tasks.Task.Delay(500);
+            HideLoadingScreen();
         }
 
         #endregion
@@ -2077,29 +2733,36 @@ namespace KYS
         #region Initial Loading Screen
 
         /// <summary>
-        /// 게임 시작 시 초기 로딩 화면 표시
+        /// 게임 시작 시 초기 로딩 화면 표시 (새로운 패턴)
         /// </summary>
         private IEnumerator ShowInitialLoadingScreen()
         {
+            Debug.Log("[UIManager] ShowInitialLoadingScreen 시작");
+
+            // LoadingCanvas가 준비될 때까지 대기
+            float waitTime = 0f;
+            float maxWaitTime = 5f; // 최대 5초 대기
+
+            while (loadingCanvas == null && waitTime < maxWaitTime)
+            {
+                yield return new WaitForSeconds(0.1f);
+                waitTime += 0.1f;
+            }
+
             if (loadingCanvas == null)
             {
-                Debug.LogWarning("[UIManager] Loading Canvas가 초기화되지 않았습니다.");
+                Debug.LogError("[UIManager] LoadingCanvas를 찾을 수 없습니다.");
                 yield break;
             }
 
-            // 로딩 화면 UI 찾기
-            LoadingScreen loadingScreen = loadingCanvas.GetComponentInChildren<LoadingScreen>(true);
-            
-
-            // 로딩 화면 표시
-            loadingScreen.gameObject.SetActive(true);
-            loadingScreen.Show();
-
-            // 초기 로딩 메시지 설정
-            if (!string.IsNullOrEmpty(initialLoadingMessage))
+            // 새로운 LoadingScreen 관리 패턴 사용
+            if (!HasLoadingScreenInstance())
             {
-                loadingScreen.SetLoadingMessage(initialLoadingMessage);
+                yield return StartCoroutine(CreateLoadingScreenInstance());
             }
+
+            // LoadingScreen 표시
+            ShowLoadingScreen(initialLoadingMessage);
 
             // 로딩 화면이 완전히 표시될 때까지 대기
             yield return new WaitForSeconds(0.5f);
@@ -2111,7 +2774,7 @@ namespace KYS
             yield return new WaitForSeconds(loadingScreenHideDelay);
 
             // 로딩 화면 숨김
-            loadingScreen.Hide();
+            HideLoadingScreen();
         }
 
         #endregion
@@ -2119,9 +2782,9 @@ namespace KYS
         #region LoadingScreen Management
 
         /// <summary>
-        /// LoadingScreen 초기화 및 생성
+        /// LoadingScreen 초기화 및 생성 (새로운 패턴)
         /// </summary>
-        private async System.Threading.Tasks.Task InitializeLoadingScreen()
+        private void InitializeLoadingScreen()
         {
             Debug.Log("[UIManager] InitializeLoadingScreen 시작");
             
@@ -2133,51 +2796,16 @@ namespace KYS
 
             Debug.Log($"[UIManager] LoadingCanvas 발견: {loadingCanvas.name}");
 
-            try
+            // 새로운 LoadingScreen 관리 패턴 사용
+            if (!HasLoadingScreenInstance())
             {
-                // 1단계: 첫 씬에 미리 배치된 LoadingScreen 찾기 (가장 우선)
-                LoadingScreen existingLoadingScreen = loadingCanvas.GetComponentInChildren<LoadingScreen>(true);
-                if (existingLoadingScreen != null)
-                {
-                    Debug.Log("[UIManager] 첫 씬의 기존 LoadingScreen 발견 - 사용");
-                    existingLoadingScreen.gameObject.SetActive(true);
-                    return;
-                }
-
-                Debug.Log("[UIManager] 첫 씬에 LoadingScreen이 없습니다. Addressable에서 로드...");
-                
-                // 2단계: Addressable에서 LoadingScreen Prefab 로드
-                if (loadingScreenPrefabReference != null && loadingScreenPrefabReference.RuntimeKeyIsValid())
-                {
-                    try
-                    {
-                        var loadingScreenHandle = loadingScreenPrefabReference.InstantiateAsync(loadingCanvas.transform);
-                        await loadingScreenHandle.Task;
-                        
-                        LoadingScreen newLoadingScreen = loadingScreenHandle.Result.GetComponent<LoadingScreen>();
-                        if (newLoadingScreen != null)
-                        {
-                            addressableHandles["LoadingScreen"] = loadingScreenHandle;
-                            Debug.Log("[UIManager] Addressable에서 LoadingScreen 로드 완료");
-                        }
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError($"[UIManager] LoadingScreen 로드 실패: {e.Message}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("[UIManager] LoadingScreen Prefab Reference가 설정되지 않았습니다.");
-                }
+                StartCoroutine(CreateLoadingScreenInstance());
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogError($"[UIManager] LoadingScreen 초기화 중 오류: {e.Message}");
+                Debug.Log("[UIManager] 기존 LoadingScreen 인스턴스가 있습니다.");
             }
         }
-
-
 
         #endregion
     }

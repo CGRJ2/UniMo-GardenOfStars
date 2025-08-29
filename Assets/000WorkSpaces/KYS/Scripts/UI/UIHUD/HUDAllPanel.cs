@@ -312,27 +312,33 @@ namespace KYS
 
         #region CompossButton Event Handlers
 
-        private bool isCompossButtonPressed = false;
+      
         private float compossButtonPressStartTime = 0f;
         private Coroutine compossButtonHoldCoroutine;
 
         private void OnCompossButtonPressed()
         {
-            Debug.Log("[HUDAllPanel] CompossButton 눌림");
-            isCompossButtonPressed = true;
+            //Debug.Log("[HUDAllPanel] CompossButton 눌림");
+          
             compossButtonPressStartTime = Time.time;
+           
+                StartCompossButtonHoldEffect();
+            
             
             // 버튼을 누르고 있을 때의 효과 시작
-            StartCompossButtonHoldEffect();
+            
         }
 
         private void OnCompossButtonReleased()
         {
-            Debug.Log("[HUDAllPanel] CompossButton 해제됨");
-            isCompossButtonPressed = false;
+            //Debug.Log("[HUDAllPanel] CompossButton 해제됨");
+      
             
-            // 버튼을 놓았을 때의 효과 정리
-            StopCompossButtonHoldEffect();
+         
+                // 버튼을 놓았을 때의 효과 정리
+                StopCompossButtonHoldEffect();
+           
+            
         }
 
         private void OnCompossButtonLongPressed()

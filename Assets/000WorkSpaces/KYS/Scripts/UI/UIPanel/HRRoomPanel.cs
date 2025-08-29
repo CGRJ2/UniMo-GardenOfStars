@@ -15,6 +15,7 @@ namespace KYS
         [SerializeField] private string closeButtonName = "CloseButton";
         [SerializeField] private string workerCountTextName = "WorkerCountText";
         [SerializeField] private string salaryTextName = "SalaryText";
+        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
         private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
@@ -24,11 +25,16 @@ namespace KYS
         private Button closeButton => GetUI<Button>(closeButtonName);
         private TextMeshProUGUI workerCountText => GetUI<TextMeshProUGUI>(workerCountTextName);
         private TextMeshProUGUI salaryText => GetUI<TextMeshProUGUI>(salaryTextName);
+        private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
 
         [Header("HR Room Settings")]
         [SerializeField] private int currentWorkerCount = 0;
         [SerializeField] private int maxWorkerCount = 10;
         [SerializeField] private int totalSalary = 0;
+
+        // 추가 변수 선언
+        private int currentMoney = 0;
+
 
         protected override void Awake()
         {
@@ -53,10 +59,23 @@ namespace KYS
             base.Initialize();
             SetupButtons();
             UpdateUI();
+
+
+            // 초기 값 설정
+            UpdateMoney(Manager.player.Data.Money.Value);
+
+            // ObservableProperty 구독 - 실시간 돈 업데이트
+            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+
         }
 
         public override void Cleanup()
         {
+
+            // ObservableProperty 구독 해제
+            Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+
+
             base.Cleanup();
         }
 
@@ -108,6 +127,28 @@ namespace KYS
             totalSalary = salary;
             UpdateUI();
         }
+
+        public void UpdateMoney(int amount)
+        {
+
+            currentMoney = amount; // 현재 값 저장
+            if (moneyText != null)
+            {
+
+
+                moneyText.text = $"{amount:N0}";
+            }
+        }
+
+        /// <summary>
+        /// ObservableProperty Money 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnMoneyChanged(int newMoneyValue)
+        {
+            UpdateMoney(newMoneyValue);
+        }
+
+    
 
         private void OnHireButtonClicked()
         {
