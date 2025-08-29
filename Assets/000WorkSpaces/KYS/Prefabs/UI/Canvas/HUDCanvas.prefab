@@ -120,5 +120,26 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   maxTouchDistance: 100
+  buildingLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  workerLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  resourceLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  facilityLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  npcLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  buildingHUDKey: BuildingInfoHUD
+  workerHUDKey: WorkerInfoHUD
+  resourceHUDKey: ResourceInfoHUD
+  facilityHUDKey: FacilityInfoHUD
+  npcHUDKey: NPCInfoHUD
+  defaultHUDKey: TouchInfoHUD
   enableDebugLogs: 0
   showTouchGizmos: 0

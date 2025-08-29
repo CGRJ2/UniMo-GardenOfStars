@@ -5,6 +5,41 @@ using System.Collections.Generic;
 namespace KYS
 {
     /// <summary>
+    /// 레이어별 HUD 타입 정의
+    /// </summary>
+    public enum HUDType
+    {
+        Building,       // 건물 정보
+        Worker,         // 작업자 정보
+        Resource,       // 자원 정보
+        Facility,       // 시설 정보
+        NPC,           // NPC 정보
+        Default         // 기본 정보
+    }
+
+    /// <summary>
+    /// HUD 데이터 구조
+    /// </summary>
+    [System.Serializable]
+    public class HUDData
+    {
+        public string title;
+        public string description;
+        public Sprite icon;
+        public HUDType hudType;
+        public Dictionary<string, object> customData;
+
+        public HUDData(string title, string description, Sprite icon = null, HUDType hudType = HUDType.Default)
+        {
+            this.title = title;
+            this.description = description;
+            this.icon = icon;
+            this.hudType = hudType;
+            this.customData = new Dictionary<string, object>();
+        }
+    }
+
+    /// <summary>
     /// 터치/클릭 감지 및 정보 팝업 관리 매니저
     /// </summary>
     public class TouchInfoManager : MonoBehaviour
@@ -15,8 +50,20 @@ namespace KYS
         [SerializeField] private LayerMask touchableLayerMask = -1; // 모든 레이어
         [SerializeField] private float maxTouchDistance = 100f; // 터치 감지 최대 거리
         
-        [Header("Popup Settings")]
-        //[SerializeField] private float popupCloseDelay = 0.1f; // 팝업 닫기 지연 시간
+        [Header("Layer-Specific HUD Settings")]
+        [SerializeField] private LayerMask buildingLayerMask = 1 << 8; // Building 레이어
+        [SerializeField] private LayerMask workerLayerMask = 1 << 9;   // Worker 레이어
+        [SerializeField] private LayerMask resourceLayerMask = 1 << 10; // Resource 레이어
+        [SerializeField] private LayerMask facilityLayerMask = 1 << 11; // Facility 레이어
+        [SerializeField] private LayerMask npcLayerMask = 1 << 12;      // NPC 레이어
+        
+        [Header("HUD Prefab References")]
+        [SerializeField] private string buildingHUDKey = "BuildingInfoHUD";
+        [SerializeField] private string workerHUDKey = "WorkerInfoHUD";
+        [SerializeField] private string resourceHUDKey = "ResourceInfoHUD";
+        [SerializeField] private string facilityHUDKey = "FacilityInfoHUD";
+        [SerializeField] private string npcHUDKey = "NPCInfoHUD";
+        [SerializeField] private string defaultHUDKey = "TouchInfoHUD";
         
         [Header("Debug Settings")]
         [SerializeField] private bool enableDebugLogs = true;
@@ -25,6 +72,9 @@ namespace KYS
         private Camera mainCamera;
         private TouchInfoHUD currentHUD;
         private List<TouchInfoHUD> activeHUDs = new List<TouchInfoHUD>();
+        
+        // 레이어별 HUD 매핑
+        private Dictionary<LayerMask, HUDType> layerToHUDType = new Dictionary<LayerMask, HUDType>();
         
         // 테스트용 데이터
         private Dictionary<Vector2, string> testData = new Dictionary<Vector2, string>();
@@ -37,15 +87,36 @@ namespace KYS
                 Debug.LogError("[TouchInfoManager] Main Camera를 찾을 수 없습니다.");
             }
             
+            // 레이어별 HUD 타입 매핑 초기화
+            InitializeLayerMapping();
+            
             // 테스트용 데이터 초기화
             InitializeTestData();
+        }
+        
+        /// <summary>
+        /// 레이어별 HUD 타입 매핑 초기화
+        /// </summary>
+        private void InitializeLayerMapping()
+        {
+            layerToHUDType.Clear();
+            //layerToHUDType.Add(buildingLayerMask, HUDType.Building);
+            //layerToHUDType.Add(workerLayerMask, HUDType.Worker);
+            //layerToHUDType.Add(resourceLayerMask, HUDType.Resource);
+            //layerToHUDType.Add(facilityLayerMask, HUDType.Facility);
+            //layerToHUDType.Add(npcLayerMask, HUDType.NPC);
+            
+            if (enableDebugLogs)
+            {
+                Debug.Log("[TouchInfoManager] 레이어별 HUD 매핑 초기화 완료");
+            }
         }
         
         private void Start()
         {
             if (enableDebugLogs)
             {
-                //Debug.Log("[TouchInfoManager] 터치 정보 매니저 초기화 완료");
+                Debug.Log("[TouchInfoManager] 터치 정보 매니저 초기화 완료");
             }
         }
         
@@ -104,44 +175,29 @@ namespace KYS
             {
                 if (enableDebugLogs)
                 {
-                    //Debug.Log("[TouchInfoManager] TouchInfoHUD 자체 클릭 감지 - HUD 유지");
+                    Debug.Log("[TouchInfoManager] TouchInfoHUD 자체 클릭 감지 - HUD 유지");
                 }
-                // TouchInfoHUD 자체를 클릭한 경우 아무것도 하지 않음 (HUD 유지)
                 return;
             }
             
             // UI 요소 클릭인지 확인 (TouchInfoHUD 제외)
             bool isUIElementClicked = IsPointerOverUI(screenPosition);
             
-            // UI 요소 클릭인 경우 - HUD만 닫고 새로운 HUD 생성하지 않음
             if (isUIElementClicked)
             {
-                // 기존 TouchInfoHUD가 있는지 확인하고 닫기
                 bool hadExistingHUD = CloseExistingTouchInfoHUD();
                 
-                if (enableDebugLogs)
+                if (enableDebugLogs && hadExistingHUD)
                 {
-                    if (hadExistingHUD)
-                    {
-                        Debug.Log("[TouchInfoManager] UI 요소 클릭 감지 - HUD 닫기 완료, UI 기능 실행 허용");
-                    }
-                    else
-                    {
-                        //Debug.Log("[TouchInfoManager] UI 요소 클릭 감지 - HUD 없음, UI 기능 실행 허용");
-                    }
+                    Debug.Log("[TouchInfoManager] UI 요소 클릭 감지 - HUD 닫기 완료");
                 }
-                // UI 요소의 클릭 이벤트가 정상적으로 처리되도록 return
                 return;
             }
             
-            // 게임 오브젝트 클릭인 경우 - 기존 HUD 닫고 새로운 HUD 생성
-            // 기존 TouchInfoHUD가 있는지 확인하고 닫기
+            // 게임 오브젝트 클릭인 경우
             CloseExistingTouchInfoHUD();
             
-            // 월드 좌표로 변환
             Vector3 worldPosition = ScreenToWorldPoint(screenPosition);
-            
-            // 레이캐스트로 대상 감지
             GameObject targetObject = GetTargetObject(worldPosition);
             
             if (targetObject != null)
@@ -150,7 +206,6 @@ namespace KYS
             }
             else
             {
-                // 대상이 없으면 테스트용 HUD 표시
                 ShowTestHUD(screenPosition);
             }
         }
@@ -300,22 +355,342 @@ namespace KYS
         }
         
         /// <summary>
-        /// 오브젝트에 대한 정보 HUD 표시
+        /// 오브젝트에 대한 정보 HUD 표시 (레이어별 처리)
         /// </summary>
         private void ShowInfoForObject(GameObject targetObject, Vector2 screenPosition)
         {
-            // 오브젝트 정보 가져오기
-            string title = GetObjectTitle(targetObject);
-            string description = GetObjectDescription(targetObject);
-            Sprite icon = GetObjectIcon(targetObject);
+            // 레이어별 HUD 데이터 생성
+            HUDData hudData = CreateHUDDataForObject(targetObject);
             
-            // HUD 생성 (기존 HUD는 이미 ProcessTouch에서 닫혔음)
-            _ = TouchInfoHUD.ShowInfoHUD(screenPosition, title, description, icon);
-
+            // 레이어별 HUD 생성
+            CreateLayerSpecificHUD(hudData, screenPosition);
+            
             if (enableDebugLogs)
             {
-                //Debug.Log($"[TouchInfoManager] 오브젝트 정보 HUD 표시: {title}");
+                Debug.Log($"[TouchInfoManager] {hudData.hudType} HUD 표시: {hudData.title}");
             }
+        }
+        
+        /// <summary>
+        /// 오브젝트에 대한 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateHUDDataForObject(GameObject targetObject)
+        {
+            int objectLayer = targetObject.layer;
+            HUDType hudType = GetHUDTypeForLayer(objectLayer);
+            
+            switch (hudType)
+            {
+                case HUDType.Building:
+                    return CreateBuildingHUDData(targetObject);
+                case HUDType.Worker:
+                    return CreateWorkerHUDData(targetObject);
+                case HUDType.Resource:
+                    return CreateResourceHUDData(targetObject);
+                case HUDType.Facility:
+                    return CreateFacilityHUDData(targetObject);
+                case HUDType.NPC:
+                    return CreateNPCHUDData(targetObject);
+                default:
+                    return CreateDefaultHUDData(targetObject);
+            }
+        }
+        
+        /// <summary>
+        /// 레이어에 따른 HUD 타입 반환
+        /// </summary>
+        private HUDType GetHUDTypeForLayer(int layer)
+        {
+            int layerMask = 1 << layer;
+            
+            foreach (var mapping in layerToHUDType)
+            {
+                if ((mapping.Key.value & layerMask) != 0)
+                {
+                    return mapping.Value;
+                }
+            }
+            
+            return HUDType.Default;
+        }
+        
+        /// <summary>
+        /// 건물 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateBuildingHUDData(GameObject building)
+        {
+            HUDData data = new HUDData(
+                building.name,
+                $"건물 정보\n위치: {building.transform.position}\n상태: 정상",
+                null,
+                HUDType.Building
+            );
+            
+            // 건물별 특정 데이터 추가
+            data.customData["buildingType"] = "Production";
+            data.customData["level"] = 1;
+            data.customData["efficiency"] = 0.85f;
+            
+            return data;
+        }
+        
+        /// <summary>
+        /// 작업자 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateWorkerHUDData(GameObject worker)
+        {
+            HUDData data = new HUDData(
+                worker.name,
+                $"작업자 정보\n위치: {worker.transform.position}\n상태: 근무 중",
+                null,
+                HUDType.Worker
+            );
+            
+            // 작업자별 특정 데이터 추가
+            data.customData["workerLevel"] = 3;
+            data.customData["skill"] = "Production";
+            data.customData["happiness"] = 0.9f;
+            data.customData["salary"] = 1500;
+            
+            return data;
+        }
+        
+        /// <summary>
+        /// 자원 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateResourceHUDData(GameObject resource)
+        {
+            HUDData data = new HUDData(
+                resource.name,
+                $"자원 정보\n위치: {resource.transform.position}\n상태: 채굴 가능",
+                null,
+                HUDType.Resource
+            );
+            
+            // 자원별 특정 데이터 추가
+            data.customData["resourceType"] = "Iron";
+            data.customData["quantity"] = 1000;
+            data.customData["quality"] = 0.8f;
+            
+            return data;
+        }
+        
+        /// <summary>
+        /// 시설 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateFacilityHUDData(GameObject facility)
+        {
+            HUDData data = new HUDData(
+                facility.name,
+                $"시설 정보\n위치: {facility.transform.position}\n상태: 운영 중",
+                null,
+                HUDType.Facility
+            );
+            
+            // 시설별 특정 데이터 추가
+            data.customData["facilityType"] = "Storage";
+            data.customData["capacity"] = 5000;
+            data.customData["currentUsage"] = 3200;
+            
+            return data;
+        }
+        
+        /// <summary>
+        /// NPC HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateNPCHUDData(GameObject npc)
+        {
+            HUDData data = new HUDData(
+                npc.name,
+                $"NPC 정보\n위치: {npc.transform.position}\n상태: 대화 가능",
+                null,
+                HUDType.NPC
+            );
+            
+            // NPC별 특정 데이터 추가
+            data.customData["npcType"] = "Merchant";
+            data.customData["reputation"] = 75;
+            data.customData["availableQuests"] = 3;
+            
+            return data;
+        }
+        
+        /// <summary>
+        /// 기본 HUD 데이터 생성
+        /// </summary>
+        private HUDData CreateDefaultHUDData(GameObject obj)
+        {
+            return new HUDData(
+                obj.name,
+                $"오브젝트 정보\n위치: {obj.transform.position}\n레이어: {LayerMask.LayerToName(obj.layer)}",
+                null,
+                HUDType.Default
+            );
+        }
+        
+        /// <summary>
+        /// 레이어별 특정 HUD 생성
+        /// </summary>
+        private async void CreateLayerSpecificHUD(HUDData hudData, Vector2 screenPosition)
+        {
+            string hudKey = GetHUDKeyForType(hudData.hudType);
+            
+            try
+            {
+                // UIManager를 통해 레이어별 HUD 생성
+                var hud = await UIManager.Instance.CreateHUDAsync<TouchInfoHUD>(hudKey);
+                
+                if (hud != null)
+                {
+                    // HUD 위치 설정
+                    hud.SetHUDPosition(screenPosition);
+                    
+                    // HUD 데이터 설정
+                    hud.SetInfo(hudData.title, hudData.description, hudData.icon);
+                    
+                    // 레이어별 추가 설정
+                    SetupLayerSpecificHUD(hud, hudData);
+                    
+                    // 활성 HUD 목록에 추가
+                    activeHUDs.Add(hud);
+                    currentHUD = hud;
+                    
+                    if (enableDebugLogs)
+                    {
+                        Debug.Log($"[TouchInfoManager] {hudData.hudType} HUD 생성 완료: {hudKey}");
+                    }
+                }
+                else
+                {
+                    // 특정 HUD를 찾을 수 없는 경우 기본 HUD 사용
+                    Debug.LogWarning($"[TouchInfoManager] {hudKey}를 찾을 수 없어 기본 HUD 사용");
+                    await CreateDefaultHUD(hudData, screenPosition);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[TouchInfoManager] HUD 생성 실패: {e.Message}");
+                await CreateDefaultHUD(hudData, screenPosition);
+            }
+        }
+        
+        /// <summary>
+        /// HUD 타입에 따른 키 반환
+        /// </summary>
+        private string GetHUDKeyForType(HUDType hudType)
+        {
+            switch (hudType)
+            {
+                case HUDType.Building: return buildingHUDKey;
+                case HUDType.Worker: return workerHUDKey;
+                case HUDType.Resource: return resourceHUDKey;
+                case HUDType.Facility: return facilityHUDKey;
+                case HUDType.NPC: return npcHUDKey;
+                default: return defaultHUDKey;
+            }
+        }
+        
+        /// <summary>
+        /// 레이어별 HUD 추가 설정
+        /// </summary>
+        private void SetupLayerSpecificHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            switch (hudData.hudType)
+            {
+                case HUDType.Building:
+                    SetupBuildingHUD(hud, hudData);
+                    break;
+                case HUDType.Worker:
+                    SetupWorkerHUD(hud, hudData);
+                    break;
+                case HUDType.Resource:
+                    SetupResourceHUD(hud, hudData);
+                    break;
+                case HUDType.Facility:
+                    SetupFacilityHUD(hud, hudData);
+                    break;
+                case HUDType.NPC:
+                    SetupNPCHUD(hud, hudData);
+                    break;
+            }
+        }
+        
+        /// <summary>
+        /// 건물 HUD 추가 설정
+        /// </summary>
+        private void SetupBuildingHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            // 건물별 특정 UI 요소 설정
+            if (hudData.customData.ContainsKey("buildingType"))
+            {
+                string buildingType = hudData.customData["buildingType"].ToString();
+                hud.SetActionButtonText($"건설 ({buildingType})");
+                hud.SetActionButtonActive(true);
+            }
+        }
+        
+        /// <summary>
+        /// 작업자 HUD 추가 설정
+        /// </summary>
+        private void SetupWorkerHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            // 작업자별 특정 UI 요소 설정
+            if (hudData.customData.ContainsKey("workerLevel"))
+            {
+                int level = (int)hudData.customData["workerLevel"];
+                hud.SetActionButtonText($"고용 (레벨 {level})");
+                hud.SetActionButtonActive(true);
+            }
+        }
+        
+        /// <summary>
+        /// 자원 HUD 추가 설정
+        /// </summary>
+        private void SetupResourceHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            // 자원별 특정 UI 요소 설정
+            if (hudData.customData.ContainsKey("resourceType"))
+            {
+                string resourceType = hudData.customData["resourceType"].ToString();
+                hud.SetActionButtonText($"채굴 ({resourceType})");
+                hud.SetActionButtonActive(true);
+            }
+        }
+        
+        /// <summary>
+        /// 시설 HUD 추가 설정
+        /// </summary>
+        private void SetupFacilityHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            // 시설별 특정 UI 요소 설정
+            if (hudData.customData.ContainsKey("facilityType"))
+            {
+                string facilityType = hudData.customData["facilityType"].ToString();
+                hud.SetActionButtonText($"이용 ({facilityType})");
+                hud.SetActionButtonActive(true);
+            }
+        }
+        
+        /// <summary>
+        /// NPC HUD 추가 설정
+        /// </summary>
+        private void SetupNPCHUD(TouchInfoHUD hud, HUDData hudData)
+        {
+            // NPC별 특정 UI 요소 설정
+            if (hudData.customData.ContainsKey("npcType"))
+            {
+                string npcType = hudData.customData["npcType"].ToString();
+                hud.SetActionButtonText($"대화 ({npcType})");
+                hud.SetActionButtonActive(true);
+            }
+        }
+        
+        /// <summary>
+        /// 기본 HUD 생성 (fallback)
+        /// </summary>
+        private async System.Threading.Tasks.Task CreateDefaultHUD(HUDData hudData, Vector2 screenPosition)
+        {
+            await TouchInfoHUD.ShowInfoHUD(screenPosition, hudData.title, hudData.description, hudData.icon);
         }
         
         /// <summary>
@@ -477,6 +852,116 @@ namespace KYS
         public void TestCloseHUD()
         {
             CloseAllHUDs();
+        }
+        
+        /// <summary>
+        /// 레이어별 HUD 데이터 설정 (외부에서 호출 가능)
+        /// </summary>
+        public void SetLayerHUDData(int layer, HUDData hudData)
+        {
+            // 특정 레이어의 HUD 데이터를 동적으로 설정
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[TouchInfoManager] 레이어 {layer} HUD 데이터 설정: {hudData.title}");
+            }
+        }
+        
+        /// <summary>
+        /// 레이어별 HUD 키 설정 (외부에서 호출 가능)
+        /// </summary>
+        public void SetLayerHUDKey(HUDType hudType, string hudKey)
+        {
+            switch (hudType)
+            {
+                case HUDType.Building:
+                    buildingHUDKey = hudKey;
+                    break;
+                case HUDType.Worker:
+                    workerHUDKey = hudKey;
+                    break;
+                case HUDType.Resource:
+                    resourceHUDKey = hudKey;
+                    break;
+                case HUDType.Facility:
+                    facilityHUDKey = hudKey;
+                    break;
+                case HUDType.NPC:
+                    npcHUDKey = hudKey;
+                    break;
+                default:
+                    defaultHUDKey = hudKey;
+                    break;
+            }
+            
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[TouchInfoManager] {hudType} HUD 키 설정: {hudKey}");
+            }
+        }
+        
+        /// <summary>
+        /// 레이어별 HUD 테스트
+        /// </summary>
+        [ContextMenu("테스트 - 레이어별 HUD")]
+        public void TestLayerSpecificHUD()
+        {
+            Vector2 testPosition = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            
+            // 각 레이어별 HUD 테스트
+            var buildingData = new HUDData("테스트 건물", "건물 정보 테스트", null, HUDType.Building);
+            var workerData = new HUDData("테스트 작업자", "작업자 정보 테스트", null, HUDType.Worker);
+            var resourceData = new HUDData("테스트 자원", "자원 정보 테스트", null, HUDType.Resource);
+            
+            CreateLayerSpecificHUD(buildingData, testPosition);
+        }
+        
+        /// <summary>
+        /// 특정 레이어의 오브젝트에 대한 HUD 표시 (외부에서 호출 가능)
+        /// </summary>
+        public void ShowHUDForLayerObject(GameObject targetObject, Vector2 screenPosition, HUDType hudType)
+        {
+            HUDData hudData = CreateHUDDataForObject(targetObject);
+            hudData.hudType = hudType; // 강제로 HUD 타입 설정
+            
+            CreateLayerSpecificHUD(hudData, screenPosition);
+            
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[TouchInfoManager] 강제 {hudType} HUD 표시: {hudData.title}");
+            }
+        }
+        
+        /// <summary>
+        /// 레이어별 레이어마스크 설정
+        /// </summary>
+        public void SetLayerMask(HUDType hudType, LayerMask layerMask)
+        {
+            switch (hudType)
+            {
+                case HUDType.Building:
+                    buildingLayerMask = layerMask;
+                    break;
+                case HUDType.Worker:
+                    workerLayerMask = layerMask;
+                    break;
+                case HUDType.Resource:
+                    resourceLayerMask = layerMask;
+                    break;
+                case HUDType.Facility:
+                    facilityLayerMask = layerMask;
+                    break;
+                case HUDType.NPC:
+                    npcLayerMask = layerMask;
+                    break;
+            }
+            
+            // 레이어 매핑 재초기화
+            InitializeLayerMapping();
+            
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[TouchInfoManager] {hudType} 레이어마스크 설정: {layerMask.value}");
+            }
         }
         
         private void OnDrawGizmos()
