@@ -37,11 +37,17 @@ language_settings_title,언어 설정,Language Settings
 language_settings_apply,적용,Apply
 language_settings_close,닫기,Close
 ,,
+# Settings Popup,,
+settings_language,언어 설정,Language Settings
+settings_sound,사운드 설정,Sound Settings
+settings_graphics,그래픽 설정,Graphics Settings
+settings_close,닫기,Close
+,,
 # Title Text,,
 titleText,유니모,UniMo
 ,,
 # Language Settings Panel,,
-label,라벨,Label
+label,,
 preview,미리보기,Preview
 translationcompleteness,번역 완성도,Translation Completeness
 currentlanguage,현재 언어,Current Language
@@ -68,57 +74,87 @@ description,설명,DescriptionInfo
 questprogress,퀘스트 진행도,Quest progress
 level,레벨,Level
 money,돈,Money
-moenybutton,돈 버튼,Money Button
-gembutton,보석 버튼,Gem Button
-goalbutton,목표 버튼,Goal Button
+runmoenybutton,,
+rungembutton,,
+rungoalbutton,,
+runtitle,,
+rundescription,,
 centermessage,중앙 메시지,Center Message
 progress,진행률,Progress
 buyupgradebutton,업그레이드 구매,Buy Upgrade
 buildingname,건물 이름,Building Name
 materials,재료,Materials
 buildingcount,건물 수,Building Count
-harvestbuildingtop,수확 건물 상단,Harvest Building Top
-harvestbuildingname,수확 건물 이름,Harvest Building Name
-harvestbuildingdesc,수확 건물 설명,Harvest Building Description
-productionmaterial,생산 재료,Production Material
-upgrade1,업그레이드 1,Upgrade 1
-upgrademoneynum1,업그레이드 비용: {0},Upgrade Cost: {0}
-beforeupgradenum1,업그레이드 전: {0},Before: {0}
-afterupgradenum1,업그레이드 후: {0},After: {0}
-changeddesc1,변경 설명 1,Change Description 1
-hr,인사,HR
-manufacturebuildingtop,제조 건물 상단,Manufacture Building Top
-manufacturebuildingname,제조 건물 이름,Manufacture Building Name
-manufacturebuildingdesc,제조 건물 설명,Manufacture Building Description
-inputmaterials,입력 재료,Input Materials
-upgrade2,업그레이드 2,Upgrade 2
-beforeupgradenum2,업그레이드 전: {0},Before: {0}
-afterupgradenum2,업그레이드 후: {0},After: {0}
-changeddesc2,변경 설명 2,Change Description 2
-upgradename,업그레이드 이름,Upgrade Name
-beforeupgradenum,업그레이드 전: {0},Before: {0}
-afterupgradenum,업그레이드 후: {0},After: {0}
+harvestbuildingtop,수확 건물,Harvest Building
+runharvestbuildingname,,
+runharvestbuildingdesc,,
+runproductionmaterial,,
+upgrade1,업그레이드,Upgrade
+runupgrademoneynum1,,
+runbeforeupgradenum1,,
+runafterupgradenum1,,
+changeddesc1,생산 속도,Production Speed
+hrroom,HR 룸,HR Room
+manufacturebuildingtop,제조 건물,Manufacture Building
+runmanufacturebuildingname,,
+runmanufacturebuildingdesc,,
+runinputmaterials,,
+upgrade2,업그레이드,Upgrade
+runbeforeupgradenum2,,
+runafterupgradenum2,,
+maxnumber,최대 개수,Max Count
+runupgradename,,
+runbeforeupgradenum,,
+runafterupgradenum,,
 upgrade,업그레이드,Upgrade
-moneynum,금액: {0},Amount: {0}
+runmoneynum,,
 playerupgrade,플레이어 업그레이드,Player Upgrade
-property,속성,Property
-buybutton,구매 버튼,Buy Button
-rcharactername,오른쪽 캐릭터 이름,Right Character Name
-choicebutton1,선택 버튼 1,Choice Button 1
-choicebutton2,선택 버튼 2,Choice Button 2
-choicebutton3,선택 버튼 3,Choice Button 3
-choicebutton4,선택 버튼 4,Choice Button 4
+property,부동산,Property
+moenybutton,돈,Money
+buybutton,구매,Buy
+runrcharactername,,
+runchoicebutton1,,
+runchoicebutton2,,
+runchoicebutton3,,
+runchoicebutton4,,
 choicequestion,선택 질문,Choice Question
-lcaractername,왼쪽 캐릭터 이름,Left Character Name
-chatwindow,채팅 창,Chat Window
-logbutton,로그 버튼,Log Button
-skipbutton,건너뛰기 버튼,Skip Button
-upgradebutton,업그레이드 버튼,Upgrade Button
+runlcaractername,,
+runchatwindow,,
+logbutton,로그,Log
+skipbutton,건너뛰기,Skip
+upgradebutton,업그레이드,Upgrade
 workername,작업자 이름,Worker Name
-workertop,작업자 상단,Worker Top
-workerlevenum,레벨: {0},Level: {0}
+workertop,작업자,Worker
+workerlevenum,,
 workerleve,작업자 레벨,Worker Level
 productspeed,생산 속도,Production Speed
 statuseffect,상태 효과,Status Effect
-upgrademoneynum,업그레이드 비용: {0},Upgrade Cost: {0}
-itemlabel,아이템 라벨,Item Label
+itemlabel,,
+runworkername,,
+runworkerlevenum,,
+runworkerleve,,
+runupgrademoneynum,,
+runmoneybutton,,
+runbuildingname,,
+runmaterials,,
+runbuildingcount,,
+runconstellation,,
+runchoicequestion,,
+runlevelnum,,
+runproductspeed,,
+runstatuseffect,,
+setting,설정,Settings
+supportbutton,지원,Support
+emergencyescape,긴급 탈출,Emergency Escape
+bgm,배경음,BGM
+sfx,효과음,SFX
+vibration,진동,Vib
+rungoalbutton,,
+rungembutton,,
+runmoneybutton,,
+rundescription,,
+runtitle,,
+touchinfohud(clone),,
+rungoalbutton,,
+rungembutton,,
+runmoneybutton,,
