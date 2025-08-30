@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7146294196069385617}
   - component: {fileID: 5953072283573131390}
   - component: {fileID: 2549089045933044897}
+  - component: {fileID: 7516172410980076033}
   m_Layer: 5
   m_Name: HUDCanvas
   m_TagString: Untagged
@@ -143,3 +144,18 @@ MonoBehaviour:
   defaultHUDKey: TouchInfoHUD
   enableDebugLogs: 0
   showTouchGizmos: 0
+--- !u!114 &7516172410980076033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376463022110047056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f91237770535d2840a267cea96cf05a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fullScreenadUnitId: ca-app-pub-3940256099942544/1033173712
+  bannerAdUnitId: ca-app-pub-3940256099942544/6300978111
+  rewardedAdUnitId: ca-app-pub-3940256099942544/5224354917

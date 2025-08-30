@@ -24,6 +24,8 @@ namespace KYS
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
         #endregion
 
+      
+
         protected override void Awake()
         {
             base.Awake();
@@ -33,6 +35,10 @@ namespace KYS
             {
                 layerType = UILayerType.HUD;
             }
+
+
+
+
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -229,6 +235,8 @@ namespace KYS
             {
                 Debug.LogError("[HUDAllPanel] UIManager 인스턴스가 null입니다!");
             }
+
+
         }
 
         private void OnPropertyButtonClicked()
