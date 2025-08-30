@@ -24,6 +24,17 @@ namespace KYS
 
         public NativeOverlayAd _nativeOverlayAd;
 
+        // 광고 제거 기능 관련 변수들
+        [Header("광고 제거 기능")]
+        public bool enableAdsRemoval = true; // 광고 제거 기능 활성화 여부
+        
+        // 각 광고 타입별 제거 상태
+        [Header("개별 광고 제거 상태")]
+        public bool isNativeAdRemoved = false; // 네이티브 광고 제거 여부
+        public bool isFullScreenAdRemoved = false; // 전체화면 광고 제거 여부
+        public bool isBannerAdRemoved = false; // 배너 광고 제거 여부
+        public bool isRewardedAdRemoved = false; // 보상형 광고 제거 여부
+
       
 
         // 보상형 광고 관련 변수들
@@ -45,8 +56,8 @@ namespace KYS
         {
             // 이벤트를 메인 스레드로
             MobileAds.RaiseAdEventsOnUnityMainThread = true; 
+            
             MobileAds.Initialize(OnInitialzed);
-
         }
 
 
@@ -69,6 +80,13 @@ namespace KYS
         [ContextMenu("FullScreenLoadTest")]
         public void LoadAdFullScreend()
         {
+            // 전체화면 광고 제거 상태 체크
+            if (isFullScreenAdRemoved)
+            {
+                Debug.Log("전체화면 광고가 제거되어 있어 로드할 수 없습니다.");
+                return;
+            }
+
             var adRequest = new AdRequest();
 
             InterstitialAd.Load(fullScreenadUnitId, adRequest, (ad, error) =>
@@ -91,6 +109,13 @@ namespace KYS
         [ContextMenu("FullScreenShowTest")]
         public void ShowAdFullScreen()
         {
+            // 전체화면 광고 제거 상태 체크
+            if (isFullScreenAdRemoved)
+            {
+                Debug.Log("전체화면 광고가 제거되어 있어 표시할 수 없습니다.");
+                return;
+            }
+
             if (loadedFullScreenAd != null && loadedFullScreenAd.CanShowAd())
             {
                 loadedFullScreenAd.Show();
@@ -118,6 +143,13 @@ namespace KYS
         [ContextMenu("LoadNShowBannerAdTest")]
         public void LoadNShowBannerAd()
         {
+            // 배너 광고 제거 상태 체크
+            if (isBannerAdRemoved)
+            {
+                Debug.Log("배너 광고가 제거되어 있어 로드할 수 없습니다.");
+                return;
+            }
+
             var adRequest = new AdRequest();
 
             if (_bannerView != null)
@@ -150,7 +182,12 @@ namespace KYS
         [ContextMenu("BannerFullWidethTest")]
         public void RequestBanner()
         {
-
+            // 배너 광고 제거 상태 체크
+            if (isBannerAdRemoved)
+            {
+                Debug.Log("배너 광고가 제거되어 있어 로드할 수 없습니다.");
+                return;
+            }
 
             // Clean up banner ad before creating a new one.
             if (_bannerView != null)
@@ -206,6 +243,13 @@ namespace KYS
 
         public void LoadRewardedAd()
         {
+            // 보상형 광고 제거 상태 체크
+            if (isRewardedAdRemoved)
+            {
+                Debug.Log("보상형 광고가 제거되어 있어 로드할 수 없습니다.");
+                return;
+            }
+
             var adRequest = new AdRequest();
 
             if (rewardedAd != null)
@@ -247,6 +291,13 @@ namespace KYS
 
         public void ShowRewardedAd(Action<Reward> onRewardEarned = null)
         {
+            // 보상형 광고 제거 상태 체크
+            if (isRewardedAdRemoved)
+            {
+                Debug.Log("보상형 광고가 제거되어 있어 표시할 수 없습니다.");
+                return;
+            }
+
             if (rewardedAd == null)
             {
                 Debug.LogWarning("보상형 광고가 로드되지 않았습니다. 다시 로드합니다.");
@@ -601,12 +652,210 @@ namespace KYS
 
         #endregion
 
+        #region Ads Removal System
+
+        /// <summary>
+        /// 네이티브 광고 제거/복원 토글
+        /// </summary>
+        [ContextMenu("ToggleNativeAdRemoval")]
+        public void ToggleNativeAdRemoval()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isNativeAdRemoved = !isNativeAdRemoved;
+            string status = isNativeAdRemoved ? "제거됨" : "활성화됨";
+            Debug.Log($"네이티브 광고 상태가 {status}로 변경되었습니다.");
+
+            if (isNativeAdRemoved)
+            {
+                DestroyAdNativeAd();
+                Debug.Log("네이티브 광고가 제거되었습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 전체화면 광고 제거/복원 토글
+        /// </summary>
+        [ContextMenu("ToggleFullScreenAdRemoval")]
+        public void ToggleFullScreenAdRemoval()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isFullScreenAdRemoved = !isFullScreenAdRemoved;
+            string status = isFullScreenAdRemoved ? "제거됨" : "활성화됨";
+            Debug.Log($"전체화면 광고 상태가 {status}로 변경되었습니다.");
+
+            if (isFullScreenAdRemoved)
+            {
+                DestroyFullScreenAd();
+                Debug.Log("전체화면 광고가 제거되었습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 배너 광고 제거/복원 토글
+        /// </summary>
+        [ContextMenu("ToggleBannerAdRemoval")]
+        public void ToggleBannerAdRemoval()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isBannerAdRemoved = !isBannerAdRemoved;
+            string status = isBannerAdRemoved ? "제거됨" : "활성화됨";
+            Debug.Log($"배너 광고 상태가 {status}로 변경되었습니다.");
+
+            if (isBannerAdRemoved)
+            {
+                DestroyBannerAd();
+                Debug.Log("배너 광고가 제거되었습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 보상형 광고 제거/복원 토글
+        /// </summary>
+        [ContextMenu("ToggleRewardedAdRemoval")]
+        public void ToggleRewardedAdRemoval()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isRewardedAdRemoved = !isRewardedAdRemoved;
+            string status = isRewardedAdRemoved ? "제거됨" : "활성화됨";
+            Debug.Log($"보상형 광고 상태가 {status}로 변경되었습니다.");
+
+            if (isRewardedAdRemoved)
+            {
+                DestroyRewardedAd();
+                Debug.Log("보상형 광고가 제거되었습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 모든 광고 제거
+        /// </summary>
+        [ContextMenu("RemoveAllAds")]
+        public void RemoveAllAds()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isNativeAdRemoved = true;
+            isFullScreenAdRemoved = true;
+            isBannerAdRemoved = true;
+            isRewardedAdRemoved = true;
+
+            DestroyAllAd();
+            Debug.Log("모든 광고가 제거되었습니다.");
+        }
+
+        /// <summary>
+        /// 모든 광고 복원
+        /// </summary>
+        [ContextMenu("RestoreAllAds")]
+        public void RestoreAllAds()
+        {
+            if (!enableAdsRemoval)
+            {
+                Debug.LogWarning("광고 제거 기능이 비활성화되어 있습니다.");
+                return;
+            }
+
+            isNativeAdRemoved = false;
+            isFullScreenAdRemoved = false;
+            isBannerAdRemoved = false;
+            isRewardedAdRemoved = false;
+
+            Debug.Log("모든 광고가 복원되었습니다.");
+        }
+
+        /// <summary>
+        /// 광고 제거 상태 확인
+        /// </summary>
+        [ContextMenu("CheckAdsRemovalStatus")]
+        public void CheckAdsRemovalStatus()
+        {
+            Debug.Log($"=== 광고 제거 상태 ===");
+            Debug.Log($"광고 제거 기능 활성화: {enableAdsRemoval}");
+            Debug.Log($"네이티브 광고: {(isNativeAdRemoved ? "제거됨" : "활성화됨")}");
+            Debug.Log($"전체화면 광고: {(isFullScreenAdRemoved ? "제거됨" : "활성화됨")}");
+            Debug.Log($"배너 광고: {(isBannerAdRemoved ? "제거됨" : "활성화됨")}");
+            Debug.Log($"보상형 광고: {(isRewardedAdRemoved ? "제거됨" : "활성화됨")}");
+            
+            int removedCount = (isNativeAdRemoved ? 1 : 0) + (isFullScreenAdRemoved ? 1 : 0) + 
+                              (isBannerAdRemoved ? 1 : 0) + (isRewardedAdRemoved ? 1 : 0);
+            
+            if (removedCount == 0)
+            {
+                Debug.Log("모든 광고가 정상적으로 활성화되어 있습니다.");
+            }
+            else if (removedCount == 4)
+            {
+                Debug.Log("모든 광고가 제거되어 있습니다.");
+            }
+            else
+            {
+                Debug.Log($"{removedCount}개 광고가 제거되어 있습니다.");
+            }
+        }
+
+        /// <summary>
+        /// 광고 제거 기능 자체를 비활성화
+        /// </summary>
+        [ContextMenu("DisableAdsRemovalFeature")]
+        public void DisableAdsRemovalFeature()
+        {
+            enableAdsRemoval = false;
+            // 모든 광고 복원
+            isNativeAdRemoved = false;
+            isFullScreenAdRemoved = false;
+            isBannerAdRemoved = false;
+            isRewardedAdRemoved = false;
+            Debug.Log("광고 제거 기능이 완전히 비활성화되었습니다. 모든 광고가 복원되었습니다.");
+        }
+
+        /// <summary>
+        /// 광고 제거 기능 자체를 활성화
+        /// </summary>
+        [ContextMenu("EnableAdsRemovalFeature")]
+        public void EnableAdsRemovalFeature()
+        {
+            enableAdsRemoval = true;
+            Debug.Log("광고 제거 기능이 활성화되었습니다.");
+        }
+
+        #endregion
 
         #region NativeOverlayAd Ad
 
         [ContextMenu("LoadNativeAdTest")]
         public void LoadNativeAd()
         {
+            // 네이티브 광고 제거 상태 체크
+            if (isNativeAdRemoved)
+            {
+                Debug.Log("네이티브 광고가 제거되어 있어 로드할 수 없습니다.");
+                return;
+            }
+
             if (_nativeOverlayAd != null)
             {
                 _nativeOverlayAd.Destroy();
@@ -675,8 +924,12 @@ Debug.Log("Native Overlay ad loading...");
         [ContextMenu("RenderNativeAdTest")]
         public void RenderAdNativeAd()
         {
-            
-
+            // 네이티브 광고 제거 상태 체크
+            if (isNativeAdRemoved)
+            {
+                Debug.Log("네이티브 광고가 제거되어 있어 렌더링할 수 없습니다.");
+                return;
+            }
 
             if (_nativeOverlayAd != null)
             {
@@ -710,6 +963,13 @@ Debug.Log("Native Overlay ad loading...");
         [ContextMenu("ShowNativeAdTest")]
         public void ShowAd()
         {
+            // 네이티브 광고 제거 상태 체크
+            if (isNativeAdRemoved)
+            {
+                Debug.Log("네이티브 광고가 제거되어 있어 표시할 수 없습니다.");
+                return;
+            }
+
             if (_nativeOverlayAd != null)
             {
                 Debug.Log("Showing Native Overlay ad.");
