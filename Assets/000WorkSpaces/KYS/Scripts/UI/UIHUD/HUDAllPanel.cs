@@ -16,12 +16,13 @@ namespace KYS
         [SerializeField] private string questProgressTextName = "QuestProgressText";
         [SerializeField] private string HRRooomButtonName = "HRRoomButton";
         [SerializeField] private string compossButtonName = "CompossButton";
-
+        [SerializeField] private string StageTransitionPanelButtonName = "StageTransitionPanelButton";
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
+
         #endregion
 
         protected override void Awake()
@@ -109,6 +110,13 @@ namespace KYS
             {
                 HRRooomEventHandler.Click += (data) => OnHRRoomButtonClicked();
             }
+
+            var StageTransitionEventHandler = GetEventWithSFX(StageTransitionPanelButtonName, "SFX_ButtonClick");
+            if (StageTransitionEventHandler != null)
+            {
+                StageTransitionEventHandler.Click += (data) => OnStageTransitionPanelButtonClicked();
+            }
+
 
             // CompossButton 설정 - 누르고 있을 때 기능
             var compossEventHandler = GetEventWithSFX(compossButtonName, "SFX_ButtonClick");
@@ -305,6 +313,44 @@ namespace KYS
             });
         }
 
+        private void OnStageTransitionPanelButtonClicked()
+        {
+            
+
+            if (UIManager.Instance == null)
+            {
+                Debug.LogError("[HUDAllPanel] UIManager.Instance가 null입니다!");
+                return;
+            }
+
+            // 이미 TitlePanel이 열려있는지 확인
+            var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+            foreach (var panel in existingPanels)
+            {
+                if (panel is StageTransitionPanel)
+                {
+                    
+                    return;
+                }
+            }
+
+            // 인벤토리 관련 로직 추가
+
+            UIManager.Instance.ShowPanelAsync<StageTransitionPanel>((panel) =>
+            {
+                if (panel != null)
+                {
+                    
+
+                }
+                else
+                {
+                    Debug.LogError("[HUDAllPanel] TitlePanel 열기 실패");
+                }
+            });
+        }
+        
+
 
 
 
@@ -312,7 +358,7 @@ namespace KYS
 
         #region CompossButton Event Handlers
 
-      
+
         private float compossButtonPressStartTime = 0f;
         private Coroutine compossButtonHoldCoroutine;
 
