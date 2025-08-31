@@ -25,7 +25,7 @@ public class WorkerSpawnTest : MonoBehaviour
 
                 Debug.Log("Space");
 
-                WorkerData worker = Manager.firebase.UserData.WorkerList.Get("Worker_0");
+                WorkerData worker = Manager.firebase.UserData.WorkerList.Get("10101_F");
 
                 if (worker == null)
                 {
@@ -35,7 +35,7 @@ public class WorkerSpawnTest : MonoBehaviour
 
                     WorkerDataJson data = new WorkerDataJson();
 
-                    data.Id = $"Worker_0";
+                    data.Id = $"10101_F";
                     data.MoveSpeedLv = 1;
                     data.MaxCapacityLv = 1;
 
