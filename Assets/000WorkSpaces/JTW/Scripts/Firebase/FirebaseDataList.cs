@@ -1,0 +1,42 @@
+using Firebase.Database;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
+{
+    private List<T> _list = new();
+
+    private Func<string, string, T> _factory;
+
+    public UnityEvent<T> OnAdded = new();
+
+    public FirebaseDataList(string id, string parentPath, Func<string, string, T> factory) : base(id, parentPath)
+    {
+        _factory = factory;
+
+        Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
+    }
+
+    private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
+    {
+        T child = _factory(args.Snapshot.Key, Path);
+
+        _list.Add(child);
+        OnAdded.Invoke(child);
+    }
+
+    public void Add(IUsableId value)
+    {
+        string json = JsonUtility.ToJson(value);
+
+        Manager.firebase.SaveJsonData($"{Path}/{value.GetId()}", json);
+    }
+
+    public T Get(string id)
+    {
+        return _list.Find(value => value.GetId() == id);
+    }
+}
