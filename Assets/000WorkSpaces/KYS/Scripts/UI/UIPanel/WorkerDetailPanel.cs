@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -172,7 +172,7 @@ namespace KYS
         private void OnCloseButtonClicked()
         {
             Debug.Log("[WorkerDetailPanel] 패널 닫기");
-            Hide();
+            Manager.ui.ClosePanel();
         }
 
         private void OnUpgradeButtonClicked()

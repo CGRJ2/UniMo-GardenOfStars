@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace KYS
 {
@@ -17,11 +18,20 @@ namespace KYS
         [SerializeField] private string HRRooomButtonName = "HRRoomButton";
         [SerializeField] private string compossButtonName = "CompossButton";
         [SerializeField] private string StageTransitionPanelButtonName = "StageTransitionPanelButton";
+        [SerializeField] private string StoryPanelButtonName = "StoryPanelButton";
+
+
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
+
+        private GameObject PropertyButton => GetUI(PropertyButtonName);
+
+        private GameObject HRRoomButton => GetUI(HRRooomButtonName);
+        private GameObject StageTransitionPanelButton => GetUI(StageTransitionPanelButtonName);
+        private GameObject StoryPanelButton => GetUI(StoryPanelButtonName);
 
         #endregion
 
@@ -115,6 +125,12 @@ namespace KYS
             if (StageTransitionEventHandler != null)
             {
                 StageTransitionEventHandler.Click += (data) => OnStageTransitionPanelButtonClicked();
+            }
+
+            var StoryPanelEventHandler = GetEventWithSFX(StoryPanelButtonName, "SFX_ButtonClick");
+            if (StoryPanelEventHandler != null)
+            {
+                StoryPanelEventHandler.Click += OnStoryPanelButtonClicked;
             }
 
 
@@ -349,8 +365,38 @@ namespace KYS
                 }
             });
         }
-        
 
+        private void OnStoryPanelButtonClicked(PointerEventData data)
+        {
+           
+            if (UIManager.Instance == null)
+            {
+                Debug.LogError("[HUDAllPanel] UIManager.Instance가 null입니다!");
+                return;
+            }
+            // 이미 TitlePanel이 열려있는지 확인
+            var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
+            foreach (var panel in existingPanels)
+            {
+                if (panel is StoryPanel)
+                {
+                    
+                    return;
+                }
+            }
+            // 인벤토리 관련 로직 추가
+            UIManager.Instance.ShowPanelAsync<StoryPanel>((panel) =>
+            {
+                if (panel != null)
+                {
+                    
+                }
+                else
+                {
+                    Debug.LogError("[HUDAllPanel] TitlePanel 열기 실패");
+                }
+            });
+        }
 
 
 
@@ -430,6 +476,51 @@ namespace KYS
         }
 
         #endregion
+
+        [ContextMenu("일반 모드로 전환 (모든 버튼 표시)")]
+        public void SwitchToNormalMode()
+        {
+            if (PropertyButton != null)
+            {
+                PropertyButton.SetActive(true);
+            }
+            if (HRRoomButton != null)
+            {
+                HRRoomButton.SetActive(true);
+            }
+            if (StageTransitionPanelButton != null)
+            {
+                StageTransitionPanelButton.SetActive(true);
+            }
+            if (StoryPanelButton != null)
+            {
+                StoryPanelButton.SetActive(true);
+            }
+
+        }
+
+        [ContextMenu("튜토리얼 모드로 전환 (일부 버튼 숨김)")]
+        public void SwitchToTutorialMode()
+        {
+            if (PropertyButton != null)
+            {
+                PropertyButton.SetActive(false);
+            }
+            if (HRRoomButton != null)
+            {
+                HRRoomButton.SetActive(false);
+            }
+            if (StageTransitionPanelButton != null)
+            {
+                StageTransitionPanelButton.SetActive(false);
+            }   
+            if (StoryPanelButton != null)
+            {
+                StoryPanelButton.SetActive(false);
+            }
+
+        }
+
 
         #region Debug Methods
 

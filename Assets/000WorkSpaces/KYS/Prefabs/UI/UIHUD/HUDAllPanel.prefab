@@ -91,6 +91,8 @@ MonoBehaviour:
   questProgressTextName: QuestProgressText
   HRRooomButtonName: HRRoomButton
   compossButtonName: CompossButton
+  StageTransitionPanelButtonName: StageTransitionPanelButton
+  StoryPanelButtonName: StoryPanelButton
 --- !u!1 &359135910222191079
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,12 +1506,12 @@ GameObject:
   - component: {fileID: 4262096785864656073}
   - component: {fileID: 4899395007546987480}
   m_Layer: 5
-  m_Name: RImageButton2
+  m_Name: StoryPanelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6853478762925649771
 RectTransform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace KYS
@@ -36,8 +37,8 @@ namespace KYS
         [SerializeField] private string runWorkerStunChanceNumName = "RunWorkerStunChanceNum"; // 실시간 숫자
         [SerializeField] private string stunChanceUnitTextName = "StunChanceUnitText";     // "%" 단위
         [SerializeField] private string workerImageName = "WorkerImage";
-        [SerializeField] private string hireButtonName = "HireButton";
-        [SerializeField] private string fireButtonName = "FireButton";
+        //[SerializeField] private string hireButtonName = "HireButton";
+        //[SerializeField] private string fireButtonName = "FireButton";
         [SerializeField] private string upgradeButtonName = "UpgradeButton";
 
         // UI 요소들 (다국어 지원을 위한 세분화)
@@ -70,7 +71,7 @@ namespace KYS
         private Image workerImage => GetUI<Image>(workerImageName);
         //private Button hireButton => GetUI<Button>(hireButtonName);
         //private Button fireButton => GetUI<Button>(fireButtonName);
-        //private Button upgradeButton => GetUI<Button>(upgradeButtonName);
+        private Button upgradeButton => GetUI<Button>(upgradeButtonName);
 
         // 실시간 데이터 연결
         private WorkerRuntimeData connectedWorkerData;
@@ -324,8 +325,8 @@ namespace KYS
             //if (fireButton != null)
             //    fireButton.onClick.AddListener(OnFireButtonClicked);
 
-            //if (upgradeButton != null)
-            //    upgradeButton.onClick.AddListener(OnUpgradeButtonClicked);
+            if (upgradeButton != null)
+             GetEventWithSFX(upgradeButtonName).Click += OnUpgradeButtonClicked;
         }
 
         // 버튼 클릭 이벤트
@@ -341,10 +342,10 @@ namespace KYS
             // TODO: Worker 해고 로직 구현
         }
 
-        private void OnUpgradeButtonClicked()
+        private void OnUpgradeButtonClicked(PointerEventData data)
         {
             Debug.Log("[WorkerInfoHUD] 업그레이드 버튼 클릭");
-            // TODO: Worker 업그레이드 로직 구현
+            Manager.ui.ShowPanelAsync<WorkerDetailPanel>();
         }
 
         /// <summary>

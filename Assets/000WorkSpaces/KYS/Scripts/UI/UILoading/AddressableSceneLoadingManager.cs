@@ -796,13 +796,14 @@ namespace KYS
             );
         }
 
-    
 
 
-    /// <summary>
-    /// 타이틀에서 인게임으로 이동하는 완전체 로딩 시스템
-    /// </summary>
-    public async System.Threading.Tasks.Task Temp_InGameLoadAsync()
+
+        /// <summary>
+        /// 타이틀에서 인게임으로 이동하는 완전체 로딩 시스템
+        /// </summary>
+        [ContextMenu("Task 사용")]
+        public async System.Threading.Tasks.Task Temp_InGameLoadAsync()
         {
             Manager.game.curStageId = "Stage00";
 
@@ -813,9 +814,16 @@ namespace KYS
                 LoadingLocalizationKeys.STAGE_COMPLETE);
         }
 
+        [ContextMenu("코루틴 사용")]
+        public void Temp_INGameLoadbyCoroutine()
+        {
+            StartCoroutine(Temp_InGameLoad());
+        }
+
         /// <summary>
         /// 타이틀에서 인게임으로 이동하는 완전체 로딩 시스템 (코루틴 버전)
         /// </summary>
+
         public IEnumerator Temp_InGameLoad()
         {
             Manager.game.curStageId = "Stage00";
