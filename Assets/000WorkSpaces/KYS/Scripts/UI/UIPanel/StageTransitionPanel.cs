@@ -20,7 +20,7 @@ namespace KYS
         #region Inspector Fields
         [Header("돌림판 설정")]
         [SerializeField] private Transform wheelParent; // 회전할 부모 오브젝트 (RadialLayout)
-        [SerializeField] private float wheelRadius = 200f; // 돌림판 반지름
+        //[SerializeField] private float wheelRadius = 200f; // 돌림판 반지름
         [SerializeField] private float rotationSpeed = 30f; // 회전 속도 (낮을수록 느림)
         [SerializeField] private float snapDuration = 0.5f; // 스냅 애니메이션 시간
         

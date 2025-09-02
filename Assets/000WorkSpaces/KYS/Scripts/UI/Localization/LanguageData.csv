@@ -169,3 +169,34 @@ movementspeed,이동 속도,Movement Speed
 RunInputmaterials재료 A ,재료 A 잘들어감,Material A
 RunInputmaterials재료 B,재료 B 잘,Material B
 RunInputmaterials재료 C,재료 C 잘,Material C
+,,
+# CJM Buildings - Harvest & Manufacture (auto-added),,
+RunHarvestBuildingName별가루 생성기,별가루 생성기,Stardust Generator
+RunHarvestBuildingDesc수확형 건물이다.,수확형 건물이다.,This is a harvest-type building.
+RunIngrediantName재료 A,재료 A,Material A
+,,
+RunManufactureBuildingName허름한 작업대,허름한 작업대,Shabby Workbench
+RunManufactureBuildingDesc재료 A가 B로 만들어질 것 같다.,재료 A가 B로 만들어질 것 같다.,Looks like material A will be made into B.
+RunInputmaterials재료 A,재료 A,Material A
+RunProductionMaterial재료 B,재료 B,Material B
+,,
+RunManufactureBuildingName훌륭한 작업대,훌륭한 작업대,Excellent Workbench
+RunManufactureBuildingDesc재료 B가 C로 만들어질 것 같다.,재료 B가 C로 만들어질 것 같다.,Looks like material B will be made into C.
+RunInputmaterials재료 B,재료 B,Material B
+RunProductionMaterial재료 C,재료 C,Material C
+runworkertitle,,
+runworkerdescription,,
+workerlevel,일꾼 레벨,Worker Level
+movespeedlabel,이동 속도,Movement Speed
+runworkermovespeednum,,
+capacitylabel,운송 수량,Carry Capacity
+runworkercapacitynum,,
+productionlabel,생산 속도,Production Speed
+runworkerproductionnum,,
+stuntimelabel,기절 시간,Stun Time
+runworkerstuntimenum,,
+stuntimeunit,S,S
+stunchancelabel,기절 확률,Stun Chance
+runworkerstunchancenum,,
+stunchanceunit,%,%
+runmoneybotton,,
