@@ -366,6 +366,22 @@ MonoBehaviour:
     wheelImage: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
     centerImage: {fileID: 21300000, guid: 444b480d7709ff34489726c5f42cd8fb, type: 3}
     isUnlocked: 1
+  stageSceneNames:
+  - Stage00
+  - Stage_Taurus
+  - Stage_Gemini
+  - Stage_Cancer
+  - Stage_Leo
+  - Stage_Virgo
+  - Stage_Libra
+  - Stage_Scorpio
+  - Stage_Sagittarius
+  - Stage_Capricorn
+  - Stage_Aquarius
+  - Stage_Pisces
+  useAddressables: 1
+  addressableSceneName: StageScene
+  useGameManagerStages: 1
   stageNameTextName: RunConstellationText
   stageIconImageName: ConstellationCharacterImage
   backButtonName: CloseButton

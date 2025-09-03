@@ -52,7 +52,6 @@ namespace KYS
             "Stage_Pisces"      // 물고기자리
         };
         [SerializeField] private bool useAddressables = false; // Addressables 사용 여부
-        [SerializeField] private string addressableSceneName = "StageScene"; // Addressables 씬 이름
         [SerializeField] private bool useGameManagerStages = true; // GameManager의 스테이지 데이터 사용 여부
         
         [Header("UI 요소")]
@@ -818,7 +817,7 @@ namespace KYS
             // ShowLoadingScreen();
             
             // Addressables 씬 로딩 (실제 구현은 Addressables 패키지에 따라 다름)
-            // var asyncOperation = Addressables.LoadSceneAsync(addressableSceneName);
+            // TODO: Addressables 패키지 구현 시 사용
             
             // 임시로 일반 씬 로딩 사용
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);

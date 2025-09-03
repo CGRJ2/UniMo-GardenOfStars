@@ -2,11 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Collections.Generic;
 
 namespace KYS
 {
     /// <summary>
-    /// 선택지 패널 - 대화 중 선택 옵션 표시
+    /// 선택지 패널 - 대화 중 선택 옵션 표시 (풀링 시스템 사용)
     /// </summary>
     public class ChoicePanel : BaseUI
     {
@@ -20,24 +21,17 @@ namespace KYS
         [Header("Choice Settings")]
         [SerializeField] private GameObject choiceButtonPrefab;
         [SerializeField] private int maxChoices = 4;
+        [SerializeField] private int initialPoolSize = 8; // 초기 풀 크기
         
         // 선택지 관리
         private Action<int> onChoiceSelected;
+        private List<GameObject> choiceButtonPool = new List<GameObject>(); // 선택지 버튼 풀
+        private List<GameObject> activeChoiceButtons = new List<GameObject>(); // 활성화된 선택지 버튼들
         
         protected override void Awake()
         {
             base.Awake();
-            
-            // 선택지 버튼 프리팹 자동 찾기
-            if (choiceButtonPrefab == null)
-            {
-                var prefabButton = GetUI<Button>(choiceButtonPrefabName);
-                if (prefabButton != null)
-                {
-                    choiceButtonPrefab = prefabButton.gameObject;
-                    prefabButton.gameObject.SetActive(false); // 템플릿은 숨김
-                }
-            }
+            InitializeChoiceButtonPool();
         }
         
         public override string[] GetAutoLocalizeKeys()
@@ -66,6 +60,33 @@ namespace KYS
         }
         
         /// <summary>
+        /// 선택지 버튼 풀 초기화
+        /// </summary>
+        private void InitializeChoiceButtonPool()
+        {
+            if (choiceButtonPrefab == null)
+            {
+                var prefabButton = GetUI<Button>(choiceButtonPrefabName);
+                if (prefabButton != null)
+                {
+                    choiceButtonPrefab = prefabButton.gameObject;
+                    prefabButton.gameObject.SetActive(false); // 템플릿은 숨김
+                }
+            }
+            
+            if (choiceButtonPrefab != null && choiceContent != null)
+            {
+                // 초기 풀 생성
+                for (int i = 0; i < initialPoolSize; i++)
+                {
+                    GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceContent);
+                    buttonObj.SetActive(false);
+                    choiceButtonPool.Add(buttonObj);
+                }
+            }
+        }
+        
+        /// <summary>
         /// 선택지 설정
         /// </summary>
         public void SetupChoices(string[] choices, Action<int> onSelected)
@@ -79,24 +100,52 @@ namespace KYS
             onChoiceSelected = onSelected;
             ClearChoices();
             
-            for (int i = 0; i < Mathf.Min(choices.Length, maxChoices); i++)
+            int choiceCount = Mathf.Min(choices.Length, maxChoices);
+            
+            // 필요한 만큼 풀에서 버튼 가져오기
+            for (int i = 0; i < choiceCount; i++)
             {
-                CreateChoiceButton(choices[i], i);
+                GameObject buttonObj = GetChoiceButtonFromPool();
+                if (buttonObj != null)
+                {
+                    SetupChoiceButton(buttonObj, choices[i], i);
+                    activeChoiceButtons.Add(buttonObj);
+                }
             }
         }
         
         /// <summary>
-        /// 선택지 버튼 생성
+        /// 풀에서 선택지 버튼 가져오기
         /// </summary>
-        private void CreateChoiceButton(string choiceText, int index)
+        private GameObject GetChoiceButtonFromPool()
         {
-            if (choiceButtonPrefab == null || choiceContent == null)
+            // 비활성화된 버튼 찾기
+            foreach (GameObject buttonObj in choiceButtonPool)
             {
-                Debug.LogError("[ChoicePanel] choiceButtonPrefab 또는 choiceContent가 설정되지 않았습니다.");
-                return;
+                if (!buttonObj.activeInHierarchy)
+                {
+                    return buttonObj;
+                }
             }
             
-            GameObject buttonObj = Instantiate(choiceButtonPrefab, choiceContent);
+            // 풀이 부족하면 새로 생성
+            if (choiceButtonPrefab != null && choiceContent != null)
+            {
+                GameObject newButton = Instantiate(choiceButtonPrefab, choiceContent);
+                choiceButtonPool.Add(newButton);
+                return newButton;
+            }
+            
+            return null;
+        }
+        
+        /// <summary>
+        /// 선택지 버튼 설정
+        /// </summary>
+        private void SetupChoiceButton(GameObject buttonObj, string choiceText, int index)
+        {
+            if (buttonObj == null) return;
+            
             buttonObj.SetActive(true);
             
             Button button = buttonObj.GetComponent<Button>();
@@ -120,18 +169,39 @@ namespace KYS
         }
         
         /// <summary>
-        /// 선택지 클리어
+        /// 선택지 숨기기 (Destroy 대신 SetActive(false) 사용)
         /// </summary>
         public void ClearChoices()
         {
-            if (choiceContent != null)
+            // 활성화된 선택지 버튼들을 비활성화
+            foreach (GameObject buttonObj in activeChoiceButtons)
             {
-                foreach (Transform child in choiceContent)
+                if (buttonObj != null)
                 {
-                    if (child.gameObject != choiceButtonPrefab)
-                        Destroy(child.gameObject);
+                    buttonObj.SetActive(false);
                 }
             }
+            
+            activeChoiceButtons.Clear();
+        }
+        
+        /// <summary>
+        /// 선택지 완전 제거 (메모리 정리 시에만 사용)
+        /// </summary>
+        public void DestroyAllChoices()
+        {
+            ClearChoices();
+            
+            // 풀의 모든 버튼 제거
+            foreach (GameObject buttonObj in choiceButtonPool)
+            {
+                if (buttonObj != null)
+                {
+                    Destroy(buttonObj);
+                }
+            }
+            
+            choiceButtonPool.Clear();
         }
         
         /// <summary>
@@ -141,6 +211,55 @@ namespace KYS
         {
             PlayClickSound();
             onChoiceSelected?.Invoke(choiceIndex);
+        }
+        
+        /// <summary>
+        /// 선택지 개수 반환
+        /// </summary>
+        public int GetActiveChoiceCount()
+        {
+            return activeChoiceButtons.Count;
+        }
+        
+        /// <summary>
+        /// 선택지 활성화 상태 확인
+        /// </summary>
+        public bool HasActiveChoices()
+        {
+            return activeChoiceButtons.Count > 0;
+        }
+        
+        /// <summary>
+        /// 특정 선택지 버튼 활성화/비활성화
+        /// </summary>
+        public void SetChoiceButtonActive(int choiceIndex, bool active)
+        {
+            if (choiceIndex >= 0 && choiceIndex < activeChoiceButtons.Count)
+            {
+                GameObject buttonObj = activeChoiceButtons[choiceIndex];
+                if (buttonObj != null)
+                {
+                    buttonObj.SetActive(active);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 선택지 버튼 상호작용 활성화/비활성화
+        /// </summary>
+        public void SetChoiceButtonsInteractable(bool interactable)
+        {
+            foreach (GameObject buttonObj in activeChoiceButtons)
+            {
+                if (buttonObj != null)
+                {
+                    Button button = buttonObj.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        button.interactable = interactable;
+                    }
+                }
+            }
         }
         
         #region 디버그 및 에디터 메서드
@@ -160,11 +279,60 @@ namespace KYS
             });
         }
         
+        [ContextMenu("테스트 - 선택지 숨기기")]
+        public void TestHideChoices()
+        {
+            ClearChoices();
+            Debug.Log("[ChoicePanel] 선택지가 숨겨졌습니다.");
+        }
+        
+        [ContextMenu("테스트 - 선택지 다시 표시")]
+        public void TestShowChoices()
+        {
+            if (activeChoiceButtons.Count > 0)
+            {
+                foreach (GameObject buttonObj in activeChoiceButtons)
+                {
+                    if (buttonObj != null)
+                    {
+                        buttonObj.SetActive(true);
+                    }
+                }
+                Debug.Log("[ChoicePanel] 선택지가 다시 표시되었습니다.");
+            }
+            else
+            {
+                Debug.Log("[ChoicePanel] 표시할 활성 선택지가 없습니다.");
+            }
+        }
+        
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
             Debug.Log($"[ChoicePanel] 선택지 프리팹: {(choiceButtonPrefab != null ? "설정됨" : "없음")}");
             Debug.Log($"[ChoicePanel] 선택지 컨텐츠: {(choiceContent != null ? "설정됨" : "없음")}");
+            Debug.Log($"[ChoicePanel] 풀 크기: {choiceButtonPool.Count}");
+            Debug.Log($"[ChoicePanel] 활성 선택지: {activeChoiceButtons.Count}");
+        }
+        
+        [ContextMenu("풀 상태 확인")]
+        public void CheckPoolStatus()
+        {
+            int activeInPool = 0;
+            int inactiveInPool = 0;
+            
+            foreach (GameObject buttonObj in choiceButtonPool)
+            {
+                if (buttonObj != null)
+                {
+                    if (buttonObj.activeInHierarchy)
+                        activeInPool++;
+                    else
+                        inactiveInPool++;
+                }
+            }
+            
+            Debug.Log($"[ChoicePanel] 풀 상태 - 활성: {activeInPool}, 비활성: {inactiveInPool}");
         }
         #endregion
     }
