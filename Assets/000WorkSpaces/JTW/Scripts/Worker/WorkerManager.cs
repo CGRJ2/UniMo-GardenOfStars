@@ -202,11 +202,23 @@ public class WorkerManager : MonoBehaviour
         {
             yield return delay;
 
-            float temp = _workerList.Sum(worker => worker.StunChance);
+            List<WorkerRuntimeData> workerList = _workerList.Where(worker =>
+            {
+                WorkerStates state = worker.WorkerController.GetCurState();
+
+                if (state == WorkerStates.Idle || state == WorkerStates.Move)
+                {
+                    return worker.IngrediantStack.Count != 0;
+                }
+
+                return true;
+            }).ToList();
+
+            float temp = workerList.Sum(worker => worker.StunChance);
             float rand = Random.Range(0f, temp);
             float total = 0;
 
-            foreach(WorkerRuntimeData worker in _workerList)
+            foreach(WorkerRuntimeData worker in workerList)
             {
                 total += worker.StunChance;
 
