@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.SceneManagement; // 씬 이동을 위한 using 추가
 
 namespace KYS
 {
@@ -33,6 +34,26 @@ namespace KYS
         
         [Header("12성좌 데이터")]
         [SerializeField] private List<ZodiacStageData> zodiacStages = new List<ZodiacStageData>();
+        
+        [Header("씬 이동 설정")]
+        [SerializeField] private string[] stageSceneNames = new string[12] // 각 성좌별 씬 이름 (기본값)
+        {
+            "Stage00",          // 양자리 (GameManager의 첫 번째 스테이지)
+            "Stage_Taurus",     // 황소자리
+            "Stage_Gemini",     // 쌍둥이자리
+            "Stage_Cancer",     // 게자리
+            "Stage_Leo",        // 사자자리
+            "Stage_Virgo",      // 처녀자리
+            "Stage_Libra",      // 천칭자리
+            "Stage_Scorpio",    // 전갈자리
+            "Stage_Sagittarius", // 궁수자리
+            "Stage_Capricorn",  // 염소자리
+            "Stage_Aquarius",   // 물병자리
+            "Stage_Pisces"      // 물고기자리
+        };
+        [SerializeField] private bool useAddressables = false; // Addressables 사용 여부
+        [SerializeField] private string addressableSceneName = "StageScene"; // Addressables 씬 이름
+        [SerializeField] private bool useGameManagerStages = true; // GameManager의 스테이지 데이터 사용 여부
         
         [Header("UI 요소")]
         [SerializeField] private string stageNameTextName = "RunConstellationText"; // 스테이지 이름 텍스트
@@ -556,40 +577,76 @@ namespace KYS
             
             // 스테이지 이름 업데이트 (12성좌 이름 사용)
             if (stageNameText != null)
-                stageNameText.text = currentStageData.stageName;
+            {
+                string stageName = currentStageData.stageName;
+                bool isUnlocked = IsStageUnlocked(stageIndex);
+                
+                // 잠긴 스테이지인 경우 이름에 잠금 표시 추가
+                if (!isUnlocked)
+                {
+                    stageName += " [잠김]";
+                }
+                
+                stageNameText.text = stageName;
+                
+                // 잠금 상태에 따른 텍스트 색상 변경
+                stageNameText.color = isUnlocked ? Color.white : Color.red;
+            }
             
             // 스테이지 아이콘 업데이트 (중앙 상단 전용 이미지 사용)
             if (stageIconImage != null && currentStageData.centerImage != null)
             {
                 stageIconImage.sprite = currentStageData.centerImage;
-                stageIconImage.color = Color.white;
+                
+                // 잠금 상태에 따른 아이콘 색상 변경
+                bool isUnlocked = IsStageUnlocked(stageIndex);
+                stageIconImage.color = isUnlocked ? Color.white : new Color(0.5f, 0.5f, 0.5f, 0.8f);
             }
         }
 
         private void OnStageButtonClicked(int stageIndex)
         {
+            // 스테이지 해금 상태 확인
+            if (!IsStageUnlocked(stageIndex))
+            {
+                Debug.Log($"스테이지가 잠겨있음: {zodiacStages[stageIndex].stageName}");
+                return;
+            }
+            
             // 클릭된 스테이지로 즉시 이동
             JumpToStage(stageIndex);
             
             // 스테이지 전환 로직 추가
             if (stageIndex < zodiacStages.Count)
             {
-                // 현재 스테이지 ID 설정 (예시: "STAGE_001", "STAGE_002" 등)
-                string stageId = $"STAGE_{stageIndex + 1:000}";
-                
-                // 이미 해당 스테이지에 위치한 경우
-                if (Manager.game.curStageId == stageId)
+                try
                 {
-                    Debug.Log("이미 해당 스테이지에 위치함");
-                    return;
+                    // GameManager에서 실제 스테이지 ID 가져오기
+                    string stageId = GetStageSceneName(stageIndex);
+                    
+                    // 이미 해당 스테이지에 위치한 경우
+                    if (Manager.game != null && Manager.game.curStageId == stageId)
+                    {
+                        Debug.Log("이미 해당 스테이지에 위치함");
+                        // 현재 위치라도 패널은 닫기
+                        Manager.ui.ClosePanel();
+                        return;
+                    }
+                    
+                    // 스테이지 전환
+                    if (Manager.game != null)
+                    {
+                        Manager.game.curStageId = stageId;
+                        Debug.Log($"스테이지 전환: {zodiacStages[stageIndex].stageName} ({stageId})");
+                    }
+                    
+                    // 씬 이동 실행
+                    TransitionToStage(stageIndex);
                 }
-                
-                // 스테이지 전환
-                Manager.game.curStageId = stageId;
-                Debug.Log($"스테이지 전환: {zodiacStages[stageIndex].stageName} ({stageId})");
-                
-                // 스테이지 씬으로 전환 (필요한 경우)
-                // Addressables.LoadSceneAsync("StageScene");
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"[StageTransitionPanel] 스테이지 클릭 처리 중 오류 발생: {e.Message}");
+                }
             }
         }
 
@@ -642,6 +699,179 @@ namespace KYS
         }
         #endregion
 
+        #region Scene Transition
+        /// <summary>
+        /// 선택된 스테이지로 씬 이동
+        /// </summary>
+        private void TransitionToStage(int stageIndex)
+        {
+            if (stageIndex < 0 || stageIndex >= stageSceneNames.Length)
+            {
+                Debug.LogError($"잘못된 스테이지 인덱스: {stageIndex}");
+                return;
+            }
+
+            // GameManager의 스테이지 데이터 사용 여부에 따라 씬 이름 결정
+            string sceneName = GetStageSceneName(stageIndex);
+            Debug.Log($"[StageTransitionPanel] 씬 이동 시작: {sceneName} (스테이지 인덱스: {stageIndex})");
+
+            // 1. 패널 닫기 (씬 이동 전에 UI 정리)
+            Manager.ui.ClosePanel();
+
+            // 2. 씬 이동 실행
+            if (useAddressables)
+            {
+                // Addressables 사용 시
+                StartCoroutine(LoadSceneAsyncAddressables(sceneName));
+            }
+            else
+            {
+                // 일반 SceneManager 사용
+                StartCoroutine(LoadSceneAsync(sceneName));
+            }
+        }
+
+        /// <summary>
+        /// 스테이지 인덱스에 해당하는 씬 이름 가져오기
+        /// </summary>
+        private string GetStageSceneName(int stageIndex)
+        {
+            // GameManager의 스테이지 데이터 사용
+            if (useGameManagerStages && Manager.game != null && Manager.game.stageDataDic != null)
+            {
+                try
+                {
+                    // GameManager의 스테이지 데이터에서 순서대로 가져오기
+                    var stageKeys = new List<string>(Manager.game.stageDataDic.Keys);
+                    if (stageKeys.Count > 0)
+                    {
+                        // 스테이지 인덱스가 범위 내에 있으면 해당 스테이지 ID 사용
+                        if (stageIndex < stageKeys.Count)
+                        {
+                            string stageId = stageKeys[stageIndex];
+                            Debug.Log($"[StageTransitionPanel] GameManager에서 스테이지 ID 가져옴: {stageId} (인덱스: {stageIndex})");
+                            return stageId;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"[StageTransitionPanel] 스테이지 인덱스 {stageIndex}가 GameManager 스테이지 개수 {stageKeys.Count}를 초과합니다. 기본값 사용.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[StageTransitionPanel] GameManager에 스테이지 데이터가 없습니다. 기본값 사용.");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[StageTransitionPanel] GameManager 스테이지 데이터 접근 중 오류 발생: {e.Message}. 기본값 사용.");
+                }
+            }
+
+            // 기본값 사용 또는 GameManager 데이터가 없는 경우
+            if (stageIndex < stageSceneNames.Length)
+            {
+                string defaultSceneName = stageSceneNames[stageIndex];
+                Debug.Log($"[StageTransitionPanel] 기본 씬 이름 사용: {defaultSceneName} (인덱스: {stageIndex})");
+                return defaultSceneName;
+            }
+
+            // 에러 처리
+            Debug.LogError($"[StageTransitionPanel] 잘못된 스테이지 인덱스: {stageIndex}");
+            return "Stage00"; // 기본값 반환
+        }
+
+        /// <summary>
+        /// 일반 SceneManager를 사용한 비동기 씬 로딩
+        /// </summary>
+        private IEnumerator LoadSceneAsync(string sceneName)
+        {
+            Debug.Log($"[StageTransitionPanel] SceneManager로 씬 로딩 시작: {sceneName}");
+            
+            // 로딩 화면 표시 (필요한 경우)
+            // ShowLoadingScreen();
+            
+            // 씬 로딩 시작
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+            
+            // 씬 로딩이 완료될 때까지 대기
+            while (!asyncLoad.isDone)
+            {
+                // 로딩 진행률 업데이트 (필요한 경우)
+                float progress = asyncLoad.progress;
+                // UpdateLoadingProgress(progress);
+                
+                yield return null;
+            }
+            
+            Debug.Log($"[StageTransitionPanel] 씬 로딩 완료: {sceneName}");
+        }
+
+        /// <summary>
+        /// Addressables를 사용한 비동기 씬 로딩
+        /// </summary>
+        private IEnumerator LoadSceneAsyncAddressables(string sceneName)
+        {
+            Debug.Log($"[StageTransitionPanel] Addressables로 씬 로딩 시작: {sceneName}");
+            
+            // 로딩 화면 표시 (필요한 경우)
+            // ShowLoadingScreen();
+            
+            // Addressables 씬 로딩 (실제 구현은 Addressables 패키지에 따라 다름)
+            // var asyncOperation = Addressables.LoadSceneAsync(addressableSceneName);
+            
+            // 임시로 일반 씬 로딩 사용
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+            
+            while (!asyncLoad.isDone)
+            {
+                float progress = asyncLoad.progress;
+                // UpdateLoadingProgress(progress);
+                yield return null;
+            }
+            
+            Debug.Log($"[StageTransitionPanel] Addressables 씬 로딩 완료: {sceneName}");
+        }
+
+        /// <summary>
+        /// 즉시 씬 이동 (로딩 화면 없음)
+        /// </summary>
+        public void TransitionToStageImmediate(int stageIndex)
+        {
+            if (stageIndex < 0 || stageIndex >= stageSceneNames.Length)
+            {
+                Debug.LogError($"잘못된 스테이지 인덱스: {stageIndex}");
+                return;
+            }
+
+            string sceneName = GetStageSceneName(stageIndex);
+            Debug.Log($"[StageTransitionPanel] 즉시 씬 이동: {sceneName} (스테이지 인덱스: {stageIndex})");
+
+            // 1. 패널 닫기
+            Manager.ui.ClosePanel();
+
+            // 2. 즉시 씬 이동
+            SceneManager.LoadScene(sceneName);
+        }
+
+        /// <summary>
+        /// 특정 성좌 이름으로 씬 이동
+        /// </summary>
+        public void TransitionToStageByName(string zodiacName)
+        {
+            for (int i = 0; i < zodiacStages.Count; i++)
+            {
+                if (zodiacStages[i].stageName == zodiacName)
+                {
+                    TransitionToStage(i);
+                    return;
+                }
+            }
+            
+            Debug.LogWarning($"성좌를 찾을 수 없음: {zodiacName}");
+        }
+        #endregion
+
         #region Visual Effects
         private void UpdateButtonInteractability(int activeStageIndex)
         {
@@ -649,8 +879,13 @@ namespace KYS
             {
                 if (stageButtons[i] != null)
                 {
-                    // 12시 방향에 위치한 버튼만 클릭 가능
-                    stageButtons[i].interactable = (i == activeStageIndex);
+                    // 12시 방향에 위치한 버튼만 클릭 가능하고, 해금된 스테이지여야 함
+                    bool isActive = (i == activeStageIndex);
+                    bool isUnlocked = IsStageUnlocked(i);
+                    stageButtons[i].interactable = isActive && isUnlocked;
+                    
+                    // 잠긴 스테이지 시각적 표시
+                    UpdateStageLockVisual(i, isUnlocked);
                 }
             }
         }
@@ -662,6 +897,67 @@ namespace KYS
                 StopCoroutine(highlightCoroutine);
             }
             highlightCoroutine = StartCoroutine(HighlightCoroutine(stageIndex));
+        }
+        
+        /// <summary>
+        /// 스테이지 해금 상태 확인
+        /// </summary>
+        private bool IsStageUnlocked(int stageIndex)
+        {
+            if (stageIndex < 0 || stageIndex >= zodiacStages.Count) return false;
+            
+            // GameManager에서 스테이지 ID 가져오기
+            string stageId = GetStageSceneName(stageIndex);
+            
+            // Manager.game.GetStageUnlockCheck 사용 (StageListPanel과 동일한 방식)
+            if (Manager.game != null)
+            {
+                try
+                {
+                    // GameManager에 해당 스테이지가 존재하는지 먼저 확인
+                    if (Manager.game.stageDataDic != null && Manager.game.stageDataDic.ContainsKey(stageId))
+                    {
+                        return Manager.game.GetStageUnlockCheck(stageId);
+                    }
+                    else
+                    {
+                        // GameManager에 해당 스테이지가 없으면 자동으로 잠금 처리
+                        Debug.LogWarning($"[StageTransitionPanel] GameManager에 스테이지 '{stageId}'가 존재하지 않습니다. 자동 잠금 처리.");
+                        return false; // 자동 잠금
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    // 예외 발생 시 자동 잠금 처리
+                    Debug.LogWarning($"[StageTransitionPanel] 스테이지 '{stageId}' 해금 상태 확인 중 오류 발생: {e.Message}. 자동 잠금 처리.");
+                    return false; // 자동 잠금
+                }
+            }
+            
+            // Manager가 없는 경우 기본값 (개발용)
+            return zodiacStages[stageIndex].isUnlocked;
+        }
+        
+        /// <summary>
+        /// 스테이지 잠금 상태 시각적 표시
+        /// </summary>
+        private void UpdateStageLockVisual(int stageIndex, bool isUnlocked)
+        {
+            if (stageIndex < 0 || stageIndex >= stageButtonImages.Count) return;
+            
+            Image stageImage = stageButtonImages[stageIndex];
+            if (stageImage == null) return;
+            
+            if (isUnlocked)
+            {
+                // 해금된 스테이지: 정상 색상
+                stageImage.color = Color.white;
+            }
+            else
+            {
+                // 잠긴 스테이지: 어두운 색상으로 표시
+                stageImage.color = new Color(0.5f, 0.5f, 0.5f, 0.8f);
+            }
         }
 
         private IEnumerator HighlightCoroutine(int stageIndex)
@@ -742,6 +1038,153 @@ namespace KYS
             Debug.Log($"현재 회전 각도: {currentRotation}");
             Debug.Log($"버튼 수: {stageButtons.Count}");
             Debug.Log($"WheelParent: {(wheelParent != null ? "설정됨" : "설정되지 않음")}");
+        }
+        #endregion
+
+        #region Test Methods
+        /// <summary>
+        /// 테스트용 씬 이동 (ContextMenu)
+        /// </summary>
+        [ContextMenu("테스트 - 양자리로 이동")]
+        public void TestTransitionToAries()
+        {
+            TransitionToStage(0);
+        }
+
+        [ContextMenu("테스트 - 황소자리로 이동")]
+        public void TestTransitionToTaurus()
+        {
+            TransitionToStage(1);
+        }
+
+        [ContextMenu("테스트 - 쌍둥이자리로 이동")]
+        public void TestTransitionToGemini()
+        {
+            TransitionToStage(2);
+        }
+
+        [ContextMenu("테스트 - 게자리로 이동")]
+        public void TestTransitionToCancer()
+        {
+            TransitionToStage(3);
+        }
+
+        [ContextMenu("테스트 - 사자자리로 이동")]
+        public void TestTransitionToLeo()
+        {
+            TransitionToStage(4);
+        }
+
+        [ContextMenu("테스트 - 처녀자리로 이동")]
+        public void TestTransitionToVirgo()
+        {
+            TransitionToStage(5);
+        }
+
+        [ContextMenu("테스트 - 천칭자리로 이동")]
+        public void TestTransitionToLibra()
+        {
+            TransitionToStage(6);
+        }
+
+        [ContextMenu("테스트 - 전갈자리로 이동")]
+        public void TestTransitionToScorpio()
+        {
+            TransitionToStage(7);
+        }
+
+        [ContextMenu("테스트 - 궁수자리로 이동")]
+        public void TestTransitionToSagittarius()
+        {
+            TransitionToStage(8);
+        }
+
+        [ContextMenu("테스트 - 염소자리로 이동")]
+        public void TestTransitionToCapricorn()
+        {
+            TransitionToStage(9);
+        }
+
+        [ContextMenu("테스트 - 물병자리로 이동")]
+        public void TestTransitionToAquarius()
+        {
+            TransitionToStage(10);
+        }
+
+        [ContextMenu("테스트 - 물고기자리로 이동")]
+        public void TestTransitionToPisces()
+        {
+            TransitionToStage(11);
+        }
+
+        /// <summary>
+        /// 모든 씬 이름 출력 (디버깅용)
+        /// </summary>
+        [ContextMenu("씬 이름 정보 출력")]
+        public void PrintSceneNames()
+        {
+            Debug.Log("[StageTransitionPanel] === 씬 이름 정보 ===");
+            
+            // GameManager 데이터가 있는 경우
+            if (useGameManagerStages && Manager.game != null && Manager.game.stageDataDic != null)
+            {
+                var stageKeys = new List<string>(Manager.game.stageDataDic.Keys);
+                Debug.Log($"[StageTransitionPanel] GameManager 스테이지 데이터 ({stageKeys.Count}개):");
+                for (int i = 0; i < stageKeys.Count; i++)
+                {
+                    string zodiacName = i < zodiacStages.Count ? zodiacStages[i].stageName : $"Unknown_{i}";
+                    string stageId = stageKeys[i];
+                    
+                    // 안전하게 해금 상태 확인
+                    bool isUnlocked = false;
+                    try
+                    {
+                        if (Manager.game.stageDataDic.ContainsKey(stageId))
+                        {
+                            isUnlocked = Manager.game.GetStageUnlockCheck(stageId);
+                        }
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning($"[StageTransitionPanel] 스테이지 '{stageId}' 해금 상태 확인 실패: {e.Message}");
+                    }
+                    
+                    Debug.Log($"스테이지 {i}: {zodiacName} -> {stageId} [{(isUnlocked ? "해금" : "잠금")}]");
+                }
+            }
+            
+            // 기본 설정값과 실제 해금 상태 비교
+            Debug.Log($"[StageTransitionPanel] 기본 설정값과 실제 해금 상태 ({stageSceneNames.Length}개):");
+            for (int i = 0; i < stageSceneNames.Length; i++)
+            {
+                string zodiacName = i < zodiacStages.Count ? zodiacStages[i].stageName : $"Unknown_{i}";
+                string stageId = GetStageSceneName(i);
+                bool isUnlocked = IsStageUnlocked(i);
+                bool existsInGameManager = Manager.game != null && Manager.game.stageDataDic != null && Manager.game.stageDataDic.ContainsKey(stageId);
+                
+                string status = isUnlocked ? "해금" : "잠금";
+                string reason = existsInGameManager ? "GameManager에 존재" : "GameManager에 없음 (자동 잠금)";
+                
+                Debug.Log($"스테이지 {i}: {zodiacName} -> {stageSceneNames[i]} [{status}] - {reason}");
+            }
+        }
+        
+        /// <summary>
+        /// 스테이지 해금 상태 정보 출력 (디버깅용)
+        /// </summary>
+        [ContextMenu("스테이지 해금 상태 정보 출력")]
+        public void PrintStageUnlockInfo()
+        {
+            Debug.Log("[StageTransitionPanel] === 스테이지 해금 상태 정보 ===");
+            
+            for (int i = 0; i < zodiacStages.Count; i++)
+            {
+                string zodiacName = zodiacStages[i].stageName;
+                string stageId = GetStageSceneName(i);
+                bool isUnlocked = IsStageUnlocked(i);
+                
+                Debug.Log($"스테이지 {i}: {zodiacName} -> {stageId} [{(isUnlocked ? "해금" : "잠금")}]");
+            }
         }
         #endregion
     }
