@@ -14,6 +14,7 @@ public partial class DataManager : Singleton<DataManager>
     public void Init()
     {
         WorkerRoutine();
+        CharacterLvRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)
