@@ -349,7 +349,10 @@ namespace KYS
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"[UIManager] UI 로드 실패: {addressableKey}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
@@ -358,7 +361,10 @@ namespace KYS
                 if (targetParent == null)
                 {
                     Debug.LogError($"[UIManager] UI 부모를 찾을 수 없음: {addressableKey}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
@@ -369,7 +375,10 @@ namespace KYS
                 if (instanceHandle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"[UIManager] UI 인스턴스 생성 실패: {addressableKey}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
@@ -380,7 +389,10 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] UI 컴포넌트를 찾을 수 없음: {addressableKey}");
                     Addressables.ReleaseInstance(uiInstance);
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
@@ -505,7 +517,10 @@ namespace KYS
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Debug.LogError($"[UIManager] 라벨 로드 실패: {label}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return new List<T>();
                 }
 
@@ -523,7 +538,10 @@ namespace KYS
                     }
                 }
 
-                Addressables.Release(handle);
+                if (handle.IsValid())
+                {
+                    Addressables.Release(handle);
+                }
                 isCreatingUI = false;
                 return loadedUIs;
             }
@@ -561,7 +579,10 @@ namespace KYS
                 else
                 {
                     Debug.LogError($"[UIManager] UI 미리 로드 실패: {addressableKey}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                 }
                 
                 isCreatingUI = false;
@@ -601,7 +622,11 @@ namespace KYS
 
                 if (addressableHandles.ContainsKey(addressableKey))
                 {
-                    Addressables.Release(addressableHandles[addressableKey]);
+                    var handle = addressableHandles[addressableKey];
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     addressableHandles.Remove(addressableKey);
                 }
             }
@@ -633,8 +658,17 @@ namespace KYS
                 }
                 instantiatedUIs.Clear();
 
-                // 핸들 해제
-                foreach (var handle in addressableHandles.Values)
+                // 핸들 해제 - 유효성 검사 추가
+                var handlesToRelease = new List<AsyncOperationHandle>();
+                foreach (var kvp in addressableHandles)
+                {
+                    if (kvp.Value.IsValid())
+                    {
+                        handlesToRelease.Add(kvp.Value);
+                    }
+                }
+                
+                foreach (var handle in handlesToRelease)
                 {
                     Addressables.Release(handle);
                 }
@@ -1458,7 +1492,10 @@ namespace KYS
                     }
                     else
                     {
-                        Addressables.Release(handle);
+                        if (handle.IsValid())
+                        {
+                            Addressables.Release(handle);
+                        }
                     }
                 }
                 catch (System.Exception e)
@@ -1466,7 +1503,10 @@ namespace KYS
                     Debug.LogWarning($"[UIManager] LoadingScreen 프리팹 처리 실패 ({key}): {e.Message}");
                     if (!loadSuccess)
                     {
-                        Addressables.Release(handle);
+                        if (handle.IsValid())
+                        {
+                            Addressables.Release(handle);
+                        }
                     }
                 }
             }
@@ -1932,7 +1972,10 @@ namespace KYS
                 else
                 {
                     //Debug.LogWarning($"[UIManager] 키 '{addressableKey}' 실패: {handle.OperationException?.Message}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                 }
             }
 
@@ -2040,7 +2083,10 @@ namespace KYS
                 else
                 {
                     Debug.LogWarning($"[UIManager] 키 '{addressableKey}' 실패: {handle.OperationException?.Message}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                 }
             }
 
@@ -2386,7 +2432,10 @@ namespace KYS
                 if (hudComponent == null)
                 {
                     Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다: {addressableKey}");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
@@ -2439,7 +2488,10 @@ namespace KYS
                 if (hudComponent == null)
                 {
                     Debug.LogError($"[UIManager] HUD 프리팹에 {typeof(T).Name} 컴포넌트가 없습니다.");
-                    Addressables.Release(handle);
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
                     return null;
                 }
 
