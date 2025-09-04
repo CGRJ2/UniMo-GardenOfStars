@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -14,6 +14,7 @@ namespace KYS
         [SerializeField] private string playerLevelTextName = "PlayerLevelText";
         [SerializeField] private string playerExpTextName = "PlayerExpText";
         [SerializeField] private string playerMoneyTextName = "PlayerMoneyText";
+        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
         private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
@@ -22,11 +23,14 @@ namespace KYS
         private TextMeshProUGUI playerLevelText => GetUI<TextMeshProUGUI>(playerLevelTextName);
         private TextMeshProUGUI playerExpText => GetUI<TextMeshProUGUI>(playerExpTextName);
         private TextMeshProUGUI playerMoneyText => GetUI<TextMeshProUGUI>(playerMoneyTextName);
-
+        private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         [Header("Player Info")]
         [SerializeField] private int playerLevel = 1;
         [SerializeField] private int playerExp = 0;
         [SerializeField] private int playerMoney = 1000;
+
+        // 추가 변수 선언
+        private int currentMoney = 0;
 
         protected override void Awake()
         {
@@ -50,10 +54,21 @@ namespace KYS
             base.Initialize();
             SetupButtons();
             UpdateUI();
+
+            // 초기 값 설정
+            UpdateMoney(Manager.player.Data.Money.Value);
+
+            // ObservableProperty 구독 - 실시간 돈 업데이트
+            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
         }
 
         public override void Cleanup()
         {
+
+            // ObservableProperty 구독 해제
+            Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+
+
             base.Cleanup();
         }
 
@@ -78,8 +93,7 @@ namespace KYS
             if (playerExpText != null)
                 playerExpText.text = $"{GetLocalizedText("ui_player_exp_label")}: {playerExp}";
 
-            if (playerMoneyText != null)
-                playerMoneyText.text = $"{GetLocalizedText("ui_player_money_label")}: {playerMoney}";
+
         }
 
         public void SetPlayerData(int level, int exp, int money)
@@ -90,12 +104,29 @@ namespace KYS
             UpdateUI();
         }
 
-        public void UpdatePlayerMoney(int newMoney)
+
+        public void UpdateMoney(int amount)
         {
-            playerMoney = newMoney;
-            if (playerMoneyText != null)
-                playerMoneyText.text = $"{GetLocalizedText("ui_player_money_label")}: {playerMoney}";
+
+            currentMoney = amount; // 현재 값 저장
+            if (moneyText != null)
+            {
+
+
+                moneyText.text = $"{amount:N0}";
+            }
         }
+
+        /// <summary>
+        /// ObservableProperty Money 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnMoneyChanged(int newMoneyValue)
+        {
+            UpdateMoney(newMoneyValue);
+        }
+
+
+
 
         private void OnCloseButtonClicked()
         {
