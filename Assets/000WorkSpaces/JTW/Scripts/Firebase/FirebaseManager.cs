@@ -1,29 +1,31 @@
 ﻿using Firebase;
-using Firebase.Analytics;
 using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
-    private static FirebaseApp _app;
-    public static FirebaseApp App => _app;
+    private FirebaseApp _app;
+    public FirebaseApp App => _app;
 
-    private static FirebaseAuth _auth;
-    public static FirebaseAuth Auth => _auth;
+    private FirebaseAuth _auth;
+    public FirebaseAuth Auth => _auth;
 
-    private static FirebaseDatabase _database;
-    public static FirebaseDatabase Database => _database;
+    private FirebaseDatabase _database;
+    public FirebaseDatabase Database => _database;
 
     public UserData UserData;
 
+    public event Action OnFirebaseInit;
+
+    public bool IsFirebaseInit;
+
     private void Awake()
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+        {
             var dependencyStatus = task.Result;
             if (dependencyStatus == DependencyStatus.Available)
             {
@@ -33,6 +35,10 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 Debug.Log("파이어베이스 연결 성공");
 
                 UserData = new UserData("UserData", "");
+
+                OnFirebaseInit.Invoke();
+
+                IsFirebaseInit = true;
             }
             else
             {
