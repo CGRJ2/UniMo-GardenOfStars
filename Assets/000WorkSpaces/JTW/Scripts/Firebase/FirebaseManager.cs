@@ -34,7 +34,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _database = FirebaseDatabase.DefaultInstance;
                 Debug.Log("파이어베이스 연결 성공");
 
-                UserData = new UserData("UserData", "");
+                // 테스트를 원활하게 하기위해 일단 실행
+                // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
+                InitUserData();
 
                 OnFirebaseInit.Invoke();
 
@@ -49,6 +51,18 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _database = null;
             }
         });
+    }
+
+    public void InitUserData()
+    {
+        if(_auth.CurrentUser == null)
+        {
+            UserData = new UserData($"UserData/testUser1234", "");
+        }
+        else
+        {
+            UserData = new UserData($"UserData/{_auth.CurrentUser.UserId}", "");
+        }
     }
 
     public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
