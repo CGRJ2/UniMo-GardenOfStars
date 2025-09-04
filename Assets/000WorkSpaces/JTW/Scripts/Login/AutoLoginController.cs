@@ -7,7 +7,7 @@ using UnityEngine;
 using Firebase.Extensions;
 
 // 타이틀 등 맨 처음 씬에 넣을 용도.
-public class AutoLoginController : MonoBehaviour
+public class AutoLoginController : MonoBehaviour 
 {
     public bool IsPlayGameLoginEnd;
     public bool IsLogined;
@@ -37,18 +37,29 @@ public class AutoLoginController : MonoBehaviour
         {
             Debug.Log($"PlayGames 로그인 실패 : {status}");
 
-            if (Auth.CurrentUser != null && Auth.CurrentUser.IsAnonymous)
+            if(Auth == null)
             {
-                // TODO : 타이틀 화면으로
-                IsLogined = true;
-                IsPlayGameLoginEnd = true;
+                Manager.firebase.OnFirebaseInit -= CheckAnonymousLogin;
+                Manager.firebase.OnFirebaseInit += CheckAnonymousLogin;
                 return;
             }
 
-            IsLogined = false;
-            IsPlayGameLoginEnd = true;
-            // TODO : 로그인 화면으로 전환
+            CheckAnonymousLogin();
         }
+    }
+
+    private void CheckAnonymousLogin()
+    {
+        if (Auth.CurrentUser != null && Auth.CurrentUser.IsAnonymous)
+        {
+            // TODO : 타이틀 화면으로
+            IsLogined = true;
+            IsPlayGameLoginEnd = true;
+            return;
+        }
+
+        IsLogined = false;
+        IsPlayGameLoginEnd = true;
     }
 
     // TODO : Firebase 서버의 문제로 중단되면 그에 맞는 처리 추가.

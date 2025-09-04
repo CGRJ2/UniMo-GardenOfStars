@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class LoginController : MonoBehaviour
 {
+    public ObservableProperty<bool> IsLoggingIn = new();
     public ObservableProperty<bool> IsLogined = new();
 
     private FirebaseAuth Auth => Manager.firebase.Auth;
@@ -17,9 +18,11 @@ public class LoginController : MonoBehaviour
 
     private void OnMaunuallyAuthenticate(SignInStatus status)
     {
+        IsLoggingIn.Value = true;
         if (status != SignInStatus.Success)
         {
             Debug.Log($"PlayGames 로그인 실패 : {status}");
+            IsLoggingIn.Value = false;
             return;
         }
 
@@ -45,16 +48,19 @@ public class LoginController : MonoBehaviour
                 if (task.IsCanceled)
                 {
                     Debug.Log("파이어베이스 연동 중단");
+                    IsLoggingIn.Value = false;
                     return;
                 }
 
                 if (task.IsFaulted)
                 {
                     Debug.Log($"파이어베이스 연동 실패 : {task.Exception}");
+                    IsLoggingIn.Value = false;
                     return;
                 }
 
                 Debug.Log("파이어베이스 연동 성공");
+                IsLoggingIn.Value = false;
                 IsLogined.Value = true;
             });
         });
@@ -62,21 +68,25 @@ public class LoginController : MonoBehaviour
 
     public void GusetLogin()
     {
+        IsLoggingIn.Value = true;
         Manager.firebase.Auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled)
             {
                 Debug.Log("익명 로그인 중단");
+                IsLoggingIn.Value = false;
                 return;
             }
 
             if (task.IsFaulted)
             {
                 Debug.Log($"익명 로그인 실패 : {task.Exception}");
+                IsLoggingIn.Value = false;
                 return;
             }
 
             Debug.Log("익명 로그인 성공");
+            IsLoggingIn.Value = false;
             IsLogined.Value = true;
         });
     }
