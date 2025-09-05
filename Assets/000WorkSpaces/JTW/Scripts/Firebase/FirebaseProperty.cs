@@ -32,7 +32,7 @@ public class FirebaseProperty<T> : FirebaseData
     {
         if (args.Snapshot.Value == null)
         {
-            Value = _default;
+            Manager.firebase.SaveData(Path, _default);
             return;
         }
 
