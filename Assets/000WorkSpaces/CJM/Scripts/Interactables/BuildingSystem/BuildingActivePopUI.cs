@@ -31,10 +31,10 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 이미 TitlePanel이 열려있는지 확인
-        var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
-        foreach (var panel in existingPanels)
+        var existingPopups = Manager.ui.GetUIsByLayer(UILayerType.Popup);
+        foreach (var Popup in existingPopups)
         {
-            if (panel is InfoPanel_Harvest)
+            if (Popup is InfoPanel_Harvest)
             {
                 //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                 return;
@@ -42,14 +42,14 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPanelAsync<InfoPanel_Harvest>((panel) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((Popup) =>
         {
-            if (panel != null)
+            if (Popup != null)
             {
                 //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
 
                 if (buildingInstance is HarvestBuilding harvesst)
-                    panel.SetUpgradeData(harvesst.originData);
+                    Popup.SetUpgradeData(harvesst.originData);
             }
             else
             {
@@ -66,10 +66,10 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 이미 TitlePanel이 열려있는지 확인
-        var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
-        foreach (var panel in existingPanels)
+        var existingPopups = Manager.ui.GetUIsByLayer(UILayerType.Popup);
+        foreach (var Popup in existingPopups)
         {
-            if (panel is InfoPanel_Manufacture)
+            if (Popup is InfoPanel_Manufacture)
             {
                 //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                 return;
@@ -77,14 +77,14 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPanelAsync<InfoPanel_Manufacture>((panel) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((Popup) =>
         {
-            if (panel != null)
+            if (Popup != null)
             {
                 //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
 
                 if (buildingInstance is ManufactureBuilding manufacture)
-                    panel.SetUpgradeData(manufacture.originData);
+                    Popup.SetUpgradeData(manufacture.originData);
             }
             else
             {

@@ -72,12 +72,17 @@ public class InfoPanel_Harvest : BaseUI
         int curMoney = Manager.player.Data.Money.Value;
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
 
-        tmp_Name.text = data.Name;
-        tmp_Description.text = data.Description;
+        string harvestbuildingNamekey = $"RunHarvestBuildingName{data.Name}";
+        string harvesetbuildingDesckey = $"RunHarvestBuildingDesc{data.Description}";
+
+        tmp_Name.text = Manager.localization.GetText(harvestbuildingNamekey);
+        tmp_Description.text = Manager.localization.GetText(harvesetbuildingDesckey);
 
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
-            tmp_ProdName.text = prodData.Result.Name;
+            string prodNameKey = $"RunIngrediantName{prodData.Result.Name}";
+
+            tmp_ProdName.text = Manager.localization.GetText(prodNameKey);
             image_Prod.sprite = prodData.Result.Sprite;
         };
 
@@ -110,6 +115,6 @@ public class InfoPanel_Harvest : BaseUI
 
     private void Close()
     {
-           UIManager.Instance.ClosePanel();
+           UIManager.Instance.ClosePopup();
     }
 }
