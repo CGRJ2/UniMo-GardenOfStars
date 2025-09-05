@@ -19,9 +19,9 @@ public class SfxController : MonoBehaviour
     private void Update()
     {
         // 현재 위치와 타겟 위치가 다르면, 위치 이동
-        if(curPosition != Target.transform.position)
+        if(Target != null && curPosition != Target.position)
         {
-            transform.position = Target.transform.position;
+            transform.position = Target.position;
             curPosition = transform.position;
         }
     }
