@@ -12,16 +12,25 @@ public class StageManager : MonoBehaviour
     void Init()
     {
         // 현재 스테이지 Id 정보와 다음 스테이지 언락 조건 저장
-        stageId = Manager.game.curStageId;
-        stageData = Manager.game.stageDataDic[stageId];
 
-        Manager.ui.ShowAllHUDElements();
-        Addressables.LoadSceneAsync($"MapScene_{Manager.game.curStageId}", LoadSceneMode.Additive).Completed += task =>
+        // 임시 테스트용(인게임씬으로 바로 실행하는 경우)
+        if (string.IsNullOrEmpty(Manager.game.curStageId))
         {
-            // 맵 씬 로드 완료 이후에 로딩 해제
-        };
-
-
+            Manager.game.curStageId = "Stage00";
+            Addressables.LoadSceneAsync($"MapScene_Stage00", LoadSceneMode.Additive);
+        }
+        // 타이틀 씬에서 인게임씬으로 이동 시, 아래 적용
+        else
+        {
+            stageId = Manager.game.curStageId;
+            stageData = Manager.game.stageDataDic[stageId];
+            Addressables.LoadSceneAsync($"MapScene_{Manager.game.curStageId}", LoadSceneMode.Additive).Completed += task =>
+            {
+                // 맵 씬 로드 완료 이후에 로딩 해제
+            };
+        }
+        
+        Manager.ui.ShowAllHUDElements();
     }
 
     public void TryUnlockNextStage(int curQuestIndex)
