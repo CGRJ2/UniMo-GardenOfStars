@@ -28,14 +28,14 @@ public class StageManager : MonoBehaviour
     {
         //Debug.Log($"클리어 이후 진행도 {curQuestIndex}");
         // 언락 인덱스가 -면 다음 스테이지가 없음
-        if (stageData.clearQuestIndex < 0)
+        if (stageData.requiredQuestIndex < 0)
         {
             Debug.Log("다음 스테이지가 없음, 언락 조건 체크 안할거임");
             return;
         }
 
         // 언락조건에 도달 안되면 return
-        if (stageData.clearQuestIndex > curQuestIndex) return;
+        if (stageData.requiredQuestIndex > curQuestIndex) return;
 
         // 언락 조건에 도달 시
         Manager.game.StageUnlock(stageData.nextStageId);

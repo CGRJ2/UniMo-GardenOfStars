@@ -4,8 +4,8 @@ using UnityEngine;
 [Serializable]
 public partial class StageData
 {
-    public string stageId;
+    public string StageId;
     public string stageName;
-    public int clearQuestIndex;
+    public int requiredQuestIndex;
     public string nextStageId;
 }
