@@ -1,38 +1,100 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerData
+public class PlayerData : FirebaseData
 {
-    // TODO : MoveSpeed 같은 값은 DataManager에서 가져오는 것으로 변경?
+    private Dictionary<string, CharacterLvDataCsv> LvCsv => Manager.data.CharacterLv.Values;
+    private PlayerDataCsv PlayerCsv => Manager.data.Player.Values["10501_F"];
 
-    public float MoveSpeed;
-    public ObservableProperty<int> MoveSpeedLv = new();
+    public float MoveSpeed => LvCsv[(MoveSpeedLv.Value + 2).ToString()].Speed;
+    public FirebaseProperty<int> MoveSpeedLv;
+    public int MoveSpeedMaxLv => PlayerCsv.MaxSpeedMaxLv;
 
-    public int MaxCapacity;
-    public ObservableProperty<int> MaxCapacityLv = new();
-    public float ProductionSpeed;
-    public ObservableProperty<int> ProductionSpeedLv = new();
+    public int MaxCapacity => LvCsv[(MaxCapacityLv.Value).ToString()].Capacity;
+    public FirebaseProperty<int> MaxCapacityLv;
+    public int MaxCapacityMaxLv => PlayerCsv.MaxCapacityMaxLv;
 
-    public float Nego;
-    public ObservableProperty<int> NegoLv = new();
+    public float ProductionSpeed => PlayerCsv.PDSpeed;
 
-    public ObservableProperty<int> Money = new();
+    public float Nego => LvCsv[NegoLv.Value.ToString()].Nego;
+    public FirebaseProperty<int> NegoLv;
+    public int NegoMaxLv => PlayerCsv.NegoMaxLv;
 
-    public PlayerData()
+    public FirebaseProperty<int> Money;
+
+    public PlayerData(string id, string parentPath) : base(id, parentPath)
     {
-        MoveSpeed = 5;
-        MoveSpeedLv.Value = 1;
+        MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
 
-        MaxCapacity = 5;
-        MaxCapacityLv.Value = 1;
+        MaxCapacityLv = new FirebaseProperty<int>("MaxCapacityLv", Path, 1);
 
-        ProductionSpeed = 2;
-        ProductionSpeedLv.Value = 1;
+        NegoLv = new FirebaseProperty<int>("NegoLv", Path, 1);
 
-        Nego = 20;
-        NegoLv.Value = 1;
+        Money = new FirebaseProperty<int>("Money", Path);
+    }
+}
 
-        Money.Value = 0;
+public class PlayerDataCsv : IUsableId
+{
+    public string Id;
+
+    public float BMSpeed;
+    public int MaxSpeedMaxLv;
+
+    public int BMCapacity;
+    public int MaxCapacityMaxLv;
+
+    public int NegoMaxLv;
+
+    public float PDSpeed;
+
+    public string GetId()
+    {
+        return Id;
+    }
+}
+
+public partial class DataManager
+{
+    private bool _isPlayerAdressable = true;
+
+    // 구글 스프레드 시트 다운로드 주소
+    private const string _playerDataTableURL = "https://docs.google.com/spreadsheets/d/1CwrcyyODjYAwjCgYkofKQl815o-vOWkUH7yy6mdUtY4/export?format=csv&gid=0";
+
+    // Addressable 에셋 주소
+    private const string _playerAdress = "PlayerCsv";
+
+    public DataTableParser<PlayerDataCsv> Player;
+    private async void PlayerRoutine()
+    {
+        string dataCsv;
+
+        if (_isPlayerAdressable)
+        {
+            dataCsv = await GetDataString(_isPlayerAdressable, _playerAdress);
+        }
+        else
+        {
+            dataCsv = await GetDataString(_isPlayerAdressable, _playerDataTableURL);
+        }
+
+        Player = new DataTableParser<PlayerDataCsv>((words, dict) =>
+        {
+            PlayerDataCsv player = new PlayerDataCsv();
+
+            float.TryParse(words[dict["BMSpeed"]], out player.BMSpeed);
+            int.TryParse(words[dict["MaxSpeedLV"]], out player.MaxSpeedMaxLv);
+
+            int.TryParse(words[dict["BMCapacity"]], out player.BMCapacity);
+            int.TryParse(words[dict["MaxCapacityLV"]], out player.MaxCapacityMaxLv);
+
+            int.TryParse(words[dict["MaxNegoLV"]], out player.NegoMaxLv);
+
+            float.TryParse(words[dict["PDSpeed"]], out player.PDSpeed);
+
+            return player;
+        });
+
+        Player.Load(dataCsv);
     }
 }
