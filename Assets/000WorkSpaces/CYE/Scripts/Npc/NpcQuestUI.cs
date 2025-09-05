@@ -7,8 +7,6 @@ namespace GameNpc
 {
     public class NpcQuestUI : MonoBehaviour
     {
-        // public int _slots;
-        // public List<GameObject> _displayArea = new();
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private GameObject _viewContent;
         public Dictionary<string, GameObject> _itemPanel = new();
@@ -19,8 +17,6 @@ namespace GameNpc
         void Init()
         {
             InitItemPanel(Manager.quest.CurrentQuestIndex.Value);
-            // // UI 카메라 방향으로 돌려놓기
-            // transform.forward = Camera.main.transform.forward;
             // 이벤트 구독
             Manager.quest.OnQuestProgressUpdate += UpdateProgressUI;
             // TO DO: 나중에 제외 필요(대화시 퀘스트가 받아지도록 변경 예정)
@@ -32,7 +28,7 @@ namespace GameNpc
             foreach (QuestProgressData progressData in Manager.quest.CurrentQuest._questProgresses)
             {
                 GameObject panel = _itemPanel[progressData._targetId];
-                panel.GetComponent<NpcProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
             }
         }
         public void InitItemPanel(int currentQuestIndex)
@@ -42,9 +38,9 @@ namespace GameNpc
             {
                 GameObject panel = Instantiate(_cellPrefab, _viewContent.transform);
                 // panel.GetComponent<NpcProgressPanel>()?.UpdateItemImage(itemSprite);
-                panel.GetComponent<NpcProgressPanel>()?.UpdateItemId(progressData._targetId);
-                panel.GetComponent<NpcProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
-                panel.GetComponent<NpcProgressPanel>()?.UpdateTargetCountText(progressData._targetCount);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateItemId(progressData._targetId);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData._targetCount);
                 if (!_itemPanel.ContainsKey(progressData._targetId)) { 
                     _itemPanel.Add(progressData._targetId, panel);
                 }

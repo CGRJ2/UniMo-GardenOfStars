@@ -10,6 +10,7 @@ namespace GameNpc
         public int _id;
         public string _name;
         public string _description;
+        public List<string> _hoveringSpeech = new();
 
         public Npc(CYETestNpcDataSO rawData)
         {
@@ -26,24 +27,19 @@ namespace GameNpc
         {
 
         }
-        public void UpdateQuestUI()
-        {
-            foreach (QuestProgressData item in Manager.quest.CurrentQuest._questProgresses)
-            {
-                // item에 해당하는 icon 및 갯수를 가져와서 업데이트
-                Debug.Log($"{item._targetId}-{item._currentCount}/{item._targetCount}");
-            }
-        }
+
         /// <summary>
         /// 하나씩 업데이트
         /// </summary>
         /// <param name="targetId"></param>
         public void ReceiveEachProduct(string targetId)
         {
-            // interact 발판에 있는 재료 정보를 들고와서
-            // interact 발판에 있는 재료를 차감함
             Manager.quest.UpdateCurrentQuestProgress(targetId, 1);
-            UpdateQuestUI();
+        }
+
+        public void Talk()
+        { 
+            
         }
     }
 }

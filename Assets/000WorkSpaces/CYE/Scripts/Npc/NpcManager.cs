@@ -6,7 +6,7 @@ using UnityEngine;
 public class NpcManager : Singleton<NpcManager>
 {
     // for test
-    public CYETestNpcDataSO _npcRawData;
+    public List<CYETestNpcDataSO> _npcRawData = new();
     public Npc CurrentNpc;
     private void Awake()
     {
@@ -23,6 +23,6 @@ public class NpcManager : Singleton<NpcManager>
         // 해당하는 regionId의 Npc 데이터를 불러와서
         // CurrentNpc에 넣어줌
         // for test
-        CurrentNpc = new Npc(_npcRawData);
+        CurrentNpc = new Npc(_npcRawData.Find(item => item._stageId.Equals(regionId)));
     }
 }
