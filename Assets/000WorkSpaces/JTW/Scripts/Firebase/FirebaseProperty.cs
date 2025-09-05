@@ -9,6 +9,7 @@ using UnityEngine.Events;
 public class FirebaseProperty<T> : FirebaseData
 {
     [SerializeField] private T _value;
+    private T _default;
 
     public T Value
     {
@@ -21,16 +22,37 @@ public class FirebaseProperty<T> : FirebaseData
     }
     private UnityEvent<T> _onValueChanged = new();
 
-    public FirebaseProperty(string id, string parentPath) : base(id, parentPath)
+    public FirebaseProperty(string id, string parentPath, T value = default) : base(id, parentPath)
     {
+        _default = value;
         Manager.firebase.SetDataEvent(Path, OnFirebaseChanged);
     }
 
     private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)
     {
-        if (args.Snapshot.Value == null) return;
+        if (args.Snapshot.Value == null)
+        {
+            Value = _default;
+            return;
+        }
 
-        _value = (T)args.Snapshot.Value;
+        if(typeof(T) == typeof(int))
+        {
+            long value = (long)args.Snapshot.Value;
+            _value = (T)(object)(int)value;
+        }
+        else if(typeof(T) == typeof(float))
+        {
+            double value = (double)args.Snapshot.Value;
+            _value = (T)(object)(float)value;
+        }
+        else
+        {
+            _value = (T)args.Snapshot.Value;
+        }
+
+        IsInitSelf = true;
+
         Notify();
     }
 

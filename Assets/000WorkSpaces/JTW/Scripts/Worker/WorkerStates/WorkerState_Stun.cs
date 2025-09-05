@@ -17,6 +17,14 @@ public class WorkerState_Stun : WorkerStateBase
         if (WorkerData.CurWorkstation.Value == null) return;
 
         WorkerData.CurWorkstation.Value.SetReserveState(false);
+
+        if (WorkerData.IsPlayerTriggered.Value)
+        {
+            StateMachine.ChangeState(WorkerStates.Idle);
+            return;
+        }
+
+        WorkerData.IsPlayerTriggered.Subscribe(WakeUp);
     }
 
     public override void Update()
@@ -33,5 +41,13 @@ public class WorkerState_Stun : WorkerStateBase
 
     public override void Exit()
     {
+        WorkerData.IsPlayerTriggered.Unsubscribe(WakeUp);
+    }
+
+    private void WakeUp(bool value)
+    {
+        if (!value) return;
+
+        StateMachine.ChangeState(WorkerStates.Idle);
     }
 }
