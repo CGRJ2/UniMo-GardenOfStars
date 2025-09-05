@@ -118,6 +118,7 @@ public class CharacterLvDataCsv : IUsableId
 
     public float Speed;
     public int Capacity;
+    public float Nego;
 
     public string GetId()
     {
@@ -152,14 +153,15 @@ public partial class DataManager
 
         CharacterLv = new DataTableParser<CharacterLvDataCsv>((words, dict) =>
         {
-            CharacterLvDataCsv CharacterLv = new CharacterLvDataCsv();
+            CharacterLvDataCsv characterLv = new CharacterLvDataCsv();
 
-            CharacterLv.Id = words[dict["LV"]];
+            characterLv.Id = words[dict["LV"]];
 
-            float.TryParse(words[dict["SpeedValue"]], out CharacterLv.Speed);
-            int.TryParse(words[dict["CapacityValue"]], out CharacterLv.Capacity);
+            float.TryParse(words[dict["SpeedValue"]], out characterLv.Speed);
+            int.TryParse(words[dict["CapacityValue"]], out characterLv.Capacity);
+            float.TryParse(words[dict["NegoValue"]], out characterLv.Nego);
 
-            return CharacterLv;
+            return characterLv;
         });
 
         CharacterLv.Load(dataCsv);
