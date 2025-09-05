@@ -11,10 +11,12 @@ public class WorkerData : FirebaseData
     public float MoveSpeed => Manager.data.CharacterLv.Values[MoveSpeedLv.Value.ToString()].Speed;
     public FirebaseProperty<long> MoveSpeedLv;
     public int MoveSpeedMaxLv => WorkerCsv.SpeedMaxLv;
+    public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
     public int MaxCapacity => Manager.data.CharacterLv.Values[MaxCapacityLv.Value.ToString()].Capacity;
     public FirebaseProperty<long> MaxCapacityLv;
     public int MaxCapacityMaxLv => WorkerCsv.MaxCapacityMaxLv;
+    public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;
 
     public float ProductionSpeed => WorkerCsv.ProductionSpeed;
     public string ProductionSpeedRank => WorkerCsv.ProductionSpeedRank;
@@ -31,17 +33,21 @@ public class WorkerData : FirebaseData
         MaxCapacityLv = new FirebaseProperty<long>("MaxCapacityLv", Path, 1);
         InitList.Add(MaxCapacityLv);
     }
-}
 
-public class WorkerDataJson : IUsableId
-{
-    public string Id;
-    public int MoveSpeedLv;
-    public int MaxCapacityLv;
-
-    public string GetId()
+    public void UpgradeMoveSpeed()
     {
-        return Id;
+        if (!IsMoveSpeedMaxLv)
+        {
+            MoveSpeedLv.Value += 1;
+        }
+    }
+
+    public void UpgradeMaxCapacity()
+    {
+        if (!IsMaxCapacityMaxLv)
+        {
+            MaxCapacityLv.Value += 1;
+        }
     }
 }
 

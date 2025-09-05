@@ -9,16 +9,19 @@ public class PlayerData : FirebaseData
     public float MoveSpeed => LvCsv[(MoveSpeedLv.Value + 2).ToString()].Speed;
     public FirebaseProperty<int> MoveSpeedLv;
     public int MoveSpeedMaxLv => PlayerCsv.MaxSpeedMaxLv;
+    public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
     public int MaxCapacity => LvCsv[(MaxCapacityLv.Value).ToString()].Capacity;
     public FirebaseProperty<int> MaxCapacityLv;
     public int MaxCapacityMaxLv => PlayerCsv.MaxCapacityMaxLv;
+    public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;
 
     public float ProductionSpeed => PlayerCsv.PDSpeed;
 
     public float Nego => LvCsv[NegoLv.Value.ToString()].Nego;
     public FirebaseProperty<int> NegoLv;
     public int NegoMaxLv => PlayerCsv.NegoMaxLv;
+    public bool IsNegoMaxLv => NegoLv.Value >= NegoMaxLv;
 
     public FirebaseProperty<int> Money;
 
@@ -36,6 +39,30 @@ public class PlayerData : FirebaseData
         InitList.Add(MaxCapacityLv);
         InitList.Add(NegoLv);
         InitList.Add(Money);
+    }
+
+    public void UpgradeMoveSpeed()
+    {
+        if (!IsMoveSpeedMaxLv)
+        {
+            MoveSpeedLv.Value += 1;
+        }
+    }
+
+    public void UpgradeMaxCapacity()
+    {
+        if (!IsMaxCapacityMaxLv)
+        {
+            MaxCapacityLv.Value += 1;
+        }
+    }
+
+    public void UpgradeNego()
+    {
+        if (!IsNegoMaxLv)
+        {
+            NegoLv.Value += 1;
+        }
     }
 }
 
