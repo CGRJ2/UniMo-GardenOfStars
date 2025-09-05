@@ -31,6 +31,11 @@ public class PlayerData : FirebaseData
         NegoLv = new FirebaseProperty<int>("NegoLv", Path, 1);
 
         Money = new FirebaseProperty<int>("Money", Path);
+
+        InitList.Add(MoveSpeedLv);
+        InitList.Add(MaxCapacityLv);
+        InitList.Add(NegoLv);
+        InitList.Add(Money);
     }
 }
 

@@ -15,7 +15,9 @@ public partial class UserData : FirebaseData
         {
             return new WorkerData(id, parentPath);
         });
+        InitList.Add(WorkerList);
 
         Player = new PlayerData("Player", Path);
+        InitList.Add(Player);
     }
 }

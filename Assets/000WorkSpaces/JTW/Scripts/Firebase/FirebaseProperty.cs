@@ -51,7 +51,8 @@ public class FirebaseProperty<T> : FirebaseData
             _value = (T)args.Snapshot.Value;
         }
 
-            
+        IsInitSelf = true;
+
         Notify();
     }
 

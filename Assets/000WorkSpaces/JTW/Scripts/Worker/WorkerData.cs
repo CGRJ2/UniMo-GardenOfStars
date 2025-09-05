@@ -26,8 +26,10 @@ public class WorkerData : FirebaseData
     public WorkerData(string id, string parentPath = null) : base(id, parentPath)
     {
         MoveSpeedLv = new FirebaseProperty<long>("MoveSpeedLv", Path, 1);
+        InitList.Add(MoveSpeedLv);
 
         MaxCapacityLv = new FirebaseProperty<long>("MaxCapacityLv", Path, 1);
+        InitList.Add(MaxCapacityLv);
     }
 }
 

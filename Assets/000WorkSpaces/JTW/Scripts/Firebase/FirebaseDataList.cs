@@ -2,6 +2,8 @@ using Firebase.Database;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -25,7 +27,9 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         T child = _factory(args.Snapshot.Key, Path);
 
         _list.Add(child);
-        OnAdded.Invoke(child);
+        InitList.Add(child);
+
+        WaitUntilAsync(child);
     }
 
     public void Add(IUsableId value)
@@ -43,5 +47,15 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     public T Get(string id)
     {
         return _list.Find(value => value.GetId() == id);
+    }
+
+    private async Task WaitUntilAsync(T child)
+    {
+        while (!child.IsInit)
+        {
+            await Task.Delay(50);
+        }
+
+        OnAdded.Invoke(child);
     }
 }
