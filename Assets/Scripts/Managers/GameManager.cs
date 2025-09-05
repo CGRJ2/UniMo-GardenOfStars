@@ -1,5 +1,6 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -7,21 +8,24 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class GameManager : Singleton<GameManager>
 {
-    //ÀÓ½Ã
-    public bool initialized;
+    //ì„ì‹œ
+    public bool initialized { get; private set; }
+    public bool inDownloading { get; private set; }
+
+    public ObservableProperty<float> downloadProgress = new();
 
     private void Awake() => Init();
 
-    // ½ºÅ×ÀÌÁöId(key) º°, ¾ğ¶ô¿©ºÎ(value) µñ¼Å³Ê¸® => ÇØ´ç µ¥ÀÌÅÍ´Â Firebase DB·Î ´ëÃ¼µÉ ¿¹Á¤
+    // ìŠ¤í…Œì´ì§€Id(key) ë³„, ì–¸ë½ì—¬ë¶€(value) ë”•ì…”ë„ˆë¦¬ => í•´ë‹¹ ë°ì´í„°ëŠ” Firebase DBë¡œ ëŒ€ì²´ë  ì˜ˆì •
     Dictionary<string, bool> stageUnlockDic = new();
-    public void StageUnlock(string stageId) { stageUnlockDic[stageId] = true; } // DB¿¡ ¹Ù·Î ÀúÀåÇÏ´Â °É·Î ´ëÃ¼µÉ ¿¹Á¤
-    public bool GetStageUnlockCheck(string stageId) { return stageUnlockDic[stageId]; } // DB¿¡ ¹Ù·Î ºÒ·¯¿À´Â °É·Î ´ëÃ¼µÉ ¿¹Á¤
+    public void StageUnlock(string stageId) { stageUnlockDic[stageId] = true; } // DBì— ë°”ë¡œ ì €ì¥í•˜ëŠ” ê±¸ë¡œ ëŒ€ì²´ë  ì˜ˆì •
+    public bool GetStageUnlockCheck(string stageId) { return stageUnlockDic[stageId]; } // DBì— ë°”ë¡œ ë¶ˆëŸ¬ì˜¤ëŠ” ê±¸ë¡œ ëŒ€ì²´ë  ì˜ˆì •
 
 
-    // ½ºÅ×ÀÌÁö µ¥ÀÌÅÍ¿¡ °üÇÑ µñ¼Å³Ê¸® (CSVÆÄÀÏÀ» ·ÎµåÇØ¼­ ½ºÅ×ÀÌÁö idº°·Î µ¥ÀÌÅÍ¸¦ ÀúÀåÇØµĞ °ø°£)
+    // ìŠ¤í…Œì´ì§€ ë°ì´í„°ì— ê´€í•œ ë”•ì…”ë„ˆë¦¬ (CSVíŒŒì¼ì„ ë¡œë“œí•´ì„œ ìŠ¤í…Œì´ì§€ idë³„ë¡œ ë°ì´í„°ë¥¼ ì €ì¥í•´ë‘” ê³µê°„)
     public Dictionary<string, StageData> stageDataDic = new();
 
-    // ÇöÀç ½ºÅ×ÀÌÁöId
+    // í˜„ì¬ ìŠ¤í…Œì´ì§€Id
     public string curStageId;
 
     void Init()
@@ -37,19 +41,19 @@ public class GameManager : Singleton<GameManager>
         {
             foreach(var value in csv.Result.stageDataColumns)
             {
-                if (!stageUnlockDic.ContainsKey(value.stageId))
+                if (!stageUnlockDic.ContainsKey(value.StageId))
                 {
-                    // Ã¹ ½ºÅ×ÀÌÁö¸é ¾ğ¶ô Ç×»ó true /// for¹®À¸·Î ¹Ù²ã¼­ ÀÎµ¦½º 0ÀÎ°É·Î Ã³¸®ÇØµÎ¸é Å°°ª »ó°ü¾øÀÌ °¡´ÉÇÒµí?
-                    if (value.stageId == "Stage00")
-                        stageUnlockDic.Add(value.stageId, true);
+                    // ì²« ìŠ¤í…Œì´ì§€ë©´ ì–¸ë½ í•­ìƒ true /// forë¬¸ìœ¼ë¡œ ë°”ê¿”ì„œ ì¸ë±ìŠ¤ 0ì¸ê±¸ë¡œ ì²˜ë¦¬í•´ë‘ë©´ í‚¤ê°’ ìƒê´€ì—†ì´ ê°€ëŠ¥í• ë“¯?
+                    if (value.StageId == "Stage00")
+                        stageUnlockDic.Add(value.StageId, true);
                     else
-                        stageUnlockDic.Add(value.stageId, false);
+                        stageUnlockDic.Add(value.StageId, false);
                 }
 
-                // ½ºÅ×ÀÌÁö º° ´ÙÀ½´Ü°è ¾ğ¶ô Á¶°Çµµ ÀúÀå
-                stageDataDic.TryAdd(value.stageId, value);
+                // ìŠ¤í…Œì´ì§€ ë³„ ë‹¤ìŒë‹¨ê³„ ì–¸ë½ ì¡°ê±´ë„ ì €ì¥
+                stageDataDic.TryAdd(value.StageId, value);
 
-                // µ¥ÀÌÅÍ º£ÀÌ½º¿¡¼­ ·Îµå ½Ã¿£ Å° Ã¼Å© ÈÄ ÇØ´ç bool°ªÀ¸·Î ÇÒ´ç
+                // ë°ì´í„° ë² ì´ìŠ¤ì—ì„œ ë¡œë“œ ì‹œì—” í‚¤ ì²´í¬ í›„ í•´ë‹¹ boolê°’ìœ¼ë¡œ í• ë‹¹
             }
         };
     }
@@ -63,27 +67,27 @@ public class GameManager : Singleton<GameManager>
                 Instantiate(task.Result);
             };*//*
 
-            // ¾À·Îµå Å×½ºÆ®
+            // ì”¬ë¡œë“œ í…ŒìŠ¤íŠ¸
         }
     }*/
 
 
-    #region Addressable Assets Storage µ¿±âÈ­ Ã¼Å©
+    #region Addressable Assets Storage ë™ê¸°í™” ì²´í¬
 
     IEnumerator Fetch()
     {
         yield return Addressables.InitializeAsync(true);
-        var checkHandle = Addressables.CheckForCatalogUpdates(false);  // º¯°æµÈ Ä«Å»·Î±× IDµé
+        var checkHandle = Addressables.CheckForCatalogUpdates(false);  // ë³€ê²½ëœ ì¹´íƒˆë¡œê·¸ IDë“¤
         yield return checkHandle;
-        Debug.Log($"¾÷µ¥ÀÌÆ® Á¸Àç ¿©ºÎ => {checkHandle.Result.Count}");
+        Debug.Log($"ì—…ë°ì´íŠ¸ ì¡´ì¬ ì—¬ë¶€ => {checkHandle.Result.Count}");
 
         if (checkHandle.Result.Count > 0)
         {
-            // »õ·Î ·ÎµåµÈ Ä«Å»·Î±×ÀÇ IResourceLocatorµé
+            // ìƒˆë¡œ ë¡œë“œëœ ì¹´íƒˆë¡œê·¸ì˜ IResourceLocatorë“¤
             var updateCatalogHandle = Addressables.UpdateCatalogs(checkHandle.Result, false);
             yield return updateCatalogHandle;
 
-            // IResourceLocatorµéÀ» IResourceLocationÀ¸·Î Ä¡È¯
+            // IResourceLocatorë“¤ì„ IResourceLocationìœ¼ë¡œ ì¹˜í™˜
             var locators = updateCatalogHandle.Result;
             var locations = new List<IResourceLocation>();
 
@@ -97,25 +101,37 @@ public class GameManager : Singleton<GameManager>
                 }
             }
 
-            // ´Ù¿î·Îµå »çÀÌÁî Ã¼Å©
+            // ë‹¤ìš´ë¡œë“œ ì‚¬ì´ì¦ˆ ì²´í¬
             var sizeCheckHandle = Addressables.GetDownloadSizeAsync(locations);
             yield return sizeCheckHandle;
-            Debug.Log($"´Ù¿î·Îµå»çÀÌÁî ¾î½ÌÅ©{sizeCheckHandle.Result}");
+            Debug.Log($"ë‹¤ìš´ë¡œë“œì‚¬ì´ì¦ˆ ì–´ì‹±í¬{sizeCheckHandle.Result}");
 
+            if(sizeCheckHandle.Result <= 0)
+            {
+                SafeRelease(ref updateCatalogHandle);
+                SafeRelease(ref checkHandle);
+                initialized = true;
+                yield break;
+            }
 
-            // ´Ù¿î·Îµå ÁøÇà
+            inDownloading = true;
+
+            // ë‹¤ìš´ë¡œë“œ ì§„í–‰
             var downloadHandle = Addressables.DownloadDependenciesAsync(locations);
 
             while (!downloadHandle.IsDone)
             {
                 yield return null;
                 DownloadStatus downloadStatus = downloadHandle.GetDownloadStatus();
-                Debug.Log($"´Ù¿î·ÎµåÁøÇà»óÈ²{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes ´Ù¿îµÊ. ÆÛ¼¾Æ®:{(int)downloadStatus.Percent * 100}");
+                Debug.Log($"ë‹¤ìš´ë¡œë“œì§„í–‰ìƒí™©{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes ë‹¤ìš´ë¨. í¼ì„¼íŠ¸:{(int)downloadStatus.Percent * 100}");
+                downloadProgress.Value = downloadStatus.Percent;
             }
-            yield return downloadHandle;
-            Debug.Log($"´Ù¿î·Îµå ¿Ï·á:{downloadHandle.GetDownloadStatus().IsDone}");
+            downloadProgress.Value = 1f;
 
-            // »õ·Î¿î ¿ä¼Ò Ãß°¡ ÀÌÈÄ¿¡ »ç¿ëÇÏÁö ¾Ê´Â ÂüÁ¶ Ä³½Ã »èÁ¦
+            yield return downloadHandle;
+            Debug.Log($"ë‹¤ìš´ë¡œë“œ ì™„ë£Œ:{downloadHandle.GetDownloadStatus().IsDone}");
+
+            // ìƒˆë¡œìš´ ìš”ì†Œ ì¶”ê°€ ì´í›„ì— ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” ì°¸ì¡° ìºì‹œ ì‚­ì œ
             var clearCacheHandle = Addressables.CleanBundleCache();
 
             SafeRelease(ref updateCatalogHandle);
@@ -125,7 +141,7 @@ public class GameManager : Singleton<GameManager>
         SafeRelease(ref checkHandle);
     }
 
-    // ÇÚµé ¾ÈÀü ÇØÁ¦ À¯Æ¿ (Áßº¹ Release ¹æÁö)
+    // í•¸ë“¤ ì•ˆì „ í•´ì œ ìœ í‹¸ (ì¤‘ë³µ Release ë°©ì§€)
     static void SafeRelease<T>(ref AsyncOperationHandle<T> handle)
     {
         if (handle.IsValid())
@@ -142,7 +158,7 @@ public class GameManager : Singleton<GameManager>
     {
         Manager.game.curStageId = "Stage00";
         Manager.ui.ShowLoadingScreen();
-        yield return new WaitForSeconds(0.3f);  // ÀÓ½Ã
+        yield return new WaitForSeconds(0.3f);  // ì„ì‹œ
 
         var loadSceneHanlde = Addressables.LoadSceneAsync("StageScene");
         while (loadSceneHanlde.IsDone)
