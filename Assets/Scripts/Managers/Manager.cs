@@ -10,6 +10,7 @@ public static class Manager
     public static PlayerManager player => PlayerManager.Instance;
 
     public static DataManager data => DataManager.Instance;
+    public static AudioManager Audio => AudioManager.Instance;
     public static BuildingManager buildings => BuildingManager.Instance;
     public static QuestManager quest => QuestManager.Instance;
     public static NpcManager npc => NpcManager.Instance;
@@ -26,6 +27,7 @@ public static class Manager
         PoolManager.CreateInstance();
         PlayerManager.CreateInstance();
         DataManager.CreateInstance();
+        AudioManager.CreateInstance();
         BuildingManager.CreateInstance();
         QuestManager.CreateInstance();
         NpcManager.CreateInstance();
