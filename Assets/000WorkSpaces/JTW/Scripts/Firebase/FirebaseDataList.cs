@@ -35,6 +35,11 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         Manager.firebase.SaveJsonData($"{Path}/{value.GetId()}", json);
     }
 
+    public void Add(string Id)
+    {
+        Manager.firebase.SaveData($"{Path}/{Id}", true);
+    }
+
     public T Get(string id)
     {
         return _list.Find(value => value.GetId() == id);
