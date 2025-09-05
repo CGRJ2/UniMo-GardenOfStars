@@ -12,6 +12,7 @@ namespace KYS
     {
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
+        [SerializeField] private Transform PropertyContentGroup;
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
 

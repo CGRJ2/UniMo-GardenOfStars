@@ -5,37 +5,82 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 
-public class BuildingSeller : BuildingInstance
+public class BuildingSeller : InteractableBase
 {
+    [SerializeField] protected BuildingSellerPopUI activatePopUI;
+
     ObjectPool _Pool;
+
     private void Awake()
     {
-        base.BIBaseInit();
-        activatePopUI.Init(this);
-        Addressables.LoadAssetAsync<GameObject>("it_Building").Completed += task =>
+        if (activatePopUI != null)
+        {
+            activatePopUI.Init();
+            activatePopUI.GetComponent<Canvas>().worldCamera = Camera.main;
+            activatePopUI.gameObject.SetActive(false);
+        }
+    }
+
+    // 테스트용 코드
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            SpawnBuildingItem("b10011");
+        }
+    }
+
+
+    public void SpawnBuildingItem(string buildingId)
+    {
+        if (characterRD.IngrediantStack.Count > 0)
+        {
+            // 손에 뭐가 있으면 구매 불가 판정
+            Debug.LogWarning("손에 이미 물건이 있어서 구매 못함");
+            return;
+        }
+
+        // 모델 생성 (메쉬&매터리얼만 교체하는 방법으로 바꿔야함)
+        Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
         {
             GameObject product = task.Result;
-            _Pool = Manager.pool.GetPoolBundle(product).instancePool;
+            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // 해당 건물(재료) 인스턴스 풀 생성
+
+            // 오브젝트 풀에서 활성화
+            GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
+            Item_Building buildingItem = disposedObject.GetComponent<Item_Building>();
+
+            buildingItem.buildingId = buildingId;
+            buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
+            characterRD.IngrediantStack.Push(buildingItem);
         };
     }
 
-    public void SpawnBuildingItem()
+    // 건물 활성화 범위 상호작용
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
-        // 오브젝트 풀에서 활성화
-        GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
-        Item_Building buildingItem = disposedObject.GetComponent<Item_Building>();
+        base.Enter(characterRuntimeData);
 
-        Addressables.LoadAssetAsync<GameObject>(buildingItem.buildingId).Completed += task =>
+        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
+        if (characterRuntimeData is PlayerRunTimeData)
         {
-            GameObject product = task.Result;
-            if (characterRD.IngrediantStack.Count > 0)
+            if (activatePopUI != null)
             {
-                // 손에 뭐가 있으면 구매 불가 판정
+                activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
             }
-            else
-            {
-                buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
-            }
-        };
+        }
+    }
+
+    // 건물 활성화 범위 상호작용
+    public override void Exit(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Exit(characterRuntimeData);
+
+        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            if (activatePopUI != null)
+                activatePopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
+        }
     }
 }

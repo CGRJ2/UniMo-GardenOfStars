@@ -114,7 +114,7 @@ public struct WorkStatoinLists
 }
 
 [Serializable]
-public class UpgradeData // 업그레이드 된 상태만 저장하면 됨
+public class UpgradeData 
 {
     public int level_ProdTime;
     public int level_Capacity;
