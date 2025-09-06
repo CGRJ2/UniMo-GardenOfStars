@@ -19,6 +19,8 @@ public class BuildingSeller : InteractableBase
             activatePopUI.GetComponent<Canvas>().worldCamera = Camera.main;
             activatePopUI.gameObject.SetActive(false);
         }
+
+        activatePopUI.Init();
     }
 
     // 테스트용 코드

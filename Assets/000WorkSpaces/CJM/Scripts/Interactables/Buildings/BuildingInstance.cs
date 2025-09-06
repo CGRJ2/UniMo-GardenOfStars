@@ -30,8 +30,9 @@ public class BuildingInstance : InteractableBase
 
     public void CheckUpgradable()
     {
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(_OriginData.ID).level_ProdTime;
-        int curLevel_StackCount = Manager.buildings.GetUpgradeData(_OriginData.ID).level_Capacity;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(_OriginData.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
         int curMoney = Manager.player.Data.Money.Value;
 
         // 생산형 건물일 때
@@ -60,9 +61,9 @@ public class BuildingInstance : InteractableBase
         {
             bool upgradable = false;
             // 두 스탯 중 업그레이드 비용이 충족될 때
-            if (mnfct.Stat_Capacity.MaxLevel > curLevel_StackCount)
+            if (mnfct.Stat_Capacity.MaxLevel > curLevel_Capacity)
             {
-                if (curMoney > mnfct.Stat_Capacity.cost[curLevel_StackCount])
+                if (curMoney > mnfct.Stat_Capacity.cost[curLevel_Capacity])
                     upgradable = true;
             }
             if (mnfct.Stat_ProdTime.MaxLevel > curLevel_ProdTime)
@@ -70,7 +71,9 @@ public class BuildingInstance : InteractableBase
                 if (curMoney > mnfct.Stat_ProdTime.cost[curLevel_ProdTime])
                     upgradable = true;
             }
+            Debug.Log($"{curMoney}, {curLevel_Capacity}, {curLevel_ProdTime}");
 
+            Debug.Log(upgradable);
             if (upgradable)
             {
                 // 상호작용 버튼을 업그레이드 모양으로 바꾸기
