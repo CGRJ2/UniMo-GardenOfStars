@@ -50,26 +50,18 @@ public class ManufactureBuilding : BuildingInstance
         }
     }
 
-    private void Awake()
+    private void Awake() => Init();
+    
+    public override void Init()
     {
-        base.BIBaseInit();
-        InitRuntimeData();
+        base.Init();
+
+        if (_OriginData is ManufactureBD mfBD) originData = mfBD;
         activatePopUI.Init(this);
-        
+
         insertArea.Init(this);
         workArea?.Init(this);
         workArea_SwitchType?.Init(this);
         prodsArea.Init(this);
     }
-
-    void InitRuntimeData()
-    {
-        if (_OriginData is ManufactureBD mfBD)
-        {
-            originData = mfBD;
-        }
-    }
-
-
-   
 }

@@ -11,22 +11,18 @@ public class HarvestBuilding : BuildingInstance
     ProductGenerater[] productGeneraters;
     ObjectPool _Pool;
 
-    private void Awake()
+    private void Awake() => Init();
+    
+    public override void Init()
     {
-        base.BIBaseInit();
-        InitRuntimeData();
+        base.Init();
+
+        if (_OriginData is HarvestBD harvestBD) originData = harvestBD;
+
         activatePopUI.Init(this);
 
         productGeneraters = prodsParentTransform.GetComponentsInChildren<ProductGenerater>();
         SetIngrediantToGeneraters();
-    }
-
-    void InitRuntimeData()
-    {
-        if (_OriginData is HarvestBD harvestBD)
-        {
-            originData = harvestBD;
-        }
     }
 
     public void SetIngrediantToGeneraters()

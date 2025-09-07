@@ -5,10 +5,10 @@ public class BuildingInstance : InteractableBase
     [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
     [SerializeField] protected BuildingActivePopUI activatePopUI;
 
-    protected void BIBaseInit()
+    public virtual void Init()
     {
-        if (_OriginData != null)
-            Manager.buildings.AddBiTransformData(transform, _OriginData.ID);
+        /*if (_OriginData != null)
+            Manager.buildings.AddBiTransformData(transform, _OriginData.ID);*/
 
         if (activatePopUI != null)
         {

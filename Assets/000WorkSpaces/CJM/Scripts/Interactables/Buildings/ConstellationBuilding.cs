@@ -8,7 +8,7 @@ public class ConstellationBuilding : BuildingInstance
 {
     private void Awake()
     {
-        base.BIBaseInit();
+        base.Init();
     }
 }
 

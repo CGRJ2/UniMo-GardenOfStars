@@ -15,7 +15,7 @@ public class BuildingManager : Singleton<BuildingManager>
     Dictionary<string, UpgradeData> upgradeDataDic = new();
 
     // 스테이지id(string) 별, 건물들의 배치 정보를 저장
-    Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
+    //Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
 
     public UnityAction<int> upgradeEvent;
 
@@ -29,17 +29,17 @@ public class BuildingManager : Singleton<BuildingManager>
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            foreach(var kvp in biPlacementDataDic[Manager.game.curStageId])
+            /*foreach(var kvp in biPlacementDataDic[Manager.game.curStageId])
             {
                 Debug.Log($"건물ID:{kvp.Value.buildingId} & 좌표:{kvp.Key}");
-            }
+            }*/
         }
     }
 
     #region 건물 인스턴스 생성/제거 시, 현재 스테이지의 건물 배치 데이터 업데이트
     public void AddBiTransformData(Transform biTransform, string buildingId)
     {
-        // 현재 스테이지에 건물 배치 정보가 없다면 빈 리스트 만들어주기
+        /*// 현재 스테이지에 건물 배치 정보가 없다면 빈 리스트 만들어주기
         if (!biPlacementDataDic.ContainsKey(Manager.game.curStageId))
         {
             biPlacementDataDic[Manager.game.curStageId] = new();
@@ -55,12 +55,12 @@ public class BuildingManager : Singleton<BuildingManager>
         else
         {
             Debug.Log("해당 좌표에 이미 건물이 존재함. 배치 불가능");
-        }
+        }*/
         
     }
     public void RemoveBiTransformData(Transform biTransform)
     {
-        if (Manager.game == null) return;
+        /*if (Manager.game == null) return;
 
         if (biPlacementDataDic.ContainsKey(Manager.game.curStageId))
         {
@@ -68,9 +68,9 @@ public class BuildingManager : Singleton<BuildingManager>
 
             if (biPlacementDataDic[Manager.game.curStageId].ContainsKey(pos))
                 biPlacementDataDic[Manager.game.curStageId].Remove(pos);
-        }
+        }*/
     }
-    public bool CanPlaceBuilding(Vector3Int pos)
+    /*public bool CanPlaceBuilding(Vector3Int pos)
     {
         // 현재 스테이지에 해당 좌표에 이미 건물이 있으면 false
         if (biPlacementDataDic[Manager.game.curStageId].ContainsKey(pos))
@@ -78,7 +78,7 @@ public class BuildingManager : Singleton<BuildingManager>
             return false;
         }
         else return true;
-    }
+    }*/
     #endregion
 
     public void UpdateUpgradedData(string buildingId, int statProdTimeAdd, int statCapacityAdd = 0)

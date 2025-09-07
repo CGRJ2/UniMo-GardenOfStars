@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -38,10 +39,10 @@ public class IngrediantInstance : PooledObject
         StartCoroutine(AttachToTargetRoutine(parent, stackCount));
     }
 
-    public void MoveToTargetAndShrink(Transform parent)
+    public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
         transform.SetParent(parent);
-        StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent));
+        StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent, completed));
     }
 
     IEnumerator AttachToTargetRoutine(Transform targetAttachTransform, int stackOrder = 0)
@@ -73,10 +74,12 @@ public class IngrediantInstance : PooledObject
             float t = Mathf.InverseLerp(startDist, 0.3f, dist);
             t = Mathf.Clamp01(t);
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
-
+            Debug.Log("접근중");
             // 도착 스냅
             if (dist < 0.01f)
             {
+                Debug.Log("도착 완료");
+
                 transform.position = targetPos;
                 transform.rotation = targetRot; // ← 마지막에 정확히 맞춰주기
                 isAttached = true;
@@ -87,7 +90,7 @@ public class IngrediantInstance : PooledObject
         }
     }
 
-    IEnumerator MoveToTargetPosAndShrinkRoutine(Transform targetAttachTransform)
+    IEnumerator MoveToTargetPosAndShrinkRoutine(Transform targetAttachTransform, Action completed)
     {
         if (targetAttachTransform == null) yield break;
 
@@ -130,6 +133,8 @@ public class IngrediantInstance : PooledObject
                 Despawn();
                 transform.localScale = new Vector3(1, 1, 1);
                 isAttached = true;
+
+                completed?.Invoke();
                 break;
             }
 

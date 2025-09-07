@@ -5,10 +5,4 @@ using UnityEngine;
 public class Item_Building : IngrediantInstance
 {
     public string buildingId;
-
-
-    void Init()
-    {
-
-    }
 }
