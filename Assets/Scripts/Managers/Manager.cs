@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using KYS;
 
 public static class Manager
@@ -16,6 +16,7 @@ public static class Manager
     public static UIManager ui => UIManager.Instance;
     public static LocalizationManager localization => LocalizationManager.Instance;
     public static CameraManager camera => CameraManager.Instance;
+    public static DialogueManager dialogue => DialogueManager.Instance;
 
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -32,5 +33,6 @@ public static class Manager
         UIManager.CreateInstance();
         LocalizationManager.CreateInstance();
         CameraManager.CreateInstance();
+        DialogueManager.CreateInstance();
     }
 }

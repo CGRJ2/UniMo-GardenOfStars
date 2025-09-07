@@ -964,5 +964,31 @@ namespace KYS
         }
 
 
+        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        public void Temp_DialogueSystemTest()
+        {
+
+
+           Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+        }
+
+
+        [ContextMenu("대화 시스템 로드 테스트 NPC002")]
+        public void Temp_DialogueSystemTest2()
+        {
+            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc002_start");
+        }
+
+        [ContextMenu("대화 시스템 로드 테스트 NPC003")]
+        public void Temp_DialogueSystemTest3()
+        {
+            Manager.dialogue.StartDialogueWithPanel("npc003", "stage_02");
+        }
+
+        [ContextMenu("대화 시스템 로드 테스트 NPC004")]
+        public void Temp_DialogueSystemTest4()
+            {
+            Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
+        }
     }
 }

@@ -100,16 +100,23 @@ public class InfoPanel_Manufacture : BaseUI
         int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
         int curLevel_Capacity = Manager.buildings.GetUpgradeData(data.ID).level_Capacity;
 
-        tmp_Name.text = data.Name;
-        tmp_Description.text = data.Description;
+        string manufacturebuildingNamekey = $"RunManufactureBuildingName{data.Name}";
+        string manufacturerbuildingDesckey = $"RunManufactureBuildingDesc{data.Description}";
+
+        tmp_Name.text = Manager.localization.GetText(manufacturebuildingNamekey);
+        tmp_Description.text = Manager.localization.GetText(manufacturerbuildingDesckey);
         Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
         {
-            tmp_RequireName.text = requireData.Result.Name;
+            string RunInputmaterials = $"RunInputmaterials{requireData.Result.Name}";
+
+            tmp_RequireName.text = Manager.localization.GetText(RunInputmaterials);
             image_Require.sprite = requireData.Result.Sprite;
         };
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
-            tmp_ProdName.text = prodData.Result.Name;
+            string RunProductionMaterial = $"RunProductionMaterial{prodData.Result.Name}";
+
+            tmp_ProdName.text = Manager.localization.GetText(RunProductionMaterial);
             image_Prod.sprite = prodData.Result.Sprite;
         };
 
@@ -175,7 +182,7 @@ public class InfoPanel_Manufacture : BaseUI
 
     private void Close()
     {
-        UIManager.Instance.ClosePanel();
+        UIManager.Instance.ClosePopup();
     }
 
 
