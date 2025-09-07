@@ -769,6 +769,30 @@ namespace KYS
                 Debug.Log("[StoryPanel] 시스템 메시지이므로 이미지를 로드하지 않습니다.");
             }
 
+            // 배경 이미지 효과 처리
+            if (!string.IsNullOrEmpty(dialogueData.BackgroundImage))
+            {
+                Debug.Log($"[StoryPanel] 배경 이미지 로드: {dialogueData.BackgroundImage}");
+                LoadAndSetBackgroundImage(dialogueData.BackgroundImage);
+            }
+            else
+            {
+                Debug.Log("[StoryPanel] 배경 이미지가 비어있어서 배경 이미지를 숨깁니다.");
+                HideBackgroundImage();
+            }
+
+            // 별자리 이미지 효과 처리
+            if (!string.IsNullOrEmpty(dialogueData.ConstellationImage))
+            {
+                Debug.Log($"[StoryPanel] 별자리 이미지 로드: {dialogueData.ConstellationImage}");
+                LoadAndSetConstellationImage(dialogueData.ConstellationImage);
+            }
+            else
+            {
+                Debug.Log("[StoryPanel] 별자리 이미지가 비어있어서 별자리 이미지를 숨깁니다.");
+                HideConstellationImage();
+            }
+
             // UI 업데이트 완료 (모든 경우에 실행)
             isUpdatingUI = false;
         }
@@ -1746,6 +1770,78 @@ namespace KYS
         /// <summary>
         /// 이미지 타입 열거형
         /// </summary>
+        /// <summary>
+        /// 배경 이미지 로드 및 설정 (Addressables만 사용)
+        /// </summary>
+        private async void LoadAndSetBackgroundImage(string imageKey)
+        {
+            try
+            {
+                Debug.Log($"[StoryPanel] 배경 이미지 로딩 시작: {imageKey}");
+                
+                // 먼저 캐시에서 확인
+                Sprite cachedSprite = Manager.data.GetCachedCharacterImage(imageKey);
+                if (cachedSprite != null)
+                {
+                    Debug.Log($"[StoryPanel] 배경 이미지 캐시에서 로드: {imageKey}");
+                    SetBackgroundImage(cachedSprite);
+                    return;
+                }
+                
+                // Addressable에서 로드
+                Sprite sprite = await Manager.data.LoadCharacterImageAsync(imageKey);
+                if (sprite != null)
+                {
+                    Debug.Log($"[StoryPanel] 배경 이미지 Addressable에서 로드: {imageKey}");
+                    SetBackgroundImage(sprite);
+                }
+                else
+                {
+                    Debug.LogWarning($"[StoryPanel] 배경 이미지 로드 실패: {imageKey}");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[StoryPanel] 배경 이미지 로드 중 오류: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 별자리 이미지 로드 및 설정 (Addressables만 사용)
+        /// </summary>
+        private async void LoadAndSetConstellationImage(string imageKey)
+        {
+            try
+            {
+                Debug.Log($"[StoryPanel] 별자리 이미지 로딩 시작: {imageKey}");
+                
+                // 먼저 캐시에서 확인
+                Sprite cachedSprite = Manager.data.GetCachedCharacterImage(imageKey);
+                if (cachedSprite != null)
+                {
+                    Debug.Log($"[StoryPanel] 별자리 이미지 캐시에서 로드: {imageKey}");
+                    SetConstellationImage(cachedSprite);
+                    return;
+                }
+                
+                // Addressable에서 로드
+                Sprite sprite = await Manager.data.LoadCharacterImageAsync(imageKey);
+                if (sprite != null)
+                {
+                    Debug.Log($"[StoryPanel] 별자리 이미지 Addressable에서 로드: {imageKey}");
+                    SetConstellationImage(sprite);
+                }
+                else
+                {
+                    Debug.LogWarning($"[StoryPanel] 별자리 이미지 로드 실패: {imageKey}");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[StoryPanel] 별자리 이미지 로드 중 오류: {ex.Message}");
+            }
+        }
+
         public enum ImageType
         {
             Background,

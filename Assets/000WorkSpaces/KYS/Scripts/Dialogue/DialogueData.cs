@@ -26,6 +26,8 @@ namespace KYS
         public string CharacterImage => Manager.data.Dialogue.Values[Id].CharacterImage;
         public string CharacterImagePosition => Manager.data.Dialogue.Values[Id].CharacterImagePosition;
         public string UseTypingEffect => Manager.data.Dialogue.Values[Id].UseTypingEffect;
+        public string BackgroundImage => Manager.data.Dialogue.Values[Id].BackgroundImage;
+        public string ConstellationImage => Manager.data.Dialogue.Values[Id].ConstellationImage;
         public float AutoAdvanceDelay => Manager.data.Dialogue.Values[Id].AutoAdvanceDelay;
         public string ConditionType => Manager.data.Dialogue.Values[Id].ConditionType;
         public string ConditionValue => Manager.data.Dialogue.Values[Id].ConditionValue;
@@ -308,6 +310,8 @@ namespace KYS
         public string CharacterImage;
         public string CharacterImagePosition; // left, right, center
         public string UseTypingEffect; // true, false
+        public string BackgroundImage; // 배경 이미지 Addressable 키
+        public string ConstellationImage; // 별자리 이미지 Addressable 키
         public float AutoAdvanceDelay;
         public string ConditionType;
         public string ConditionValue;

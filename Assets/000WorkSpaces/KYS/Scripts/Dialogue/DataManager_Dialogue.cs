@@ -73,6 +73,8 @@ public partial class DataManager
                 dialogue.CharacterImage = GetFieldValue(words, dict, "CharacterImage");
                 dialogue.CharacterImagePosition = GetFieldValue(words, dict, "CharacterImagePosition");
                 dialogue.UseTypingEffect = GetFieldValue(words, dict, "UseTypingEffect");
+                dialogue.BackgroundImage = GetFieldValue(words, dict, "BackgroundImage");
+                dialogue.ConstellationImage = GetFieldValue(words, dict, "ConstellationImage");
                 dialogue.AutoAdvanceDelay = float.TryParse(GetFieldValue(words, dict, "AutoAdvanceDelay"), out float delay) ? delay : 0f;
                 dialogue.ConditionType = GetFieldValue(words, dict, "ConditionType");
                 dialogue.ConditionValue = GetFieldValue(words, dict, "ConditionValue");
