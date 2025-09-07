@@ -22,7 +22,7 @@ npc002_choice_001,npc002,stage_01,choice,player,엔피씨,NPCDa,choice_question_
 npc002_accept_path,npc002,stage_01,dialogue,npc,엔피씨,NPCDa,dialogue_npc002_accept,좋습니다! 어떤 물건에 관심이 있으신가요?,Great! What kind of items are you interested in?,npc002_end,Loading5,right,true,Loading4,Loading5,,,,,,,,,,,,,,,,,,,,,
 npc002_decline_path,npc002,stage_01,dialogue,npc,엔피씨,NPCDa,dialogue_npc002_decline,그렇다면 다음에 또 오세요!,Then come back next time!,npc002_end,Loading4,right,true,Loading5,Loading4,,,,,,,,,,,,,,,,,,,,,
 npc002_ask_path,npc002,stage_01,dialogue,npc,엔피씨,NPCDa,dialogue_npc002_ask,가격에 대해 말씀드리겠습니다. 이 물건은...,I'll tell you about the prices. This item is...,npc002_end,Loading5,right,true,Loading4,Loading5,,,,,,,,,,,,,,,,,,,,,
-npc002_bargain_path,npc002,stage_01,dialogue,npc,엔피씨,NPCDa,dialogue_npc002_bargain,"흥정이라... 흠, 조금만 할인해드릴게요.","Bargaining... Hmm, I'll give you a small discount.",npc002_end,Loading4,right,true,Loading5,Loading4,,,,,,,,,,,,,,,,,,,,,
+npc002_bargain_path,npc002,stage_01,dialogue,npc,엔피씨,NPCDa,dialogue_npc002_bargain,"$흥정이라... 흠, 조금만 할인해드릴게요.$","$Bargaining... Hmm, I'll give you a small discount.$",npc002_end,Loading4,right,true,Loading5,Loading4,,,,,,,,,,,,,,,,,,,,,
 npc002_end,npc002,stage_01,end,story,스토리,Story,dialogue_npc002_end,거래가 끝났습니다.,The transaction has ended.,,,,,Loading4,Loading5,,,,,,,,,,,,,,,,,,,,,
 npc003_start,npc003,stage_02,start,npc,마법사,Wizard,dialogue_npc003_001,안녕하세요! 마법의 세계에 오신 것을 환영합니다.,Hello! Welcome to the world of magic.,npc003_dialogue_002,Loading4,left,true,Loading5,Loading4,,,,,,,,,,,,,,,,,,,,,
 npc003_dialogue_002,npc003,stage_02,dialogue,npc,마법사,Wizard,dialogue_npc003_002,저는 마법을 가르치는 마법사입니다.,I am a wizard who teaches magic.,npc003_end,Loading5,left,true,Loading4,Loading5,,,,,,,,,,,,,,,,,,,,,

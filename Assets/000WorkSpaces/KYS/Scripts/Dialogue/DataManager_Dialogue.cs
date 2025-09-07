@@ -85,7 +85,7 @@ public partial class DataManager
             });
 
             Dialogue.Load(dataCsv);
-            Debug.Log($"[DataManager] Dialogue 데이터 로드 완료 - 총 {Dialogue.Values.Count}개");
+            //Debug.Log($"[DataManager] Dialogue 데이터 로드 완료 - 총 {Dialogue.Values.Count}개");
 
             // 이미지 로딩 시작
             await LoadAllCharacterImages();
@@ -124,7 +124,7 @@ public partial class DataManager
             }
         }
 
-        Debug.Log($"[DataManager] 로드할 캐릭터 이미지: {uniqueImageKeys.Count}개");
+        //Debug.Log($"[DataManager] 로드할 캐릭터 이미지: {uniqueImageKeys.Count}개");
 
         // 병렬로 이미지 로드
         var loadTasks = new List<Task>();
@@ -134,7 +134,7 @@ public partial class DataManager
         }
 
         await Task.WhenAll(loadTasks);
-        Debug.Log("[DataManager] 모든 캐릭터 이미지 로드 완료");
+        //Debug.Log("[DataManager] 모든 캐릭터 이미지 로드 완료");
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ public partial class DataManager
             if (sprite != null)
             {
                 imageCache[imageKey] = sprite;
-                Debug.Log($"[DataManager] 이미지 로드 성공: {imageKey}");
+                //Debug.Log($"[DataManager] 이미지 로드 성공: {imageKey}");
             }
             else
             {
