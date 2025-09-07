@@ -4,26 +4,82 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Audio;
 using UnityEngine.Pool;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class AudioManager : Singleton<AudioManager>
 {
+    private const int MIN_DB = -80;
+
+    [SerializeField] private AudioMixer _audioMixer;
+    [SerializeField] private AudioMixerGroup _sfxGroup;
     public ObjectPool<SfxController> SfxPool { get; private set; }
 
-    public float MasterVolume = 1f;
-    private float _bgmVolume = 1f;
-    public float BgmVolume
+    public float MasterVolume
     {
-        get => _bgmVolume;
+        get
+        {
+            _audioMixer.GetFloat("MasterVolume", out float db);
+            return Mathf.Pow(10f, db / 20f);
+        }
+
         set
         {
-            _bgmVolume = value;
-            _bgmSource.volume = MasterVolume * _bgmVolume * _bgmLocalVolume;
+            if (value <= 0)
+            {
+                _audioMixer.SetFloat("MasterVolume", MIN_DB);
+            }
+            else
+            {
+                float db = Mathf.Log10(value) * 20f;
+                _audioMixer.SetFloat("MasterVolume", db);
+            }
         }
     }
-    private float _bgmLocalVolume;
-    public float SfxVolume = 1f;
+    public float BgmVolume
+    {
+        get 
+        {
+            _audioMixer.GetFloat("BgmVolume", out float db);
+            return Mathf.Pow(10f, db / 20f);
+        }
+            
+        set
+        {
+            if(value <= 0)
+            {
+                _audioMixer.SetFloat("BgmVolume", MIN_DB);
+            }
+            else
+            {
+                float db = Mathf.Log10(value) * 20f;
+                _audioMixer.SetFloat("BgmVolume", db);
+            }
+        }
+    }
+
+    public float SfxVolume
+    {
+        get
+        {
+            _audioMixer.GetFloat("SfxVolume", out float db);
+            return Mathf.Pow(10f, db / 20f);
+        }
+
+        set
+        {
+            if (value <= 0)
+            {
+                _audioMixer.SetFloat("SfxVolume", MIN_DB);
+            }
+            else
+            {
+                float db = Mathf.Log10(value) * 20f;
+                _audioMixer.SetFloat("SfxVolume", db);
+            }
+        }
+    }
 
     private AudioSource _bgmSource;
 
@@ -37,6 +93,21 @@ public class AudioManager : Singleton<AudioManager>
         _bgmSource.loop = true;
 
         SfxPool = new ObjectPool<SfxController>(CreateSfx, GetSfx, ReleaseSfx, DestroySfx);
+
+        for(int i = 0; i < 10; i++)
+        {
+            GameObject obj = new GameObject("SfxController");
+            obj.transform.parent = transform;
+            AudioSource audioSource = obj.AddComponent<AudioSource>();
+
+            audioSource.outputAudioMixerGroup = _sfxGroup;
+            audioSource.spatialBlend = 1.0f;
+            audioSource.minDistance = 5f;
+            audioSource.maxDistance = 30f;
+            audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+
+            SfxPool.Release(obj.AddComponent<SfxController>());
+        }
     }
 
     public void BgmPlay(string clipName, float fadeDuration = 0)
@@ -60,7 +131,6 @@ public class AudioManager : Singleton<AudioManager>
 
             if (_bgmSource.clip == clip) return;
 
-            _bgmLocalVolume = data.Result.Volume;
             _bgmSource.DOKill();
             _bgmSource.DOFade(0f, fadeDuration).OnComplete(() =>
             {
@@ -68,7 +138,7 @@ public class AudioManager : Singleton<AudioManager>
                 _bgmSource.clip = clip;
                 _bgmSource.Play();
 
-                _bgmSource.DOFade(MasterVolume * BgmVolume * data.Result.Volume, fadeDuration);
+                _bgmSource.DOFade(data.Result.Volume, fadeDuration);
                 Addressables.Release(data);
             });
         };
@@ -91,7 +161,7 @@ public class AudioManager : Singleton<AudioManager>
 
             SfxController sfx = SfxPool.Get();
             sfx.Target = target;
-            sfx.SfxPlay(data.Result, Mathf.Clamp01(MasterVolume * SfxVolume * data.Result.Volume));
+            sfx.SfxPlay(data.Result, Mathf.Clamp01(data.Result.Volume));
             Addressables.Release(data);
         };
     }
@@ -102,6 +172,7 @@ public class AudioManager : Singleton<AudioManager>
         obj.transform.parent = transform;
         AudioSource audioSource = obj.AddComponent<AudioSource>();
 
+        audioSource.outputAudioMixerGroup = _sfxGroup;
         audioSource.spatialBlend = 1.0f;       
         audioSource.minDistance = 5f;        
         audioSource.maxDistance = 30f;      
@@ -143,7 +214,7 @@ public class AudioManager : Singleton<AudioManager>
 
             AudioSource source = sfx.GetComponent<AudioSource>();
             source.clip = data.Result.Clip;
-            source.volume = Mathf.Clamp01(MasterVolume * SfxVolume * data.Result.Volume);
+            source.volume = Mathf.Clamp01(data.Result.Volume);
             source.loop = true;
             source.Play();
 
