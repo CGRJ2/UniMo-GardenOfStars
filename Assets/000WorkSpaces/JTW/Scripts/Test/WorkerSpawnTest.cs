@@ -33,13 +33,7 @@ public class WorkerSpawnTest : MonoBehaviour
                     // 실제에서는 UserData가 이미 초기화 되었을테니 OnEnable 같은데서 추가하면 된다.
                     Manager.firebase.UserData.WorkerList.OnAdded.AddListener(WorkerSpawnEvent);
 
-                    WorkerDataJson data = new WorkerDataJson();
-
-                    data.Id = $"10101_F";
-                    data.MoveSpeedLv = 1;
-                    data.MaxCapacityLv = 1;
-
-                    Manager.firebase.UserData.WorkerList.Add(data);
+                    Manager.firebase.UserData.WorkerList.Add("10101_F");
                 }
                 else
                 {
@@ -55,6 +49,7 @@ public class WorkerSpawnTest : MonoBehaviour
     
     private void WorkerSpawnEvent(WorkerData worker)
     {
+        Debug.Log("처음 생성");
         _workerManager.InstantiateWorker(worker);
         Manager.firebase.UserData.WorkerList.OnAdded.RemoveListener(WorkerSpawnEvent);
     }

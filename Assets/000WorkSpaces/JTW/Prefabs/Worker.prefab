@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 3748741630047970184}
   - component: {fileID: 875156556206429596}
   - component: {fileID: 3912910585794690682}
+  - component: {fileID: 5811337911342908531}
   m_Layer: 6
   m_Name: Worker
   m_TagString: Untagged
@@ -207,6 +208,8 @@ MonoBehaviour:
     _value: 0
   NavMeshPriority: 0
   IsHarvest: 0
+  IsPlayerTriggered:
+    _value: 0
 --- !u!114 &3748741630047970184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +261,29 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!136 &5811337911342908531
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6093669597428345217}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.65
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7100560354410099319
 GameObject:
   m_ObjectHideFlags: 0
