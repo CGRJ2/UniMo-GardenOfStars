@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -39,6 +40,7 @@ public class AdManager : Singleton<AdManager>
     {
         base.SingletonInit();
     }
+    
     void Start()
     {
         MobileAds.Initialize(initStatus =>
