@@ -66,16 +66,20 @@ namespace KYS
                 {
                     buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
                     
+                    // 건물 정보 슬롯 생성
                     PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
-                    content.SetBuildingData(bd);
+
+                    // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                    Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                    if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                    {
+                        content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                    }
+                    else
+                    {
+                        content.SetBuildingData(bd);
+                    }
                 }
-
-
-
-
-                // 데이터베이스에서 유저가 보유중인 건물 => 업그레이드 딕셔너리 해당하는 애들만 체크
-                //Manager.buildings.upgradeDataDic
-
             };
         }
         public override void Cleanup()

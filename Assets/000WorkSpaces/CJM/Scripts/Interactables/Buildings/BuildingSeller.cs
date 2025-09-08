@@ -7,22 +7,9 @@ using UnityEngine.AddressableAssets;
 
 public class BuildingSeller : InteractableBase
 {
-    [SerializeField] protected BuildingSellerPopUI activatePopUI;
-
     ObjectPool _Pool;
 
-    private void Awake()
-    {
-        if (activatePopUI != null)
-        {
-            activatePopUI.Init();
-            activatePopUI.GetComponent<Canvas>().worldCamera = Camera.main;
-            activatePopUI.gameObject.SetActive(false);
-        }
-
-        activatePopUI.Init();
-    }
-
+  
     // 테스트용 코드
     public void Update()
     {
@@ -55,6 +42,9 @@ public class BuildingSeller : InteractableBase
             buildingItem.buildingId = buildingId;
             buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
             characterRD.IngrediantStack.Push(buildingItem);
+
+            // 구매한 건물 ID => DB에 갱신
+            Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = buildingId;
         };
     }
 
@@ -62,27 +52,11 @@ public class BuildingSeller : InteractableBase
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
-
-        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
-        if (characterRuntimeData is PlayerRunTimeData)
-        {
-            if (activatePopUI != null)
-            {
-                activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
-            }
-        }
     }
 
     // 건물 활성화 범위 상호작용
     public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
         base.Exit(characterRuntimeData);
-
-        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
-        if (characterRuntimeData is PlayerRunTimeData)
-        {
-            if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(false); // 기본 상호작용 팝업 비활성화 (존재 한다면)
-        }
     }
 }
