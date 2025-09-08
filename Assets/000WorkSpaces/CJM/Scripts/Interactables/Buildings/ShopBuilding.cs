@@ -17,7 +17,7 @@ public class ShopBuilding : BuildingInstance
     Coroutine popPricePanelRoutine;
 
     void Awake() => Init();
-    void Init()
+    new void Init()
     {
         panel_Price?.gameObject?.SetActive(false);
         if (Canvas_PriceData != null)

@@ -73,20 +73,13 @@ namespace KYS
                     Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
                     if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
                     {
-
+                        content.SetBuildingData(bd, upgradeDic[bd.ID]);
                     }
-
-
-
-                    content.SetBuildingData(bd);
+                    else
+                    {
+                        content.SetBuildingData(bd);
+                    }
                 }
-
-
-
-
-                // 데이터베이스에서 유저가 보유중인 건물 => 업그레이드 딕셔너리 해당하는 애들만 체크
-                //Manager.buildings.upgradeDataDic
-
             };
         }
         public override void Cleanup()

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class WaitingTile : InteractableBase
 {
     [SerializeField] Slider progressBar;
-    [SerializeField] float installingTime;
+    [SerializeField] float interactTime;
     [SerializeField] float progressedTime;
 
     public void Init()
@@ -16,12 +16,6 @@ public class WaitingTile : InteractableBase
 
     IEnumerator ProgressingTask()
     {
-        // 정지 상태까지 대기했다가 작업 실행
-        yield return new WaitUntil(() => !characterRD.IsMove.Value);
-
-        // 작업 시작 시, 진행도 표기
-        progressBar.gameObject.SetActive(true);
-
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             // 작업 진행 중, 영역 내에서 움직인 경우 대기
@@ -29,21 +23,25 @@ public class WaitingTile : InteractableBase
             {
                 progressBar.gameObject.SetActive(false);
                 progressedTime = 0; // 진행도 초기화
-                yield return new WaitUntil(() => !characterRD.IsMove.Value);
-                progressBar.gameObject.SetActive(true);
+                yield return null;
+                continue;
             }
 
             // 작업 영역 밖으로 나가는 경우
             if (characterRD == null)
             {
                 progressedTime = 0; // 진행도 초기화
+                yield return null;
                 break;
             }
+
+            // 작업 시작 시, 진행도 표기
+            progressBar.gameObject.SetActive(true);
 
             progressedTime += Time.deltaTime;
 
             // 설치가 완료된 경우
-            if (installingTime < progressedTime)
+            if (interactTime < progressedTime)
             {
                 CompleteTask(); // 결과물 생성
                 progressedTime = 0; // 진행도 초기화
@@ -51,7 +49,7 @@ public class WaitingTile : InteractableBase
             }
 
             // 진행도 게이지 업데이트
-            progressBar.value = progressedTime / installingTime;
+            progressBar.value = progressedTime / interactTime;
 
             yield return null;
         }
@@ -63,7 +61,8 @@ public class WaitingTile : InteractableBase
 
     public void CompleteTask()
     {
-        // UI업데이트
+        // UI 열기
+        Debug.Log("부동산 패널 열기");
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)

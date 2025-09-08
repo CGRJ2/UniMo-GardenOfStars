@@ -74,12 +74,10 @@ public class IngrediantInstance : PooledObject
             float t = Mathf.InverseLerp(startDist, 0.3f, dist);
             t = Mathf.Clamp01(t);
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
-            Debug.Log("접근중");
+
             // 도착 스냅
             if (dist < 0.01f)
             {
-                Debug.Log("도착 완료");
-
                 transform.position = targetPos;
                 transform.rotation = targetRot; // ← 마지막에 정확히 맞춰주기
                 isAttached = true;
