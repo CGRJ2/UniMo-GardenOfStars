@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
@@ -117,12 +116,13 @@ public class PlaceTile : InteractableBase
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
-
-        StartCoroutine(ProgressingTask());
+        
+        if (state == PlaceTileState.Activated)
+            StartCoroutine(ProgressingTask());
     }
 }
 
 public enum PlaceTileState
 {
-    Deactivated, Activated, Constructed
+    Activated, Deactivated, Constructed
 }

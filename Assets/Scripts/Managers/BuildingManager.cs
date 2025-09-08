@@ -12,7 +12,7 @@ public class BuildingManager : Singleton<BuildingManager>
     public WorkStatoinLists workStatinLists = new ();
 
     // 건물id(string)에 해당하는 업그레이드 정보를 저장
-    Dictionary<string, UpgradeData> upgradeDataDic = new();
+    public Dictionary<string, UpgradeData> upgradeDataDic = new();
 
     // 스테이지id(string) 별, 건물들의 배치 정보를 저장
     //Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
@@ -83,8 +83,7 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public void UpdateUpgradedData(string buildingId, int statProdTimeAdd, int statCapacityAdd = 0)
     {
-        upgradeDataDic[buildingId].Level_ProdTime.Value += statProdTimeAdd;
-        upgradeDataDic[buildingId].Level_Capacity.Value += statCapacityAdd;
+        upgradeDataDic[buildingId].Upgrade(statProdTimeAdd, statCapacityAdd);
     }
 
     UpgradeData temp_UpgradeData;
@@ -142,8 +141,8 @@ public struct WorkStatoinLists
 [Serializable]
 public class UpgradeData : FirebaseData
 {
-    public FirebaseProperty<int> Level_ProdTime;
-    public FirebaseProperty<int> Level_Capacity;
+    FirebaseProperty<int> Level_ProdTime;
+    FirebaseProperty<int> Level_Capacity;
 
     public int level_ProdTime => Level_ProdTime.Value;
     public int level_Capacity => Level_Capacity.Value;
@@ -159,7 +158,11 @@ public class UpgradeData : FirebaseData
         InitList.Add(Level_Capacity);
     }
 
-    
+    public void Upgrade(int statProdTimeAdd, int statCapacityAdd = 0)
+    {
+        Level_ProdTime.Value += statProdTimeAdd;
+        Level_Capacity.Value += statCapacityAdd;
+    }
 }
 
 [Serializable]

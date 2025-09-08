@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 
 namespace KYS
@@ -13,6 +14,8 @@ namespace KYS
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] Transform contentParent;
+        [SerializeField] GameObject contentPrefab;
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
@@ -21,6 +24,7 @@ namespace KYS
         // 추가 변수 선언
         private int currentMoney = 0;
 
+        Dictionary<string, BuildingData> buildingDatas = new();
 
         protected override void Awake()
         {
@@ -54,6 +58,25 @@ namespace KYS
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
 
+
+            // 건물 데이터 불러오기
+            Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+            {
+                foreach (BuildingData bd in task.Result)
+                {
+                    buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
+                    
+                    PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+                    content.SetBuildingData(bd);
+                }
+
+
+
+
+                // 데이터베이스에서 유저가 보유중인 건물 => 업그레이드 딕셔너리 해당하는 애들만 체크
+                //Manager.buildings.upgradeDataDic
+
+            };
         }
         public override void Cleanup()
         {
