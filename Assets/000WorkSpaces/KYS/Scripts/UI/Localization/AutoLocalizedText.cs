@@ -11,7 +11,7 @@ namespace KYS
     public class AutoLocalizedText : MonoBehaviour
     {
         [Header("Auto Localization Settings")]
-        [SerializeField] private bool enableAutoLocalization = true;
+        [SerializeField] private bool enableAutoLocalization = false;
         [SerializeField] private string customKey = ""; // UI 이름과 다른 키를 사용하고 싶을 때
         [SerializeField] private bool useCustomKey = false; // customKey 사용 여부
         
