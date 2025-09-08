@@ -100,6 +100,92 @@ namespace KYS
             // 초기화가 완료된 후 SetupLoadingScreen 호출
             StartCoroutine(InitializeAfterFrame());
         }
+
+        /// <summary>
+        /// LoadingScreen 전용 Show 애니메이션 (검은 배경 문제 해결)
+        /// </summary>
+        protected override void PlayShowAnimation()
+        {
+            Debug.Log("[LoadingScreen] PlayShowAnimation() 호출됨");
+            
+            // CanvasGroup 상태 확인 및 수정
+            if (canvasGroup != null)
+            {
+                Debug.Log($"[LoadingScreen] PlayShowAnimation: CanvasGroup alpha: {canvasGroup.alpha}");
+                if (canvasGroup.alpha <= 0f)
+                {
+                    canvasGroup.alpha = 1f;
+                    Debug.Log("[LoadingScreen] PlayShowAnimation: CanvasGroup alpha를 1로 강제 설정");
+                }
+            }
+
+            // 배경 이미지 상태 확인 및 수정
+            if (loadingImages != null && loadingImages.Length > 0)
+            {
+                for (int i = 0; i < loadingImages.Length; i++)
+                {
+                    if (loadingImages[i] != null)
+                    {
+                        Debug.Log($"[LoadingScreen] PlayShowAnimation: 이미지 {i} 알파값: {loadingImages[i].color.a}");
+                        if (loadingImages[i].color.a <= 0f)
+                        {
+                            Color color = loadingImages[i].color;
+                            color.a = 1f;
+                            loadingImages[i].color = color;
+                            Debug.Log($"[LoadingScreen] PlayShowAnimation: 이미지 {i} 알파값을 1로 강제 설정");
+                        }
+                    }
+                }
+            }
+
+#if DOTWEEN
+            // DOTween이 있는 경우 부모 클래스의 애니메이션 사용
+            base.PlayShowAnimation();
+#else
+            // DOTween이 없는 경우 즉시 표시
+            if (canvasGroup != null) canvasGroup.alpha = 1f;
+            if (rectTransform != null) rectTransform.localScale = originalScale;
+            Debug.Log("[LoadingScreen] PlayShowAnimation: DOTween 없음 - 즉시 표시");
+#endif
+        }
+
+        /// <summary>
+        /// LoadingScreen 숨기기 (재사용을 위해 파괴하지 않고 비활성화만)
+        /// </summary>
+        public override void Hide()
+        {
+            Debug.Log("[LoadingScreen] Hide() 메서드 호출됨");
+            
+            if (!IsActive) 
+            {
+                Debug.Log("[LoadingScreen] 이미 비활성화 상태입니다.");
+                return;
+            }
+
+            // UI 닫기 사운드 재생
+            PlayCloseSound();
+
+            if (useAnimation && useHideAnimation)
+            {
+                Debug.Log("[LoadingScreen] 애니메이션과 함께 숨기기 시작");
+                PlayHideAnimation(() =>
+                {
+                    // 애니메이션 완료 후 비활성화만 (파괴하지 않음)
+                    Debug.Log("[LoadingScreen] 애니메이션 완료 - GameObject 비활성화");
+                    gameObject.SetActive(false);
+                    OnHide();
+                });
+            }
+            else
+            {
+                Debug.Log("[LoadingScreen] 애니메이션 없이 즉시 숨기기");
+                // 애니메이션 없이 즉시 숨김
+                if (canvasGroup != null) canvasGroup.alpha = 0f;
+                if (rectTransform != null) rectTransform.localScale = Vector3.zero;
+                gameObject.SetActive(false);
+                OnHide();
+            }
+        }
         
         private IEnumerator InitializeAfterFrame()
         {
@@ -173,22 +259,36 @@ namespace KYS
             SetLoadingMessageByIndex(0);
             
             // 초기 이미지 설정 (첫 번째 이미지만 활성화)
-            if (loadingImages.Length > 0)
+            if (loadingImages != null && loadingImages.Length > 0)
             {
+                Debug.Log($"[LoadingScreen] SetupLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
                 for (int i = 0; i < loadingImages.Length; i++)
                 {
                     if (loadingImages[i] != null)
                     {
                         loadingImages[i].gameObject.SetActive(i == 0);
-                        //Debug.Log($"[LoadingScreen] 초기 이미지 설정: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")}");
+                        Debug.Log($"[LoadingScreen] SetupLoadingScreen: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")} - 알파값: {loadingImages[i].color.a}");
+                        
+                        // 첫 번째 이미지의 알파값을 강제로 1로 설정
+                        if (i == 0)
+                        {
+                            Color color = loadingImages[i].color;
+                            color.a = 1f;
+                            loadingImages[i].color = color;
+                            Debug.Log($"[LoadingScreen] SetupLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[LoadingScreen] SetupLoadingScreen: loadingImages[{i}]가 null입니다!");
                     }
                 }
                 currentImageIndex = 0;
-                //Debug.Log("[LoadingScreen] 초기 이미지 인덱스: 0");
+                Debug.Log("[LoadingScreen] SetupLoadingScreen: 초기 이미지 인덱스: 0");
             }
             else
             {
-                //Debug.LogWarning("[LoadingScreen] loadingImages 배열이 비어있습니다.");
+                Debug.LogWarning("[LoadingScreen] SetupLoadingScreen: loadingImages 배열이 null이거나 비어있습니다!");
             }
             
             // 자동 전환 시작
@@ -308,6 +408,57 @@ namespace KYS
                 OnLoadingComplete?.Invoke();
             }
         }
+
+        /// <summary>
+        /// 부드러운 진행률 애니메이션 (DOTween 사용)
+        /// </summary>
+        public void SetProgressAnimated(float targetProgress, float duration = 0.5f)
+        {
+            if (useImageFill && fillProgressImage != null)
+            {
+                SetFillProgressAnimated(targetProgress, duration);
+            }
+            else if (useSlider && loadingProgressBar != null)
+            {
+                StartCoroutine(AnimateSliderProgress(targetProgress, duration));
+            }
+            else
+            {
+                // 애니메이션을 지원하지 않는 경우 즉시 설정
+                SetProgress(targetProgress);
+            }
+        }
+
+        /// <summary>
+        /// Slider 진행률 애니메이션 코루틴
+        /// </summary>
+        private IEnumerator AnimateSliderProgress(float targetProgress, float duration)
+        {
+            float startProgress = loadingProgressBar.value;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                float currentProgress = Mathf.Lerp(startProgress, targetProgress, t);
+                loadingProgressBar.value = Mathf.Clamp01(currentProgress);
+                
+                // Progress Text도 함께 업데이트
+                if (progressText != null)
+                {
+                    progressText.text = $"{Mathf.RoundToInt(currentProgress * 100)}%";
+                }
+                
+                yield return null;
+            }
+
+            loadingProgressBar.value = Mathf.Clamp01(targetProgress);
+            if (progressText != null)
+            {
+                progressText.text = $"{Mathf.RoundToInt(targetProgress * 100)}%";
+            }
+        }
         
         /// <summary>
         /// 중앙 메시지 설정
@@ -328,6 +479,22 @@ namespace KYS
         {
             string message = GetLocalizedMessage(localizationKey, fallbackMessage);
             SetCenterMessage(message);
+        }
+
+        /// <summary>
+        /// 현재 진행률 가져오기 (0.0 ~ 1.0)
+        /// </summary>
+        public float GetCurrentProgress()
+        {
+            if (useImageFill && fillProgressImage != null)
+            {
+                return fillProgressImage.fillAmount;
+            }
+            else if (useSlider && loadingProgressBar != null)
+            {
+                return loadingProgressBar.value;
+            }
+            return 0f;
         }
 
         /// <summary>
@@ -399,6 +566,87 @@ namespace KYS
             //Debug.Log("[LoadingScreen] 로딩 완료");
             SetProgress(1f);
             OnLoadingComplete?.Invoke();
+        }
+
+        /// <summary>
+        /// LoadingScreen 상태 초기화 (재사용을 위해)
+        /// </summary>
+        public void ResetLoadingScreen()
+        {
+            Debug.Log("[LoadingScreen] ResetLoadingScreen() 호출됨");
+            
+            // 진행률 강제 초기화
+            ForceResetProgress();
+            
+            // 추가로 SetProgress(0f)도 호출하여 이벤트 발생
+            SetProgress(0f);
+            
+            // 메시지 초기화
+            if (centerMessageText != null)
+            {
+                centerMessageText.gameObject.SetActive(false);
+            }
+            
+            // Progress 요소들 초기화
+            if (progressText != null)
+            {
+                progressText.gameObject.SetActive(false);
+            }
+            if (loadingProgressBar != null)
+            {
+                loadingProgressBar.gameObject.SetActive(false);
+            }
+            if (fillProgressImage != null)
+            {
+                fillProgressImage.gameObject.SetActive(false);
+            }
+            
+            // 이미지 초기화 (배경 이미지 보장)
+            if (loadingImages != null && loadingImages.Length > 0)
+            {
+                Debug.Log($"[LoadingScreen] ResetLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
+                for (int i = 0; i < loadingImages.Length; i++)
+                {
+                    if (loadingImages[i] != null)
+                    {
+                        loadingImages[i].gameObject.SetActive(i == 0);
+                        
+                        // 첫 번째 이미지의 알파값을 강제로 1로 설정
+                        if (i == 0)
+                        {
+                            Color color = loadingImages[i].color;
+                            color.a = 1f;
+                            loadingImages[i].color = color;
+                            Debug.Log($"[LoadingScreen] ResetLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[LoadingScreen] ResetLoadingScreen: loadingImages[{i}]가 null입니다!");
+                    }
+                }
+                currentImageIndex = 0;
+            }
+            else
+            {
+                Debug.LogWarning("[LoadingScreen] ResetLoadingScreen: loadingImages 배열이 null이거나 비어있습니다!");
+            }
+            
+            // 메시지 인덱스 초기화
+            currentMessageIndex = 0;
+            
+            // 코루틴들 정리
+            StopAllCoroutines();
+            
+            // 외부 모니터링 상태 초기화
+            isExternalMonitoringActive = false;
+            if (externalProgressCoroutine != null)
+            {
+                StopCoroutine(externalProgressCoroutine);
+                externalProgressCoroutine = null;
+            }
+            
+            Debug.Log("[LoadingScreen] ResetLoadingScreen() 완료");
         }
         
         /// <summary>
@@ -477,10 +725,23 @@ namespace KYS
                 float t = elapsed / duration;
                 float currentProgress = Mathf.Lerp(startProgress, targetProgress, t);
                 fillProgressImage.fillAmount = Mathf.Clamp01(currentProgress);
+                
+                // Progress Text도 함께 업데이트
+                if (progressText != null)
+                {
+                    progressText.text = $"{Mathf.RoundToInt(currentProgress * 100)}%";
+                }
+                
                 yield return null;
             }
 
             fillProgressImage.fillAmount = Mathf.Clamp01(targetProgress);
+            
+            // 최종 Progress Text 업데이트
+            if (progressText != null)
+            {
+                progressText.text = $"{Mathf.RoundToInt(targetProgress * 100)}%";
+            }
         }
 
         /// <summary>
@@ -882,15 +1143,31 @@ namespace KYS
         /// </summary>
         public static void HideLoadingScreen()
         {
-            // LoadingScreen 인스턴스 찾기
-            LoadingScreen[] loadingScreens = FindObjectsOfType<LoadingScreen>();
-            foreach (var loadingScreen in loadingScreens)
+            if (UIManager.Instance != null)
             {
-                if (loadingScreen != null && loadingScreen.gameObject.activeInHierarchy)
-                {
-                    loadingScreen.Hide();
-                    break;
-                }
+                UIManager.Instance.HideLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// 로딩 화면 상태 초기화 (정적 메서드)
+        /// </summary>
+        //public static void ResetLoadingScreen()
+        //{
+        //    if (UIManager.Instance != null)
+        //    {
+        //        UIManager.Instance.ResetLoadingScreen();
+        //    }
+        //}
+
+        /// <summary>
+        /// 로딩 화면 강제 재생성 (정적 메서드)
+        /// </summary>
+        public static void RecreateLoadingScreen()
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.RecreateLoadingScreen();
             }
         }
         
