@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 
 namespace KYS
@@ -13,6 +14,8 @@ namespace KYS
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] Transform contentParent;
+        [SerializeField] GameObject contentPrefab;
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
@@ -21,6 +24,7 @@ namespace KYS
         // 추가 변수 선언
         private int currentMoney = 0;
 
+        Dictionary<string, BuildingData> buildingDatas = new();
 
         protected override void Awake()
         {
@@ -54,6 +58,29 @@ namespace KYS
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
 
+
+            // 건물 데이터 불러오기
+            Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+            {
+                foreach (BuildingData bd in task.Result)
+                {
+                    buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
+                    
+                    // 건물 정보 슬롯 생성
+                    PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+
+                    // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                    Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                    if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                    {
+                        content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                    }
+                    else
+                    {
+                        content.SetBuildingData(bd);
+                    }
+                }
+            };
         }
         public override void Cleanup()
         {

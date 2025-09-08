@@ -18,7 +18,7 @@ public class Btn_Stage : MonoBehaviour
     public void Init(StageData stageData)
     {
         this.stageData = stageData;
-        tmp_StageName.text = stageData.StageName;
+        tmp_StageName.text = stageData.stageName;
     }
 
     void OnClickSelf()

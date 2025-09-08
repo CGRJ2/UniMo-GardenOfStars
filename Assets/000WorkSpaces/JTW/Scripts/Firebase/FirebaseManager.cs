@@ -38,7 +38,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
                 InitUserData();
 
-                OnFirebaseInit.Invoke();
+                OnFirebaseInit?.Invoke();
 
                 IsFirebaseInit = true;
             }
