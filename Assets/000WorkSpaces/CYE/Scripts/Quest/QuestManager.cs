@@ -116,7 +116,7 @@ public class QuestManager : Singleton<QuestManager>
         int questIdx = -1;
         for (int idx = 0; idx < _currentQuestList.Length; idx++)
         {
-            if (_currentQuestList[idx]._questState == QuestState.InProgress)
+            if (_currentQuestList[idx]._data.State == QuestState.InProgress)
             {
                 questIdx = idx;
                 break;
@@ -166,7 +166,7 @@ public class QuestManager : Singleton<QuestManager>
         bool isCompleted = true;
         foreach (Quest quest in _currentQuestList)
         {
-            if (quest._questState != QuestState.Completed)
+            if (quest._data.State != QuestState.Completed)
             {
                 isCompleted = false;
                 break;

@@ -25,24 +25,24 @@ namespace GameNpc
 
         public void UpdateProgressUI()
         {
-            foreach (QuestProgressData progressData in Manager.quest.CurrentQuest._questProgresses)
+            foreach (QuestContentProgressData progressData in Manager.quest.CurrentQuest._progresses)
             {
-                GameObject panel = _itemPanel[progressData._targetId];
-                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
+                GameObject panel = _itemPanel[progressData.ContentTargetId];
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressCount.Value);
             }
         }
         public void InitItemPanel(int currentQuestIndex)
         {
             ResetItemPanel();
-            foreach (QuestProgressData progressData in Manager.quest.CurrentQuest._questProgresses)
+            foreach (QuestContentProgressData progressData in Manager.quest.CurrentQuest._progresses)
             {
                 GameObject panel = Instantiate(_cellPrefab, _viewContent.transform);
                 // panel.GetComponent<NpcProgressPanel>()?.UpdateItemImage(itemSprite);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateItemId(progressData._targetId);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText(progressData._currentCount);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData._targetCount);
-                if (!_itemPanel.ContainsKey(progressData._targetId)) { 
-                    _itemPanel.Add(progressData._targetId, panel);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateItemId(progressData.ContentTargetId);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressCount.Value);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData.ContentTargetCount);
+                if (!_itemPanel.ContainsKey(progressData.ContentTargetId)) { 
+                    _itemPanel.Add(progressData.ContentTargetId, panel);
                 }
             }
         }
