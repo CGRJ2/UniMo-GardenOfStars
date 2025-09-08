@@ -26,17 +26,12 @@ public class PlaceTile : InteractableBase
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         Debug.LogWarning("스테이지 데이터 생성 후 초기화1");
-
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
-        Debug.LogWarning(Manager.firebase.UserData.Id);
         Debug.LogWarning("스테이지 데이터 생성 후 초기화2");
-
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         Debug.LogWarning("스테이지 데이터 생성 후 초기화3");
-
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.IsInit);
         Debug.LogWarning("스테이지 데이터 생성 후 초기화4");
-
         Init();
     }
 

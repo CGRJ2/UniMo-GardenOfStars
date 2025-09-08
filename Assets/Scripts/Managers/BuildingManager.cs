@@ -11,6 +11,8 @@ public class BuildingManager : Singleton<BuildingManager>
 {
     public WorkStatoinLists workStatinLists = new ();
 
+    public BuildingSeller buildingSeller;
+
     // 건물id(string)에 해당하는 업그레이드 정보를 저장
     public Dictionary<string, UpgradeData> upgradeDataDic = new();
 

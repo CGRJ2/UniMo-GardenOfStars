@@ -63,6 +63,7 @@ public class WaitingTile : InteractableBase
     {
         // UI 열기
         Debug.Log("부동산 패널 열기");
+        OpenEstatePanel();
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
@@ -82,19 +83,19 @@ public class WaitingTile : InteractableBase
             return;
         }
 
-        // 이미 TitlePanel이 열려있는지 확인
+        // 이미 부동산 패널이 열려있는지 확인
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
-            if (panel is InfoPanel_Harvest)
+            if (panel is PropertyPanel)
             {
                 //Debug.Log("[부동산 패널] 이미 부동산 패널이 열려있습니다. 중복 호출 무시");
                 return;
             }
         }
 
-        // 업그레이드 패널 열기
-        Manager.ui.ShowPanelAsync<InfoPanel_Harvest>((panel) =>
+        // 부동산 패널 열기
+        Manager.ui.ShowPanelAsync<PropertyPanel>((panel) =>
         {
             if (panel != null)
             {
