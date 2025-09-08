@@ -9,7 +9,12 @@ public class BuildingSeller : InteractableBase
 {
     ObjectPool _Pool;
 
-  
+    private void Awake()
+    {
+        Manager.buildings.buildingSeller = this;
+    }
+
+
     // 테스트용 코드
     public void Update()
     {
