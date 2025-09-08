@@ -1,4 +1,4 @@
-using DG.Tweening;
+ï»¿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,38 +8,34 @@ using UnityEngine.TextCore.Text;
 public class ProdTile : InteractableBase
 {
     ObjectPool _Pool;
-    [Header("Floating È¿°ú ¼³Á¤")]
-    [SerializeField] private float floatHeight = 0.5f;   // À§¾Æ·¡ ÀÌµ¿ °Å¸®
-    [SerializeField] private float floatDuration = 2f;   // À§¾Æ·¡ ÀÌµ¿ ½Ã°£
-    [SerializeField] private float rotationSpeed = 50f;  // ÃÊ´ç È¸Àü ¼Óµµ(µµ ´ÜÀ§)
+    [Header("Floating íš¨ê³¼ ì„¤ì •")]
+    [SerializeField] private float floatHeight = 0.5f;   // ìœ„ì•„ë˜ ì´ë™ ê±°ë¦¬
+    [SerializeField] private float floatDuration = 2f;   // ìœ„ì•„ë˜ ì´ë™ ì‹œê°„
+    [SerializeField] private float rotationSpeed = 50f;  // ì´ˆë‹¹ íšŒì „ ì†ë„(ë„ ë‹¨ìœ„)
     private Tween floatTween;
     private Tween rotateTween;
     Item_Building buildingItem;
 
-    // ±¸¸Å ¿Ï·á ½Ã, DB¿¡ ±¸¸ÅÇÑ BuildingId ÀúÀå
-    // ¼³Ä¡ ¿Ï·á ½Ã, DB¿¡ Id »èÁ¦
+    // êµ¬ë§¤ ì™„ë£Œ ì‹œ, DBì— êµ¬ë§¤í•œ BuildingId ì €ì¥
+    // ì„¤ì¹˜ ì™„ë£Œ ì‹œ, DBì— Id ì‚­ì œ
 
-    // °ÔÀÓ Á¾·á ÈÄ ´Ù½Ã ½ÇÇà ½Ã DB¿¡ ±¸¸ÅÇÑ BulidingId°¡ ÀÖÀ¸¸é »ı¼º
+    // ê²Œì„ ì¢…ë£Œ í›„ ë‹¤ì‹œ ì‹¤í–‰ ì‹œ DBì— êµ¬ë§¤í•œ BulidingIdê°€ ìˆìœ¼ë©´ ìƒì„±
 
     private void Awake()
     {
-        // Å¸ÀÌÆ²¿¡¼­ ½ºÅ×ÀÌÁö ¾ÀÀ¸·Î ÀüÈ¯µÉ ¶§ ½ÇÇà
+        // íƒ€ì´í‹€ì—ì„œ ìŠ¤í…Œì´ì§€ ì”¬ìœ¼ë¡œ ì „í™˜ë  ë•Œ ì‹¤í–‰
         //UpdateInstanceView();
 
-        // Å×½ºÆ®¿ëÀ¸·Î ¹Ù·Î ½ºÅ×ÀÌÁö ¾À¿¡¼­ ½ÃÀÛÇÒ ¶§ ½ÇÇà
+        // í…ŒìŠ¤íŠ¸ìš©ìœ¼ë¡œ ë°”ë¡œ ìŠ¤í…Œì´ì§€ ì”¬ì—ì„œ ì‹œì‘í•  ë•Œ ì‹¤í–‰
         StartCoroutine(WaitAndLoad());
     }
 
     IEnumerator WaitAndLoad()
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
-        Debug.LogWarning(111);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
-        Debug.LogWarning(222);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
-        Debug.LogWarning(333);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PurchasedBuildingID.IsInit);
-        Debug.LogWarning(444);
 
         UpdateInstanceView();
     }
@@ -52,26 +48,26 @@ public class ProdTile : InteractableBase
         Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
         {
             GameObject product = task.Result;
-            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // ÇØ´ç °Ç¹°(Àç·á) ÀÎ½ºÅÏ½º Ç® »ı¼º
+            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // í•´ë‹¹ ê±´ë¬¼(ì¬ë£Œ) ì¸ìŠ¤í„´ìŠ¤ í’€ ìƒì„±
 
-            // ¿ÀºêÁ§Æ® Ç®¿¡¼­ È°¼ºÈ­
+            // ì˜¤ë¸Œì íŠ¸ í’€ì—ì„œ í™œì„±í™”
             GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
             buildingItem = disposedObject.GetComponent<Item_Building>();
             buildingItem.buildingId = buildingId;
 
-            // ÀÌ¹Ì ½ÇÇà ÁßÀÌ¶ó¸é ¹«½Ã
+            // ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ë¼ë©´ ë¬´ì‹œ
             if (floatTween != null && floatTween.IsActive()) return;
 
-            // È¸Àü ½ÃÀÛ
-            // À§¾Æ·¡ ¶°´Ù´Ï´Â È¿°ú (YÃà ÀÌµ¿ ¹İº¹)
+            // íšŒì „ ì‹œì‘
+            // ìœ„ì•„ë˜ ë– ë‹¤ë‹ˆëŠ” íš¨ê³¼ (Yì¶• ì´ë™ ë°˜ë³µ)
             floatTween = disposedObject.transform.DOMoveY(transform.position.y + floatHeight, floatDuration)
                 .SetEase(Ease.InOutSine)
-                .SetLoops(-1, LoopType.Yoyo); // ¹«ÇÑ ¹İº¹, ¿ä¿ä(¿Õº¹)
+                .SetLoops(-1, LoopType.Yoyo); // ë¬´í•œ ë°˜ë³µ, ìš”ìš”(ì™•ë³µ)
 
-            // È¸Àü È¿°ú (YÃà ±âÁØ È¸Àü)
+            // íšŒì „ íš¨ê³¼ (Yì¶• ê¸°ì¤€ íšŒì „)
             rotateTween = disposedObject.transform.DORotate(new Vector3(0, 360f, 0), rotationSpeed, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Restart); // ¹«ÇÑ ¹İº¹
+                .SetLoops(-1, LoopType.Restart); // ë¬´í•œ ë°˜ë³µ
         };
     }
    
@@ -79,16 +75,16 @@ public class ProdTile : InteractableBase
 
     public void PickUp()
     {
-        // ¼Õ¿¡ ´Ù¸¥ ¹º°¡°¡ ÀÖ´Ù¸é ÁİÁö ¾Ê°Ô ¸¸µé±â
+        // ì†ì— ë‹¤ë¥¸ ë­”ê°€ê°€ ìˆë‹¤ë©´ ì¤ì§€ ì•Šê²Œ ë§Œë“¤ê¸°
         if (characterRD.IngrediantStack.Count > 0) return;
 
-        // ÀÎ½ºÅÏ½º ¿òÁ÷ÀÓ È¿°ú Á¤Áö
+        // ì¸ìŠ¤í„´ìŠ¤ ì›€ì§ì„ íš¨ê³¼ ì •ì§€
         floatTween?.Kill();
         rotateTween?.Kill();
         floatTween = null;
         rotateTween = null;
 
-        // ÇÃ·¹ÀÌ¾î º¸À¯ ½ºÅÃ¿¡ ¿Ã·ÁÁÖ±â
+        // í”Œë ˆì´ì–´ ë³´ìœ  ìŠ¤íƒì— ì˜¬ë ¤ì£¼ê¸°
         buildingItem.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
         characterRD.IngrediantStack.Push(buildingItem);
     }

@@ -1,4 +1,4 @@
-using KYS;
+ï»¿using KYS;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,53 +16,53 @@ public class WaitingTile : InteractableBase
 
     IEnumerator ProgressingTask()
     {
-        while (characterRD != null) // ¿µ¿ª ¾È¿¡ ÀÖÀ» ¶§ ÁøÇà
+        while (characterRD != null) // ì˜ì—­ ì•ˆì— ìˆì„ ë•Œ ì§„í–‰
         {
-            // ÀÛ¾÷ ÁøÇà Áß, ¿µ¿ª ³»¿¡¼­ ¿òÁ÷ÀÎ °æ¿ì ´ë±â
+            // ì‘ì—… ì§„í–‰ ì¤‘, ì˜ì—­ ë‚´ì—ì„œ ì›€ì§ì¸ ê²½ìš° ëŒ€ê¸°
             if (characterRD.IsMove.Value)
             {
                 progressBar.gameObject.SetActive(false);
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 yield return null;
                 continue;
             }
 
-            // ÀÛ¾÷ ¿µ¿ª ¹ÛÀ¸·Î ³ª°¡´Â °æ¿ì
+            // ì‘ì—… ì˜ì—­ ë°–ìœ¼ë¡œ ë‚˜ê°€ëŠ” ê²½ìš°
             if (characterRD == null)
             {
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 yield return null;
                 break;
             }
 
-            // ÀÛ¾÷ ½ÃÀÛ ½Ã, ÁøÇàµµ Ç¥±â
+            // ì‘ì—… ì‹œì‘ ì‹œ, ì§„í–‰ë„ í‘œê¸°
             progressBar.gameObject.SetActive(true);
 
             progressedTime += Time.deltaTime;
 
-            // ¼³Ä¡°¡ ¿Ï·áµÈ °æ¿ì
+            // ì„¤ì¹˜ê°€ ì™„ë£Œëœ ê²½ìš°
             if (interactTime < progressedTime)
             {
-                CompleteTask(); // °á°ú¹° »ı¼º
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                CompleteTask(); // ê²°ê³¼ë¬¼ ìƒì„±
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 break;
             }
 
-            // ÁøÇàµµ °ÔÀÌÁö ¾÷µ¥ÀÌÆ®
+            // ì§„í–‰ë„ ê²Œì´ì§€ ì—…ë°ì´íŠ¸
             progressBar.value = progressedTime / interactTime;
 
             yield return null;
         }
 
-        // ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+        // ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
         progressBar.gameObject.SetActive(false);
         yield return null;
     }
 
     public void CompleteTask()
     {
-        // UI ¿­±â
-        Debug.Log("ºÎµ¿»ê ÆĞ³Î ¿­±â");
+        // UI ì—´ê¸°
+        Debug.Log("ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°");
         OpenEstatePanel();
     }
 
@@ -74,39 +74,39 @@ public class WaitingTile : InteractableBase
     }
 
 
-    // ºÎµ¿»ê ÆĞ³Î ¿­±â
+    // ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°
     public void OpenEstatePanel()
     {
         if (UIManager.Instance == null)
         {
-            Debug.LogError("[ºÎµ¿»ê ÆĞ³Î] UIManager.Instance°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("[ë¶€ë™ì‚° íŒ¨ë„] UIManager.Instanceê°€ nullì…ë‹ˆë‹¤!");
             return;
         }
 
-        // ÀÌ¹Ì ºÎµ¿»ê ÆĞ³ÎÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ
+        // ì´ë¯¸ ë¶€ë™ì‚° íŒ¨ë„ì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
             if (panel is PropertyPanel)
             {
-                //Debug.Log("[ºÎµ¿»ê ÆĞ³Î] ÀÌ¹Ì ºÎµ¿»ê ÆĞ³ÎÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Áßº¹ È£Ãâ ¹«½Ã");
+                //Debug.Log("[ë¶€ë™ì‚° íŒ¨ë„] ì´ë¯¸ ë¶€ë™ì‚° íŒ¨ë„ì´ ì—´ë ¤ìˆìŠµë‹ˆë‹¤. ì¤‘ë³µ í˜¸ì¶œ ë¬´ì‹œ");
                 return;
             }
         }
 
-        // ºÎµ¿»ê ÆĞ³Î ¿­±â
+        // ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°
         Manager.ui.ShowPanelAsync<PropertyPanel>((panel) =>
         {
             if (panel != null)
             {
-                //Debug.Log("[ºÎµ¿»ê ÆĞ³Î] ºÎµ¿»ê ÆĞ³Î ¼º°øÀûÀ¸·Î ¿­¸²");
+                //Debug.Log("[ë¶€ë™ì‚° íŒ¨ë„] ë¶€ë™ì‚° íŒ¨ë„ ì„±ê³µì ìœ¼ë¡œ ì—´ë¦¼");
 
                 /*if (buildingInstance is HarvestBuilding harvesst)
                     panel.SetUpgradeData(harvesst.originData);*/
             }
             else
             {
-                //Debug.LogError("[ºÎµ¿»ê ÆĞ³Î]  ¿­±â ½ÇÆĞ");
+                //Debug.LogError("[ë¶€ë™ì‚° íŒ¨ë„]  ì—´ê¸° ì‹¤íŒ¨");
             }
         });
     }
