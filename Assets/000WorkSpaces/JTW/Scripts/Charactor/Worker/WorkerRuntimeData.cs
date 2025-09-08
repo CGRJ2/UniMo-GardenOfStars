@@ -38,6 +38,8 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public bool IsHarvest;
 
+    public ObservableProperty<bool> IsPlayerTriggered = new();
+
     private void Awake()
     {
         _workerController = GetComponent<WorkerController>();
@@ -67,5 +69,21 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public override float GetProductionSpeed()
     {
         return ProductionSpeed;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            IsPlayerTriggered.Value = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            IsPlayerTriggered.Value = false;
+        }
     }
 }

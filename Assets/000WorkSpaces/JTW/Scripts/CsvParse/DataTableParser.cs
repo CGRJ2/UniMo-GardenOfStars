@@ -32,7 +32,7 @@ public class DataTableParser<T> where T : IUsableId
 
         for(int i = 0; i < names.Length; i++)
         {
-            nameToIndexDict[names[i]] = i;
+            nameToIndexDict[names[i].Trim()] = i;
         }
 
         for (int i = 4; i < lines.Length; i++)

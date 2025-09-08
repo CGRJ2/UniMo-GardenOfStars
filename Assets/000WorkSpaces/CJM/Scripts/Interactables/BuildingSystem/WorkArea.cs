@@ -37,7 +37,7 @@ public class WorkArea : InteractableBase, IWorkStation
         // 작업 시작 시, 진행도 표기
         progressBar.gameObject.SetActive(true);
 
-        while (curWorker == characterRD) // 현재 작업자가 있는 동안 계속 실행
+        while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
         {
             // 작업 진행 중, 영역 내에서 움직인 경우 대기
             if (curWorker.IsMove.Value)
@@ -56,7 +56,7 @@ public class WorkArea : InteractableBase, IWorkStation
             }
 
             // 작업 영역 밖으로 나가는 경우
-            if (curWorker != characterRD) break;
+            if (curWorker != personalTaskOwner) break;
 
             // 쌓여있는 재료가 있을때만 실행
             if (ownerInstance.ingrediantStack.Count > 0)
