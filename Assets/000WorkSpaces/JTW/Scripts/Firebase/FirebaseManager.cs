@@ -120,8 +120,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             CheckInitData data = _checkInitQueue.Dequeue();
 
-            Debug.LogWarning($"{data.Path} 경로 초기화 검색");
-
             bool done = false;
             var task = _database.RootReference.Child(data.Path).GetValueAsync();
 
