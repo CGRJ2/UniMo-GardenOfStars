@@ -12,8 +12,14 @@ namespace KYS
     {
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
+        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
+        private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
+
+
+        // 추가 변수 선언
+        private int currentMoney = 0;
 
 
         protected override void Awake()
@@ -40,9 +46,23 @@ namespace KYS
             base.Initialize();
             SetupButtons();
             SetupAutoLocalization();
+
+
+            // 초기 값 설정
+            UpdateMoney(Manager.player.Data.Money.Value);
+
+            // ObservableProperty 구독 - 실시간 돈 업데이트
+            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+
         }
         public override void Cleanup()
         {
+
+
+            // ObservableProperty 구독 해제
+            Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+
+
             base.Cleanup();
         }
 
@@ -75,6 +95,27 @@ namespace KYS
             }
 
 
+        }
+
+
+        public void UpdateMoney(int amount)
+        {
+
+            currentMoney = amount; // 현재 값 저장
+            if (moneyText != null)
+            {
+
+
+                moneyText.text = $"{amount:N0}";
+            }
+        }
+
+        /// <summary>
+        /// ObservableProperty Money 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnMoneyChanged(int newMoneyValue)
+        {
+            UpdateMoney(newMoneyValue);
         }
 
 
