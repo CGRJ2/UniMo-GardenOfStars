@@ -3,7 +3,10 @@ using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using static FirebaseManager;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
@@ -21,6 +24,11 @@ public class FirebaseManager : Singleton<FirebaseManager>
     public event Action OnFirebaseInit;
 
     public bool IsFirebaseInit;
+
+    private Coroutine _checkInitCoroutine;
+    private WaitForSeconds _delay = new WaitForSeconds(0.1f);
+
+    private Queue<CheckInitData> _checkInitQueue = new Queue<CheckInitData>();
 
     private void Awake()
     {
@@ -84,5 +92,53 @@ public class FirebaseManager : Singleton<FirebaseManager>
     public void SaveJsonData(string path, string json)
     {
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);
+    }
+
+    public class CheckInitData
+    {
+        public string Path;
+        public Action<DataSnapshot> OnCompleted;
+    }
+
+    public void CheckInit(string path, Action<DataSnapshot> onCompleted)
+    {
+        CheckInitData data = new CheckInitData();
+        data.Path = path;
+        data.OnCompleted = onCompleted;
+
+        _checkInitQueue.Enqueue(data);
+
+        if(_checkInitCoroutine == null)
+        {
+            _checkInitCoroutine = StartCoroutine(CheckInitCoroutine());
+        }
+    }
+
+    private IEnumerator CheckInitCoroutine()
+    {
+        while(_checkInitQueue.Count > 0)
+        {
+            CheckInitData data = _checkInitQueue.Dequeue();
+
+            Debug.LogWarning($"{data.Path} 경로 초기화 검색");
+
+            bool done = false;
+            var task = _database.RootReference.Child(data.Path).GetValueAsync();
+
+            yield return task;
+
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                Debug.LogWarning($"{data.Path} 경로 초기화 실패");
+                continue;
+            }
+
+            data.OnCompleted(task.Result);
+            done = true;
+
+            yield return _delay;
+        }
+
+        _checkInitCoroutine = null;
     }
 }
