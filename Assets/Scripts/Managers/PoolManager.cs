@@ -44,6 +44,21 @@ public class PoolManager : Singleton<PoolManager>
         return bundle;
     }
 
+    public PoolBundle GetPoolBundle(GameObject prefab, int customCount)
+    {
+        foreach (PoolBundle poolBundle in pools)
+        {
+            if (poolBundle.IsInThisPool(prefab))
+                return poolBundle;
+        }
+
+        Debug.Log("해당 프리펩을 담아둔 오브젝트 풀이 없음 => 없으면 풀 만들기");
+        PoolBundle bundle = new($"{prefab.name} Pool", prefab, customCount);
+        bundle.Init();
+        pools.Add(bundle);
+        return bundle;
+    }
+
 }
 
 [Serializable]

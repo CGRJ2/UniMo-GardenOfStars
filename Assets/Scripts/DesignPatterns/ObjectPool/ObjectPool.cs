@@ -63,7 +63,7 @@ public class ObjectPool
         }
         else
         {
-            Debug.LogWarning("오브젝트풀 비어서 추가로 생성.");
+            //Debug.LogWarning("오브젝트풀 비어서 추가로 생성.");
             
             // 풀 오브젝트에 담기 (즉시 생성한 오브젝트)
             GameObject instance = Object.Instantiate(_prefab, poolObj.transform);
