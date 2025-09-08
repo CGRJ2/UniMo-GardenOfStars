@@ -89,11 +89,28 @@ namespace KYS
                 levelText.text = $"{GetLocalizedText("ui_level_label")}: {buildingLevel}";
         }
 
-        public void SetBuildingData(BuildingData buildingData)
+        public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
         {
             buildingName = buildingData.Name;
             buildingCost = buildingData.Cost;
-            // buildingLevel = level; //업그레이드 데이터를 받아올 때 적용
+
+            if (buildingData is HarvestBD)
+            {
+                //업그레이드 데이터를 받아올 때 적용
+                if (upgradeData != null)
+                {
+                    //buildingLevel = level; 
+                }
+            }
+            else if (buildingData is ManufactureBD)
+            {
+                //업그레이드 데이터를 받아올 때 적용
+                if (upgradeData != null)
+                {
+                    //buildingLevel = level; 
+                }
+            }
+            
             UpdateUI();
         }
 
