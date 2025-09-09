@@ -20,8 +20,17 @@ public class WorkerManager : MonoBehaviour
     {
         StartCoroutine(AssignWorkerCoroutine());
         StartCoroutine(StunWorkerCoroutine());
-        
-        foreach(string key in Manager.data.Worker.Values.Keys.ToList())
+        StartCoroutine(WaitInitData());
+    }
+
+    private IEnumerator WaitInitData()
+    {
+        yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.data.Worker != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        foreach (string key in Manager.data.Worker.Values.Keys.ToList())
         {
             WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
 
