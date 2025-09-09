@@ -18,8 +18,11 @@ public class PlaceTile : InteractableBase
 
     private void Awake()
     {
-        StartCoroutine(WaitAndInit());
+        // 타이틀에서 스테이지 씬으로 전환될 때 실행
         //Init();
+
+        // 테스트용으로 바로 스테이지 씬에서 시작할 때 실행
+        StartCoroutine(WaitAndInit());
     }
 
     IEnumerator WaitAndInit()
@@ -28,6 +31,8 @@ public class PlaceTile : InteractableBase
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.IsInit);
+
+        //yield return new WaitForSeconds(1f);
         Init();
     }
 
@@ -60,9 +65,6 @@ public class PlaceTile : InteractableBase
 
     IEnumerator ProgressingTask()
     {
-        // 정지 상태까지 대기했다가 작업 실행
-        //yield return new WaitUntil(() => !characterRD.IsMove.Value);
-
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             yield return null;
@@ -162,6 +164,13 @@ public class PlaceTile : InteractableBase
 
         if (state == PlaceTileState.Activated)
             StartCoroutine(ProgressingTask());
+    }
+
+    protected override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+
+        StopAllCoroutines();
     }
 }
 

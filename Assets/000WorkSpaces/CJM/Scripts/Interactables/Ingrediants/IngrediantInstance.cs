@@ -1,6 +1,11 @@
+using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class IngrediantInstance : PooledObject
 {
@@ -8,23 +13,34 @@ public class IngrediantInstance : PooledObject
     [SerializeField] float absorbAcceleration = 3f;
     [SerializeField] Vector3 stackOffset;
 
-    public GameObject owner; // CharacterBase 완성 후 변수 수정
+    [Header("출렁 효과 설정값")]
+    CharaterRuntimeData ownerCharacterRD;
+    int myOrder;
+    Transform wobbleParent;
+    bool isOnHand;
+    [SerializeField] AnimationCurve baseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] float moveSpeed = 4f;
+    [SerializeField] float minStretch = 0.5f; // myOrder=0 → 빠르게
+    [SerializeField] float maxStretch = 10.0f; // myOrder=9 → 느리게
 
     protected override void OnPooledEnable()
     {
         base.OnPooledEnable();
-        //proceededtime = 0;
+
+        // 생성 효과음
     }
 
     protected override void OnPooledDisable()
     {
         base.OnPooledDisable();
+
+        ownerCharacterRD = null;
+        isOnHand = false;
+        // 소멸 효과음
     }
 
     public void Despawn()
     {
-        owner = null;
-
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
     }
 
@@ -33,15 +49,19 @@ public class IngrediantInstance : PooledObject
         this.Data = ingrediantSO;
     }
 
-    public void AttachToTarget(Transform parent, int stackCount = 0)
+    public void AttachToTarget(Transform parent, int stackCount = 0, CharaterRuntimeData characterRD = null)
     {
-        transform.SetParent(parent);
+        //transform.SetParent(parent);
+        ownerCharacterRD = characterRD;
+        if (characterRD == null) isOnHand = false;
         StartCoroutine(AttachToTargetRoutine(parent, stackCount));
     }
 
     public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
         transform.SetParent(parent);
+        ownerCharacterRD = null;
+        isOnHand = false;
         StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent, completed));
     }
 
@@ -80,10 +100,15 @@ public class IngrediantInstance : PooledObject
             {
                 transform.position = targetPos;
                 transform.rotation = targetRot; // ← 마지막에 정확히 맞춰주기
+
                 isAttached = true;
+
+                // 출렁 모션을 위한 필드
+                if (ownerCharacterRD != null)
+                    SetupWobbleParent(targetAttachTransform, stackOrder);
+
                 break;
             }
-
             yield return null;
         }
     }
@@ -139,4 +164,44 @@ public class IngrediantInstance : PooledObject
             yield return null;
         }
     }
+
+    void SetupWobbleParent(Transform parent, int stackOrder)
+    {
+        myOrder = stackOrder;
+
+        if (stackOrder == 0)
+            wobbleParent = parent; // 맨 아래는 AttachPoint
+        else
+        {
+            // 바로 아래 재료를 wobbleParent로
+            // push순서의 스택을 리스트로
+            List<IngrediantInstance> list = ownerCharacterRD?.IngrediantStack.ToList();
+            list.Reverse();
+            wobbleParent = list[myOrder - 1].gameObject.transform;
+        }
+
+        isOnHand = true;
+    }
+
+
+
+    public void UpdateTransform()
+    {
+        if (!isOnHand) return;
+
+        Vector3 offset = (myOrder > 0) ? stackOffset : Vector3.zero;
+        Vector3 targetPos = wobbleParent.position + offset;
+        Quaternion targetRot = wobbleParent.rotation;
+
+        float order01 = Mathf.Clamp01((float)myOrder / 11f); // 최대 스택 가능 개수 나눠주기
+        float t = Time.fixedDeltaTime * moveSpeed;
+        // 커브 적용
+        float eased = baseCurve.Evaluate(t);
+        eased = Mathf.Lerp(1f - order01, 1f, eased);
+
+        // 보간
+        transform.position = Vector3.Lerp(transform.position, targetPos, eased);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, eased);
+    }
 }
+

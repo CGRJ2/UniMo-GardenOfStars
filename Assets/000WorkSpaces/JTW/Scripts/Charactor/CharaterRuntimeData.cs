@@ -12,4 +12,12 @@ public abstract class CharaterRuntimeData : MonoBehaviour
 
     public abstract int GetMaxCapacity();
     public abstract float GetProductionSpeed();
+
+    public void FixedUpdate()
+    {
+        foreach(IngrediantInstance ingrediant in IngrediantStack)
+        {
+            ingrediant.UpdateTransform();
+        }
+    }
 }

@@ -37,6 +37,8 @@ public class ProdTile : InteractableBase
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PurchasedBuildingID.IsInit);
 
+        //yield return new WaitForSeconds(1f);
+
         UpdateInstanceView();
     }
 
@@ -85,13 +87,20 @@ public class ProdTile : InteractableBase
         rotateTween = null;
 
         // 플레이어 보유 스택에 올려주기
-        buildingItem.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
+        buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
         characterRD.IngrediantStack.Push(buildingItem);
     }
 
-    public override void Enter(CharaterRuntimeData characterRuntimeData)
+    public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
-        base.Enter(characterRuntimeData);
+        base.Enter_PersonalTask(characterRuntimeData);
         PickUp();
+    }
+
+    protected override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+
+        StopAllCoroutines();
     }
 }

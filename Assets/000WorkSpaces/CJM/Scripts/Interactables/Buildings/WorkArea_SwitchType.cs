@@ -21,7 +21,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     bool isOperating;
 
     // 현재 작업 중인 일꾼 정보
-    CharaterRuntimeData curWorker;
+    public CharaterRuntimeData curWorker;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -158,7 +158,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas_SwitchType?.Remove(this);

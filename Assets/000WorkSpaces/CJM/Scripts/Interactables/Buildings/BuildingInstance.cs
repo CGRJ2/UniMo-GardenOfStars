@@ -17,7 +17,7 @@ public class BuildingInstance : InteractableBase
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
 
