@@ -56,7 +56,7 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            Debug.LogWarning($"[PropertyContent] Awake 실행 - {gameObject.name}");
+            //Debug.LogWarning($"[PropertyContent] Awake 실행 - {gameObject.name}");
 
             // buyButton이 null인지 확인
             if (buyButton != null)
@@ -67,7 +67,7 @@ namespace KYS
                     Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
                     Manager.ui.ClosePanel();
                 });
-                Debug.LogWarning($"[PropertyContent] buyButton 이벤트 등록 완료: {buildBuyButtonName}");
+                //Debug.LogWarning($"[PropertyContent] buyButton 이벤트 등록 완료: {buildBuyButtonName}");
             }
             else
             {
@@ -91,28 +91,33 @@ namespace KYS
         public override void Initialize()
         {
             base.Initialize();
-            Debug.LogWarning($"[PropertyContent] Initialize 실행 - {gameObject.name}");
+            //Debug.LogWarning($"[PropertyContent] Initialize 실행 - {gameObject.name}");
             SetupButtons();
             UpdateUI();
+            
+            // 언어 변경 이벤트 구독
+            BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
         }
 
         public override void Cleanup()
         {
+            // 언어 변경 이벤트 구독 해제
+            BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
             base.Cleanup();
         }
 
         private void SetupButtons()
         {
-            Debug.LogWarning($"[PropertyContent] SetupButtons 실행 - {gameObject.name}");
-            Debug.LogWarning($"[PropertyContent] firstBuyButtonName: {firstBuyButtonName}");
-            Debug.LogWarning($"[PropertyContent] UpgradeButtonName: {UpgradeButtonName}");
+            //Debug.LogWarning($"[PropertyContent] SetupButtons 실행 - {gameObject.name}");
+            //Debug.LogWarning($"[PropertyContent] firstBuyButtonName: {firstBuyButtonName}");
+            //Debug.LogWarning($"[PropertyContent] UpgradeButtonName: {UpgradeButtonName}");
             
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var buildEventHandler = GetEventWithSFX(firstBuyButtonName, "SFX_ButtonClick");
             if (buildEventHandler != null)
             {
                 buildEventHandler.Click += (data) => OnFirstBuyClicked();
-                Debug.LogWarning($"[PropertyContent] 첫 구매 버튼 이벤트 설정 완료: {firstBuyButtonName}");
+                //Debug.LogWarning($"[PropertyContent] 첫 구매 버튼 이벤트 설정 완료: {firstBuyButtonName}");
             }
             else
             {
@@ -123,7 +128,7 @@ namespace KYS
             if (UpgradeEventHandler != null)
             {
                 UpgradeEventHandler.Click += (data) => OnUpgradeClicked();
-                Debug.LogWarning($"[PropertyContent] 업그레이드 버튼 이벤트 설정 완료: {UpgradeButtonName}");
+                //Debug.LogWarning($"[PropertyContent] 업그레이드 버튼 이벤트 설정 완료: {UpgradeButtonName}");
             }
             else
             {
@@ -134,11 +139,7 @@ namespace KYS
 
         private void UpdateUI()
         {
-            if (buildingText != null)
-                buildingText.text = $"{buildingName}";
-            else
-                Debug.LogWarning($"건물 텍스트를 찾을 수 없습니다: {buildingTextName}");
-
+        
             if (costText != null)
                 costText.text = $"{buildingCost}";
             else
@@ -155,8 +156,8 @@ namespace KYS
 
             if (buildingData is HarvestBD harvestBD)
             {
-                string harvestbuildingNamekey = $"RunHarvestBuildingName{buildingData.Name}";
-                buildingName = Manager.localization.GetText(harvestbuildingNamekey);
+                // BuildingLocalizationHelper를 사용하여 건물 이름 번역
+                buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
                 // 재료(생산품) 이름, 스프라이트
                 Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
                 {
@@ -175,9 +176,8 @@ namespace KYS
             }
             else if (buildingData is ManufactureBD manufactureBD)
             {
-
-                string manufacturebuildingNamekey = $"RunManufactureBuildingName{buildingData.Name}";
-                buildingName = Manager.localization.GetText(manufacturebuildingNamekey);
+                // BuildingLocalizationHelper를 사용하여 건물 이름 번역
+                buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
 
                 Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
                 {
@@ -356,7 +356,16 @@ namespace KYS
 
         }
 
-
-
+        /// <summary>
+        /// 언어가 변경될 때 호출되는 메서드
+        /// </summary>
+        private void OnLanguageChanged(SystemLanguage newLanguage)
+        {
+            if (currentBuildingData != null)
+            {
+                // 건물 이름 다시 로드
+                buildingText.text = BuildingLocalizationHelper.GetBuildingName(currentBuildingData.ID);
+            }
+        }
     }
 }
