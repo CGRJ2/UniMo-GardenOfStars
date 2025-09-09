@@ -14,76 +14,34 @@ using GameQuest;
 public class QuestManager : Singleton<QuestManager>
 {
     #region >>> For Test Data(추후 교체 혹은 삭제 예정)
-    [SerializeField] private CYETestQuestDataSO[] _questDataList;
-    [SerializeField] private CYETestQuestContentDataSO[] _questContentDataList;
-    [SerializeField] private CYETestQuestProgressDataSO[] _questProgressDataList;
-    #endregion
-
-    #region >>> Class Variables
-    // 현재 퀘스트 목록
-    public Quest[] _currentQuestList;
-    // 현재 진행중인 퀘스트 index
-    public ObservableProperty<int> CurrentQuestIndex = new();
-    // 현재 진행중인 퀘스트
-    public Quest CurrentQuest { get { return _currentQuestList[CurrentQuestIndex.Value]; } }
-    // 현재 퀘스트 목록의 목표 완료 수치(*임시*: 모든 퀘스트를 완료하도록 지정하였으며, 추후 데이터를 통해 받아올 예정)
-    public int TargetCompleteCount { get { return _currentQuestList.Length; } }
-    #endregion
-
-    #region >>> Class Events
-    // 현재 진행중인 퀘스트의 진행도를 업데이트할 시 실행되는 event
-    public event Action OnQuestProgressUpdate;
-    #endregion
-
-    // ===== ===== ===== ===== //
-
-    #region >>> Unity Message Function
-    private void Awake()
-    {
-        base.SingletonInit();
-        Init();
-    }
-    private void Start()
-    {
-        SetQuestsOnNpc("test");
-    }
-    #endregion
-
-    #region >>> Class Functions
-    /// <summary>
-    /// QuestManager Awake시 실행되는 최초 초기화 함수입니다.
-    /// </summary>
-    private void Init()
-    {
-        // 초기화
-    }
-
-    /// <summary>
-    /// NpcId를 통해 해당 Npc에 해당하는 퀘스트 목록을 가져와 _currentQuestList에 지정합니다.
-    /// </summary>
-    /// <param name="npcId">현재 Npc의 Id</param>
-    public void SetQuestsOnNpc(string npcId)
-    {
-        // TO DO: DB에서 Npc Id를 통해 해당 Npc의 퀘스트 목록을 가져와야 한다.
-        CYETestQuestDataSO[] temp = Array.FindAll(_questDataList, item => item._npcId == npcId);
-        // 퀘스트 리스트 초기화
-        _currentQuestList = new Quest[temp.Length];
-        // 퀘스트 데이터 정렬(퀘스트 진행 순서(_questOrder) 오름차순)
-        Array.Sort(temp);
-        // DataSo를 Quest array에 대입
-        for (int idx = 0; idx < temp.Length; idx++)
-        {
-            _currentQuestList[idx]
-             = new Quest(
-                temp[idx],
-                Array.FindAll(_questContentDataList, item => item._questId == temp[idx]._id),
-                Array.FindAll(_questProgressDataList, item => item._questId == temp[idx]._id)
-                );
-        }
-        // 현재 진행중인 퀘스트 진행도의 index를 가져옴
-        CurrentQuestIndex.Value = GetCurrentQuestIndex();
-    }
-
+    // [SerializeField] private CYETestQuestDataSO[] _questDataList;
+    // [SerializeField] private CYETestQuestContentDataSO[] _questContentDataList;
+    // [SerializeField] private CYETestQuestProgressDataSO[] _questProgressDataList;
+    // /// <summary>
+    // /// NpcId를 통해 해당 Npc에 해당하는 퀘스트 목록을 가져와 _currentQuestList에 지정합니다.
+    // /// </summary>
+    // /// <param name="npcId">현재 Npc의 Id</param>
+    // public void SetQuestsOnNpc(string npcId)
+    // {
+    //     // TO DO: DB에서 Npc Id를 통해 해당 Npc의 퀘스트 목록을 가져와야 한다.
+    //     CYETestQuestDataSO[] temp = Array.FindAll(_questDataList, item => item._npcId == npcId);
+    //     // 퀘스트 리스트 초기화
+    //     _currentQuestList = new Quest[temp.Length];
+    //     // 퀘스트 데이터 정렬(퀘스트 진행 순서(_questOrder) 오름차순)
+    //     Array.Sort(temp);
+    //     // DataSo를 Quest array에 대입
+    //     for (int idx = 0; idx < temp.Length; idx++)
+    //     {
+    //         _currentQuestList[idx]
+    //          = new Quest(
+    //             temp[idx],
+    //             Array.FindAll(_questContentDataList, item => item._questId == temp[idx]._id),
+    //             Array.FindAll(_questProgressDataList, item => item._questId == temp[idx]._id)
+    //             );
+    //     }
+    //     // 현재 진행중인 퀘스트 진행도의 index를 가져옴
+    //     CurrentQuestIndex.Value = GetCurrentQuestIndex();
+    // }
     // /// <summary>
     // /// (*임시*) 현재 퀘스트 데이터 SO 목록
     // /// </summary>
@@ -106,6 +64,60 @@ public class QuestManager : Singleton<QuestManager>
     //             );
     //     }
     // }
+    #endregion
+
+    #region >>> Class Variables
+    // 현재 지역 퀘스트 목록
+    // public Quest[] _currentQuestList;
+    public List<Quest> _currentQuestList = new();
+    // 현재 진행중인 퀘스트 index
+    public ObservableProperty<int> CurrentQuestIndex = new();
+    // 현재 진행중인 퀘스트
+    public Quest CurrentQuest => _currentQuestList[CurrentQuestIndex.Value];
+    // 현재 퀘스트 목록의 목표 완료 수치(*임시*: 모든 퀘스트를 완료하도록 지정하였으며, 추후 데이터를 통해 받아올 예정)
+    public int TargetCompleteCount => _currentQuestList.Count;
+    #endregion
+
+    #region >>> Class Events
+    // 현재 진행중인 퀘스트의 진행도를 업데이트할 시 실행되는 event
+    public event Action OnQuestProgressUpdate;
+    #endregion
+
+    // ===== ===== ===== ===== //
+
+    #region >>> Unity Message Function
+    private void Awake()
+    {
+        base.SingletonInit();
+        Init();
+    }
+    #endregion
+
+    #region >>> Class Functions
+    /// <summary>
+    /// QuestManager Awake시 실행되는 최초 초기화 함수입니다.
+    /// </summary>
+    private void Init()
+    {
+        // 초기화
+    }
+
+
+    public void SetQuestsOnRegion(string stageId)
+    {
+        string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == stageId).Key;
+        if (npcDataId == default)
+        {
+            Debug.LogWarning($"[QuestManager] 현재 지역 {stageId}의 Npc 데이터 Id를 가져오는데 실패하였습니다.");
+            return;
+        }
+        var questData = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
+        foreach (var i in questData)
+        {
+            _currentQuestList.Add(new Quest(i.Key));
+        }
+    }
+
 
     /// <summary>
     /// 현재 진행중인 퀘스트의 index를 가져옵니다.
@@ -114,7 +126,7 @@ public class QuestManager : Singleton<QuestManager>
     private int GetCurrentQuestIndex()
     {
         int questIdx = -1;
-        for (int idx = 0; idx < _currentQuestList.Length; idx++)
+        for (int idx = 0; idx < _currentQuestList.Count; idx++)
         {
             if (_currentQuestList[idx]._data.State == QuestState.InProgress)
             {
@@ -122,7 +134,7 @@ public class QuestManager : Singleton<QuestManager>
                 break;
             }
         }
-        if (_currentQuestList.Length != 0 && questIdx < 0)
+        if (_currentQuestList.Count != 0 && questIdx < 0)
         {
             if (!CheckQuestsCompleted())
             {
@@ -131,7 +143,7 @@ public class QuestManager : Singleton<QuestManager>
             }
             else
             {
-                questIdx = _currentQuestList.Length - 1;
+                questIdx = _currentQuestList.Count - 1;
             }
         }
         return questIdx;
@@ -183,7 +195,7 @@ public class QuestManager : Singleton<QuestManager>
         // 다음 퀘스트 index를 가져옴
         int nextQuestIndex = CurrentQuestIndex.Value + 1;
         // 만일 다음 퀘스트 index가 오버되지 않았다면
-        if (nextQuestIndex < _currentQuestList.Length)
+        if (nextQuestIndex < _currentQuestList.Count)
         {
             // 현재 퀘스트의 index를 다음 퀘스트의 index로 지정
             CurrentQuestIndex.Value = nextQuestIndex;

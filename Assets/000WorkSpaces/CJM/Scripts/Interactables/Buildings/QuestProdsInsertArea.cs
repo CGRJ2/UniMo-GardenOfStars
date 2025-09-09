@@ -66,7 +66,7 @@ public class QuestProdsInsertArea : InteractableBase
                     // 현재 진행도에 개수 추가
                     if (targetRequirement.Count < targetRequirement.ContentTargetCount)
                     {
-                        GetComponentInParent<Npc>()?.ReceiveProduct(targetRequirement.ContentTargetId);
+                        GetComponentInParent<NpcController>()?.ReceiveProduct(targetRequirement.ContentTargetId);
                         // targetRequirement._currentCount += 1;
                         IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                         popedProd.MoveToTargetAndShrink(attachPoint);
