@@ -6,6 +6,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
+
 
 #if DOTWEEN
 using DG.Tweening;
@@ -1895,7 +1897,7 @@ namespace KYS
         /// <summary>
         /// 제네릭 팝업 UI 표시 (비동기 버전)
         /// </summary>
-        public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
+        public async Task<GameObject> ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
             string popupName = typeof(T).Name;
             
@@ -1904,11 +1906,12 @@ namespace KYS
             {
                 Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다.");
                 onComplete?.Invoke(null);
-                return;
+                return null;
             }
             
             isCreatingPopup = true;
-            StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
+            GameObject obj = await ShowPopUpAsyncCoroutine<T>(onComplete);
+            return obj;
         }
         
         /// <summary>
@@ -1941,7 +1944,7 @@ namespace KYS
             StartCoroutine(ShowPanelAsyncCoroutine<T>(onComplete));
         }
 
-        private System.Collections.IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
+        private async Task<GameObject> ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
 
@@ -1963,7 +1966,7 @@ namespace KYS
             foreach (string addressableKey in possibleKeys)
             {
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-                yield return handle;
+                await handle.Task;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -1985,7 +1988,7 @@ namespace KYS
                 Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
                 onComplete?.Invoke(null);
                 isCreatingPopup = false;
-                yield break;
+                return null;
             }
 
             try
@@ -1996,7 +1999,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // UI 타입에 따라 적절한 Canvas 선택
@@ -2005,7 +2008,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
@@ -2017,7 +2020,7 @@ namespace KYS
                     Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                     Destroy(uiInstance);
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // UI 타입에 따라 적절한 메서드 호출
@@ -2031,6 +2034,8 @@ namespace KYS
                 }
 
                 onComplete?.Invoke(uiComponent);
+
+                return uiInstance;
             }
             catch (System.Exception e)
             {
@@ -2047,6 +2052,8 @@ namespace KYS
                     Addressables.Release(handle);
                 }
             }
+
+            return null;
         }
         
         /// <summary>
