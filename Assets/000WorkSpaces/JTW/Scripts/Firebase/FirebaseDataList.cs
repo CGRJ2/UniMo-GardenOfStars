@@ -21,15 +21,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
         Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
 
-        Manager.firebase.CheckInit(Path, OnInitChecked);
-    }
-
-    private void OnInitChecked(DataSnapshot snapshot)
-    {
-        if(!snapshot.Exists || !snapshot.HasChildren)
-        {
-            IsInitSelf = true;
-        }
+        IsInitSelf = Manager.firebase.CheckInit(Path);
     }
 
     private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
