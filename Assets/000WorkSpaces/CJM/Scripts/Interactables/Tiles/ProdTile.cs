@@ -33,6 +33,7 @@ public class ProdTile : InteractableBase
     IEnumerator WaitAndLoad()
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PurchasedBuildingID.IsInit);

@@ -1,4 +1,5 @@
 ﻿using KYS;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ public class WaitingTile : InteractableBase
     [SerializeField] Slider progressBar;
     [SerializeField] float interactTime;
     [SerializeField] float progressedTime;
+
+    public Action WaitingCompletedAction;
 
     public void Init()
     {
@@ -61,9 +64,7 @@ public class WaitingTile : InteractableBase
 
     public void CompleteTask()
     {
-        // UI 열기
-        Debug.Log("부동산 패널 열기");
-        OpenEstatePanel();
+        WaitingCompletedAction?.Invoke();
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
@@ -72,44 +73,4 @@ public class WaitingTile : InteractableBase
 
         StartCoroutine(ProgressingTask());
     }
-
-
-    // 부동산 패널 열기
-    public void OpenEstatePanel()
-    {
-        if (UIManager.Instance == null)
-        {
-            Debug.LogError("[부동산 패널] UIManager.Instance가 null입니다!");
-            return;
-        }
-
-        // 이미 부동산 패널이 열려있는지 확인
-        var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
-        foreach (var panel in existingPanels)
-        {
-            if (panel is PropertyPanel)
-            {
-                //Debug.Log("[부동산 패널] 이미 부동산 패널이 열려있습니다. 중복 호출 무시");
-                return;
-            }
-        }
-
-        // 부동산 패널 열기
-        Manager.ui.ShowPanelAsync<PropertyPanel>((panel) =>
-        {
-            if (panel != null)
-            {
-                //Debug.Log("[부동산 패널] 부동산 패널 성공적으로 열림");
-
-                /*if (buildingInstance is HarvestBuilding harvesst)
-                    panel.SetUpgradeData(harvesst.originData);*/
-            }
-            else
-            {
-                //Debug.LogError("[부동산 패널]  열기 실패");
-            }
-        });
-    }
-
-
 }
