@@ -93,7 +93,7 @@ public class WorkerManager : MonoBehaviour
         workstation = null;
 
         // 작업 영역에 일거리 있는지 탐색
-        foreach (WorkArea work in WorkStatinLists.workAreas)
+        foreach (WorkArea_SwitchType work in WorkStatinLists.workAreas_SwitchType)
         {
             if (!work.GetWorkableState() || work.GetReserveState() || work.curWorker != null) continue;
 

@@ -67,10 +67,10 @@ public class WorkerState_Move : WorkerStateBase
     {
         if (!CurWorkstation.GetWorkableState()) return false;
 
-        if (CurWorkstation is WorkArea)
+        if (CurWorkstation is WorkArea_SwitchType)
         {
-            if ((CurWorkstation as WorkArea).curWorker != null
-                && (CurWorkstation as WorkArea).curWorker != WorkerData)
+            if ((CurWorkstation as WorkArea_SwitchType).curWorker != null
+                && (CurWorkstation as WorkArea_SwitchType).curWorker != WorkerData)
             {
                 return false;
             }
