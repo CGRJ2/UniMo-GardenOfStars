@@ -1,11 +1,8 @@
-using DG.Tweening;
-using DG.Tweening.Core.Easing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class IngrediantInstance : PooledObject
 {
@@ -51,9 +48,16 @@ public class IngrediantInstance : PooledObject
 
     public void AttachToTarget(Transform parent, int stackCount = 0, CharaterRuntimeData characterRD = null)
     {
-        //transform.SetParent(parent);
-        ownerCharacterRD = characterRD;
-        if (characterRD == null) isOnHand = false;
+        if (characterRD == null)
+        {
+            transform.SetParent(parent);
+            isOnHand = false;
+            ownerCharacterRD = null;
+        }
+        else
+        {
+            ownerCharacterRD = characterRD;
+        }
         StartCoroutine(AttachToTargetRoutine(parent, stackCount));
     }
 

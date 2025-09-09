@@ -60,8 +60,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
             }
-            Debug.LogWarning(ownerInstance);
-            Debug.LogWarning(ownerInstance.ingrediantStack);
+
             // 재료 소진 시
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
