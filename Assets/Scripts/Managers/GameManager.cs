@@ -25,8 +25,6 @@ public class GameManager : Singleton<GameManager>
     // 스테이지 데이터에 관한 딕셔너리 (CSV파일을 로드해서 스테이지 id별로 데이터를 저장해둔 공간)
     public Dictionary<string, StageData> stageDataDic = new();
 
-    // 현재 스테이지Id
-    public string curStageId;
 
     void Init()
     {
@@ -156,7 +154,7 @@ public class GameManager : Singleton<GameManager>
 
     public IEnumerator Temp_InGameLoad()
     {
-        Manager.game.curStageId = "Stage00";
+        //Manager.game.curStageId = "Stage00";
         Manager.ui.ShowLoadingScreen();
         yield return new WaitForSeconds(0.3f);  // 임시
 

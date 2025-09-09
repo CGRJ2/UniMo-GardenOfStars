@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace GameQuest
     /// <summary>
     /// 퀘스트 진행도 데이터 클래스
     /// </summary>
+    [Serializable]
     public class QuestContentProgressData : FirebaseData
     {
         private QuestContentDataCsv _questContentCsv => Manager.data.QuestContent.Values[Id];

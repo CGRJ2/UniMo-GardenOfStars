@@ -10,8 +10,8 @@ public class TutorialGuide : MonoBehaviour
     }
     private void Init()
     {
-        Manager.npc.SetCurrentNpc("tutorial");
-        Manager.quest.SetQuestsOnRegion("tutorial");
+        //Manager.npc.SetCurrentNpc("tutorial");
+        //Manager.quest.SetQuestsOnRegion("tutorial");
     }
 
     private void StartGuide()
