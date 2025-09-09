@@ -22,12 +22,9 @@ public class NpcManager : Singleton<NpcManager>
     public void SetCurrentNpc()
     {
         string curStageID = Manager.firebase.UserData.CurStage.Value;
-        Debug.LogError(curStageID);
         // 해당하는 regionId의 Npc 데이터를 불러와서
         // CurrentNpc에 넣어줌
         // for test
-        // CurrentNpc = new NpcController(_npcRawData.Find(item => item._stageId.Equals(regionId)));
-        Debug.LogError($"[NpcManager] {Manager.data.Npc.Values.Count}");
         CurrentNpc = new NpcData(Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == curStageID).Key);
     }
 }
