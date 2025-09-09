@@ -2,7 +2,10 @@ using GameNpc;
 using GameQuest;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 
 public class QuestRequireTile : InteractableBase
 {
@@ -12,9 +15,44 @@ public class QuestRequireTile : InteractableBase
     [SerializeField] Transform attachPoint;
     [SerializeField] float insertDelayTime = 0.1f;
 
+    [SerializeField] CanvasGroup group_Require;
+    [SerializeField] CanvasGroup group_Complete;
+    [SerializeField] Image image_Ingrediant;
+    [SerializeField] TMP_Text tmp_Count;
+
+    private IngrediantData ingrediantData;
+
     public void UpdateView()
     {
+        if (requirement.State == QuestProgressState.Completed)
+        {
+            group_Require.gameObject.SetActive(false);
+            group_Complete.gameObject.SetActive(true);
+        }
+        else
+        {
+            group_Complete.gameObject.SetActive(false);
+            group_Require.gameObject.SetActive(true);
 
+            tmp_Count.text = $"{requirement.Count}/{requirement.ContentTargetCount}";
+
+
+            // 이미 재료 데이터가 있는데, 현재 조건의 재료 데이터와 같다면 => 불러오지 않아도 됨. return;
+            if (ingrediantData != null)
+            {
+                if (ingrediantData.ID == requirement.ContentTargetId)
+                {
+                    return;
+                }
+            }
+
+            Addressables.LoadAssetAsync<IngrediantData>(requirement.ContentTargetId).Completed += task =>
+            {
+                ingrediantData = task.Result;
+                image_Ingrediant.sprite = ingrediantData.Sprite;
+            };
+        }
+            
     }
 
     IEnumerator AutoInserting()
@@ -41,6 +79,8 @@ public class QuestRequireTile : InteractableBase
                     GetComponentInParent<NpcController>()?.ReceiveProduct(requirement.ContentTargetId);
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                     popedProd.MoveToTargetAndShrink(attachPoint);
+
+                    UpdateView();
                 }
                 else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
                 {
