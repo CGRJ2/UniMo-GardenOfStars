@@ -23,14 +23,15 @@ public class WorkerPanel : KYS.BaseUI
     private TextMeshProUGUI _workerPayText;
     private Image _workerImage;
 
-
     private Button _workerBtn;
     private TextMeshProUGUI _workerBtnText;
 
     private GameObject _lockPanel;
 
-    private string _workerKey;
     public WorkerData Worker => Manager.firebase.UserData.CurStageData.WorkerList.Get(_workerKey);
+    private string _workerKey;
+
+    private int _employCost;
 
     protected override void Awake()
     {
@@ -61,18 +62,22 @@ public class WorkerPanel : KYS.BaseUI
         {
             case WorkerPanelStates.Upgrade:
                 _workerBtnText.text = "업그레이드";
+                _workerPayText.gameObject.SetActive(false);
                 _lockPanel.SetActive(false);
                 break;
             case WorkerPanelStates.Purchase:
                 _workerBtnText.text = "고용";
+                _workerPayText.gameObject.SetActive(true);
+                _employCost = Manager.data.WorkerEmployCost.Values[_workerKey].Cost;
+                _workerPayText.text = _employCost.ToString();
                 _lockPanel.SetActive(false);
                 break;
             case WorkerPanelStates.Locked:
                 _workerBtnText.text = "잠금";
+                _workerPayText.gameObject.SetActive(false);
                 _lockPanel.SetActive(true);
 
                 break;
-
         }
     }
 
@@ -83,6 +88,13 @@ public class WorkerPanel : KYS.BaseUI
 
         if(Worker == null)
         {
+            if(Manager.player.Data.Money.Value < _employCost)
+            {
+                _presenter.LockPanel(false);
+                return;
+            }
+
+            Manager.player.Data.Money.Value -= _employCost;
             Manager.firebase.UserData.CurStageData.WorkerList.Add(_workerKey);
         }
         else
@@ -96,6 +108,8 @@ public class WorkerPanel : KYS.BaseUI
         GameObject obj = await Manager.ui.ShowPopUpAsync<WorkerDetailPanel>();
 
         WorkerDetailPanel panel = obj.GetComponent<WorkerDetailPanel>();
+
+        panel.SetInfo(Worker);
 
         _presenter.SetInfo();
     }
