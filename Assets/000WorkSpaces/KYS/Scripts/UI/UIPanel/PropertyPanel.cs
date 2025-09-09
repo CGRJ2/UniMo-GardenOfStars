@@ -25,6 +25,7 @@ namespace KYS
         private int currentMoney = 0;
 
         Dictionary<string, BuildingData> buildingDatas = new();
+        Dictionary<string, PropertyContent> contentInstances = new();
 
         protected override void Awake()
         {
@@ -64,31 +65,48 @@ namespace KYS
             {
                 foreach (BuildingData bd in task.Result)
                 {
-                    buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
-                    
-                    // 건물 정보 슬롯 생성
-                    PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
-
-                    // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
-                    Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
-                    if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                    if (!buildingDatas.ContainsKey(bd.ID))
                     {
-                        content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                        buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
                     }
-                    else
+                    
+                    // 건물 정보 슬롯 생성 (중복 생성 방지)
+                    if (!contentInstances.ContainsKey(bd.ID))
                     {
-                        content.SetBuildingData(bd);
+                        PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+                        contentInstances.Add(bd.ID, content);
+                        
+                        // PropertyContent 초기화
+                        content.Initialize();
+
+                        // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                        Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                        if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                        {
+                            content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                        }
+                        else
+                        {
+                            content.SetBuildingData(bd);
+                        }
                     }
                 }
             };
         }
         public override void Cleanup()
         {
-
+            // 생성된 PropertyContent 인스턴스들 정리
+            foreach (var content in contentInstances.Values)
+            {
+                if (content != null)
+                {
+                    Destroy(content.gameObject);
+                }
+            }
+            contentInstances.Clear();
 
             // ObservableProperty 구독 해제
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
-
 
             base.Cleanup();
         }

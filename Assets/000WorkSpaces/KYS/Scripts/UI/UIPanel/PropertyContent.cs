@@ -12,7 +12,7 @@ namespace KYS
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string buildingTextName = "RunBuildingNameText";
         [SerializeField] private string buildBuyButtonName = "BuyButton";
-        [SerializeField] private string FirstbuyButtonName = "FirstBuyButton";
+        [SerializeField] private string firstBuyButtonName = "FirstBuyButton";
         [SerializeField] private string costTextName = "RunBuildingCostText";
         //[SerializeField] private string levelTextName = "LevelText";
         [SerializeField] private string ItemContent1Name = "ItemContent1";
@@ -24,7 +24,6 @@ namespace KYS
         [SerializeField] private string BuyButtonScreenName = "BuyButtonScreen";
         [SerializeField] private string LockScreenName = "LockScreen";
         [SerializeField] private string LockImageName = "LockImage";
-        [SerializeField] private string FirstBuyButtonName = "FirstBuyButton";
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
 
@@ -32,7 +31,7 @@ namespace KYS
         // UI 요소들 (BaseUI GetUI<T>() 사용)
         private TextMeshProUGUI buildingText => GetUI<TextMeshProUGUI>(buildingTextName);
         private Button buyButton => GetUI<Button>(buildBuyButtonName);
-        private Button firstbuyButton => GetUI<Button>(FirstbuyButtonName);
+        private Button firstbuyButton => GetUI<Button>(firstBuyButtonName);
         private TextMeshProUGUI costText => GetUI<TextMeshProUGUI>(costTextName);
         private TextMeshProUGUI MaterialsNameText => GetUI<TextMeshProUGUI>(RunMaterials);
         private TextMeshProUGUI ProdNameText => GetUI<TextMeshProUGUI>(RunProdName);
@@ -41,7 +40,7 @@ namespace KYS
         //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         private GameObject BuyButtonsScreen => GetUI(BuyButtonScreenName);
         private GameObject LockScreen => GetUI(LockScreenName);
-        private GameObject FirstBuyButton => GetUI(FirstBuyButtonName);
+        private GameObject FirstBuyButton => GetUI(firstBuyButtonName);
         private GameObject LockImage => GetUI(LockImageName);
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
         private GameObject ItemContent2 => GetUI(ItemContent2Name); 
@@ -57,14 +56,23 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            Debug.LogWarning("초기화 실행");
+            Debug.LogWarning($"[PropertyContent] Awake 실행 - {gameObject.name}");
 
-            buyButton.onClick.AddListener(() =>
+            // buyButton이 null인지 확인
+            if (buyButton != null)
             {
-                Debug.LogWarning("구매 버튼 클릭");
-                Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
-                Manager.ui.ClosePanel();
-            });
+                buyButton.onClick.AddListener(() =>
+                {
+                    Debug.LogWarning("구매 버튼 클릭");
+                    Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
+                    Manager.ui.ClosePanel();
+                });
+                Debug.LogWarning($"[PropertyContent] buyButton 이벤트 등록 완료: {buildBuyButtonName}");
+            }
+            else
+            {
+                Debug.LogError($"[PropertyContent] buyButton을 찾을 수 없습니다: {buildBuyButtonName}");
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -83,6 +91,7 @@ namespace KYS
         public override void Initialize()
         {
             base.Initialize();
+            Debug.LogWarning($"[PropertyContent] Initialize 실행 - {gameObject.name}");
             SetupButtons();
             UpdateUI();
         }
@@ -94,19 +103,31 @@ namespace KYS
 
         private void SetupButtons()
         {
-            Debug.LogWarning("버튼 설정 실행");
+            Debug.LogWarning($"[PropertyContent] SetupButtons 실행 - {gameObject.name}");
+            Debug.LogWarning($"[PropertyContent] firstBuyButtonName: {firstBuyButtonName}");
+            Debug.LogWarning($"[PropertyContent] UpgradeButtonName: {UpgradeButtonName}");
+            
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var buildEventHandler = GetEventWithSFX(FirstbuyButtonName, "SFX_ButtonClick");
+            var buildEventHandler = GetEventWithSFX(firstBuyButtonName, "SFX_ButtonClick");
             if (buildEventHandler != null)
             {
                 buildEventHandler.Click += (data) => OnFirstBuyClicked();
+                Debug.LogWarning($"[PropertyContent] 첫 구매 버튼 이벤트 설정 완료: {firstBuyButtonName}");
+            }
+            else
+            {
+                Debug.LogError($"[PropertyContent] 첫 구매 버튼을 찾을 수 없습니다: {firstBuyButtonName}");
             }
 
             var UpgradeEventHandler = GetEventWithSFX(UpgradeButtonName, "SFX_ButtonClick");
             if (UpgradeEventHandler != null)
             {
                 UpgradeEventHandler.Click += (data) => OnUpgradeClicked();
-                Debug.LogWarning("업그레이드 버튼 이벤트 설정 완료");
+                Debug.LogWarning($"[PropertyContent] 업그레이드 버튼 이벤트 설정 완료: {UpgradeButtonName}");
+            }
+            else
+            {
+                Debug.LogError($"[PropertyContent] 업그레이드 버튼을 찾을 수 없습니다: {UpgradeButtonName}");
             }
 
         }
@@ -115,9 +136,13 @@ namespace KYS
         {
             if (buildingText != null)
                 buildingText.text = $"{buildingName}";
+            else
+                Debug.LogWarning($"건물 텍스트를 찾을 수 없습니다: {buildingTextName}");
 
             if (costText != null)
-                costText.text = $"{costTextName}";
+                costText.text = $"{buildingCost}";
+            else
+                Debug.LogWarning($"비용 텍스트를 찾을 수 없습니다: {costTextName}");
 
         }
 
@@ -130,6 +155,8 @@ namespace KYS
 
             if (buildingData is HarvestBD harvestBD)
             {
+                string harvestbuildingNamekey = $"RunHarvestBuildingName{buildingData.Name}";
+                buildingName = Manager.localization.GetText(harvestbuildingNamekey);
                 // 재료(생산품) 이름, 스프라이트
                 Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
                 {
@@ -148,6 +175,10 @@ namespace KYS
             }
             else if (buildingData is ManufactureBD manufactureBD)
             {
+
+                string manufacturebuildingNamekey = $"RunManufactureBuildingName{buildingData.Name}";
+                buildingName = Manager.localization.GetText(manufacturebuildingNamekey);
+
                 Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
                 {
                     string RunInputmaterials = $"RunInputmaterials{requireData.Result.Name}";
@@ -176,7 +207,7 @@ namespace KYS
 
         private void OnFirstBuyClicked()
         {
-            Debug.LogWarning("구매 버튼 클릭");
+            Debug.LogWarning($"[PropertyContent] OnFirstBuyClicked 실행 - buildingID: {buildingID}");
             Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
             Manager.ui.ClosePanel();
         }
@@ -189,7 +220,7 @@ namespace KYS
 
         private void OnUpgradeClicked()
         {
-            Debug.Log("[PropertyContent] 업그레이드 버튼 클릭");
+            Debug.LogWarning($"[PropertyContent] OnUpgradeClicked 실행 - currentBuildingData: {currentBuildingData?.Name}");
             
             // 저장된 BuildingData 타입에 따라 적절한 패널 열기
             if (currentBuildingData != null)
@@ -256,7 +287,7 @@ namespace KYS
         {
             if (BuyButtonsScreen != null)
             {
-                BuyButtonsScreen.SetActive(true);
+                BuyButtonsScreen.SetActive(false);
             }
             if (LockScreen != null)
             {
