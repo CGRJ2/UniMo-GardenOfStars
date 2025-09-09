@@ -20,6 +20,22 @@ public class WorkerManager : MonoBehaviour
     {
         StartCoroutine(AssignWorkerCoroutine());
         StartCoroutine(StunWorkerCoroutine());
+        
+        foreach(string key in Manager.data.Worker.Values.Keys.ToList())
+        {
+            WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
+
+            if (worker == null) continue;
+
+            InstantiateWorker(worker);
+        }
+
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InstantiateWorker);
+    }
+
+    private void OnDestroy()
+    {
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InstantiateWorker);
     }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
