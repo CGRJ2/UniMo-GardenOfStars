@@ -5,19 +5,9 @@ using UnityEngine;
 
 namespace GameNpc
 {
-    public class Npc : MonoBehaviour
+    public class NpcController : MonoBehaviour
     {
-        public int _id;
-        public string _name;
-        public string _description;
-
-        public Npc(CYETestNpcDataSO rawData)
-        {
-            this._id = rawData._id;
-            this._name = rawData._name;
-            this._description = rawData._description;
-        }
-
+        
         void Awake()
         {
             Init();
@@ -26,24 +16,34 @@ namespace GameNpc
         {
 
         }
-        public void UpdateQuestUI()
-        {
-            foreach (QuestProgressData item in Manager.quest.CurrentQuest._questProgresses)
-            {
-                // item에 해당하는 icon 및 갯수를 가져와서 업데이트
-                Debug.Log($"{item._targetId}-{item._currentCount}/{item._targetCount}");
-            }
-        }
+
         /// <summary>
-        /// 하나씩 업데이트
+        /// 물품 납품
         /// </summary>
         /// <param name="targetId"></param>
-        public void ReceiveEachProduct(string targetId)
+        /// <param name="addCount"></param>
+        public void ReceiveProduct(string targetId, int addCount = 1)
         {
-            // interact 발판에 있는 재료 정보를 들고와서
-            // interact 발판에 있는 재료를 차감함
-            Manager.quest.UpdateCurrentQuestProgress(targetId, 1);
-            UpdateQuestUI();
+            // 퀘스트 업데이트
+            Manager.quest.UpdateCurrentQuestProgress(targetId, addCount);
+        }
+
+        /// <summary>
+        /// 대화
+        /// </summary>
+        public void Talk()
+        {
+            // Dialogue 실행
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+        }
+
+        /// <summary>
+        /// npc 포커스
+        /// </summary>
+        public void Focus()
+        {
+            // 대사 출력
+            // Debug.Log($"{_focusTextList[NpcUtil.GetRandomIndex(_focusTextList.Count)]}");
         }
     }
 }

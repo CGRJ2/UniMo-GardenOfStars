@@ -16,6 +16,9 @@ public partial class DataManager : Singleton<DataManager>
         WorkerRoutine();
         CharacterLvRoutine();
         DialogueRoutine();
+        NpcRoutine();
+        QuestRoutine();
+        QuestContentRoutine();
         WorkerUpgradeCostRoutine();
         WorkerEmployCostRoutine();
     }
