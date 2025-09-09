@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
@@ -13,7 +13,7 @@ public class PlaceTile : InteractableBase
     [SerializeField] float progressedTime;
     [SerializeField] Transform attachPoint;
 
-    [Header("»óÅÂ µğ¹ö±×¿ë")]
+    [Header("ìƒíƒœ ë””ë²„ê·¸ìš©")]
     [SerializeField] PlaceTileState state;
 
     private void Awake()
@@ -25,22 +25,18 @@ public class PlaceTile : InteractableBase
     IEnumerator WaitAndInit()
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
-        Debug.LogWarning("½ºÅ×ÀÌÁö µ¥ÀÌÅÍ »ı¼º ÈÄ ÃÊ±âÈ­1");
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
-        Debug.LogWarning("½ºÅ×ÀÌÁö µ¥ÀÌÅÍ »ı¼º ÈÄ ÃÊ±âÈ­2");
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
-        Debug.LogWarning("½ºÅ×ÀÌÁö µ¥ÀÌÅÍ »ı¼º ÈÄ ÃÊ±âÈ­3");
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.IsInit);
-        Debug.LogWarning("½ºÅ×ÀÌÁö µ¥ÀÌÅÍ »ı¼º ÈÄ ÃÊ±âÈ­4");
         Init();
     }
 
     public void Init()
     {
-        Debug.Log("½ºÅ×ÀÌÁö µ¥ÀÌÅÍ »ı¼º ÈÄ ÃÊ±âÈ­");
+        Debug.Log("ìŠ¤í…Œì´ì§€ ë°ì´í„° ìƒì„± í›„ ì´ˆê¸°í™”");
         progressBar.gameObject.SetActive(false);
 
-        // µ¥ÀÌÅÍº£ÀÌ½º¿¡¼­ ÇöÀç ½ºÅ×ÀÌÁö ÀúÀå¼Ò¿¡ º»ÀÎÀÌ ÀÖ´ÂÁö Ã¼Å©, ¾øÀ¸¸é µ¥ÀÌÅÍ »ı¼º
+        // ë°ì´í„°ë² ì´ìŠ¤ì—ì„œ í˜„ì¬ ìŠ¤í…Œì´ì§€ ì €ì¥ì†Œì— ë³¸ì¸ì´ ìˆëŠ”ì§€ ì²´í¬, ì—†ìœ¼ë©´ ë°ì´í„° ìƒì„±
         PlaceTileData placeTileData = Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId);
         if (placeTileData == null)
         {
@@ -50,13 +46,13 @@ public class PlaceTile : InteractableBase
         {
             string buildingID = placeTileData.BuildingID.Value;
 
-            // °Ç¹° Á¤º¸°¡ ÀÖ´Â Å¸ÀÏÀÌ¶ó¸é, °Ç¹° ÀÎ½ºÅÏ½º »ı¼ºÇØÁÖ±â
+            // ê±´ë¬¼ ì •ë³´ê°€ ìˆëŠ” íƒ€ì¼ì´ë¼ë©´, ê±´ë¬¼ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±í•´ì£¼ê¸°
             if (!string.IsNullOrEmpty(buildingID))
             {
                 Addressables.LoadAssetAsync<GameObject>(buildingID).Completed += task =>
                 {
                     GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
-                    ChangeState(PlaceTileState.Constructed); // `°Ç¼³µÊ` »óÅÂ·Î º¯°æ
+                    ChangeState(PlaceTileState.Constructed); // `ê±´ì„¤ë¨` ìƒíƒœë¡œ ë³€ê²½
                 };
             }
         }
@@ -64,75 +60,75 @@ public class PlaceTile : InteractableBase
 
     IEnumerator ProgressingTask()
     {
-        // Á¤Áö »óÅÂ±îÁö ´ë±âÇß´Ù°¡ ÀÛ¾÷ ½ÇÇà
+        // ì •ì§€ ìƒíƒœê¹Œì§€ ëŒ€ê¸°í–ˆë‹¤ê°€ ì‘ì—… ì‹¤í–‰
         //yield return new WaitUntil(() => !characterRD.IsMove.Value);
 
-        while (characterRD != null) // ¿µ¿ª ¾È¿¡ ÀÖÀ» ¶§ ÁøÇà
+        while (characterRD != null) // ì˜ì—­ ì•ˆì— ìˆì„ ë•Œ ì§„í–‰
         {
             yield return null;
 
-            // ÀÛ¾÷ ¿µ¿ª ¹ÛÀ¸·Î ³ª°¡´Â °æ¿ì
+            // ì‘ì—… ì˜ì—­ ë°–ìœ¼ë¡œ ë‚˜ê°€ëŠ” ê²½ìš°
             if (characterRD == null)
             {
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 break;
             }
 
-            // ÀÛ¾÷ ÁøÇà Áß, ¿µ¿ª ³»¿¡¼­ ¿òÁ÷ÀÎ °æ¿ì ´ë±â
+            // ì‘ì—… ì§„í–‰ ì¤‘, ì˜ì—­ ë‚´ì—ì„œ ì›€ì§ì¸ ê²½ìš° ëŒ€ê¸°
             if (characterRD.IsMove.Value)
             {
                 progressBar.gameObject.SetActive(false);
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 continue;
             }
 
             IngrediantInstance ownedBuilding;
             characterRD.IngrediantStack.TryPeek(out ownedBuilding);
-            // ¼Õ¿¡ °Ç¹°ÀÌ ¾øÀ» ½Ã, continue
-            if (ownedBuilding == null) { continue; } // ¼Õ¿¡ µç Àç·á°¡ ¾øÀ» ¶§
-            else { if (!(ownedBuilding is Item_Building)) continue; } // <- ¼Õ¿¡ µç Àç·á°¡ °Ç¹°ÀÌ ¾Æ´Ò ¶§
+            // ì†ì— ê±´ë¬¼ì´ ì—†ì„ ì‹œ, continue
+            if (ownedBuilding == null) { continue; } // ì†ì— ë“  ì¬ë£Œê°€ ì—†ì„ ë•Œ
+            else { if (!(ownedBuilding is Item_Building)) continue; } // <- ì†ì— ë“  ì¬ë£Œê°€ ê±´ë¬¼ì´ ì•„ë‹ ë•Œ
             
 
-            // ÀÛ¾÷ ½ÃÀÛ ½Ã, ÁøÇàµµ Ç¥±â
+            // ì‘ì—… ì‹œì‘ ì‹œ, ì§„í–‰ë„ í‘œê¸°
             progressBar.gameObject.SetActive(true);
 
             progressedTime += Time.deltaTime;
 
-            // ¼³Ä¡°¡ ¿Ï·áµÈ °æ¿ì
+            // ì„¤ì¹˜ê°€ ì™„ë£Œëœ ê²½ìš°
             if (installingTime < progressedTime)
             {
-                CompleteTask(); // °á°ú¹° »ı¼º
-                progressedTime = 0; // ÁøÇàµµ ÃÊ±âÈ­
+                CompleteTask(); // ê²°ê³¼ë¬¼ ìƒì„±
+                progressedTime = 0; // ì§„í–‰ë„ ì´ˆê¸°í™”
                 break;
             }
 
-            // ÁøÇàµµ °ÔÀÌÁö ¾÷µ¥ÀÌÆ®
+            // ì§„í–‰ë„ ê²Œì´ì§€ ì—…ë°ì´íŠ¸
             progressBar.value = progressedTime / installingTime;
         }
 
-        // ÁøÇàµµ Ç¥±â ºñÈ°¼ºÈ­
+        // ì§„í–‰ë„ í‘œê¸° ë¹„í™œì„±í™”
         progressBar.gameObject.SetActive(false);
         yield return null;
     }
 
     public void CompleteTask()
     {
-        // °Ç¹°(Àç·á) ½ºÅÃ¿¡¼­ »©¼­ ³Ö¾îÁÖ±â
+        // ê±´ë¬¼(ì¬ë£Œ) ìŠ¤íƒì—ì„œ ë¹¼ì„œ ë„£ì–´ì£¼ê¸°
         Item_Building buildingItem = characterRD.IngrediantStack.Pop() as Item_Building;
         buildingItem.MoveToTargetAndShrink(attachPoint,
-            // °øÅÍ¿¡ °Ç¹°(Àç·á)°¡ µé¾î°¡¸ç ¼Ò¸êÇÒ ¶§, ÀÎ½ºÅÏ½º »ı¼º
+            // ê³µí„°ì— ê±´ë¬¼(ì¬ë£Œ)ê°€ ë“¤ì–´ê°€ë©° ì†Œë©¸í•  ë•Œ, ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
             () => Addressables.LoadAssetAsync<GameObject>(buildingItem.buildingId).Completed += task =>
         {
             GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
             ChangeState(PlaceTileState.Constructed);
 
-            // ¹èÄ¡ ¿Ï·á ½Ã,
-            // °Ç¹° ¹èÄ¡ Á¤º¸ DB¿¡ ¾÷µ¥ÀÌÆ®
-            // ½ºÅ×ÀÌÁö µ¥ÀÌÅÍ -> PlaceTile¸®½ºÆ® -> ÇöÀç Å¸ÀÏ id¿¡ °æ·Î¿¡ °Ç¹° id ÀúÀå
+            // ë°°ì¹˜ ì™„ë£Œ ì‹œ,
+            // ê±´ë¬¼ ë°°ì¹˜ ì •ë³´ DBì— ì—…ë°ì´íŠ¸
+            // ìŠ¤í…Œì´ì§€ ë°ì´í„° -> PlaceTileë¦¬ìŠ¤íŠ¸ -> í˜„ì¬ íƒ€ì¼ idì— ê²½ë¡œì— ê±´ë¬¼ id ì €ì¥
             PlaceTileData placeTileData = Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId);
             placeTileData.BuildingID.Value = buildingItem.buildingId;
 
-            // ±¸¸ÅÇÑ °Ç¹° ID => DB¿¡¼­ ÃÊ±âÈ­
+            // êµ¬ë§¤í•œ ê±´ë¬¼ ID => DBì—ì„œ ì´ˆê¸°í™”
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
         });
     }
@@ -142,12 +138,12 @@ public class PlaceTile : InteractableBase
         switch (state)
         {
             case PlaceTileState.Activated:
-                // ¹ßÆÇ º¸¿©ÁÖ±â
+                // ë°œíŒ ë³´ì—¬ì£¼ê¸°
                 break;
 
             case PlaceTileState.Deactivated:
             case PlaceTileState.Constructed:
-                // ¹ßÆÇ Áö¿ì±â
+                // ë°œíŒ ì§€ìš°ê¸°
                 break;
 
             default: break;

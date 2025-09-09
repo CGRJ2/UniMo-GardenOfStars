@@ -31,36 +31,33 @@ public class WorkArea : InteractableBase, IWorkStation
         curWorker = characterRD; // 임시. 일꾼까지 포함한 변수로 수정 필요
         curWorker.IsWork.Value = true;
 
-        // 정지 상태까지 대기했다가 작업 실행
-        yield return new WaitUntil(() => !curWorker.IsMove.Value);
-
-        // 작업 시작 시, 진행도 표기
-        progressBar.gameObject.SetActive(true);
-
         while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
         {
+            yield return null;
+
+            // 작업 영역 밖으로 나가는 경우
+            if (curWorker != personalTaskOwner) break;
+
             // 작업 진행 중, 영역 내에서 움직인 경우 대기
             if (curWorker.IsMove.Value)
             {
                 progressBar.gameObject.SetActive(false);
-                yield return new WaitUntil(() => !curWorker.IsMove.Value);
-                progressBar.gameObject.SetActive(true);
+                continue;
             }
 
             // 재료 소진 시, 재료가 채워질 때 까지 대기
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
                 progressBar.gameObject.SetActive(false);
-                yield return new WaitUntil(() => ownerInstance.ingrediantStack.Count > 0);
-                progressBar.gameObject.SetActive(true);
+                continue;
             }
-
-            // 작업 영역 밖으로 나가는 경우
-            if (curWorker != personalTaskOwner) break;
 
             // 쌓여있는 재료가 있을때만 실행
             if (ownerInstance.ingrediantStack.Count > 0)
             {
+                // 작업 시작 시, 진행도 표기
+                progressBar.gameObject.SetActive(true);
+
                 ownerInstance.progressedTime += Time.deltaTime;
 
                 if (ownerInstance.ProdTime < ownerInstance.progressedTime)
