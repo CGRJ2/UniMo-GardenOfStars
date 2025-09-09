@@ -23,13 +23,13 @@ public class Btn_Stage : MonoBehaviour
 
     void OnClickSelf()
     {
-        if (Manager.game.curStageId == stageData.StageId)
+        if (Manager.firebase.UserData.CurStage.Value == stageData.StageId)
         {
             Debug.Log("이미 해당 스테이지에 위치함");
             return;
         }
 
-        Manager.game.curStageId = stageData.StageId;
+        Manager.firebase.UserData.CurStage.Value = stageData.StageId;
         Addressables.LoadSceneAsync("StageScene");
     }
 

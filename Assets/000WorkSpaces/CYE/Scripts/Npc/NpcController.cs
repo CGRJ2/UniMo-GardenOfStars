@@ -5,45 +5,68 @@ using UnityEngine;
 
 namespace GameNpc
 {
-    public class Npc : MonoBehaviour
+    public class NpcController : MonoBehaviour
     {
-        public int _id;
-        public string _name;
-        public string _description;
-
-        public Npc(CYETestNpcDataSO rawData)
-        {
-            this._id = rawData._id;
-            this._name = rawData._name;
-            this._description = rawData._description;
-        }
+        [SerializeField] Transform requireTilesParent;
+        QuestRequireTile[] requireTiles;
 
         void Awake()
         {
+            // 타이틀씬에서 시작 시
+            //Init();
+
+
+            // 스테이지씬에서 시작 시
+            StartCoroutine(WaitAndInit());
+        }
+
+        IEnumerator WaitAndInit()
+        {
+            yield return new WaitForSeconds(1.5f);
             Init();
         }
+
         private void Init()
         {
+            requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>();
 
-        }
-        public void UpdateQuestUI()
-        {
-            foreach (QuestProgressData item in Manager.quest.CurrentQuest._questProgresses)
+            for (int i =0; i< Manager.quest.CurrentQuest._progresses.Count; i++)
             {
-                // item에 해당하는 icon 및 갯수를 가져와서 업데이트
-                Debug.Log($"{item._targetId}-{item._currentCount}/{item._targetCount}");
+                if (Manager.quest.CurrentQuest._progresses.Count > requireTiles.Length) 
+                { Debug.LogError("퀘스트 조건 발판 개수보다 퀘스트 조건이 더 많음"); break; }
+
+                requireTiles[i].requirement = Manager.quest.CurrentQuest._progresses[i];
+                requireTiles[i].UpdateView();
             }
         }
+
         /// <summary>
-        /// 하나씩 업데이트
+        /// 물품 납품
         /// </summary>
         /// <param name="targetId"></param>
-        public void ReceiveEachProduct(string targetId)
+        /// <param name="addCount"></param>
+        public void ReceiveProduct(string targetId, int addCount = 1)
         {
-            // interact 발판에 있는 재료 정보를 들고와서
-            // interact 발판에 있는 재료를 차감함
-            Manager.quest.UpdateCurrentQuestProgress(targetId, 1);
-            UpdateQuestUI();
+            // 퀘스트 업데이트
+            Manager.quest.UpdateCurrentQuestProgress(targetId, addCount);
+        }
+
+        /// <summary>
+        /// 대화
+        /// </summary>
+        public void Talk()
+        {
+            // Dialogue 실행
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+        }
+
+        /// <summary>
+        /// npc 포커스
+        /// </summary>
+        public void Focus()
+        {
+            // 대사 출력
+            // Debug.Log($"{_focusTextList[NpcUtil.GetRandomIndex(_focusTextList.Count)]}");
         }
     }
 }

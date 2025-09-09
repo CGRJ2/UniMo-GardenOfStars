@@ -624,7 +624,7 @@ namespace KYS
                     string stageId = GetStageSceneName(stageIndex);
                     
                     // 이미 해당 스테이지에 위치한 경우
-                    if (Manager.game != null && Manager.game.curStageId == stageId)
+                    if (Manager.game != null && Manager.firebase.UserData.CurStage.Value == stageId)
                     {
                         Debug.Log("이미 해당 스테이지에 위치함");
                         // 현재 위치라도 패널은 닫기
@@ -635,7 +635,7 @@ namespace KYS
                     // 스테이지 전환
                     if (Manager.game != null)
                     {
-                        Manager.game.curStageId = stageId;
+                        Manager.firebase.UserData.CurStage.Value = stageId;
                         Debug.Log($"스테이지 전환: {zodiacStages[stageIndex].stageName} ({stageId})");
                     }
                     
