@@ -32,6 +32,7 @@ namespace GameQuest
                 if (i.Value.QuestContentId == Id)
                 {
                     this._questContentStep.Add(new QuestContentStepData(i.Key));
+                    
                 }
             }
             ProgressCount = new FirebaseProperty<long>("ProgressCount", Path);
@@ -67,6 +68,12 @@ namespace GameQuest
             {
                 // 만일 현재 수량이 목표 수량에 도달했을 경우 상태를 완료(Complete)로 변경함.
                 // State = QuestProgressState.Completed;
+                GetCurrentContentStep().UpdateCompletedState(true);
+                ProgressCount.Value = 0;
+                // UpdateProgressState(QuestProgressState.Completed);
+            }
+            if (GetCurrentContentStep() == null)
+            { 
                 UpdateProgressState(QuestProgressState.Completed);
             }
             Debug.Log($"[QeustContentData] Update Data Complete -> {QuestId}/{ContentTargetId}/{CurrentTargetCount}/{Count}/{State}");
@@ -80,7 +87,7 @@ namespace GameQuest
         {
             ProgressState.Value = (int)nextState;
         }
-        private int GetCurrentTargetCount()
+        public int GetCurrentTargetCount()
         {
             foreach (QuestContentStepData item in _questContentStep)
             {
@@ -91,7 +98,20 @@ namespace GameQuest
             }
             return 0;
         }
+        private QuestContentStepData GetCurrentContentStep()
+        {
+            foreach (QuestContentStepData item in _questContentStep)
+            {
+                if (!item.IsCompleted)
+                {
+                    return item;
+                    // return item.TargetAmount;
+                }
+            }
+            return null;
+        }
     }
+    
 
     public class QuestContentStepData : FirebaseData
     {
