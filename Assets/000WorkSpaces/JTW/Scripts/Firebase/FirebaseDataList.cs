@@ -15,6 +15,8 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
     public UnityEvent<T> OnAdded = new();
 
+    public int Count => _list.Count;
+
     public FirebaseDataList(string id, string parentPath, Func<string, string, T> factory) : base(id, parentPath)
     {
         _factory = factory;
