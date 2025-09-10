@@ -7,7 +7,6 @@ ui_apply,적용,Apply
 ui_back,뒤로,Back
 ui_next,다음,Next
 ui_previous,이전,Previous
-,,
 # Menu Related,,
 menu_title,메뉴,Menu
 menu_resume,게임 계속,Resume Game
@@ -16,14 +15,12 @@ menu_exit,게임 종료,Exit Game
 menu_inventory,인벤토리,Inventory
 menu_start,게임 시작,Start Game
 menu_close,닫기,Close
-,,
 # Game Related,,
 game_over,게임 오버,Game Over
 game_victory,승리!,Victory!
 game_pause,일시정지,Pause
 game_resume,계속,Resume
 game_restart,다시 시작,Restart
-,,
 # Loading Related,,
 loading_text,로딩 중...,Loading...
 loading_please_wait,잠시만 기다려주세요,Please wait
@@ -37,37 +34,30 @@ loading_success,로딩이 완료되었습니다!,Loading completed!
 loading_error,로딩 중 오류가 발생했습니다.,An error occurred during loading.
 loading_timeout,로딩 시간이 초과되었습니다.,Loading timeout.
 loading_retry,다시 시도하시겠습니까?,Would you like to retry?
-,,
 # Stage Loading Related,,
 stage_prepare,스테이지를 준비하는 중...,Preparing stage...
 stage_loading,스테이지를 로딩하는 중...,Loading stage...
 stage_complete,스테이지 로딩 완료!,Stage loading completed!
-,,
 # Fast Loading Related,,
 loading_fast_prepare,빠른 로딩 준비 중...,Preparing fast loading...
 loading_fast_progress,빠른 로딩 중...,Fast loading...
 loading_fast_complete,빠른 로딩 완료!,Fast loading completed!
 loading_fast_success,빠른 로딩이 완료되었습니다!,Fast loading completed!
-,,
 # Scene Transition Related,,
 scene_transition_prepare,씬 전환 준비 중...,Preparing scene transition...
 scene_transition_loading,씬을 전환하는 중...,Transitioning scene...
 scene_transition_complete,씬 전환 완료!,Scene transition completed!
-,,
 # Language Settings,,
 language_settings_title,언어 설정,Language Settings
 language_settings_apply,적용,Apply
 language_settings_close,닫기,Close
-,,
 # Settings Popup,,
 settings_language,언어 설정,Language Settings
 settings_sound,사운드 설정,Sound Settings
 settings_graphics,그래픽 설정,Graphics Settings
 settings_close,닫기,Close
-,,
 # Title Text,,
 titleText,유니모,UniMo
-,,
 # Language Settings Panel,,
 label,,
 preview,미리보기,Preview
@@ -80,7 +70,6 @@ test,테스트,Test
 cancel,취소,Cancel
 confirm,확인,Confirm
 titletext,유니모,UniMo
-,,
 # Additional UI Elements,,
 exit,종료,Exit
 settings,설정,Settings
@@ -171,15 +160,7 @@ emergencyescape,긴급 탈출,Emergency Escape
 bgm,배경음,BGM
 sfx,효과음,SFX
 vibration,진동,Vib
-rungoalbutton,,
-rungembutton,,
-runmoneybutton,,
-rundescription,,
-runtitle,,
 touchinfohud(clone),,
-rungoalbutton,,
-rungembutton,,
-runmoneybutton,,
 hirebutton,,
 (tmp),,
 tmpstagename,,
@@ -188,3 +169,54 @@ movementspeed,이동 속도,Movement Speed
 RunInputmaterials재료 A ,재료 A 잘들어감,Material A
 RunInputmaterials재료 B,재료 B 잘,Material B
 RunInputmaterials재료 C,재료 C 잘,Material C
+,,
+# CJM Buildings - Harvest & Manufacture (auto-added),,
+RunHarvestBuildingName별가루 생성기,별가루 생성기,Stardust Generator
+RunHarvestBuildingDesc수확형 건물이다.,수확형 건물이다.,This is a harvest-type building.
+RunIngrediantName재료 A,재료 A,Material A
+,,
+RunManufactureBuildingName허름한 작업대,허름한 작업대,Shabby Workbench
+RunManufactureBuildingDesc재료 A가 B로 만들어질 것 같다.,재료 A가 B로 만들어질 것 같다.,Looks like material A will be made into B.
+RunInputmaterials재료 A,재료 A,Material A
+RunProductionMaterial재료 B,재료 B,Material B
+,,
+RunManufactureBuildingName훌륭한 작업대,훌륭한 작업대,Excellent Workbench
+RunManufactureBuildingDesc재료 B가 C로 만들어질 것 같다.,재료 B가 C로 만들어질 것 같다.,Looks like material B will be made into C.
+RunInputmaterials재료 B,재료 B,Material B
+RunProductionMaterial재료 C,재료 C,Material C
+runworkertitle,,
+runworkerdescription,,
+workerlevel,일꾼 레벨,Worker Level
+movespeedlabel,이동 속도,Movement Speed
+runworkermovespeednum,,
+capacitylabel,운송 수량,Carry Capacity
+runworkercapacitynum,,
+productionlabel,생산 속도,Production Speed
+runworkerproductionnum,,
+stuntimelabel,기절 시간,Stun Time
+runworkerstuntimenum,,
+stuntimeunit,S,S
+stunchancelabel,기절 확률,Stun Chance
+runworkerstunchancenum,,
+stunchanceunit,%,%
+runmoneybotton,,
+# Upgrade Related,,
+MaxLevelReached,이미 최대 단계입니다.,Already at maximum level.
+MaxLevel,최대 단계,Max Level
+moneyplus,,
+arrow,,
+runlevel,,
+runworkercost,,
+amountupgradename,,
+moneyupgradename,,
+rungenerate,,
+runinput,,
+runbuildingcost,,
+runproduct,,
+firstbuybutton,,
+runlstorycharactername,,
+runstorychatwindow,,
+runrdialoguecharactername,,
+runldialoguecharactername,,
+rundialoguechatwindow,,
+account,,

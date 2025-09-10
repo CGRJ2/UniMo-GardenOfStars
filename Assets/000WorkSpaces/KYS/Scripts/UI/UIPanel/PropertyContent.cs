@@ -21,9 +21,9 @@ namespace KYS
         [SerializeField] private string image_MaterialName = "RunMaterialImage";
         [SerializeField] private string RunProdName = "RunProductText";
         [SerializeField] private string image_ProdName = "RunProductImage";
-        [SerializeField] private string BuyButtonScreenName = "BuyButtonScreen";
+        [SerializeField] private string BeforeBuyScreenName = "BeforeBuyScreen";
         [SerializeField] private string LockScreenName = "LockScreen";
-        [SerializeField] private string LockImageName = "LockImage";
+
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
 
@@ -38,10 +38,8 @@ namespace KYS
         private Image image_Material => GetUI<Image>(image_MaterialName);
         private Image image_Prod => GetUI<Image>(image_ProdName);
         //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
-        private GameObject BuyButtonsScreen => GetUI(BuyButtonScreenName);
+        private GameObject BeforeBuyScreen => GetUI(BeforeBuyScreenName);
         private GameObject LockScreen => GetUI(LockScreenName);
-        private GameObject FirstBuyButton => GetUI(firstBuyButtonName);
-        private GameObject LockImage => GetUI(LockImageName);
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
         private GameObject ItemContent2 => GetUI(ItemContent2Name); 
         private Button UpgradeButton => GetUI<Button>(UpgradeButtonName);
@@ -255,29 +253,23 @@ namespace KYS
         [ContextMenu("구매 후 (모든 버튼 표시) 수확 모드")]
         public void SwitchAfrterBuyModeHarvestMode()
         {
-            if (BuyButtonsScreen != null)
+
+            if (BeforeBuyScreen != null)
             {
-                BuyButtonsScreen.SetActive(false);
+                BeforeBuyScreen.SetActive(false);
             }
             if (LockScreen != null)
             {
                 LockScreen.SetActive(false);
             }
-            if (FirstBuyButton != null)
-            {
-                FirstBuyButton.SetActive(false);
-            }
-            if (LockImage != null)
-            {
-                LockImage.SetActive(false);
-            }
+
             if (ItemContent1 != null)
             {
-                ItemContent1.SetActive(false);
+                ItemContent1.SetActive(true);
             }
             if (ItemContent2 != null)
             {
-                ItemContent2.SetActive(true);
+                ItemContent2.SetActive(false);
             }
 
         }
@@ -285,22 +277,15 @@ namespace KYS
         [ContextMenu("구매 후 (모든 버튼 표시) 제조 모드")]
         public void SwitchAfrterBuyModeManufactureMode()
         {
-            if (BuyButtonsScreen != null)
+            if (BeforeBuyScreen != null)
             {
-                BuyButtonsScreen.SetActive(false);
+                BeforeBuyScreen.SetActive(false);
             }
             if (LockScreen != null)
             {
                 LockScreen.SetActive(false);
             }
-            if (FirstBuyButton != null)
-            {
-                FirstBuyButton.SetActive(false);
-            }
-            if (LockImage != null)
-            {
-                LockImage.SetActive(false);
-            }
+
             if (ItemContent1 != null)
             {
                 ItemContent1.SetActive(true);
@@ -315,21 +300,13 @@ namespace KYS
         [ContextMenu("구매 전 (Block 활성화)")]
         public void SwitchBeforeBuyMode()
         {
-            if (BuyButtonsScreen != null)
+            if (BeforeBuyScreen != null)
             {
-                BuyButtonsScreen.SetActive(true);
+                BeforeBuyScreen.SetActive(true);
             }
             if (LockScreen != null)
             {
                 LockScreen.SetActive(false);
-            }
-            if (FirstBuyButton != null)
-            {
-                FirstBuyButton.SetActive(true);
-            }
-            if (LockImage != null)
-            {
-                LockImage.SetActive(false);
             }
 
         }
@@ -337,21 +314,13 @@ namespace KYS
         [ContextMenu("구매 Lock (Block 활성화 및 Lock 이미지)")]
         public void SwitchLockMode()
         {
-            if ( BuyButtonsScreen != null)
+            if (BeforeBuyScreen != null)
             {
-                BuyButtonsScreen.SetActive(false);
+                BeforeBuyScreen.SetActive(false);
             }
-            if (LockScreen != null)
+            if(LockScreen != null)
             {
                 LockScreen.SetActive(true);
-            }
-            if (FirstBuyButton != null)
-            {
-                FirstBuyButton.SetActive(true);
-            }
-            if (LockImage != null)
-            {
-                LockImage.SetActive(true);
             }
 
         }
