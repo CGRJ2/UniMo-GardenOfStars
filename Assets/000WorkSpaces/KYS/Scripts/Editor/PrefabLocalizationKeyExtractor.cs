@@ -496,7 +496,7 @@ namespace KYS.Editor
             }
 
             // 기본 CSV 파일 경로
-            string defaultCsvPath = "Assets/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string defaultCsvPath = "Assets/000WorkSpaces/KYS/Csvs/LanguageData.csv";
             
             // 사용자에게 선택 옵션 제공
             int choice = EditorUtility.DisplayDialogComplex(
