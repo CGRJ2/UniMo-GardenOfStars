@@ -332,18 +332,18 @@ namespace KYS
             {
                 Debug.Log($"[DialogueSystemTester] CYE 퀘스트 시스템 연동 테스트:");
                 Debug.Log($"  - QuestManager 존재: {QuestManager.Instance != null}");
-                Debug.Log($"  - 현재 퀘스트 목록 수: {QuestManager.Instance._currentQuestList?.Length ?? 0}");
+                Debug.Log($"  - 현재 퀘스트 목록 수: {QuestManager.Instance._currentQuestList?.Count ?? 0}");
                 
-                if (QuestManager.Instance._currentQuestList != null && QuestManager.Instance._currentQuestList.Length > 0)
+                if (QuestManager.Instance._currentQuestList != null && QuestManager.Instance._currentQuestList.Count > 0)
                 {
                     var currentQuest = QuestManager.Instance.CurrentQuest;
-                    Debug.Log($"  - 현재 퀘스트 ID: {currentQuest._baseData._id}");
-                    Debug.Log($"  - 현재 퀘스트 상태: {currentQuest._questState}");
-                    Debug.Log($"  - 퀘스트 진행도 항목 수: {currentQuest._questProgresses.Count}");
+                    Debug.Log($"  - 현재 퀘스트 ID: {currentQuest._data.QuestId}");
+                    Debug.Log($"  - 현재 퀘스트 상태: {currentQuest._data.State}");
+                    Debug.Log($"  - 퀘스트 진행도 항목 수: {currentQuest._progresses.Count}");
                     
-                    foreach (var progress in currentQuest._questProgresses)
+                    foreach (var progress in currentQuest._progresses)
                     {
-                        Debug.Log($"    - {progress._targetId}: {progress._currentCount}/{progress._targetCount} ({progress._currentState})");
+                        Debug.Log($"    - {progress.ContentTargetId}: {progress.ProgressCount}/{progress.ContentTargetCount} ({progress.State})");
                     }
                 }
             }

@@ -5,7 +5,7 @@ using GameQuest;
 using System;
 
 [System.Serializable]
-public struct NpcDialogue
+public struct NpcDialogueData
 {
     public int targetCount;
     public string keyword;
@@ -18,6 +18,6 @@ public class CYETestNpcDataSO : ScriptableObject
     public int _id;
     public string _name;
     public string _stageId;
-    public List<NpcDialogue> _dialogue = new();
+    public List<NpcDialogueData> _dialogueData = new();
     public string _description;
 }

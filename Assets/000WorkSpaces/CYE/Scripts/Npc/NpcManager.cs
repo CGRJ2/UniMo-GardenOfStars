@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameNpc;
 using UnityEngine;
 
 public class NpcManager : Singleton<NpcManager>
 {
     // for test
-    public CYETestNpcDataSO _npcRawData;
-    public Npc CurrentNpc;
+    public List<CYETestNpcDataSO> _npcRawData = new();
+    public NpcData CurrentNpc;
     private void Awake()
     {
         base.SingletonInit();
@@ -15,14 +16,15 @@ public class NpcManager : Singleton<NpcManager>
     }
     private void Init()
     {
-        // 초기화
-        SetCurrentNpc("test");
+        // // 초기화
+        // SetCurrentNpc("test");
     }
-    public void SetCurrentNpc(string regionId)
+    public void SetCurrentNpc()
     {
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
         // 해당하는 regionId의 Npc 데이터를 불러와서
         // CurrentNpc에 넣어줌
         // for test
-        CurrentNpc = new Npc(_npcRawData);
+        CurrentNpc = new NpcData(Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == curStageID).Key);
     }
 }

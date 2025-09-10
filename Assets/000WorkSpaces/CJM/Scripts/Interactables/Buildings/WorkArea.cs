@@ -104,7 +104,7 @@ public class WorkArea : InteractableBase, IWorkStation
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas?.Remove(this);

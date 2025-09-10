@@ -805,8 +805,6 @@ namespace KYS
         [ContextMenu("Task 사용")]
         public async System.Threading.Tasks.Task Temp_InGameLoadAsync()
         {
-            Manager.game.curStageId = "Stage00";
-
             // 완전체 로딩 시스템 사용 (자동 숨김 포함)
             await LoadSceneWithCompleteLoadingAsync("StageScene",
                 LoadingLocalizationKeys.STAGE_PREPARE,
@@ -826,8 +824,6 @@ namespace KYS
 
         public IEnumerator Temp_InGameLoad()
         {
-            Manager.game.curStageId = "Stage00";
-
             // 완전체 로딩 시스템 사용 (자동 숨김 포함)
             yield return StartCoroutine(LoadSceneWithCompleteLoading("StageScene",
                 LoadingLocalizationKeys.STAGE_PREPARE,

@@ -9,12 +9,12 @@ public class WorkerData : FirebaseData
     public int Rank => WorkerCsv.Rank;
 
     public float MoveSpeed => Manager.data.CharacterLv.Values[MoveSpeedLv.Value.ToString()].Speed;
-    public FirebaseProperty<long> MoveSpeedLv;
+    public FirebaseProperty<int> MoveSpeedLv;
     public int MoveSpeedMaxLv => WorkerCsv.SpeedMaxLv;
     public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
     public int MaxCapacity => Manager.data.CharacterLv.Values[MaxCapacityLv.Value.ToString()].Capacity;
-    public FirebaseProperty<long> MaxCapacityLv;
+    public FirebaseProperty<int> MaxCapacityLv;
     public int MaxCapacityMaxLv => WorkerCsv.MaxCapacityMaxLv;
     public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;
 
@@ -27,10 +27,10 @@ public class WorkerData : FirebaseData
 
     public WorkerData(string id, string parentPath = null) : base(id, parentPath)
     {
-        MoveSpeedLv = new FirebaseProperty<long>("MoveSpeedLv", Path, 1);
+        MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
         InitList.Add(MoveSpeedLv);
 
-        MaxCapacityLv = new FirebaseProperty<long>("MaxCapacityLv", Path, 1);
+        MaxCapacityLv = new FirebaseProperty<int>("MaxCapacityLv", Path, 1);
         InitList.Add(MaxCapacityLv);
     }
 

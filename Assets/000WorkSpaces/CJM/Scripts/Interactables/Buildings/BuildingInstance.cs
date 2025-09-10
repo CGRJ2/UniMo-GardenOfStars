@@ -17,7 +17,7 @@ public class BuildingInstance : InteractableBase
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
 
@@ -97,7 +97,10 @@ public class BuildingInstance : InteractableBase
         {
             if (activatePopUI != null)
             {
-                CheckUpgradable();
+                // for test
+                if(_OriginData!=null)
+                    CheckUpgradable();
+
                 activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)
             }
         }

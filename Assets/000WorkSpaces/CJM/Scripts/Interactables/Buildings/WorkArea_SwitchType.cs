@@ -21,7 +21,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     bool isOperating;
 
     // 현재 작업 중인 일꾼 정보
-    CharaterRuntimeData curWorker;
+    public CharaterRuntimeData curWorker;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -60,8 +60,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
             }
-            Debug.LogWarning(ownerInstance);
-            Debug.LogWarning(ownerInstance.ingrediantStack);
+
             // 재료 소진 시
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
@@ -158,7 +157,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas_SwitchType?.Remove(this);

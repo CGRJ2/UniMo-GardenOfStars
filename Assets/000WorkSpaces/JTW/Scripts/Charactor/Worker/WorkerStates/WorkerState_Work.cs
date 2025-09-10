@@ -60,10 +60,10 @@ public class WorkerState_Work : WorkerStateBase
         {
             if (WorkerData.IngrediantStack.Count >= WorkerData.MaxCapacity) return false;
         }
-        else if (workstation is WorkArea)
+        else if (workstation is WorkArea_SwitchType)
         {
-            if ((workstation as WorkArea).curWorker != null
-                && (workstation as WorkArea).curWorker != WorkerData)
+            if ((workstation as WorkArea_SwitchType).curWorker != null
+                && (workstation as WorkArea_SwitchType).curWorker != WorkerData)
             {
                 return false;
             }
