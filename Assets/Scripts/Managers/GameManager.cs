@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -222,7 +221,7 @@ public partial class DataManager
             stage.Name_KR = words[dict["Name_Korean"]];
             stage.Name_En = words[dict["Name_English"]];
 
-            try
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["WheelSprite"]]}", typeof(Sprite), out var locations)))
             {
                 Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
                 {
@@ -235,12 +234,8 @@ public partial class DataManager
                     stage.WheelSprite = task.Result;
                 };
             }
-            catch (InvalidKeyException e)
-            {
-                Debug.LogWarning(e.Message);
-            }
 
-            try
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["CenterSprite"]]}", typeof(Sprite), out var locations)))
             {
                 Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
                 {
@@ -253,11 +248,6 @@ public partial class DataManager
                     stage.WheelSprite = task.Result;
                 };
             }
-            catch (InvalidKeyException e)
-            {
-                Debug.LogWarning(e.Message);
-            }
-
 
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
 
