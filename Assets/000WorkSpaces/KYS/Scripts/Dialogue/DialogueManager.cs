@@ -478,7 +478,7 @@ namespace KYS
             }
 
             // 퀘스트 진행도 계산 (완료된 진행도 항목 수 / 전체 진행도 항목 수 * 100)
-            int completedCount = quest._progresses.Count(p => p.State == QuestProgressState.Completed);
+            int completedCount = quest._progresses.Count(p => p.IsContentClear);
             int totalCount = quest._progresses.Count;
             int currentProgress = totalCount > 0 ? (completedCount * 100) / totalCount : 0;
 

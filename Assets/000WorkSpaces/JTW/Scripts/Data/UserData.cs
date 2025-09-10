@@ -1,3 +1,4 @@
+using GameQuest;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,8 @@ public partial class UserData : FirebaseData
 
     public FirebaseProperty<string> CurStage;
     public StageData CurStageData => StageList.Get(CurStage.Value);
+
+
 
     public UserData(string id, string parentPath = null) : base(id, parentPath)
     {

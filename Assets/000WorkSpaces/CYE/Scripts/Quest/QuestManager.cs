@@ -1,12 +1,12 @@
 // System 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-// Unity
-using UnityEngine;
 // Custom
 using GameQuest;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+// Unity
+using UnityEngine;
 
 /// <summary>
 /// 현 스테이지의 퀘스트 목록 및 진행도를 관리하는 Singleton Class
@@ -89,7 +89,9 @@ public class QuestManager : Singleton<QuestManager>
     private void Awake()
     {
         base.SingletonInit();
-        Init();
+        //Init();
+
+        StartCoroutine(WaitAndInit());
     }
     #endregion
 
@@ -97,9 +99,66 @@ public class QuestManager : Singleton<QuestManager>
     /// <summary>
     /// QuestManager Awake시 실행되는 최초 초기화 함수입니다.
     /// </summary>
+    /// 
+
+    IEnumerator WaitAndInit()
+    {
+        /*yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStage.IsInit);*/
+
+        yield return new WaitForSeconds(3f);
+        Init();
+    }
+
     private void Init()
     {
-        // 초기화
+        string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
+
+        // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
+        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
+        Debug.LogError($"curStageQuestDatas개수: {curStageQuestDatas.Count()}");
+
+        foreach (var questDataKVP in curStageQuestDatas)
+        {
+            // 퀘스트 데이터 초기화
+            QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(questDataKVP.Key);
+            if (questData == null)
+            {
+                Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
+                Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(questDataKVP.Key);
+            }
+        }
+    }
+
+    public void QuestDataInitEvent(QuestBaseData questBaseData)
+    {
+        Debug.LogError($"{questBaseData.Id}, {questBaseData.QuestId}");
+        // 현재 퀘스트 데이터의 QC들
+        var QCParsedData = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == questBaseData.Id);
+
+        //Debug.LogError($"QCParsedData개수: {QCParsedData.Count()}");
+
+        foreach (var QCDataKVP in QCParsedData)
+        {
+            // 현재 QC의 QCS들
+            var QCSParsedData = Manager.data.QuestContentStep.Values.Where(item => item.Value.QuestContentId == QCDataKVP.Key);
+
+
+            //Debug.LogError($"QCSParsedData개수: {QCSParsedData.Count()}");
+            foreach (var QCSDataKVP in QCSParsedData)
+            {
+                // QCS 초기화
+
+                var data = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCSDataKVP.Value.QuestContentId);
+                if (data == null)
+                {
+                    Debug.LogError(333);
+                    Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCSDataKVP.Value.QuestContentId);
+                }
+            }
+        }
     }
 
 
@@ -159,8 +218,10 @@ public class QuestManager : Singleton<QuestManager>
         bool isUpdateSuccess = CurrentQuest.UpdateProgress(targetId, count);
         // 퀘스트 진행도 갱신시 발생하는 event 실행
         OnQuestProgressUpdate?.Invoke();
+
+
         // 현재 퀘스트의 진행도가 모두 완료되었다면
-        if (CurrentQuest.CheckState() == QuestState.Completed)
+        if (true)
         {
             // 현재 퀘스트의 상태를 완료로 변경
             CurrentQuest.UpdateQuestState(QuestState.Completed);
@@ -186,7 +247,7 @@ public class QuestManager : Singleton<QuestManager>
         }
         return isCompleted;
     }
-    
+
     /// <summary>
     /// 현재 퀘스트를 다음 퀘스트로 변경합니다.
     /// </summary>
@@ -206,4 +267,9 @@ public class QuestManager : Singleton<QuestManager>
         QuestEventBus.Publish(0, nextQuestIndex);
     }
     #endregion
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
 }

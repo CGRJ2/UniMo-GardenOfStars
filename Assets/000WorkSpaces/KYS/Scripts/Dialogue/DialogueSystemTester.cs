@@ -343,7 +343,7 @@ namespace KYS
                     
                     foreach (var progress in currentQuest._progresses)
                     {
-                        Debug.Log($"    - {progress.ContentTargetId}: {progress.ProgressCount}/{progress.ContentTargetCount} ({progress.State})");
+                        /*Debug.Log($"    - {progress.ContentTargetId}: {progress.ProgressdProdsCount}/{progress.CurrentTargetCount} ({progress.State})");*/
                     }
                 }
             }

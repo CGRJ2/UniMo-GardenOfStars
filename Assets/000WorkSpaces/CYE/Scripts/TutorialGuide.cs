@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class TutorialGuide : MonoBehaviour
 {
-    private void Awake()
+    private void Start()
     {
-        Init();
+        StartCoroutine(Init());
     }
-    private void Init()
+    private IEnumerator Init()
     {
-        //Manager.npc.SetCurrentNpc("tutorial");
-        //Manager.quest.SetQuestsOnRegion("tutorial");
+        yield return new WaitForSeconds(1f);
+        Debug.Log("[TutorialGuide] Call");
+        Manager.npc.SetCurrentNpc();
+        Manager.quest.SetQuestsOnRegion("Tutorial");
     }
 
     private void StartGuide()
