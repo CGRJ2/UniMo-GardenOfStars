@@ -33,7 +33,7 @@ public class QuestRequireTile : InteractableBase
 
     public void UpdateView()
     {
-        if (requirement.State == QuestProgressState.Completed)
+        if (requirement.IsContentClear)
         {
             group_Require.gameObject.SetActive(false);
             group_Complete.gameObject.SetActive(true);
@@ -43,7 +43,7 @@ public class QuestRequireTile : InteractableBase
             group_Complete.gameObject.SetActive(false);
             group_Require.gameObject.SetActive(true);
 
-            tmp_Count.text = $"{requirement.Count}/{requirement.ContentTargetCount}";
+            tmp_Count.text = $"{requirement.Count}/{requirement.CurrentTargetCount}";
 
 
             // 이미 재료 데이터가 있는데, 현재 조건의 재료 데이터와 같다면 => 불러오지 않아도 됨. return;
@@ -76,14 +76,14 @@ public class QuestRequireTile : InteractableBase
                 if (requirement == null) { Debug.LogError("해당 퀘스트 발판에 퀘스트 조건 데이터가 할당되지 않음"); break; }
 
                 // 손에 있는 재료가 퀘스트 조건이 아니면 || 퀘스트가 이미 완료된 상황이면
-                if (instanceProd.Data.ID != requirement.ContentTargetId || requirement.State == QuestProgressState.Completed)
+                if (instanceProd.Data.ID != requirement.ContentTargetId || requirement.IsContentClear)
                 {
                     break;  // 상호작용 취소
                 }
 
                 
                 // 현재 진행도에 개수 추가
-                if (requirement.Count < requirement.ContentTargetCount)
+                if (requirement.Count < requirement.CurrentTargetCount)
                 {
                     GetComponentInParent<NpcController>()?.ReceiveProduct(requirement.ContentTargetId);
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();

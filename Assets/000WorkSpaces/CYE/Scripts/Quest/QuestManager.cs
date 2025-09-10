@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using UnityEngine;
 // Custom
 using GameQuest;
+using GameNpc;
+using static UnityEditor.Progress;
 
 /// <summary>
 /// 현 스테이지의 퀘스트 목록 및 진행도를 관리하는 Singleton Class
@@ -89,7 +91,9 @@ public class QuestManager : Singleton<QuestManager>
     private void Awake()
     {
         base.SingletonInit();
-        Init();
+        //Init();
+
+        StartCoroutine(WaitAndInit());
     }
     #endregion
 
@@ -97,9 +101,61 @@ public class QuestManager : Singleton<QuestManager>
     /// <summary>
     /// QuestManager Awake시 실행되는 최초 초기화 함수입니다.
     /// </summary>
+    /// 
+
+    IEnumerator WaitAndInit()
+    {
+        /*yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);*/
+
+        yield return new WaitForSeconds(2f);
+        Init();
+    }
+
     private void Init()
     {
-        // 초기화
+        string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
+
+        // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
+        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
+
+        foreach (var kvp in curStageQuestDatas)
+        {
+            // 퀘스트 데이터 초기화
+            QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(kvp.Key);
+            if (questData == null)
+            {
+                Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(kvp.Key);
+            }
+            
+            // 현재 퀘스트 데이터의 QC들
+            var QuestContentID = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == kvp.Key);
+
+            foreach (var kvp2 in QuestContentID)
+            {
+                // 현재 QC의 QCS들
+                var QuestcontentStepData = Manager.data.QuestContentStep.Values.Where(item => item.Value.QuestContentId == kvp2.Key);
+
+                foreach (var kvp3 in QuestcontentStepData)
+                {
+                    // QCS 초기화
+                    var data = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.Get(kvp3.Value.QuestContentId);
+                    if (data == null)
+                    {
+                        Debug.LogError(333);
+                        Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.Add(kvp3.Value.QuestContentId);
+                    }
+                }
+            }
+
+
+
+                
+        }
     }
 
 
@@ -159,8 +215,10 @@ public class QuestManager : Singleton<QuestManager>
         bool isUpdateSuccess = CurrentQuest.UpdateProgress(targetId, count);
         // 퀘스트 진행도 갱신시 발생하는 event 실행
         OnQuestProgressUpdate?.Invoke();
+
+
         // 현재 퀘스트의 진행도가 모두 완료되었다면
-        if (CurrentQuest.CheckState() == QuestState.Completed)
+        if (true)
         {
             // 현재 퀘스트의 상태를 완료로 변경
             CurrentQuest.UpdateQuestState(QuestState.Completed);
@@ -206,4 +264,9 @@ public class QuestManager : Singleton<QuestManager>
         QuestEventBus.Publish(0, nextQuestIndex);
     }
     #endregion
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
 }

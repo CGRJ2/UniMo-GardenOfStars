@@ -21,6 +21,10 @@ public class NpcManager : Singleton<NpcManager>
     }
     public void SetCurrentNpc()
     {
-        CurrentNpc = new NpcData(Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == regionId).Key);
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
+        // 해당하는 regionId의 Npc 데이터를 불러와서
+        // CurrentNpc에 넣어줌
+        // for test
+        CurrentNpc = new NpcData(Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == curStageID).Key);
     }
 }

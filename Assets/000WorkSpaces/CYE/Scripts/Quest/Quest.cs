@@ -111,7 +111,7 @@ namespace GameQuest
         /// 현재 퀘스트의 상태를 확인합니다
         /// </summary>
         /// <returns>현재 퀘스트의 상태값</returns>
-        public QuestState CheckState()
+        /*public QuestState CheckState()
         {
             if (_progresses.Count() == 0)
             {
@@ -129,7 +129,7 @@ namespace GameQuest
                 return QuestState.Completed;
             }
             return QuestState.InProgress;
-        }
+        }*/
 
         // /// <summary>
         // /// 개별 진행도 데이터 초기화

@@ -55,7 +55,7 @@ public class QuestProdsInsertArea : InteractableBase
                 foreach (QuestContentProgressData requirement in Manager.quest.CurrentQuest._progresses)
                 {
                     // 손에 있는 재료가 퀘스트 조건에 있는 재료이고 && 충족되지 않은 상황이면
-                    if (instanceProd.Data.ID == requirement.ContentTargetId && requirement.State != QuestProgressState.Completed)
+                    if (instanceProd.Data.ID == requirement.ContentTargetId /*&& requirement.State != QuestProgressState.Completed*/)
                     {
                         targetRequirement = requirement;    // 타겟으로 설정
                         break;

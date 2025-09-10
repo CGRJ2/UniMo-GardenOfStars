@@ -12,7 +12,7 @@ public class TutorialGuide : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         Debug.Log("[TutorialGuide] Call");
-        Manager.npc.SetCurrentNpc("Tutorial");
+        Manager.npc.SetCurrentNpc();
         Manager.quest.SetQuestsOnRegion("Tutorial");
     }
 

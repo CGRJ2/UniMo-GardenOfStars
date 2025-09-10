@@ -61,7 +61,7 @@ public class QuestContentStepDataCsv : IUsableId
     }
 }
 
-public class QuestUserDataJson : IUsableId
+/*public class QuestUserDataJson : IUsableId
 {
     public string Id;
     public string QuestId;
@@ -72,9 +72,9 @@ public class QuestUserDataJson : IUsableId
     {
         return Id;
     }
-}
+}*/
 
-public class QuestUserProgressDataJson : IUsableId
+/*public class QuestUserProgressDataJson : IUsableId
 {
     public string Id;
     public int QuestId;
@@ -88,7 +88,7 @@ public class QuestUserProgressDataJson : IUsableId
     {
         return Id;
     }
-}
+}*/
 
 public partial class DataManager
 {
