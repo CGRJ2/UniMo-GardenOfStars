@@ -2,6 +2,7 @@ using GameNpc;
 using GameQuest;
 using System;
 using System.Collections;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -31,9 +32,6 @@ public class QuestRequireTile : InteractableBase
         UpdateView();
     }
 
-
-    
-
     public void UpdateView()
     {
         if (QC_Data.IsContentClear)
@@ -46,7 +44,7 @@ public class QuestRequireTile : InteractableBase
             group_Complete.gameObject.SetActive(false);
             group_Require.gameObject.SetActive(true);
 
-            tmp_Count.text = $"{QC_Data.Count}/{QC_Data.CurrentTargetCount}";
+            tmp_Count.text = $"{QC_Data.ProgressdProdsCount.Value}/{QC_Data.CurrentTargetCount}";
 
 
             // 이미 재료 데이터가 있는데, 현재 조건의 재료 데이터와 같다면 => 불러오지 않아도 됨. return;
@@ -86,9 +84,9 @@ public class QuestRequireTile : InteractableBase
 
                 
                 // 현재 진행도에 개수 추가
-                if (QC_Data.Count < QC_Data.CurrentTargetCount)
+                if (QC_Data.ProgressdProdsCount.Value < QC_Data.CurrentTargetCount)
                 {
-                    GetComponentInParent<NpcController>()?.ReceiveProduct(QC_Data.ContentTargetId);
+                    QC_Data.ProgressdProdsCount.Value += 1; // 이거 바로바로 Value를 연속해서 바꾸는게 가능한가?
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                     popedProd.MoveToTargetAndShrink(attachPoint);
 

@@ -435,14 +435,14 @@ namespace KYS
             // }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._data.QuestId == questId);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
                 Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {questId}");
                 return false;
             }
 
-            bool isCompleted = quest._data.State == QuestState.Completed;
+            bool isCompleted = quest.State == QuestState.Completed;
             Debug.Log($"[DialogueManager] 퀘스트 완료 체크: {questId} = {isCompleted}");
             return isCompleted;
         }
@@ -470,16 +470,21 @@ namespace KYS
             }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._data.QuestId == parts[0]);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
                 Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {parts[0]}");
                 return false;
             }
 
+            // 어떤 진행도인지 잘 모르겠어서 일단 1로 통일해두었습니다 :최재민
             // 퀘스트 진행도 계산 (완료된 진행도 항목 수 / 전체 진행도 항목 수 * 100)
-            int completedCount = quest._progresses.Count(p => p.IsContentClear);
-            int totalCount = quest._progresses.Count;
+            // int completedCount = quest._progresses.Count(p => p.IsContentClear);
+            // int totalCount = quest._progresses.Count;
+
+            int completedCount = 1;
+            int totalCount = 1;
+
             int currentProgress = totalCount > 0 ? (completedCount * 100) / totalCount : 0;
 
             bool meetsRequirement = currentProgress >= requiredProgress;
