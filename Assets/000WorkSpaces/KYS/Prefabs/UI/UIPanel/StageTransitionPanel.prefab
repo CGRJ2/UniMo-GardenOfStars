@@ -380,7 +380,6 @@ MonoBehaviour:
   - Stage_Aquarius
   - Stage_Pisces
   useAddressables: 1
-  addressableSceneName: StageScene
   useGameManagerStages: 1
   stageNameTextName: RunConstellationText
   stageIconImageName: ConstellationCharacterImage
@@ -1608,8 +1607,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 450}
+  m_AnchoredPosition: {x: 0, y: 240}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2396003668943787944
 CanvasRenderer:

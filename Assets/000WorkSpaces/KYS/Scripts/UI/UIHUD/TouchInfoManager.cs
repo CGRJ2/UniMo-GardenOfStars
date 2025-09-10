@@ -187,9 +187,9 @@ namespace KYS
             
             if (mainCamera != null)
             {
-                Debug.Log($"[TouchInfoManager] 메인 카메라 설정 완료: {mainCamera.name}");
-                Debug.Log($"[TouchInfoManager] 카메라 위치: {mainCamera.transform.position}");
-                Debug.Log($"[TouchInfoManager] 카메라 회전: {mainCamera.transform.eulerAngles}");
+                //Debug.Log($"[TouchInfoManager] 메인 카메라 설정 완료: {mainCamera.name}");
+                //Debug.Log($"[TouchInfoManager] 카메라 위치: {mainCamera.transform.position}");
+                //Debug.Log($"[TouchInfoManager] 카메라 회전: {mainCamera.transform.eulerAngles}");
                 
                 #if CINEMACHINE
                 // 시네머신 정보도 출력

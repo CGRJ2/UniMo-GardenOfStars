@@ -18,12 +18,12 @@ namespace KYS
         private Button _capacityUpgradeButton => GetUI<Button>(_capacityUpgradeButtonName);
         private TextMeshProUGUI _workerNameText => GetUI<TextMeshProUGUI>("WorkerNameText");
         private TextMeshProUGUI _workerRankText => GetUI<TextMeshProUGUI>("WorkerRankText");
-        private TextMeshProUGUI _effectRankText => GetUI<TextMeshProUGUI>("EffectRankText");
-        private TextMeshProUGUI _productSpeedRankText => GetUI<TextMeshProUGUI>("ProductSpeedRankText");
-        private TextMeshProUGUI _curSpeedText => GetUI<TextMeshProUGUI>("CurSpeedText");
-        private TextMeshProUGUI _curCapacityText => GetUI<TextMeshProUGUI>("CurCapacityText");
-        private TextMeshProUGUI _upgradeSpeedText => GetUI<TextMeshProUGUI>("UpgradeSpeedText");
-        private TextMeshProUGUI _upgradeCapacityText => GetUI<TextMeshProUGUI>("UpgradeCapacityText");
+        private TextMeshProUGUI _effectRankText => GetUI<TextMeshProUGUI>("RunStatusEffectRankText");
+        private TextMeshProUGUI _productSpeedRankText => GetUI<TextMeshProUGUI>("RunProductSpeedRankText");
+        private TextMeshProUGUI _curSpeedText => GetUI<TextMeshProUGUI>("RunCurSpeedText");
+        private TextMeshProUGUI _curCapacityText => GetUI<TextMeshProUGUI>("RunCurCapacityText");
+        private TextMeshProUGUI _upgradeSpeedText => GetUI<TextMeshProUGUI>("RunUpgradeSpeedText");
+        private TextMeshProUGUI _upgradeCapacityText => GetUI<TextMeshProUGUI>("RunUpgradeCapacityText");
         private TextMeshProUGUI _upgradeSpeedCostText => GetUI<TextMeshProUGUI>("UpgradeSpeedCostText");
         private TextMeshProUGUI _upgradeCapacityCostText => GetUI<TextMeshProUGUI>("UpgradeCapacityCostText");
 
