@@ -144,8 +144,7 @@ MonoBehaviour:
   m_text: "\uC5C5\uADF8\uB808\uC774\uB4DC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
-  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0,
-    type: 2}
+  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -240,7 +239,7 @@ GameObject:
   - component: {fileID: 7631015946466036267}
   - component: {fileID: 3579571725054705084}
   m_Layer: 5
-  m_Name: BuyButton
+  m_Name: DummyBuyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -360,7 +359,7 @@ GameObject:
   - component: {fileID: 5683803756827542590}
   - component: {fileID: 6993646098290147349}
   m_Layer: 5
-  m_Name: WorkerImage
+  m_Name: RunWorkerImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -567,8 +566,7 @@ MonoBehaviour:
   m_text: "\uACE0\uC6A9\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
-  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0,
-    type: 2}
+  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -841,8 +839,7 @@ MonoBehaviour:
   m_text: "\uC81C\uC784\uC2A4 "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
-  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06,
-    type: 2}
+  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1166,7 +1163,7 @@ GameObject:
   - component: {fileID: 3473872925648643084}
   - component: {fileID: 713038722270578726}
   m_Layer: 5
-  m_Name: LevelText
+  m_Name: ContentWorkerLevelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1222,8 +1219,7 @@ MonoBehaviour:
   m_text: "\uB4F1\uAE09: "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
-  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06,
-    type: 2}
+  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1301,7 +1297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -1374,8 +1370,7 @@ MonoBehaviour:
   m_text: 500
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
-  m_sharedMaterial: {fileID: -4003619541380878546, guid: 8fb8614c7663c554fa8de4f18640326d,
-    type: 2}
+  m_sharedMaterial: {fileID: -4003619541380878546, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1453,7 +1448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 1
+  enableAutoLocalization: 0
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -1492,7 +1487,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 145, y: 20}
+  m_AnchoredPosition: {x: 200, y: 20}
   m_SizeDelta: {x: 375, y: 65}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &8767640328156124343
@@ -1526,8 +1521,7 @@ MonoBehaviour:
   m_text: S
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
-  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06,
-    type: 2}
+  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1743,7 +1737,7 @@ GameObject:
   - component: {fileID: 1766420804722583454}
   - component: {fileID: 6722788437872563140}
   m_Layer: 5
-  m_Name: WorkerNameText
+  m_Name: ContentWorkerNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1799,8 +1793,7 @@ MonoBehaviour:
   m_text: "\uC9C1\uC6D0 \uC774\uB984: "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
-  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06,
-    type: 2}
+  m_sharedMaterial: {fileID: 2818768795228101000, guid: 7ec6b6796427e43439f23ddd7fc98f06, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1878,7 +1871,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableAutoLocalization: 0
+  enableAutoLocalization: 1
   customKey: 
   useCustomKey: 0
   showDebugLogs: 0
@@ -2151,8 +2144,7 @@ MonoBehaviour:
   m_text: "\uACE0\uC6A9\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
-  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0,
-    type: 2}
+  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2474,8 +2466,8 @@ GameObject:
   - component: {fileID: 5626357616614821352}
   - component: {fileID: 488830124606616134}
   - component: {fileID: 7232810674278057749}
-  - component: {fileID: 8995863565987637994}
   - component: {fileID: 2804540404798613492}
+  - component: {fileID: 5982690578440584377}
   m_Layer: 5
   m_Name: WorkerContent
   m_TagString: Untagged
@@ -2545,7 +2537,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8995863565987637994
+--- !u!225 &2804540404798613492
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8279631505264968660}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5982690578440584377
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2554,7 +2558,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8279631505264968660}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 807ddf2b6de48e241beacc13a589800b, type: 3}
+  m_Script: {fileID: 11500000, guid: 244350124693c3e478026ac9a0768a16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   layerType: 1
@@ -2580,32 +2584,6 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  workerNameTextName: WorkerNameText
-  workerLevelTextName: WorkerLevelText
-  workerSkillTextName: WorkerSkillText
-  workerSalaryTextName: WorkerSalaryText
-  workerImageName: WorkerImage
-  assignButtonName: AssignButton
-  fireButtonName: FireButton
-  upgradeButtonName: UpgradeButton
-  workerName: 
-  workerLevel: 1
-  workerSkill: 
-  workerSalary: 100
-  workerPortrait: {fileID: 0}
-  isAssigned: 0
---- !u!225 &2804540404798613492
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8279631505264968660}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &8914785219779986785
 GameObject:
   m_ObjectHideFlags: 0
