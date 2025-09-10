@@ -36,7 +36,7 @@ namespace GameNpc
                 { Debug.LogError("퀘스트 조건 발판 개수보다 퀘스트 조건이 더 많음"); break; }
 
                 requireTiles[i].requirement = Manager.quest.CurrentQuest._progresses[i];
-                requireTiles[i].UpdateView();
+                requireTiles[i].Init();
             }
         }
 

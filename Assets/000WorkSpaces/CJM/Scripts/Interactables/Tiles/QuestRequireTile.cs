@@ -20,7 +20,16 @@ public class QuestRequireTile : InteractableBase
     [SerializeField] Image image_Ingrediant;
     [SerializeField] TMP_Text tmp_Count;
 
+    [SerializeField] Transform lampParent;
+    Lamp_QuestContent[] lamps;
+
     private IngrediantData ingrediantData;
+
+    public void Init()
+    {
+        lamps = lampParent.GetComponentsInChildren<Lamp_QuestContent>();
+        UpdateView();
+    }
 
     public void UpdateView()
     {
@@ -102,7 +111,7 @@ public class QuestRequireTile : InteractableBase
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
-
+        Debug.Log("Å¸ÀÏ µé¾î¿È");
         StartCoroutine(AutoInserting());
     }
 }
