@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic; // Added for Dictionary
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic; // Added for Dictionary
+using GoogleMobileAds.Api;
 
 namespace KYS
 {
@@ -29,7 +30,8 @@ namespace KYS
         
         // 생성된 SafeArea 패널들
         private Dictionary<Canvas, GameObject> safeAreaPanels = new Dictionary<Canvas, GameObject>();
-        
+
+
         private void Awake()
         {
             if (enableSafeArea)
@@ -45,8 +47,13 @@ namespace KYS
             {
                 ApplySafeAreaToAllCanvases();
             }
+
+           
         }
+
+
         
+
         /// <summary>
         /// SafeArea 계산
         /// </summary>
