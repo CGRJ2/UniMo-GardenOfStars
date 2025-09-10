@@ -14,8 +14,8 @@ namespace GameQuest
         private QuestContentDataCsv _questContentCsv => Manager.data.QuestContent.Values[Id];
         public string QuestId => _questContentCsv.QuestId;
         public string ContentTargetId => _questContentCsv.ContentTargetId;
-        public int CurrentTargetCount => GetCurrentTargetCount();//_questContentCsv.ContentTargetCount;
-        public List<QuestContentStepData> _questContentStep = new();
+        public int CurrentTargetCount => GetCurrentStepTargetCount();//_questContentCsv.ContentTargetCount;
+        //public List<QuestContentStepData> _questContentStep = new();
 
         // ProgressdIndex가 CSV의 최대Index를 넘어갈 때 클리어 판정.
         public FirebaseProperty<int> ProgressdIndex;
@@ -33,13 +33,13 @@ namespace GameQuest
         /// <param name="rawProgressData">퀘스트 진행도 데이터</param>
         public QuestContentProgressData(string id, string parentPath = null) : base(id, parentPath)
         {
-            foreach (KeyValuePair<string, QuestContentStepDataCsv> i in Manager.data.QuestContentStep.Values)
+            /*foreach (KeyValuePair<string, QuestContentStepDataCsv> i in Manager.data.QuestContentStep.Values)
             {
                 if (i.Value.QuestContentId == Id)
                 {
                     this._questContentStep.Add(new QuestContentStepData(i.Key));
                 }
-            }
+            }*/
 
             ProgressdProdsCount = new FirebaseProperty<int>("ProgressdCount", Path);
             InitList.Add(ProgressdProdsCount);
@@ -74,11 +74,11 @@ namespace GameQuest
             {
                 // 만일 현재 수량이 목표 수량에 도달했을 경우 상태를 완료(Complete)로 변경함.
                 // State = QuestProgressState.Completed;
-                GetCurrentContentStep().UpdateCompletedState(true);
+                // GetCurrentContentStep().UpdateCompletedState(true);
                 ProgressdProdsCount.Value = 0;
                 // UpdateProgressState(QuestProgressState.Completed);
             }
-            if (GetCurrentContentStep() == null)
+            if (true/*GetCurrentContentStep() == null*/)
             { 
                 UpdateProgressState(QuestProgressState.Completed);
             }
@@ -92,19 +92,18 @@ namespace GameQuest
         {
             //ProgressState.Value = (int)nextState;
         }
-        public int GetCurrentTargetCount()
+        public int GetCurrentStepTargetCount()
         {
-            foreach (QuestContentStepData item in _questContentStep)
+            foreach (var kvp in Manager.data.QuestContentStep.Values)
             {
-                if (!item.IsCompleted)
+                if (kvp.Value.QuestContentId == Id && ProgressdIndex.Value == kvp.Value.ContentOrder)
                 {
-                    return item.TargetAmount;
+                    return kvp.Value.TargetAmount;
                 }
             }
-
-            return 0;
+            return -1;
         }
-        private QuestContentStepData GetCurrentContentStep()
+        /*private QuestContentStepData GetCurrentContentStep()
         {
             foreach (QuestContentStepData item in _questContentStep)
             {
@@ -115,7 +114,7 @@ namespace GameQuest
                 }
             }
             return null;
-        }
+        }*/
     }
     
 

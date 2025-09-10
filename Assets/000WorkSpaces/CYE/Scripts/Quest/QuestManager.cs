@@ -112,8 +112,11 @@ public class QuestManager : Singleton<QuestManager>
         Init();
     }
 
-    private void Init()
+    public void Init()
     {
+        Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded?.RemoveListener(QuestDataInitEvent);
+        Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
+
         string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
@@ -126,7 +129,7 @@ public class QuestManager : Singleton<QuestManager>
             QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(questDataKVP.Key);
             if (questData == null)
             {
-                Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
+                //Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
                 Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(questDataKVP.Key);
             }
         }
@@ -134,7 +137,7 @@ public class QuestManager : Singleton<QuestManager>
 
     public void QuestDataInitEvent(QuestBaseData questBaseData)
     {
-        Debug.LogError($"{questBaseData.Id}, {questBaseData.QuestId}");
+        //Debug.LogError($"{questBaseData.Id}, {questBaseData.QuestId}");
         // 현재 퀘스트 데이터의 QC들
         var QCParsedData = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == questBaseData.Id);
 
@@ -154,7 +157,6 @@ public class QuestManager : Singleton<QuestManager>
                 var data = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCSDataKVP.Value.QuestContentId);
                 if (data == null)
                 {
-                    Debug.LogError(333);
                     Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCSDataKVP.Value.QuestContentId);
                 }
             }

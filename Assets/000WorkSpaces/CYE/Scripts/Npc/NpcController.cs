@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameQuest;
 using UnityEngine;
 
@@ -22,23 +23,51 @@ namespace GameNpc
 
         IEnumerator WaitAndInit()
         {
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(3f);
             Init();
         }
 
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>();
+            UpdateQuestData();
 
-            for (int i =0; i< Manager.quest.CurrentQuest._progresses.Count; i++)
-            {
-                if (Manager.quest.CurrentQuest._progresses.Count > requireTiles.Length) 
-                { Debug.LogError("퀘스트 조건 발판 개수보다 퀘스트 조건이 더 많음"); break; }
 
-                requireTiles[i].requirement = Manager.quest.CurrentQuest._progresses[i];
-                requireTiles[i].Init();
-            }
+            //var kvpList = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == )
+
+            /* for (int i =0; i< Manager.quest.CurrentQuest._progresses.Count; i++)
+             {
+                 if (Manager.quest.CurrentQuest._progresses.Count > requireTiles.Length) 
+                 { Debug.LogError("퀘스트 조건 발판 개수보다 퀘스트 조건이 더 많음"); break; }
+
+                 requireTiles[i].requirement = Manager.quest.CurrentQuest._progresses[i];
+                 requireTiles[i].Init();
+             }*/
         }
+
+        public void UpdateQuestData()
+        {
+            // QC데이터가 있는 만큼만 발판 활성화
+            Debug.Log(Manager.firebase.UserData.CurStageData.Npc.CurQuestData);
+            Debug.Log(Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList);
+            Debug.Log(Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List);
+            var QCDataList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
+            for (int i = 0; i < QCDataList.Count; i++)
+            {
+                requireTiles[i].gameObject.SetActive(true);
+
+                requireTiles[i].QC_Data = QCDataList[i];
+                requireTiles[i].UpdateView();
+            }
+            if (QCDataList.Count < requireTiles.Length)
+            {
+                for (int i = QCDataList.Count; i < requireTiles.Length; i++)
+                {
+                    requireTiles[i].gameObject.SetActive(false);
+                }
+            }
+    }
+
 
         /// <summary>
         /// 물품 납품

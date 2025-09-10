@@ -224,7 +224,7 @@ public partial class DataManager
 
             try
             {
-                Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
                 {
                     if (task.Status != AsyncOperationStatus.Succeeded)
                     {
@@ -233,7 +233,7 @@ public partial class DataManager
                     }
 
                     stage.WheelSprite = task.Result;
-                };
+                };*/
             }
             catch (InvalidKeyException e)
             {
@@ -242,7 +242,7 @@ public partial class DataManager
 
             try
             {
-                Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
                 {
                     if (task.Status != AsyncOperationStatus.Succeeded)
                     {
@@ -251,7 +251,7 @@ public partial class DataManager
                     }
 
                     stage.WheelSprite = task.Result;
-                };
+                };*/
             }
             catch (InvalidKeyException e)
             {
