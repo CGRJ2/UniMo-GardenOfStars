@@ -14,7 +14,8 @@ namespace GameQuest
         private QuestContentDataCsv _questContentCsv => Manager.data.QuestContent.Values[Id];
         public string QuestId => _questContentCsv.QuestId;
         public string ContentTargetId => _questContentCsv.ContentTargetId;
-        public int ContentTargetCount => _questContentCsv.ContentTargetCount;
+        public int CurrentTargetCount => GetCurrentTargetCount();//_questContentCsv.ContentTargetCount;
+        public List<QuestContentStepData> _questContentStep = new();
         public FirebaseProperty<long> ProgressCount;
         public int Count => (int)ProgressCount.Value;
         public FirebaseProperty<long> ProgressState;
@@ -27,6 +28,15 @@ namespace GameQuest
         /// <param name="rawProgressData">퀘스트 진행도 데이터</param>
         public QuestContentProgressData(string id, string parentPath = null) : base(id, parentPath)
         {
+
+            foreach (KeyValuePair<string, QuestContentStepDataCsv> i in Manager.data.QuestContentStep.Values)
+            {
+                if (i.Value.QuestContentId == Id)
+                {
+                    this._questContentStep.Add(new QuestContentStepData(i.Key));
+                    
+                }
+            }
             ProgressCount = new FirebaseProperty<long>("ProgressCount", Path);
             InitList.Add(ProgressCount);
 
@@ -56,21 +66,84 @@ namespace GameQuest
             // Count += addCount;
             UpdateProgressCount(addCount);
 
-            if (Count == ContentTargetCount)
+            if (Count == CurrentTargetCount)
             {
                 // 만일 현재 수량이 목표 수량에 도달했을 경우 상태를 완료(Complete)로 변경함.
                 // State = QuestProgressState.Completed;
+                GetCurrentContentStep().UpdateCompletedState(true);
+                ProgressCount.Value = 0;
+                // UpdateProgressState(QuestProgressState.Completed);
+            }
+            if (GetCurrentContentStep() == null)
+            { 
                 UpdateProgressState(QuestProgressState.Completed);
             }
+            Debug.Log($"[QeustContentData] Update Data Complete -> {QuestId}/{ContentTargetId}/{CurrentTargetCount}/{Count}/{State}");
         }
 
         private void UpdateProgressCount(int addCount)
         {
-            ProgressCount.Value = (ProgressCount.Value + addCount) >= ContentTargetCount ? ContentTargetCount : (ProgressCount.Value + addCount);
+            ProgressCount.Value = (ProgressCount.Value + addCount) >= CurrentTargetCount ? CurrentTargetCount : (ProgressCount.Value + addCount);
         }
         private void UpdateProgressState(QuestProgressState nextState)
         {
             ProgressState.Value = (int)nextState;
+        }
+        public int GetCurrentTargetCount()
+        {
+            foreach (QuestContentStepData item in _questContentStep)
+            {
+                if (!item.IsCompleted)
+                {
+                    return item.TargetAmount;
+                }
+            }
+            return 0;
+        }
+        private QuestContentStepData GetCurrentContentStep()
+        {
+            foreach (QuestContentStepData item in _questContentStep)
+            {
+                if (!item.IsCompleted)
+                {
+                    return item;
+                    // return item.TargetAmount;
+                }
+            }
+            return null;
+        }
+    }
+    
+
+    public class QuestContentStepData : FirebaseData
+    {
+        private QuestContentStepDataCsv _questContentStepCsv => Manager.data.QuestContentStep.Values[Id];
+        public string QuestContentId => _questContentStepCsv.QuestContentId;
+        public int TargetAmount => _questContentStepCsv.TargetAmount;
+        public string RewardId => _questContentStepCsv.RewardId;
+        public int RewardAmount => _questContentStepCsv.RewardAmount;
+        public int ContentOrder => _questContentStepCsv.ContentOrder;
+        public FirebaseProperty<bool> IsCompletedProp;
+        public bool IsCompleted => IsCompletedProp.Value;
+        public FirebaseProperty<bool> IsProvidedProp;
+        public bool IsProvided => IsProvidedProp.Value;
+
+        public QuestContentStepData(string id, string parentPath = null) : base(id, parentPath)
+        {
+            IsCompletedProp = new FirebaseProperty<bool>("IsCompleted", Path);
+            InitList.Add(IsCompletedProp);
+
+            IsProvidedProp = new FirebaseProperty<bool>("IsProvided", Path);
+            InitList.Add(IsProvidedProp);
+        }
+
+        public void UpdateCompletedState(bool isCompleted)
+        {
+            IsCompletedProp.Value = isCompleted;
+        }
+        public void UpdateProvidedState(bool isProvided)
+        {
+            IsProvidedProp.Value = isProvided;
         }
     }
 }

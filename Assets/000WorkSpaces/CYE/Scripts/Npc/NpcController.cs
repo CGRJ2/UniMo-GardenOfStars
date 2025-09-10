@@ -47,7 +47,7 @@ namespace GameNpc
         /// <param name="addCount"></param>
         public void ReceiveProduct(string targetId, int addCount = 1)
         {
-            // 퀘스트 업데이트
+            Debug.Log($"[NpcContoller] {nameof(ReceiveProduct)} Call");
             Manager.quest.UpdateCurrentQuestProgress(targetId, addCount);
         }
 
@@ -56,6 +56,7 @@ namespace GameNpc
         /// </summary>
         public void Talk()
         {
+            Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
             // Dialogue 실행
             Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }

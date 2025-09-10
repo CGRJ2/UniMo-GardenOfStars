@@ -1736,7 +1736,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6371479456462524165, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6782152535141514229, guid: 2f9f97343532edd429ddea736b50d075, type: 3}
       propertyPath: m_Pivot.x
@@ -2507,7 +2507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1281660204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2930,7 +2930,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   personalTaskOwner: {fileID: 0}
-  ownerInstance: {fileID: 0}
+  ownerInstance: {fileID: 2000200555}
   attachPoint: {fileID: 1644995046}
   insertDelayTime: 0.1
 --- !u!65 &1644995048
@@ -3851,10 +3851,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab419a9ade18334488d0e21bb2715452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _id: 0
-  _name: 
-  _description: 
-  _focusTextList: []
 --- !u!114 &2000200555
 MonoBehaviour:
   m_ObjectHideFlags: 0

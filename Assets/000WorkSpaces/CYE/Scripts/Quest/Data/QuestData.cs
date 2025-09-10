@@ -35,4 +35,24 @@ namespace GameQuest
             QuestState.Value = (int)nextState;
         }
     }
+
+    public class QuestRewardData : FirebaseData
+    {
+        private QuestRewardDataCsv _questRewardCsv => Manager.data.QuestReward.Values[Id];
+        public string QuestId => _questRewardCsv.QuestId;
+        public string RewardId => _questRewardCsv.RewardId;
+        public int RewardAmount => _questRewardCsv.RewardAmount;
+        public FirebaseProperty<bool> IsProvidedProp;
+        public bool IsProvided => IsProvidedProp.Value;
+
+        public QuestRewardData(string id, string parentPath = null) : base(id, parentPath)
+        {
+            IsProvidedProp = new FirebaseProperty<bool>("IsProvided", Path);
+            InitList.Add(IsProvidedProp);
+        }
+        public void UpdateProvidedState(bool isProvided)
+        {
+            IsProvidedProp.Value = isProvided;
+        }
+    }
 }
