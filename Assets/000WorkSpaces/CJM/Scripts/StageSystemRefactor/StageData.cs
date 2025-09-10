@@ -36,7 +36,7 @@ public partial class StageData : FirebaseData
         PurchasedBuildingID = new FirebaseProperty<string>("PurchasedBuildingID", Path);
 
         // 해당 스테이지의 id에 존재하는 NPCId
-        Npc = new NpcData("NpcData", parentPath);
+        Npc = new NpcData("NpcData", Path);
 
         InitList.Add(WorkerList);
         InitList.Add(PlaceTileList);
