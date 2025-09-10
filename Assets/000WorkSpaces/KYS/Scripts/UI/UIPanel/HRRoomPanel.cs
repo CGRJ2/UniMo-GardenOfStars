@@ -85,7 +85,15 @@ namespace KYS
                     Debug.Log($"[HRRoomPanel] WorkerUpgradePresenter 위치: {presenter.gameObject.name}");
                 }
                 
+                // 먼저 workerUpgradePanel에서 찾기 시도
                 _workerUpgradePresenter = workerUpgradePanel.GetComponent<WorkerUpgradePresenter>();
+                
+                // 찾지 못했다면 FindObjectsOfType으로 찾은 것 사용
+                if (_workerUpgradePresenter == null && allPresenters.Length > 0)
+                {
+                    _workerUpgradePresenter = allPresenters[0];
+                    Debug.Log($"[HRRoomPanel] workerUpgradePanel에서 찾지 못해 FindObjectsOfType으로 찾은 것을 사용: {_workerUpgradePresenter.gameObject.name}");
+                }
                 
                 if (_workerUpgradePresenter == null)
                 {

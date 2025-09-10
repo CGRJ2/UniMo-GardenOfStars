@@ -37,7 +37,7 @@ namespace KYS
         void OnEnable()
         {
             AdManager.OnBannerHeightChanged += AdjustUI;
-            Debug.Log("실행됨?");
+            //Debug.Log("실행됨?");
         }
 
         void OnDisable()
