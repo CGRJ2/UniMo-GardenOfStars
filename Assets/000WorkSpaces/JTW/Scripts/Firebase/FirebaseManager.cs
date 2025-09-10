@@ -90,20 +90,29 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         _isUserDataInit = true;
     }
-
-    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T defaultT, out T value)
+    
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, out T value)
     {
         if (_isUserDataInit)
         {
-            value = defaultT;
-            _database.RootReference.Child(path).ValueChanged += func;
+            value = setValue;
+            _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
+            {
+                if(task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("FirebaseProperty 값 변경 실패");
+                    return;
+                }
+
+                _database.RootReference.Child(path).ValueChanged += func;
+            });
             return true;
         }
         else
         {
             if (!_rootDataSnapshot.Child(path).Exists)
             {
-                value = defaultT;
+                value = setValue;
             }
             else
             {
