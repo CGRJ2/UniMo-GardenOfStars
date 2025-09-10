@@ -39,7 +39,7 @@ public class QuestContentDataCsv : IUsableId
     public string Id;
     public string QuestId;
     public string ContentTargetId;
-    public int ContentTargetCount;
+    //public int ContentTargetCount;
 
     public string GetId()
     {

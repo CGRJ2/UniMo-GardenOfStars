@@ -492,10 +492,7 @@ namespace KYS
             {
                 StageTransitionPanelButton.SetActive(true);
             }
-            if (StoryPanelButton != null)
-            {
-                StoryPanelButton.SetActive(true);
-            }
+
 
         }
 
@@ -514,11 +511,20 @@ namespace KYS
             {
                 StageTransitionPanelButton.SetActive(false);
             }   
-            if (StoryPanelButton != null)
-            {
-                StoryPanelButton.SetActive(false);
-            }
 
+
+        }
+
+        [ContextMenu("모든 버튼 숨기기")]
+        public void HindAllHUD()
+        {
+            GameObject.SetActive(false);
+        }
+
+        [ContextMenu("모든 버튼 보이기")]
+        public void ShowAllHUD()
+        {
+            GameObject.SetActive(true);
         }
 
 

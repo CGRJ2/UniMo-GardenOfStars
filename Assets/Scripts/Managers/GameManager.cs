@@ -176,7 +176,8 @@ public class StageDataCsv : IUsableId
     public string Name_KR;
     public string Name_En;
 
-    public Sprite Sprite;
+    public Sprite WheelSprite;
+    public Sprite CenterSprite;
 
     public int RequiredQuestIndex;
 
@@ -223,22 +224,40 @@ public partial class DataManager
 
             try
             {
-                Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["StageImage"]]}").Completed += task =>
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
                 {
                     if (task.Status != AsyncOperationStatus.Succeeded)
                     {
-                        Debug.LogWarning("이미지 불러오기 실패");
+                        Debug.LogWarning("WheelSprite 로드 실패");
                         return;
                     }
 
-                    stage.Sprite = task.Result;
-                };
+                    stage.WheelSprite = task.Result;
+                };*/
             }
             catch (InvalidKeyException e)
             {
                 Debug.LogWarning(e.Message);
             }
-            
+
+            try
+            {
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("CenterSprite 로드 실패");
+                        return;
+                    }
+
+                    stage.WheelSprite = task.Result;
+                };*/
+            }
+            catch (InvalidKeyException e)
+            {
+                Debug.LogWarning(e.Message);
+            }
+
 
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
 
