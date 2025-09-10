@@ -160,6 +160,6 @@ namespace KYS
 
     public enum CharacterRanks
     {
-        Normal = 1, Rare, Epic, Legendary
+        C = 1, B, A, S
     }
 }

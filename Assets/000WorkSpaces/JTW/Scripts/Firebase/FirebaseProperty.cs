@@ -20,7 +20,8 @@ public class FirebaseProperty<T> : FirebaseData
 
             if (!_isFirebaseConnected)
             {
-                _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, _default, out _value);
+                _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, value, out _value);
+                return;
             }
 
             Manager.firebase.SaveData(Path, value);

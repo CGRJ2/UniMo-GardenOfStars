@@ -11,8 +11,6 @@ public class WorkerUpgradePresenter : KYS.BaseUI
     private List<WorkerPanel> _workerPanelList = new();
 
     // UI 패널들
-    private GameObject _hrScrollView; // HR Scroll View
-    private GameObject _hrViewport;   // HR Viewport
     private GameObject _workerUpgradePanel; // WorkerUpgradePanel
 
 
@@ -21,8 +19,6 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         base.Awake();
         
         // UI 패널들 초기화
-        _hrScrollView = GetUI("HR Scroll View");
-        _hrViewport = GetUI("HR Viewport");
         _workerUpgradePanel = GetUI("WorkerUpgradePanel");
 
         // 워커 패널들 생성

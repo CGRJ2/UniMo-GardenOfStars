@@ -24,14 +24,13 @@ public class WorkerPanel : KYS.BaseUI
 
     // Run 접두사가 붙은 동적 데이터 UI 요소들
     private TextMeshProUGUI _runWorkerNameText;
-    private TextMeshProUGUI _runLevelText;
+    private TextMeshProUGUI _runRankText;
     private TextMeshProUGUI _runWorkerCostText;
     private Image _runWorkerImage;
 
     // 버튼들
     private Button _upgradeBtn;
     private Button _buyBtn;
-    private Button _lockBtn;
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
@@ -49,24 +48,21 @@ public class WorkerPanel : KYS.BaseUI
 
         // Run 접두사가 붙은 동적 데이터 UI 요소들 초기화
         _runWorkerNameText = GetUI<TextMeshProUGUI>("RunWorkerNameText");
-        _runLevelText = GetUI<TextMeshProUGUI>("RunLevelText");
+        _runRankText = GetUI<TextMeshProUGUI>("RunRankText");
         _runWorkerCostText = GetUI<TextMeshProUGUI>("RunWorkerCostText");
         _runWorkerImage = GetUI<Image>("RunWorkerImage");
 
         // 버튼들 초기화
         _upgradeBtn = GetUI<Button>("UpgradeButton");
         _buyBtn = GetUI<Button>("BuyButton");
-        _lockBtn = GetUI<Button>("LockButton"); // LockScreen 내의 LockButton
 
         // 디버그: 버튼 초기화 확인
         Debug.Log($"[WorkerPanel] _upgradeBtn: {_upgradeBtn != null}");
         Debug.Log($"[WorkerPanel] _buyBtn: {_buyBtn != null}");
-        Debug.Log($"[WorkerPanel] _lockBtn: {_lockBtn != null}");
 
         // 버튼 이벤트 등록
         if (_upgradeBtn != null) _upgradeBtn.onClick.AddListener(OnUpgradeClick);
         if (_buyBtn != null) _buyBtn.onClick.AddListener(OnBuyClick);
-        if (_lockBtn != null) _lockBtn.onClick.AddListener(OnLockClick);
 
         // Firebase 데이터가 초기화된 후에만 리스너 등록
         if (Manager.firebase?.UserData?.CurStageData?.WorkerList != null)
@@ -93,8 +89,6 @@ public class WorkerPanel : KYS.BaseUI
         }
     }
 
-
-
     private void UpdateWorkerData()
     {
         // 워커 기본 데이터 가져오기
@@ -118,11 +112,11 @@ public class WorkerPanel : KYS.BaseUI
         //    _runWorkerImage.sprite = workerData.Image;
         //}
         
-        // 워커 등급 설정 (Run 접두사가 붙은 등급 텍스트가 있다면)
-        var runWorkerRankText = GetUI<TextMeshProUGUI>("RunLevelText");
+        // 워커 등급 설정
+        var runWorkerRankText = GetUI<TextMeshProUGUI>("RunRankText");
         if (runWorkerRankText != null)
         {
-            runWorkerRankText.text = ((CharacterRanks)workerData.Rank).ToString();
+            _runRankText.text = ((CharacterRanks)workerData.Rank).ToString();
         }
         
         // 고용 비용 설정
@@ -133,17 +127,6 @@ public class WorkerPanel : KYS.BaseUI
             {
                 _runWorkerCostText.text = _employCost.ToString();
             }
-        }
-        
-        // 고용된 워커의 경우 레벨 표시
-        if (Worker != null && _runLevelText != null)
-        {
-            //_runLevelText.text = $"Lv.{Worker.Level}";
-        }
-        else if (_runLevelText != null)
-        {
-            // 고용되지 않은 워커는 기본 레벨 표시
-            _runLevelText.text = "Lv.1";
         }
     }
 
@@ -161,25 +144,16 @@ public class WorkerPanel : KYS.BaseUI
         {
             case WorkerPanelStates.Upgrade:
                 if (_upgradeButton != null) _upgradeButton.SetActive(true);
-                // 고용된 워커의 현재 레벨 표시
-                if (Worker != null && _runLevelText != null)
-                {
-                    //_runLevelText.text = $"Lv.{Worker.Level}";
-                }
                 break;
                 
             case WorkerPanelStates.Purchase:
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
                 // 고용 비용 업데이트
                 if (_runWorkerCostText != null) _runWorkerCostText.text = _employCost.ToString();
-                // 구매 가능한 워커의 기본 레벨 표시
-                if (_runLevelText != null) _runLevelText.text = "Lv.1";
                 break;
                 
             case WorkerPanelStates.Locked:
                 if (_lockScreen != null) _lockScreen.SetActive(true);
-                // 잠금된 워커의 기본 레벨 표시
-                if (_runLevelText != null) _runLevelText.text = "Lv.1";
                 break;
         }
     }
@@ -192,33 +166,21 @@ public class WorkerPanel : KYS.BaseUI
 
     private void OnBuyClick()
     {
-
-        Manager.player.Data.Money.Value += 500;
-
         if (Manager.player.Data.Money.Value < _employCost)
         {
+            Debug.LogWarning("잔액이 부족합니다.");
             return;
         }
        
         Manager.player.Data.Money.Value -= _employCost;
-        
-        // Firebase에 워커 추가 (안전한 접근)
-        if (Manager.firebase?.UserData?.CurStageData?.WorkerList != null)
-        {
-            Manager.firebase.UserData.CurStageData.WorkerList.Add(_workerKey);
-        }
-        
+
+        Manager.firebase.UserData.CurStageData.WorkerList.Add(_workerKey);
+
         // 구매 후 상태를 Upgrade로 변경
         SetInfo(WorkerPanelStates.Upgrade);
         
         // Presenter에 데이터 변경 알림
         _presenter?.OnWorkerDataChanged();
-    }
-
-    private void OnLockClick()
-    {
-        // 잠금 상태에서의 클릭 처리 (예: 건물 해제 등)
-        Debug.Log($"[WorkerPanel] Locked worker clicked: {_workerKey}");
     }
 
     private async Task ShowUpgradePopUp()
