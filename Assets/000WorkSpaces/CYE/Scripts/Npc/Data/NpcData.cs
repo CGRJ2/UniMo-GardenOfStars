@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace GameNpc
 {
+    [Serializable]
     public class NpcData : FirebaseData
     {
         private NpcDataCsv _npcCsv => Manager.data.Npc.Values[Id];

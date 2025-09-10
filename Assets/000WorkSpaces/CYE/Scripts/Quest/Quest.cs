@@ -14,23 +14,10 @@ namespace GameQuest
         // 퀘스트 기본 데이터
         public QuestBaseData _data; // = new();
         // public QuestBaseData BaseData { get { return _baseData; } }
+        
         // 퀘스트 진행도
         public List<QuestContentProgressData> _progresses = new();
         // public List<QuestProgressData> QuestProgresses { get { return _questProgresses; } }
-        // 퀘스트 상태
-        // public QuestState _questState;
-        // // public QuestState QuestState { get { return _questState; } }
-
-        public Quest(CYETestQuestDataSO rawData, CYETestQuestContentDataSO[] rawContentData, CYETestQuestProgressDataSO[] rawProgressData)
-        {
-            // this._baseData.QuestId = rawData._id;
-            // this._baseData.QuestName = rawData._name;
-            // this._baseData.QuestType = rawData._questType;
-            // this._baseData.Description = rawData._description;
-            // _questProgresses = this.InitProgress(rawContentData, rawProgressData);
-            // // 반드시 _questProgresses의 초기화가 선행되어야 함.(위아래 코드 순서 변경 금지)
-            // // _questState = CheckState();
-        }
         public Quest(string questId)
         {
             this._data = new QuestBaseData(questId);

@@ -40,7 +40,7 @@ namespace GameNpc
                 // panel.GetComponent<NpcProgressPanel>()?.UpdateItemImage(itemSprite);
                 panel.GetComponent<QuestProgressPanel>()?.UpdateItemId(progressData.ContentTargetId);
                 panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressCount.Value);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData.ContentTargetCount);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData.CurrentTargetCount);
                 if (!_itemPanel.ContainsKey(progressData.ContentTargetId)) { 
                     _itemPanel.Add(progressData.ContentTargetId, panel);
                 }
