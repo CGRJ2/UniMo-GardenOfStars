@@ -17,6 +17,13 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
     public int Count => _list.Count;
 
+    public List<T> List { 
+        get
+        {
+            return _list;
+        } 
+    }
+
     public FirebaseDataList(string id, string parentPath, Func<string, string, T> factory) : base(id, parentPath)
     {
         _factory = factory;
