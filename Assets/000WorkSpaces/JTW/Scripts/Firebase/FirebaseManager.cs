@@ -6,7 +6,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static FirebaseManager;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
@@ -72,6 +71,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
         else
         {
             userPath = $"UserData/{_auth.CurrentUser.UserId}";
+            Debug.LogWarning($"현재 UserId : {_auth.CurrentUser.UserId}");
         }
 
         _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
@@ -91,9 +91,43 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _isUserDataInit = true;
     }
 
-    public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, out T value)
     {
-        _database.RootReference.Child(path).ValueChanged += func;
+        if (_isUserDataInit)
+        {
+            value = default;
+            _database.RootReference.Child(path).ValueChanged += func;
+            return true;
+        }
+        else
+        {
+            if (!_rootDataSnapshot.Child(path).Exists)
+            {
+                value = default;
+            }
+            else
+            {
+                DataSnapshot snapshot = _rootDataSnapshot.Child(path);
+
+                if (typeof(T) == typeof(int))
+                {
+                    long valueT = (long)snapshot.Value;
+                    value = (T)(object)(int)valueT;
+                }
+                else if (typeof(T) == typeof(float))
+                {
+                    double valueT = (double)snapshot.Value;
+                    value = (T)(object)(float)valueT;
+                }
+                else
+                {
+                    value = (T)snapshot.Value;
+                }
+            }
+
+            return false;
+        }
+        
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
