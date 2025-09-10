@@ -515,6 +515,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1908636495}
     m_Modifications:
+    - target: {fileID: 178704541382241188, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 178704541382241188, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 178704541382241188, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 178704541382241188, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 178704541382241188, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 970868381410524264, guid: b0a8e37a88f4e544fa5081f0be219075, type: 3}
       propertyPath: m_Name
       value: StageTransitionPanel

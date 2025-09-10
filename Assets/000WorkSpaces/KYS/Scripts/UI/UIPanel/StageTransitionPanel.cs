@@ -1,10 +1,8 @@
-﻿using JetBrains.Annotations;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement; // 씬 이동을 위한 using 추가
 using UnityEngine.UI;
 
 namespace KYS
@@ -73,8 +71,6 @@ namespace KYS
         {
             base.Awake();
 
-
-
             zodiacStages.Clear();
             foreach (StageDataCsv data in Manager.data.Stage.Values.Values)
             {
@@ -87,9 +83,6 @@ namespace KYS
 
                 zodiacStages.Add(zodiac);
             }
-
-            
-
 
             Initialize();
         }
@@ -300,10 +293,16 @@ namespace KYS
             }
         }
 
+        private float _startAngle;
+        private Vector2 _startTouchPostion;
+
         private void OnInputBegan(Vector2 position)
         {
             isDragging = true;
             lastTouchPos = position;
+
+            _startAngle = wheelParent.rotation.eulerAngles.z;
+            _startTouchPostion = position;
 
             // 진행 중인 애니메이션 중지
             if (snapCoroutine != null)
@@ -320,12 +319,32 @@ namespace KYS
             Vector2 delta = position - lastTouchPos;
             float rotationDelta = delta.x * rotationSpeed * Time.deltaTime;
 
+            Vector2 vector1 = _startTouchPostion - (Vector2)wheelParent.position;
+            Vector2 vector2 = position - (Vector2)wheelParent.position;
+
+            float angle = Vector2.Angle(vector1, vector2);
+
+            float cross = vector1.x * vector2.y - vector1.y * vector2.x;
+
+            if (cross < 0)
+            {
+                angle *= -1;
+            }
+
+            Quaternion moveRotation = Quaternion.Euler(0, 0, _startAngle) * Quaternion.Euler(0, 0, angle);
+
+            currentRotation = _startAngle + angle;
+
+            wheelParent.rotation = moveRotation;
+
+            lastTouchPos = position;
+            return;
+
             // 회전 속도 제한 (급격한 회전 방지)
             float maxRotationDelta = 15f; // 한 프레임당 최대 회전 각도
             rotationDelta = Mathf.Clamp(rotationDelta, -maxRotationDelta, maxRotationDelta);
 
             currentRotation += rotationDelta;
-            lastTouchPos = position;
 
             // 돌림판 회전 (Z축만 회전, 크기 변화 방지)
             if (wheelParent != null)
@@ -877,7 +896,7 @@ namespace KYS
 
         [ContextMenu("테스트 - 천칭자리로 이동")]
         public void TestTransitionToLibra()
-        {   
+        {
             TransitionToStage(zodiacStages[6].stageId);
         }
 
