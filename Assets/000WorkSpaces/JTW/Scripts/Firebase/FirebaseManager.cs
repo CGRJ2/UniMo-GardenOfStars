@@ -91,11 +91,11 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _isUserDataInit = true;
     }
 
-    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, out T value)
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T defaultT, out T value)
     {
         if (_isUserDataInit)
         {
-            value = default;
+            value = defaultT;
             _database.RootReference.Child(path).ValueChanged += func;
             return true;
         }
@@ -103,7 +103,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (!_rootDataSnapshot.Child(path).Exists)
             {
-                value = default;
+                value = defaultT;
             }
             else
             {
