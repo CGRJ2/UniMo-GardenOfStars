@@ -88,6 +88,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
     {
         yield return new WaitUntil(() => UserData.IsInit);
 
+        Debug.LogWarning("[FirebaseManager] UserData 초기화 완료");
+
         _isUserDataInit = true;
     }
     
@@ -155,14 +157,17 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);
     }
 
-    public bool CheckInit(string path)
+    public bool CheckInit(string path, out int count)
     {
+        count = 0;
+
         if (_isUserDataInit) return true;
 
         DataSnapshot data = _rootDataSnapshot.Child(path);
 
         if(!data.Exists || !data.HasChildren) return true;
 
+        count = (int)data.ChildrenCount;
         return false;
     }
 }
