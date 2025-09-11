@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using GameQuest;
 using UnityEngine;
@@ -57,3 +57,4 @@ namespace GameNpc
     }    
 }
 
+*/

@@ -80,6 +80,7 @@ namespace KYS
 
         public void UpdateMoney(int amount)
         {
+            //currentMoney = amount;
             if (runMoneyButtonText != null)
             {
                 runMoneyButtonText.text = $"{amount:N0}";

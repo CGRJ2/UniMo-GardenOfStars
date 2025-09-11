@@ -223,7 +223,7 @@ public partial class DataManager
 
             if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["WheelSprite"]]}", typeof(Sprite), out var locations)))
             {
-                Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
                 {
                     if (task.Status != AsyncOperationStatus.Succeeded)
                     {
@@ -232,12 +232,12 @@ public partial class DataManager
                     }
 
                     stage.WheelSprite = task.Result;
-                };
+                };*/
             }
 
             if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["CenterSprite"]]}", typeof(Sprite), out var locations)))
             {
-                Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
                 {
                     if (task.Status != AsyncOperationStatus.Succeeded)
                     {
@@ -246,7 +246,7 @@ public partial class DataManager
                     }
 
                     stage.WheelSprite = task.Result;
-                };
+                };*/
             }
 
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
