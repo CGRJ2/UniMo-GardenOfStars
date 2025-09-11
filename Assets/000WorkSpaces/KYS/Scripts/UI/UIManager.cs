@@ -32,6 +32,7 @@ namespace KYS
 
         [Header("Backdrop Settings")]
         [SerializeField] private AssetReferenceGameObject backdropPrefabReference; // Backdrop Prefab Reference
+        [SerializeField] private Color defaultBackdropColor = new Color(0, 0, 0, 0.3f); // 기본 Backdrop 투명도
 
         [Header("Addressable UI Settings")]
         //[SerializeField] private string uiPrefabLabel = "UI";
@@ -80,6 +81,11 @@ namespace KYS
         public Canvas PopupCanvas => popupCanvas;
         public Canvas LoadingCanvas => loadingCanvas;
         public AssetReferenceGameObject BackdropPrefabReference => backdropPrefabReference;
+
+        /// <summary>
+        /// 기본 Backdrop 투명도 가져오기
+        /// </summary>
+        public Color GetDefaultBackdropColor() => defaultBackdropColor;
 
         /// <summary>
         /// Canvas들이 모두 초기화되었는지 확인
