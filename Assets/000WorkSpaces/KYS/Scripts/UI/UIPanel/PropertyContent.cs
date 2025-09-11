@@ -61,9 +61,36 @@ namespace KYS
             {
                 buyButton.onClick.AddListener(() =>
                 {
-                    Debug.LogWarning("구매 버튼 클릭");
-                    Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
-                    Manager.ui.ClosePanel();
+                    Debug.LogWarning($"구매 버튼 실행 - buildingID: {buildingID}");
+                    string purchasedBuildingID = Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value;
+
+                    if (!string.IsNullOrEmpty(purchasedBuildingID))
+                    {
+                        Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있습니다");
+                        return;
+                    }
+
+
+                    int curMoney = Manager.player.Data.Money.Value;
+                    Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
+                    {
+                        int cost = task.Result.Cost;
+
+                        Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
+
+                        if (cost < curMoney)
+                        {
+                            Manager.player.Data.Money.Value -= cost;
+                            Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
+                            Manager.ui.ClosePanel();
+                        }
+                        else
+                        {
+                            Debug.LogWarning("돈이 모자랍니다");
+                        }
+                    };
+
+
                 });
                 //Debug.LogWarning($"[PropertyContent] buyButton 이벤트 등록 완료: {buildBuyButtonName}");
             }
@@ -206,8 +233,24 @@ namespace KYS
         private void OnFirstBuyClicked()
         {
             Debug.LogWarning($"[PropertyContent] OnFirstBuyClicked 실행 - buildingID: {buildingID}");
-            Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
-            Manager.ui.ClosePanel();
+
+            int curMoney = Manager.player.Data.Money.Value;
+            Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
+            {
+                int cost = task.Result.Cost;
+                if (cost < curMoney)
+                {
+                    Manager.player.Data.Money.Value -= cost;
+                    Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
+                    Manager.ui.ClosePanel();
+                }
+                else
+                {
+                    Debug.LogWarning("돈이 모자랍니다");
+                }
+            };
+
+            
         }
 
         private void OnCancelButtonClicked()
