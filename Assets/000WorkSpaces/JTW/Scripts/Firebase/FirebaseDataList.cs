@@ -30,7 +30,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
         Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
 
-        IsInitSelf = Manager.firebase.CheckInit(Path);
+        IsInitSelf = Manager.firebase.CheckInit(Path, out ListInitCount);
     }
 
     private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
@@ -53,6 +53,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     public void Add(string Id)
     {
         Manager.firebase.SaveData($"{Path}/{Id}", true);
+        ListInitCount++;
     }
 
     public T Get(string id)

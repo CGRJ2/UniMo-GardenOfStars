@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Linq;
-using KYS;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace KYS
 {
@@ -79,7 +78,7 @@ namespace KYS
             Debug.Log($"Dialogue 데이터 개수: {Manager.data?.Dialogue?.Values?.Count ?? 0}");
             Debug.Log($"DialogueManager 존재: {DialogueManager.Instance != null}");
             Debug.Log($"StoryPanel 참조: {storyPanel != null}");
-            
+
             if (Manager.data?.Dialogue != null)
             {
                 Debug.Log("=== 로드된 모든 노드 목록 ===");
@@ -87,7 +86,7 @@ namespace KYS
                 {
                     Debug.Log($"  - {node.Id} | {node.NodeType} | {node.Speaker} | {node.DialogueText_Korea}");
                 }
-                
+
                 // 특정 노드 찾기 테스트
                 if (Manager.data.Dialogue.Values.TryGetValue("npc001_start", out var testNode))
                 {
@@ -114,11 +113,11 @@ namespace KYS
             if (DialogueManager.Instance != null)
             {
                 Debug.Log("=== DialogueManager 직접 테스트 ===");
-                
+
                 // StartDialogue 메서드 직접 호출
                 bool result = DialogueManager.Instance.StartDialogue("npc001", "stage_01", "npc001_start");
                 Debug.Log($"StartDialogue 결과: {result}");
-                
+
                 if (result)
                 {
                     Debug.Log("대화 시작 성공!");
@@ -144,13 +143,13 @@ namespace KYS
         public void TestCSVParsingDebug()
         {
             Debug.Log("=== CSV 파싱 디버깅 ===");
-            
+
             if (Manager.data?.Dialogue != null)
             {
                 Debug.Log($"DataTableParser 상태: {Manager.data.Dialogue != null}");
                 Debug.Log($"Values Dictionary 상태: {Manager.data.Dialogue.Values != null}");
                 Debug.Log($"Values Count: {Manager.data.Dialogue.Values.Count}");
-                
+
                 if (Manager.data.Dialogue.Values.Count > 0)
                 {
                     Debug.Log("=== 첫 번째 노드 상세 정보 ===");
@@ -175,7 +174,7 @@ namespace KYS
         private System.Collections.IEnumerator TestWithDataLoadWaitCoroutine()
         {
             Debug.Log("=== 데이터 로드 대기 테스트 ===");
-            
+
             // 데이터 로드 대기
             float waitTime = 0f;
             while (Manager.data?.Dialogue == null && waitTime < 10f)
@@ -183,12 +182,12 @@ namespace KYS
                 yield return new WaitForSeconds(0.1f);
                 waitTime += 0.1f;
             }
-            
+
             if (Manager.data?.Dialogue != null)
             {
                 Debug.Log($"데이터 로드 완료! 대기 시간: {waitTime:F1}초");
                 Debug.Log($"로드된 노드 수: {Manager.data.Dialogue.Values.Count}");
-                
+
                 // 대화 시작 테스트
                 if (storyPanel != null)
                 {
@@ -328,24 +327,17 @@ namespace KYS
         [ContextMenu("테스트 - CYE 퀘스트 시스템 연동")]
         public void TestCYEQuestSystemIntegration()
         {
-            if (QuestManager.Instance != null)
+            if (Manager.quest != null)
             {
                 Debug.Log($"[DialogueSystemTester] CYE 퀘스트 시스템 연동 테스트:");
                 Debug.Log($"  - QuestManager 존재: {QuestManager.Instance != null}");
-                Debug.Log($"  - 현재 퀘스트 목록 수: {QuestManager.Instance._currentQuestList?.Count ?? 0}");
-                
-                if (QuestManager.Instance._currentQuestList != null && QuestManager.Instance._currentQuestList.Count > 0)
-                {
-                    var currentQuest = QuestManager.Instance.CurrentQuest;
-                    Debug.Log($"  - 현재 퀘스트 ID: {currentQuest._data.QuestId}");
-                    Debug.Log($"  - 현재 퀘스트 상태: {currentQuest._data.State}");
-                    Debug.Log($"  - 퀘스트 진행도 항목 수: {currentQuest._progresses.Count}");
-                    
-                    foreach (var progress in currentQuest._progresses)
-                    {
-                        /*Debug.Log($"    - {progress.ContentTargetId}: {progress.ProgressdProdsCount}/{progress.CurrentTargetCount} ({progress.State})");*/
-                    }
-                }
+                Debug.Log($"  - 현재 스테이지의 퀘스트 목록 수: {Manager.quest.GetCurStageQuestCount()}");
+
+                var currentQuest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
+                Debug.Log($"  - 현재 퀘스트 ID: {currentQuest.QuestId}");
+                Debug.Log($"  - 현재 퀘스트 상태: {currentQuest.State}");
+                Debug.Log($"  - 퀘스트 진행도: 현재 퀘스트:{Manager.quest.GetCurStageQuestIndex()} / 총 퀘스트 수:{Manager.quest.GetCurStageQuestCount()}");
+
             }
             else
             {
@@ -374,7 +366,7 @@ namespace KYS
                     LocalizationManager.Instance.SetLanguage(SystemLanguage.Korean);
                 }
                 storyPanel.StartCSVDialogue(testNpcId, testStageId, testStartNodeId);
-                
+
                 // 2초 후 영어로 변경
                 StartCoroutine(ChangeLanguageAfterDelay(SystemLanguage.English, 2f));
             }
@@ -383,7 +375,7 @@ namespace KYS
         private System.Collections.IEnumerator ChangeLanguageAfterDelay(SystemLanguage newLanguage, float delay)
         {
             yield return new WaitForSeconds(delay);
-            
+
             if (LocalizationManager.Instance != null)
             {
                 Debug.Log($"[DialogueSystemTester] 언어를 {newLanguage}로 변경합니다.");
@@ -394,7 +386,7 @@ namespace KYS
         [ContextMenu("테스트 - 대화창 닫기")]
         private void ClosePanel()
         {
-                       if (storyPanel != null)
+            if (storyPanel != null)
             {
                 Manager.ui.ClosePanel();
             }
@@ -447,10 +439,10 @@ namespace KYS
         public void TestDifferentStageIdDialogue()
         {
             Debug.Log("[DialogueSystemTester] 다른 StageId 대화 테스트 시작");
-            
+
             // stage_02의 npc003 대화 시작
             bool success = DialogueManager.Instance.StartDialogueWithPanel("npc003", "stage_02", "npc003_start");
-            
+
             if (success)
             {
                 Debug.Log("[DialogueSystemTester] stage_02 대화 시작 성공");
@@ -465,10 +457,10 @@ namespace KYS
         public void TestDirectNodeMoveToDifferentStage()
         {
             Debug.Log("[DialogueSystemTester] 다른 StageId 노드로 직접 이동 테스트");
-            
+
             // stage_02의 노드로 직접 이동
             bool success = DialogueManager.Instance.MoveToNode("npc003_dialogue_002");
-            
+
             if (success)
             {
                 Debug.Log("[DialogueSystemTester] 다른 StageId 노드로 이동 성공");
@@ -483,10 +475,10 @@ namespace KYS
         public void TestEmptyStageIdDialogue()
         {
             Debug.Log("[DialogueSystemTester] 빈 StageId 대화 테스트 시작");
-            
+
             // 빈 StageId로 대화 시작 ("" 사용)
             bool success = DialogueManager.Instance.StartDialogueWithPanel("npc004", "", "npc004_start");
-            
+
             if (success)
             {
                 Debug.Log("[DialogueSystemTester] 빈 StageId 대화 시작 성공");
@@ -501,10 +493,10 @@ namespace KYS
         public void TestNullStageIdDialogue()
         {
             Debug.Log("[DialogueSystemTester] null StageId 대화 테스트 시작");
-            
+
             // null StageId로 대화 시작
             bool success = DialogueManager.Instance.StartDialogueWithPanel("npc004", null, "npc004_start");
-            
+
             if (success)
             {
                 Debug.Log("[DialogueSystemTester] null StageId 대화 시작 성공");

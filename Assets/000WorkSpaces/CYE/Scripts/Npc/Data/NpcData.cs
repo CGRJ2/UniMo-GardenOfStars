@@ -15,6 +15,7 @@ namespace GameNpc
         public string Description => _npcCsv.Description;
 
         // 대화 관련
+        public FirebaseProperty<string> NpcID;
         public FirebaseProperty<bool> IsTalked;
 
         // 퀘스트 관련
@@ -25,10 +26,13 @@ namespace GameNpc
 
         public NpcData(string id, string parentPath = null) : base(id, parentPath)
         {
+            NpcID = new FirebaseProperty<string>("ID", Path);
+            InitList.Add(NpcID);
+
             IsTalked = new FirebaseProperty<bool>("IsTalked", Path);
             InitList.Add(IsTalked);
 
-            CurrentQuestID = new FirebaseProperty<string>("CurrentQuestID", Path, "quest0001");
+            CurrentQuestID = new FirebaseProperty<string>("CurrentQuestID", Path, "quest9999");
             InitList.Add(CurrentQuestID);
 
             QuestList = new FirebaseDataList<QuestBaseData>("QuestDataList", Path, (id, parentPath) =>

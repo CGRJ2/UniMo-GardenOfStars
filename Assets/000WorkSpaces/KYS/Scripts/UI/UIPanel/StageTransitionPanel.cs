@@ -31,6 +31,8 @@ namespace KYS
         [SerializeField] private float selectedYOffset = 20f; // 선택된 스테이지 위로 이동 거리
         [SerializeField] private Color selectedColor = Color.white; // 선택된 스테이지 색상
         [SerializeField] private Color normalColor = new Color(0.8f, 0.8f, 0.8f, 0.8f); // 일반 스테이지 색상
+        [SerializeField] private float highlightAnimationDuration = 0.3f; // 강조 애니메이션 시간
+        [SerializeField] private bool hideUnselectedButtons = false; // 선택되지 않은 버튼 이미지 비활성화
 
         [Header("12성좌 데이터")]
         [SerializeField] private List<ZodiacStageData> zodiacStages = new List<ZodiacStageData>();
@@ -64,6 +66,9 @@ namespace KYS
         // 애니메이션
         private Coroutine snapCoroutine;
         private Coroutine highlightCoroutine;
+        
+        // 현재 활성화된 스테이지 인덱스
+        private int _lastActiveStageIndex = -1;
         #endregion
 
         #region Unity Lifecycle
@@ -736,6 +741,8 @@ namespace KYS
 
         private void UpdateStageHighlight(int stageIndex)
         {
+            _lastActiveStageIndex = stageIndex; // 현재 활성화된 스테이지 인덱스 저장
+            
             if (highlightCoroutine != null)
             {
                 StopCoroutine(highlightCoroutine);
@@ -763,13 +770,32 @@ namespace KYS
 
             if (isUnlocked)
             {
-                // 해금된 스테이지: 정상 색상
-                stageImage.color = Color.white;
+                // 해금된 스테이지: 이미지 비활성화 옵션 고려
+                if (hideUnselectedButtons)
+                {
+                    // 이미지 비활성화 옵션이 활성화된 경우, HighlightCoroutine에서 처리하도록 함
+                    // 여기서는 색상 변경하지 않음
+                }
+                else
+                {
+                    // 일반 모드: 정상 색상
+                    stageImage.enabled = true;
+                    stageImage.color = Color.white;
+                }
             }
             else
             {
-                // 잠긴 스테이지: 어두운 색상으로 표시
-                stageImage.color = new Color(0.5f, 0.5f, 0.5f, 0.8f);
+                // 잠긴 스테이지: 숨김 옵션이 켜져 있다면 비선택 시 이미지 비활성화
+                if (hideUnselectedButtons && stageIndex != _lastActiveStageIndex)
+                {
+                    stageImage.enabled = false;
+                }
+                else
+                {
+                    // 선택되었거나 숨김 옵션이 꺼진 경우 어두운 색상으로 표시
+                    stageImage.enabled = true;
+                    stageImage.color = new Color(0.5f, 0.5f, 0.5f, 0.8f);
+                }
             }
         }
 
@@ -780,7 +806,38 @@ namespace KYS
             {
                 if (stageButtonImages[i] != null)
                 {
-                    stageButtonImages[i].color = normalColor;
+                    // 잠금 상태 확인
+                    bool isUnlocked = IsStageUnlocked(i);
+                    
+                    if (!isUnlocked)
+                    {
+                        // 잠긴 스테이지: 숨김 옵션이 켜져 있다면 비선택 시 이미지 비활성화
+                        if (hideUnselectedButtons && i != stageIndex)
+                        {
+                            stageButtonImages[i].enabled = false;
+                        }
+                        else
+                        {
+                            // 선택되었거나 숨김 옵션이 꺼진 경우 어두운 색상으로 표시
+                            stageButtonImages[i].enabled = true;
+                            stageButtonImages[i].color = new Color(0.5f, 0.5f, 0.5f, 0.8f);
+                        }
+                    }
+                    else
+                    {
+                        // 해금된 스테이지: 이미지 비활성화 옵션
+                        if (hideUnselectedButtons && i != stageIndex)
+                        {
+                            // 선택되지 않은 버튼은 이미지 비활성화
+                            stageButtonImages[i].enabled = false;
+                        }
+                        else
+                        {
+                            // 선택된 버튼은 이미지 활성화하고 정상 색상
+                            stageButtonImages[i].enabled = true;
+                            stageButtonImages[i].color = normalColor;
+                        }
+                    }
                 }
                 if (stageButtonTransforms[i] != null)
                 {
@@ -806,7 +863,7 @@ namespace KYS
                 if (selectedImage != null && selectedTransform != null)
                 {
                     float elapsed = 0f;
-                    float duration = 0.3f;
+                    float duration = highlightAnimationDuration;
 
                     while (elapsed < duration)
                     {

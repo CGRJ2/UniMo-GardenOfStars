@@ -1,4 +1,3 @@
-using GameNpc;
 using GameQuest;
 using System;
 using System.Collections;
@@ -25,17 +24,49 @@ public class QuestRequireTile : InteractableBase
 
     private IngrediantData ingrediantData;
 
-    public void Init()
+    private void Awake()
     {
         lamps = lampParent.GetComponentsInChildren<Lamp_QuestContent>();
-        UpdateView();
     }
 
-
-    
-
-    public void UpdateView()
+    public void SetUp()
     {
+        // 스텝 램프 초기화
+        for (int i = 0; i < lamps.Length; i++)
+        {
+            if (i > QC_Data.StepIndexForClearContent)
+            {
+                lamps[i].gameObject.SetActive(false);
+            }
+            else
+            {
+                lamps[i].gameObject.SetActive(true);
+                lamps[i].UpdateView(false);
+            }
+        }
+
+        // 등록 후 업데이트 1회 실행
+        UpdateLampView(QC_Data.ProgressdIndex.Value);
+        UpdateTileView(QC_Data.ProgressdProdsCount.Value);
+
+        // 업데이트 함수 이벤트 등록
+        QC_Data.ProgressdProdsCount.Subscribe(UpdateTileView);
+        QC_Data.ProgressdIndex.Subscribe(UpdateLampView);
+    }
+
+    public void UpdateLampView(int progressIndex)
+    {
+        for (int i = 0; i < lamps.Length; i++)
+        {
+            if (i < progressIndex) lamps[i].UpdateView(true);
+            else lamps[i].UpdateView(false);
+        }
+    }
+
+    public void UpdateTileView(int progressdProdsCount)
+    {
+        Debug.Log("발판 상태 업데이트");
+
         if (QC_Data.IsContentClear)
         {
             group_Require.gameObject.SetActive(false);
@@ -46,8 +77,7 @@ public class QuestRequireTile : InteractableBase
             group_Complete.gameObject.SetActive(false);
             group_Require.gameObject.SetActive(true);
 
-            tmp_Count.text = $"{QC_Data.Count}/{QC_Data.CurrentTargetCount}";
-
+            tmp_Count.text = $"{progressdProdsCount}/{QC_Data.CurrentTargetCount}";
 
             // 이미 재료 데이터가 있는데, 현재 조건의 재료 데이터와 같다면 => 불러오지 않아도 됨. return;
             if (ingrediantData != null)
@@ -64,7 +94,7 @@ public class QuestRequireTile : InteractableBase
                 image_Ingrediant.sprite = ingrediantData.Sprite;
             };
         }
-            
+
     }
 
     IEnumerator AutoInserting()
@@ -84,15 +114,13 @@ public class QuestRequireTile : InteractableBase
                     break;  // 상호작용 취소
                 }
 
-                
+
                 // 현재 진행도에 개수 추가
-                if (QC_Data.Count < QC_Data.CurrentTargetCount)
+                if (QC_Data.ProgressdProdsCount.Value < QC_Data.CurrentTargetCount)
                 {
-                    GetComponentInParent<NpcController>()?.ReceiveProduct(QC_Data.ContentTargetId);
+                    QC_Data.ProgressdProdsCount.Value += 1;
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                     popedProd.MoveToTargetAndShrink(attachPoint);
-
-                    UpdateView();
                 }
                 else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
                 {
