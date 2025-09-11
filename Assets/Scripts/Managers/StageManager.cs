@@ -28,12 +28,9 @@ public class StageManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
 
         Manager.quest.CurStageQuestDataInit();
-        //Debug.LogWarning("안넘어감");
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurQuestData.IsInit);
-        //Debug.LogWarning("넘어감");
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.IsInit);
-        //Debug.LogWarning("넘어감22");
-        yield return new WaitForSeconds(0.5f);
+
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+
         Init();
     }
 

@@ -46,7 +46,7 @@ namespace GameNpc
                 requireTiles[i].gameObject.SetActive(true);
 
                 requireTiles[i].QC_Data = QCDataList[i];
-                requireTiles[i].Init();
+                requireTiles[i].SetUp();
             }
             if (QCDataList.Count < requireTiles.Length)
             {

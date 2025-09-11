@@ -86,7 +86,7 @@ public class QuestManager : Singleton<QuestManager>
         if (allContentCleard)
         {
             Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestState.Value = 3; // Completed
-            Debug.LogWarning($"퀘스트(id: {Manager.firebase.UserData.CurStage.Value})의 모든 Content 클리어");
+            Debug.LogWarning($"퀘스트(id: {Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Value})의 모든 Content 클리어");
 
             // 현재 퀘스트 클리어 이벤트 (QuestState에 구독해두기)
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
