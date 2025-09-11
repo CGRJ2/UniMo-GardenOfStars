@@ -55,11 +55,14 @@ namespace GameQuest
         {
             if (CurrentTargetCount <= curProdsCount)
             {
-                // 다음 Step 인덱스로 넘어가기 & 개수 정보 초기화
-                ProgressdIndex.Value += 1;
-
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)
                 Debug.LogWarning("스텝 클리어, 보상 수령");
+
+                ///.../// 스텝 완료 이펙트 종료 후에
+
+
+                // 다음 Step 인덱스로 넘어가기 & 개수 정보 초기화
+                ProgressdIndex.Value += 1;
 
                 // 마지막 스텝인 경우 Value 안바꿔줌
                 if (CurrentTargetCount > 0)  
