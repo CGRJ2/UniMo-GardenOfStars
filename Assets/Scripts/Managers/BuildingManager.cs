@@ -152,6 +152,9 @@ public class UpgradeData : FirebaseData
     public UpgradeData(string id, string parentPath = null) : base(id, parentPath)
     {
         Level_ProdTime = new FirebaseProperty<int>("Level_ProdTime", Path);
+
+        Level_ProdTime.Subscribe((a) => Debug.LogWarning("???"));
+
         Level_ProdTime.Subscribe((value) => Manager.buildings.upgradeEvent?.Invoke(value));
         InitList.Add(Level_ProdTime);
 
