@@ -23,7 +23,8 @@ namespace GameNpc
 
         IEnumerator WaitAndInit()
         {
-            yield return new WaitForSeconds(3f);
+            //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
+            yield return new WaitForSeconds(2f);
             Init();
         }
 
@@ -45,7 +46,7 @@ namespace GameNpc
                 requireTiles[i].gameObject.SetActive(true);
 
                 requireTiles[i].QC_Data = QCDataList[i];
-                requireTiles[i].UpdateView();
+                requireTiles[i].Init();
             }
             if (QCDataList.Count < requireTiles.Length)
             {

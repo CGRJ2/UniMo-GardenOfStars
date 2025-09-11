@@ -35,7 +35,7 @@ namespace GameQuest
             ProgressdIndex.Subscribe(CheckContentClear);
             ProgressdProdsCount.Subscribe(CheckStepClear);
 
-            InitList.Add(ProgressdProdsCount);
+            InitList.Add(ProgressdIndex);
             InitList.Add(ProgressdProdsCount);
         }
 
@@ -57,10 +57,13 @@ namespace GameQuest
             {
                 // 다음 Step 인덱스로 넘어가기 & 개수 정보 초기화
                 ProgressdIndex.Value += 1;
-                ProgressdProdsCount.Value = 0;
 
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)
-                Debug.LogWarning("보상 준다");
+                Debug.LogWarning("스텝 클리어, 보상 수령");
+
+                // 마지막 스텝인 경우 Value 안바꿔줌
+                if (CurrentTargetCount > 0)  
+                    ProgressdProdsCount.Value = 0;
             }
         }
 

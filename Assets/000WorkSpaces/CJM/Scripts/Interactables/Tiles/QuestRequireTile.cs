@@ -30,10 +30,15 @@ public class QuestRequireTile : InteractableBase
     {
         lamps = lampParent.GetComponentsInChildren<Lamp_QuestContent>();
         UpdateView();
+
+        QC_Data.ProgressdProdsCount.Subscribe(UpdateView);
     }
 
-    public void UpdateView()
+
+    public void UpdateView(int a = -1)
     {
+        Debug.Log("발판 상태 업데이트");
+
         if (QC_Data.IsContentClear)
         {
             group_Require.gameObject.SetActive(false);
@@ -44,8 +49,13 @@ public class QuestRequireTile : InteractableBase
             group_Complete.gameObject.SetActive(false);
             group_Require.gameObject.SetActive(true);
 
-            tmp_Count.text = $"{QC_Data.ProgressdProdsCount.Value}/{QC_Data.CurrentTargetCount}";
+            Debug.LogWarning(QC_Data.ProgressdProdsCount.Value);
+            Debug.LogWarning(a);
 
+            if (a >= 0)
+                tmp_Count.text = $"{a}/{QC_Data.CurrentTargetCount}";
+            else
+                tmp_Count.text = $"{QC_Data.ProgressdProdsCount.Value}/{QC_Data.CurrentTargetCount}";
 
             // 이미 재료 데이터가 있는데, 현재 조건의 재료 데이터와 같다면 => 불러오지 않아도 됨. return;
             if (ingrediantData != null)
@@ -86,11 +96,9 @@ public class QuestRequireTile : InteractableBase
                 // 현재 진행도에 개수 추가
                 if (QC_Data.ProgressdProdsCount.Value < QC_Data.CurrentTargetCount)
                 {
-                    QC_Data.ProgressdProdsCount.Value += 1; // 이거 바로바로 Value를 연속해서 바꾸는게 가능한가?
+                    QC_Data.ProgressdProdsCount.Value += 1;
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                     popedProd.MoveToTargetAndShrink(attachPoint);
-
-                    UpdateView();
                 }
                 else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
                 {
