@@ -93,9 +93,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _isUserDataInit = true;
     }
     
-    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, out T value)
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
     {
-        if (_isUserDataInit)
+        if (!isInit)
         {
             value = setValue;
             _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
