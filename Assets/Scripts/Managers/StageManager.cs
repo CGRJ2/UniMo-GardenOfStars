@@ -23,13 +23,24 @@ public class StageManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        Debug.LogWarning("UserData Inited");
+
+        //Manager.firebase.UserData.CurStage.Value = "Tutorial";
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
+        Debug.LogWarning("CurStageData Inited");
+
+
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
 
+        Debug.LogWarning("Npc Inited");
+
         Manager.quest.CurStageQuestDataInit();
 
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
+        Debug.LogWarning("QuestList Inited");
 
         Init();
     }
@@ -61,7 +72,7 @@ public class StageManager : MonoBehaviour
                 // 현재 스테이지의 NpcID 넣어주기
                 var npc = Manager.firebase.UserData.CurStageData.Npc;
                 npc.NpcID.Value = kvp.Value.Id;
-                Debug.LogWarning("현재 스테이지의 NpcID 설정됨: {kvp.Value.Id}");
+                Debug.LogWarning($"현재 스테이지({Manager.firebase.UserData.CurStage.Value})의 NpcID 설정됨: {kvp.Value.Id}");
 
                 foreach (var value in npc.QuestList.List)
                 {

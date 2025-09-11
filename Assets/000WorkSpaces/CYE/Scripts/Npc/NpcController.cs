@@ -23,8 +23,39 @@ namespace GameNpc
 
         IEnumerator WaitAndInit()
         {
+            yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+            yield return new WaitUntil(() => Manager.firebase.UserData != null);
+            yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+            Debug.LogWarning("UserData Inited");
+
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
+            Debug.LogWarning("CurStageData Inited");
+
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc != null);
+            Debug.LogWarning("Npc Inited");
+
+            var npc = Manager.firebase.UserData.CurStageData.Npc;
             //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
-            yield return new WaitForSeconds(2f);
+
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(npc.CurrentQuestID.Value));
+            Debug.LogWarning("CurQuestID Inited");
+
+            Debug.LogWarning($"QuestList: {npc.QuestList.Count}");
+            //yield return new WaitUntil(() => npc.QuestList.IsInit); // <<<<<<=== Error
+            yield return new WaitUntil(() => npc.QuestList.Count > 0);
+
+            yield return new WaitUntil(() => npc.CurQuestData != null);
+            Debug.LogWarning("CurQuestData Inited");
+
+
+            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
+            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            Debug.LogWarning($"QuestContentList: {npc.CurQuestData.QuestContentList.Count}");
+
+            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            Debug.LogWarning("QuestContentList Inited");
+
             Init();
         }
 
@@ -39,6 +70,9 @@ namespace GameNpc
 
         public void UpdateQuestData(string questID = null)
         {
+            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Value})");
+
+
             // QC데이터가 있는 만큼만 발판 활성화
             var QCDataList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
             for (int i = 0; i < QCDataList.Count; i++)
