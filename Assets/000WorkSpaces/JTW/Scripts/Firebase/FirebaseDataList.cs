@@ -53,6 +53,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     public void Add(string Id)
     {
         Manager.firebase.SaveData($"{Path}/{Id}", true);
+        ListInitCount++;
     }
 
     public T Get(string id)
