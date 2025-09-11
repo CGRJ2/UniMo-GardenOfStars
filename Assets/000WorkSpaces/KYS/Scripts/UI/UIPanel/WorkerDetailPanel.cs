@@ -16,7 +16,7 @@ namespace KYS
         private Button _closeButton => GetUI<Button>(_closeButtonName);
         private Button _speedUpgradeButton => GetUI<Button>(_speedUpgradeButtonName);
         private Button _capacityUpgradeButton => GetUI<Button>(_capacityUpgradeButtonName);
-        private TextMeshProUGUI _workerNameText => GetUI<TextMeshProUGUI>("WorkerNameText");
+        private TextMeshProUGUI _workerNameText => GetUI<TextMeshProUGUI>("RunWorkerName");
         private TextMeshProUGUI _workerRankText => GetUI<TextMeshProUGUI>("WorkerRankText");
         private TextMeshProUGUI _effectRankText => GetUI<TextMeshProUGUI>("RunStatusEffectRankText");
         private TextMeshProUGUI _productSpeedRankText => GetUI<TextMeshProUGUI>("RunProductSpeedRankText");
@@ -52,8 +52,11 @@ namespace KYS
         {
             _worker = worker;
 
+            _workerImage.sprite = _worker.Sprite;
+
+            _workerNameText.text = _worker.Name;
             _workerRankText.text = ((CharacterRanks)_worker.Rank).ToString();
-            Debug.LogWarning(_workerRankText.text);
+
             _effectRankText.text = _worker.StunRank;
             _productSpeedRankText.text = _worker.ProductionSpeedRank;
             
