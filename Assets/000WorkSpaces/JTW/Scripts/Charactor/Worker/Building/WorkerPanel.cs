@@ -97,26 +97,27 @@ public class WorkerPanel : KYS.BaseUI
             Debug.LogWarning($"[WorkerPanel] 워커 데이터를 찾을 수 없습니다. 키: {_workerKey}");
             return;
         }
-        
-        var workerData = Manager.data.Worker.Values[_workerKey];
-        
+
+        WorkerDataCsv _workerData = Manager.data.Worker.Values[_workerKey];
+        CharacterDataCsv _characterData = Manager.data.Character.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"];
+
         // 워커 이름 설정
-        //if (_runWorkerNameText != null) 
-        //{
-        //    _runWorkerNameText.text = workerData.Name;
-        //}
-        //
+        if (_runWorkerNameText != null)
+        {
+            _runWorkerNameText.text = _characterData.Name_Kr;
+        }
+
         //// 워커 이미지 설정
-        //if (_runWorkerImage != null && workerData.Image != null) 
-        //{
-        //    _runWorkerImage.sprite = workerData.Image;
-        //}
-        
+        if (_runWorkerImage != null && _characterData.Sprite != null)
+        {
+            _runWorkerImage.sprite = _characterData.Sprite;
+        }
+
         // 워커 등급 설정
         var runWorkerRankText = GetUI<TextMeshProUGUI>("RunRankText");
         if (runWorkerRankText != null)
         {
-            _runRankText.text = ((CharacterRanks)workerData.Rank).ToString();
+            _runRankText.text = ((CharacterRanks)_workerData.Rank).ToString();
         }
         
         // 고용 비용 설정
