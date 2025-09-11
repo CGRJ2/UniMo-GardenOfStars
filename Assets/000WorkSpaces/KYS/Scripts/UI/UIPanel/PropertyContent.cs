@@ -78,7 +78,7 @@ namespace KYS
 
                         Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
 
-                        if (cost < curMoney)
+                        if (cost <= curMoney)
                         {
                             Manager.player.Data.Money.Value -= cost;
                             Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
