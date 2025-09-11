@@ -49,9 +49,6 @@ public class QuestRequireTile : InteractableBase
             group_Complete.gameObject.SetActive(false);
             group_Require.gameObject.SetActive(true);
 
-            Debug.LogWarning(QC_Data.ProgressdProdsCount.Value);
-            Debug.LogWarning(a);
-
             if (a >= 0)
                 tmp_Count.text = $"{a}/{QC_Data.CurrentTargetCount}";
             else
