@@ -18,18 +18,18 @@ public class Btn_Stage : MonoBehaviour
     public void Init(StageData stageData)
     {
         this.stageData = stageData;
-        tmp_StageName.text = stageData.StageName;
+        tmp_StageName.text = stageData.stageName;
     }
 
     void OnClickSelf()
     {
-        if (Manager.game.curStageId == stageData.StageId)
+        if (Manager.firebase.UserData.CurStage.Value == stageData.StageId)
         {
             Debug.Log("이미 해당 스테이지에 위치함");
             return;
         }
 
-        Manager.game.curStageId = stageData.StageId;
+        Manager.firebase.UserData.CurStage.Value = stageData.StageId;
         Addressables.LoadSceneAsync("StageScene");
     }
 

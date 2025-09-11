@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 
 namespace KYS
@@ -13,6 +14,8 @@ namespace KYS
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] Transform contentParent;
+        [SerializeField] GameObject contentPrefab;
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
@@ -21,6 +24,8 @@ namespace KYS
         // 추가 변수 선언
         private int currentMoney = 0;
 
+        Dictionary<string, BuildingData> buildingDatas = new();
+        Dictionary<string, PropertyContent> contentInstances = new();
 
         protected override void Awake()
         {
@@ -54,14 +59,54 @@ namespace KYS
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
 
+
+            // 건물 데이터 불러오기
+            Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+            {
+                foreach (BuildingData bd in task.Result)
+                {
+                    if (!buildingDatas.ContainsKey(bd.ID))
+                    {
+                        buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
+                    }
+                    
+                    // 건물 정보 슬롯 생성 (중복 생성 방지)
+                    if (!contentInstances.ContainsKey(bd.ID))
+                    {
+                        PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+                        contentInstances.Add(bd.ID, content);
+                        
+                        // PropertyContent 초기화
+                        content.Initialize();
+
+                        // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                        Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                        if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                        {
+                            content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                        }
+                        else
+                        {
+                            content.SetBuildingData(bd);
+                        }
+                    }
+                }
+            };
         }
         public override void Cleanup()
         {
-
+            // 생성된 PropertyContent 인스턴스들 정리
+            foreach (var content in contentInstances.Values)
+            {
+                if (content != null)
+                {
+                    Destroy(content.gameObject);
+                }
+            }
+            contentInstances.Clear();
 
             // ObservableProperty 구독 해제
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
-
 
             base.Cleanup();
         }

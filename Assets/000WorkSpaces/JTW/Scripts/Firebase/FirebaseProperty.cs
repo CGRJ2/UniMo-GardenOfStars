@@ -17,15 +17,27 @@ public class FirebaseProperty<T> : FirebaseData
         set
         {
             if (object.Equals(_value, value)) return;
+
+            if (!_isFirebaseConnected)
+            {
+                _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, value, false, out _value);
+                return;
+            }
+
             Manager.firebase.SaveData(Path, value);
         }
     }
     private UnityEvent<T> _onValueChanged = new();
 
+    private bool _isFirebaseConnected;
+
     public FirebaseProperty(string id, string parentPath, T value = default) : base(id, parentPath)
     {
         _default = value;
-        Manager.firebase.SetDataEvent(Path, OnFirebaseChanged);
+        
+        Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, _default, true, out _value);
+
+        IsInitSelf = true;
     }
 
     private void OnFirebaseChanged(object sender, ValueChangedEventArgs args)

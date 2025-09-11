@@ -46,15 +46,21 @@ public class InfoPanel_Harvest : BaseUI
 
     public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
-        
+        Manager.buildings.upgradeEvent += OnUpgradeEvent;
+
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_Close.onClick.AddListener(Close);
+        
+        // 언어 변경 이벤트 구독
+        BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
     }
 
     void UpgradeProdTime()
     {
         // 돈 차감
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+         
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
@@ -70,13 +76,13 @@ public class InfoPanel_Harvest : BaseUI
         targetBD = data;
 
         int curMoney = Manager.player.Data.Money.Value;
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
 
-        string harvestbuildingNamekey = $"RunHarvestBuildingName{data.Name}";
-        string harvesetbuildingDesckey = $"RunHarvestBuildingDesc{data.Description}";
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
 
-        tmp_Name.text = Manager.localization.GetText(harvestbuildingNamekey);
-        tmp_Description.text = Manager.localization.GetText(harvesetbuildingDesckey);
+        // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
+        tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
+        tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
 
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
@@ -105,16 +111,39 @@ public class InfoPanel_Harvest : BaseUI
         {
             Debug.Log("생산 속도가 최대 단계입니다");
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
-            tmp_AfterUpProdTime.text = $"이미 최대 단계입니다.";
+            tmp_AfterUpProdTime.text = Manager.localization.GetText("MaxLevelReached");
 
-            tmp_ProdTimeUpCost.text = $"최대 단계";
+            tmp_ProdTimeUpCost.text = Manager.localization.GetText("MaxLevel");
 
             btn_ProdTimeUpgrade.interactable = false;
         }
     }
-
+    void OnUpgradeEvent(int value)
+    {
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+    }
     private void Close()
     {
            UIManager.Instance.ClosePopup();
+    }
+    
+    protected override void OnDestroy()
+    {
+        // 언어 변경 이벤트 구독 해제
+        BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+    }
+    
+    /// <summary>
+    /// 언어가 변경될 때 호출되는 메서드
+    /// </summary>
+    private void OnLanguageChanged(SystemLanguage newLanguage)
+    {
+        if (targetBD != null)
+        {
+            // 건물 정보 다시 로드
+            tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
+            tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
+        }
     }
 }

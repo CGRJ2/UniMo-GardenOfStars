@@ -60,16 +60,23 @@ public class InfoPanel_Manufacture : BaseUI
 
     public void Init() // 초기화를 어디서 해줘야 할까요?
     {
+        Manager.buildings.upgradeEvent += OnUpgradeEvent;
+
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_CapacityUpgrade.onClick.AddListener(UpgradeCapacity);
         btn_Close.onClick.AddListener(Close);
+        
+        // 언어 변경 이벤트 구독
+        BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
     }
 
 
     void UpgradeProdTime()
     {
         // 돈 차감
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
@@ -82,7 +89,9 @@ public class InfoPanel_Manufacture : BaseUI
     void UpgradeCapacity()
     {
         // 돈 차감
-        int curLevel_Capacity = Manager.buildings.GetUpgradeData(targetBD.ID).level_Capacity;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
+
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
 
         // 업그레이드 스탯 적용
@@ -97,14 +106,13 @@ public class InfoPanel_Manufacture : BaseUI
         ManufactureBD data = manufacture;
         targetBD = data;
         int curMoney = Manager.player.Data.Money.Value;
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
-        int curLevel_Capacity = Manager.buildings.GetUpgradeData(data.ID).level_Capacity;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
 
-        string manufacturebuildingNamekey = $"RunManufactureBuildingName{data.Name}";
-        string manufacturerbuildingDesckey = $"RunManufactureBuildingDesc{data.Description}";
-
-        tmp_Name.text = Manager.localization.GetText(manufacturebuildingNamekey);
-        tmp_Description.text = Manager.localization.GetText(manufacturerbuildingDesckey);
+        // 새로운 BuildingLocalizationHelper 사용
+        tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
+        tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
         Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
         {
             string RunInputmaterials = $"RunInputmaterials{requireData.Result.Name}";
@@ -142,9 +150,9 @@ public class InfoPanel_Manufacture : BaseUI
         {
             Debug.Log("생산 속도가 최대 단계입니다");
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
-            tmp_AfterUpProdTime.text = $"이미 최대 단계입니다.";
+            tmp_AfterUpProdTime.text = Manager.localization.GetText("MaxLevelReached");
 
-            tmp_ProdTimeUpCost.text = $"최대 단계";
+            tmp_ProdTimeUpCost.text = Manager.localization.GetText("MaxLevel");
 
             btn_ProdTimeUpgrade.interactable = false;
         }
@@ -171,20 +179,39 @@ public class InfoPanel_Manufacture : BaseUI
         {
             Debug.Log("최대 투입 개수가 최대 단계입니다");
             tmp_CurCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity]}";
-            tmp_AfterUpCapacity.text = $"이미 최대 단계입니다.";
+            tmp_AfterUpCapacity.text = Manager.localization.GetText("MaxLevelReached");
 
-            tmp_CapacityUpCost.text = $"최대 단계";
+            tmp_CapacityUpCost.text = Manager.localization.GetText("MaxLevel");
 
             btn_CapacityUpgrade.interactable = false;
         }
     }
 
+    void OnUpgradeEvent(int value)
+    {
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+    }
 
     private void Close()
     {
         UIManager.Instance.ClosePopup();
     }
 
+    protected override void OnDestroy()
+    {
+        // 언어 변경 이벤트 구독 해제
+        BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+    }
 
+    private void OnLanguageChanged(SystemLanguage newLanguage)
+    {
+        // 언어가 변경되면 건물 이름과 설명 업데이트
+        if (targetBD != null)
+        {
+            tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
+            tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
+        }
+    }
 
 }

@@ -426,22 +426,23 @@ namespace KYS
                 return false;
             }
 
-            // 퀘스트 ID를 int로 변환
-            if (!int.TryParse(questId, out int questIdInt))
-            {
-                Debug.LogWarning($"[DialogueManager] 잘못된 퀘스트 ID 형식: {questId}");
-                return false;
-            }
+            // 250908 CYE -> 퀘스트 아이디 타입 변경으로 인한 주석처리(int -> string)
+            // // 퀘스트 ID를 int로 변환
+            // if (!int.TryParse(questId, out int questIdInt))
+            // {
+            //     Debug.LogWarning($"[DialogueManager] 잘못된 퀘스트 ID 형식: {questId}");
+            //     return false;
+            // }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._baseData._id == questIdInt);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
                 Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {questId}");
                 return false;
             }
 
-            bool isCompleted = quest._questState == QuestState.Completed;
+            bool isCompleted = quest.State == QuestState.Completed;
             Debug.Log($"[DialogueManager] 퀘스트 완료 체크: {questId} = {isCompleted}");
             return isCompleted;
         }
@@ -455,7 +456,8 @@ namespace KYS
             var parts = conditionValue.Split(':');
             if (parts.Length != 2) return false;
 
-            if (!int.TryParse(parts[0], out int questId) || !int.TryParse(parts[1], out int requiredProgress))
+            // if (!int.TryParse(parts[0], out int questId) || !int.TryParse(parts[1], out int requiredProgress))
+            if (!int.TryParse(parts[1], out int requiredProgress))
             {
                 Debug.LogWarning($"[DialogueManager] 잘못된 진행도 조건 형식: {conditionValue}");
                 return false;
@@ -468,20 +470,25 @@ namespace KYS
             }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._baseData._id == questId);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
-                Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {questId}");
+                Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {parts[0]}");
                 return false;
             }
 
+            // 어떤 진행도인지 잘 모르겠어서 일단 1로 통일해두었습니다 :최재민
             // 퀘스트 진행도 계산 (완료된 진행도 항목 수 / 전체 진행도 항목 수 * 100)
-            int completedCount = quest._questProgresses.Count(p => p._currentState == QuestProgressState.Completed);
-            int totalCount = quest._questProgresses.Count;
+            // int completedCount = quest._progresses.Count(p => p.IsContentClear);
+            // int totalCount = quest._progresses.Count;
+
+            int completedCount = 1;
+            int totalCount = 1;
+
             int currentProgress = totalCount > 0 ? (completedCount * 100) / totalCount : 0;
 
             bool meetsRequirement = currentProgress >= requiredProgress;
-            Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {questId} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
+            Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {parts[0]} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
             return meetsRequirement;
         }
 

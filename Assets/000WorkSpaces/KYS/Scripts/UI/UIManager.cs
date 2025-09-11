@@ -6,6 +6,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
+
 
 #if DOTWEEN
 using DG.Tweening;
@@ -165,7 +167,7 @@ namespace KYS
 
                 if (!hasExistingLoadingCanvas)
                 {
-                    Debug.LogWarning("[UIManager] 첫 씬에 LoadingCanvas가 없습니다. Addressables에서 로드합니다.");
+                    //Debug.LogWarning("[UIManager] 첫 씬에 LoadingCanvas가 없습니다. Addressables에서 로드합니다.");
                     
                     if (loadingCanvasReference != null && loadingCanvasReference.RuntimeKeyIsValid())
                     {
@@ -1448,7 +1450,7 @@ namespace KYS
         /// </summary>
         private IEnumerator CreateLoadingScreenInstance()
         {
-            Debug.Log("[UIManager] CreateLoadingScreenInstance 시작");
+            //Debug.Log("[UIManager] CreateLoadingScreenInstance 시작");
             
             // 씬 전환 중 Addressable 시스템 안정성을 위한 대기
             yield return new WaitForSeconds(0.1f);
@@ -1465,7 +1467,7 @@ namespace KYS
 
             foreach (string key in possibleKeys)
             {
-                Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 시도: {key}");
+                //Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 시도: {key}");
                 AsyncOperationHandle<GameObject> handle = default;
                 bool loadSuccess = false;
 
@@ -1487,7 +1489,7 @@ namespace KYS
                     {
                         loadingScreenPrefab = handle.Result;
                         loadSuccess = true;
-                        Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 성공: {key}");
+                        //Debug.Log($"[UIManager] LoadingScreen 프리팹 로드 성공: {key}");
                         break;
                     }
                     else
@@ -1513,7 +1515,7 @@ namespace KYS
 
             if (loadingScreenPrefab != null)
             {
-                Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 시작");
+                //Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 시작");
                 
                 // LoadingCanvas에 인스턴스 생성
                 GameObject instance = Instantiate(loadingScreenPrefab, loadingCanvas.transform);
@@ -1524,7 +1526,7 @@ namespace KYS
                     // 초기에는 비활성화 상태로 생성
                     loadingScreenInstance.gameObject.SetActive(false);
                     isLoadingScreenInitialized = false;
-                    Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료");
+                    //Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료");
                 }
                 else
                 {
@@ -1895,7 +1897,7 @@ namespace KYS
         /// <summary>
         /// 제네릭 팝업 UI 표시 (비동기 버전)
         /// </summary>
-        public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
+        public async Task<GameObject> ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
             string popupName = typeof(T).Name;
             
@@ -1904,11 +1906,12 @@ namespace KYS
             {
                 Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다.");
                 onComplete?.Invoke(null);
-                return;
+                return null;
             }
             
             isCreatingPopup = true;
-            StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
+            GameObject obj = await ShowPopUpAsyncCoroutine<T>(onComplete);
+            return obj;
         }
         
         /// <summary>
@@ -1941,7 +1944,7 @@ namespace KYS
             StartCoroutine(ShowPanelAsyncCoroutine<T>(onComplete));
         }
 
-        private System.Collections.IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
+        private async Task<GameObject> ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
 
@@ -1963,7 +1966,7 @@ namespace KYS
             foreach (string addressableKey in possibleKeys)
             {
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-                yield return handle;
+                await handle.Task;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -1985,7 +1988,7 @@ namespace KYS
                 Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
                 onComplete?.Invoke(null);
                 isCreatingPopup = false;
-                yield break;
+                return null;
             }
 
             try
@@ -1996,7 +1999,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // UI 타입에 따라 적절한 Canvas 선택
@@ -2005,7 +2008,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
@@ -2017,7 +2020,7 @@ namespace KYS
                     Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                     Destroy(uiInstance);
                     onComplete?.Invoke(null);
-                    yield break;
+                    return null;
                 }
 
                 // UI 타입에 따라 적절한 메서드 호출
@@ -2031,6 +2034,8 @@ namespace KYS
                 }
 
                 onComplete?.Invoke(uiComponent);
+
+                return uiInstance;
             }
             catch (System.Exception e)
             {
@@ -2047,6 +2052,8 @@ namespace KYS
                     Addressables.Release(handle);
                 }
             }
+
+            return null;
         }
         
         /// <summary>
@@ -2838,7 +2845,7 @@ namespace KYS
         /// </summary>
         private void InitializeLoadingScreen()
         {
-            Debug.Log("[UIManager] InitializeLoadingScreen 시작");
+            //Debug.Log("[UIManager] InitializeLoadingScreen 시작");
             
             if (loadingCanvas == null)
             {
@@ -2846,7 +2853,7 @@ namespace KYS
                 return;
             }
 
-            Debug.Log($"[UIManager] LoadingCanvas 발견: {loadingCanvas.name}");
+            //Debug.Log($"[UIManager] LoadingCanvas 발견: {loadingCanvas.name}");
 
             // 새로운 LoadingScreen 관리 패턴 사용
             if (!HasLoadingScreenInstance())

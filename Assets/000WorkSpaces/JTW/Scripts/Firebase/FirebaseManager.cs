@@ -3,6 +3,8 @@ using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FirebaseManager : Singleton<FirebaseManager>
@@ -17,6 +19,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
     public FirebaseDatabase Database => _database;
 
     public UserData UserData;
+    private DataSnapshot _rootDataSnapshot;
+    private bool _isUserDataInit;
 
     public event Action OnFirebaseInit;
 
@@ -36,9 +40,10 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
                 // 테스트를 원활하게 하기위해 일단 실행
                 // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
-                InitUserData();
 
-                OnFirebaseInit.Invoke();
+                OnFirebaseInit?.Invoke();
+
+                InitUserData();
 
                 IsFirebaseInit = true;
             }
@@ -55,19 +60,85 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     public void InitUserData()
     {
+        _isUserDataInit = false;
+
+        string userPath;
+
         if(_auth.CurrentUser == null)
         {
-            UserData = new UserData($"UserData/testUser1234", "");
+            userPath = $"UserData/testUser1234";
         }
         else
         {
-            UserData = new UserData($"UserData/{_auth.CurrentUser.UserId}", "");
+            userPath = $"UserData/{_auth.CurrentUser.UserId}";
+            Debug.LogWarning($"현재 UserId : {_auth.CurrentUser.UserId}");
         }
+
+        _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            _rootDataSnapshot = task.Result;
+
+            UserData = new UserData(userPath, "");
+
+            StartCoroutine(CheckUserDataInit());
+        });
     }
 
-    public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
+    private IEnumerator CheckUserDataInit()
     {
-        _database.RootReference.Child(path).ValueChanged += func;
+        yield return new WaitUntil(() => UserData.IsInit);
+
+        Debug.LogWarning("[FirebaseManager] UserData 초기화 완료");
+
+        _isUserDataInit = true;
+    }
+    
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
+    {
+        if (!isInit)
+        {
+            value = setValue;
+            _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
+            {
+                if(task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("FirebaseProperty 값 변경 실패");
+                    return;
+                }
+
+                _database.RootReference.Child(path).ValueChanged += func;
+            });
+            return true;
+        }
+        else
+        {
+            if (!_rootDataSnapshot.Child(path).Exists)
+            {
+                value = setValue;
+            }
+            else
+            {
+                DataSnapshot snapshot = _rootDataSnapshot.Child(path);
+
+                if (typeof(T) == typeof(int))
+                {
+                    long valueT = (long)snapshot.Value;
+                    value = (T)(object)(int)valueT;
+                }
+                else if (typeof(T) == typeof(float))
+                {
+                    double valueT = (double)snapshot.Value;
+                    value = (T)(object)(float)valueT;
+                }
+                else
+                {
+                    value = (T)snapshot.Value;
+                }
+            }
+
+            return false;
+        }
+        
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
@@ -84,5 +155,19 @@ public class FirebaseManager : Singleton<FirebaseManager>
     public void SaveJsonData(string path, string json)
     {
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);
+    }
+
+    public bool CheckInit(string path, out int count)
+    {
+        count = 0;
+
+        if (_isUserDataInit) return true;
+
+        DataSnapshot data = _rootDataSnapshot.Child(path);
+
+        if(!data.Exists || !data.HasChildren) return true;
+
+        count = (int)data.ChildrenCount;
+        return false;
     }
 }

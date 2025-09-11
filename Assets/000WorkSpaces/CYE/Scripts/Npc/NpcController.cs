@@ -1,49 +1,108 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameQuest;
 using UnityEngine;
 
 namespace GameNpc
 {
-    public class Npc : MonoBehaviour
+    public class NpcController : MonoBehaviour
     {
-        public int _id;
-        public string _name;
-        public string _description;
-
-        public Npc(CYETestNpcDataSO rawData)
-        {
-            this._id = rawData._id;
-            this._name = rawData._name;
-            this._description = rawData._description;
-        }
+        [SerializeField] Transform requireTilesParent;
+        QuestRequireTile[] requireTiles;
 
         void Awake()
         {
+            // 타이틀씬에서 시작 시
+            //Init();
+
+
+            // 스테이지씬에서 시작 시
+            StartCoroutine(WaitAndInit());
+        }
+
+        IEnumerator WaitAndInit()
+        {
+            yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+            yield return new WaitUntil(() => Manager.firebase.UserData != null);
+            yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+            Debug.LogWarning("UserData Inited");
+
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
+            Debug.LogWarning("CurStageData Inited");
+
+            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc != null);
+            Debug.LogWarning("Npc Inited");
+
+            var npc = Manager.firebase.UserData.CurStageData.Npc;
+            //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
+
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(npc.CurrentQuestID.Value));
+            Debug.LogWarning("CurQuestID Inited");
+
+            Debug.LogWarning($"QuestList: {npc.QuestList.Count}");
+            //yield return new WaitUntil(() => npc.QuestList.IsInit); // <<<<<<=== Error
+            yield return new WaitUntil(() => npc.QuestList.Count > 0);
+
+            yield return new WaitUntil(() => npc.CurQuestData != null);
+            Debug.LogWarning("CurQuestData Inited");
+
+
+            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
+            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            Debug.LogWarning($"QuestContentList: {npc.CurQuestData.QuestContentList.Count}");
+
+            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            Debug.LogWarning("QuestContentList Inited");
+
             Init();
         }
+
         private void Init()
         {
+            requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>();
+            UpdateQuestData();
+
+            Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
 
         }
-        public void UpdateQuestUI()
+
+        public void UpdateQuestData(string questID = null)
         {
-            foreach (QuestProgressData item in Manager.quest.CurrentQuest._questProgresses)
+            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Value})");
+
+
+            // QC데이터가 있는 만큼만 발판 활성화
+            var QCDataList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
+            for (int i = 0; i < QCDataList.Count; i++)
             {
-                // item에 해당하는 icon 및 갯수를 가져와서 업데이트
-                Debug.Log($"{item._targetId}-{item._currentCount}/{item._targetCount}");
+                requireTiles[i].gameObject.SetActive(true);
+
+                requireTiles[i].QC_Data = QCDataList[i];
+                requireTiles[i].SetUp();
             }
-        }
-        /// <summary>
-        /// 하나씩 업데이트
-        /// </summary>
-        /// <param name="targetId"></param>
-        public void ReceiveEachProduct(string targetId)
+            if (QCDataList.Count < requireTiles.Length)
+            {
+                for (int i = QCDataList.Count; i < requireTiles.Length; i++)
+                {
+                    requireTiles[i].gameObject.SetActive(false);
+                }
+            }
+    }
+
+
+        public void Talk()
         {
-            // interact 발판에 있는 재료 정보를 들고와서
-            // interact 발판에 있는 재료를 차감함
-            Manager.quest.UpdateCurrentQuestProgress(targetId, 1);
-            UpdateQuestUI();
+            Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
+            // Dialogue 실행
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+        }
+
+        public void Focus()
+        {
+            // 대사 출력
+            // Debug.Log($"{_focusTextList[NpcUtil.GetRandomIndex(_focusTextList.Count)]}");
         }
     }
 }

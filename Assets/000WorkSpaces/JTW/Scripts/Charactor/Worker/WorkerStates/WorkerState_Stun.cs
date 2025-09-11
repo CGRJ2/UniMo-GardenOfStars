@@ -24,11 +24,16 @@ public class WorkerState_Stun : WorkerStateBase
             return;
         }
 
-        WorkerData.IsPlayerTriggered.Subscribe(WakeUp);
     }
 
     public override void Update()
     {
+        if(WorkerData.IsPlayerTriggered.Value)
+        {
+            StateMachine.ChangeState(WorkerStates.Idle);
+            return;
+        }
+
         _timer += Time.deltaTime;
 
         if(_timer >= WorkerData.StunTime)
@@ -41,13 +46,5 @@ public class WorkerState_Stun : WorkerStateBase
 
     public override void Exit()
     {
-        WorkerData.IsPlayerTriggered.Unsubscribe(WakeUp);
-    }
-
-    private void WakeUp(bool value)
-    {
-        if (!value) return;
-
-        StateMachine.ChangeState(WorkerStates.Idle);
     }
 }

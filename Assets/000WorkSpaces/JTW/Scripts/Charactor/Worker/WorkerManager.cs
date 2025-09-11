@@ -20,6 +20,32 @@ public class WorkerManager : MonoBehaviour
     {
         StartCoroutine(AssignWorkerCoroutine());
         StartCoroutine(StunWorkerCoroutine());
+        StartCoroutine(WaitInitData());
+    }
+
+    private IEnumerator WaitInitData()
+    {
+        yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.data.Worker != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        foreach (string key in Manager.data.Worker.Values.Keys.ToList())
+        {
+            WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
+
+            if (worker == null) continue;
+
+            InstantiateWorker(worker);
+        }
+
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InstantiateWorker);
+    }
+
+    private void OnDestroy()
+    {
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InstantiateWorker);
     }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
@@ -67,7 +93,7 @@ public class WorkerManager : MonoBehaviour
         workstation = null;
 
         // 작업 영역에 일거리 있는지 탐색
-        foreach (WorkArea work in WorkStatinLists.workAreas)
+        foreach (WorkArea_SwitchType work in WorkStatinLists.workAreas_SwitchType)
         {
             if (!work.GetWorkableState() || work.GetReserveState() || work.curWorker != null) continue;
 
