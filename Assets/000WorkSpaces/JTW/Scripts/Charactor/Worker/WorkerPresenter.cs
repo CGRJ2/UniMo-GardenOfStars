@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class WorkerPresenter : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
-    }
+        WorkerRuntimeData data = GetComponent<WorkerRuntimeData>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GameObject avatarPrefab = Manager.data.Character.Values[$"{data.Id}_{Manager.firebase.UserData.CurStage.Value}"].Avatar;
+
+        Instantiate(avatarPrefab, data.transform);
     }
 }

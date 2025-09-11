@@ -5,8 +5,13 @@ using UnityEngine;
 public class WorkerData : FirebaseData
 {
     private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[Id];
+    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[$"{Id}_{Manager.firebase.UserData.CurStage.Value}"];
 
+    public string Name => CharacterCsv.Name_Kr;
     public int Rank => WorkerCsv.Rank;
+
+    public Sprite Sprite => CharacterCsv.Sprite;
+    public GameObject Avatar => CharacterCsv.Avatar;
 
     public float MoveSpeed => Manager.data.CharacterLv.Values[MoveSpeedLv.Value.ToString()].Speed;
     public FirebaseProperty<int> MoveSpeedLv;
