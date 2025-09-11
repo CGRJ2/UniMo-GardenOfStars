@@ -1,4 +1,4 @@
-using KYS;
+ï»¿using KYS;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,31 +17,31 @@ public class PortalPopUI : MonoBehaviour
     {
         if (UIManager.Instance == null)
         {
-            Debug.LogError("[°Ç¹° Á¤º¸ ÆĞ³Î] UIManager.Instance°¡ nullÀÔ´Ï´Ù!");
+            Debug.LogError("[ìŠ¤í…Œì´ì§€ íŒ¨ë„] UIManager.Instanceê°€ nullì…ë‹ˆë‹¤!");
             return;
         }
 
-        // ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ
+        // ì´ë¯¸ íŒ¨ë„ì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
-            if (panel is StageListPanel)
+            if (panel is StageTransitionPanel)
             {
-                //Debug.Log("[HUDAllPanel] ÀÌ¹Ì TitlePanelÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Áßº¹ È£Ãâ ¹«½Ã");
+                //Debug.Log("ì´ë¯¸ ìŠ¤í…Œì´ì§€ íŒ¨ë„ì´ ì—´ë ¤ìˆìŠµë‹ˆë‹¤. ì¤‘ë³µ í˜¸ì¶œ ë¬´ì‹œ");
                 return;
             }
         }
 
-        // ¾÷±×·¹ÀÌµå ÆĞ³Î ¿­±â
-        Manager.ui.ShowPanelAsync<StageListPanel>((panel) =>
+        // ì—…ê·¸ë ˆì´ë“œ íŒ¨ë„ ì—´ê¸°
+        Manager.ui.ShowPanelAsync<StageTransitionPanel>((panel) =>
         {
             if (panel != null)
             {
-                //Debug.Log("[HUDAllPanel] TitlePanel ¼º°øÀûÀ¸·Î ¿­¸²");
+                //Debug.Log("ìŠ¤í…Œì´ì§€ íŒ¨ë„ ì„±ê³µì ìœ¼ë¡œ ì—´ë¦¼");
             }
             else
             {
-                //Debug.LogError("[HUDAllPanel]  ¿­±â ½ÇÆĞ");
+                //Debug.LogError("ìŠ¤í…Œì´ì§€ íŒ¨ë„  ì—´ê¸° ì‹¤íŒ¨");
             }
         });
     }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PlaceTile : InteractableBase
 {
     [SerializeField] Slider progressBar;
-    public string tileId;
+    public string tileId => gameObject.name;
 
 
     [SerializeField] float installingTime;

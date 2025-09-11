@@ -20,7 +20,8 @@ public class FirebaseProperty<T> : FirebaseData
 
             if (!_isFirebaseConnected)
             {
-                _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, out _value);
+                _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, value, out _value);
+                return;
             }
 
             Manager.firebase.SaveData(Path, value);
@@ -33,7 +34,7 @@ public class FirebaseProperty<T> : FirebaseData
     public FirebaseProperty(string id, string parentPath, T value = default) : base(id, parentPath)
     {
         _default = value;
-        _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, out _value);
+        _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, _default, out _value);
 
         if (!_isFirebaseConnected) IsInitSelf = true;
     }

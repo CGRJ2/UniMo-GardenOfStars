@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +19,11 @@ public class Portal : InteractableBase
     {
         base.Enter(characterRuntimeData);
 
-        // »óÈ£ÀÛ¿ëÇÑ ÁÖÃ¼°¡ ÇÃ·¹ÀÌ¾î¶ó¸é (ÇÃ·¹ÀÌ¾î ÇÑÁ¤)
+        // ìƒí˜¸ì‘ìš©í•œ ì£¼ì²´ê°€ í”Œë ˆì´ì–´ë¼ë©´ (í”Œë ˆì´ì–´ í•œì •)
         if (characterRuntimeData is PlayerRunTimeData)
         {
             if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(true);  // ±âº» »óÈ£ÀÛ¿ë ÆË¾÷ È°¼ºÈ­ (Á¸Àç ÇÑ´Ù¸é)
+                activatePopUI.gameObject.SetActive(true);  // ê¸°ë³¸ ìƒí˜¸ì‘ìš© íŒì—… í™œì„±í™” (ì¡´ì¬ í•œë‹¤ë©´)
         }
     }
 
@@ -31,11 +31,11 @@ public class Portal : InteractableBase
     {
         base.Exit(characterRuntimeData);
 
-        // »óÈ£ÀÛ¿ëÇÑ ÁÖÃ¼°¡ ÇÃ·¹ÀÌ¾î¶ó¸é (ÇÃ·¹ÀÌ¾î ÇÑÁ¤)
+        // ìƒí˜¸ì‘ìš©í•œ ì£¼ì²´ê°€ í”Œë ˆì´ì–´ë¼ë©´ (í”Œë ˆì´ì–´ í•œì •)
         if (characterRuntimeData is PlayerRunTimeData)
         {
             if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(false); // ±âº» »óÈ£ÀÛ¿ë ÆË¾÷ ºñÈ°¼ºÈ­ (Á¸Àç ÇÑ´Ù¸é)
+                activatePopUI.gameObject.SetActive(false); // ê¸°ë³¸ ìƒí˜¸ì‘ìš© íŒì—… ë¹„í™œì„±í™” (ì¡´ì¬ í•œë‹¤ë©´)
         }
     }
 }

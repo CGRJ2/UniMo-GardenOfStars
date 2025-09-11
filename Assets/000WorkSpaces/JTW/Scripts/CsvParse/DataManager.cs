@@ -19,10 +19,12 @@ public partial class DataManager : Singleton<DataManager>
         BuildingLocalizationRoutine();
         NpcRoutine();
         QuestRoutine();
+        QuestRewardRoutine();
         QuestContentRoutine();
         WorkerUpgradeCostRoutine();
         WorkerEmployCostRoutine();
         StageRoutine();
+        QuestContentStepRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)

@@ -1,26 +1,28 @@
-﻿퀘스트 내용 단계 및 보상 데이터,,,,
-퀘스트 내용 단계 데이터 Id,퀘스트 내용 데이터 Id,"$목표오브젝트 Id(건물, 재료, 재화 등 해당하는 오브젝트의 데이터 ID)$",보상 재화 ID,보상 재화 지급 수량
-Id,QuestContentId,TargetAmount,RewardId,RewardAmount
-string,string,int,string,int
-qcs0001,qc0001,3,goods0001,10
-qcs0002,qc0002,5,goods0002,10
-qcs0003,qc0003,2,goods0003,10
-qcs0004,qc0004,4,goods0004,10
-qcs0005,qc0005,3,goods0005,10
-qcs0006,qc0006,3,goods0006,10
-qcs0007,qc0007,5,goods0007,20
-qcs0008,qc0008,5,goods0008,30
-qcs0009,qc0008,7,goods0009,30
-qcs0010,qc0009,2,goods0010,30
-qcs0011,qc0009,5,goods0011,30
-qcs0012,qc0009,8,goods0012,30
-qcs0013,qc0010,10,goods0013,30
-qcs0014,qc0011,5,goods0014,30
-qcs0015,qc0011,5,goods0015,30
-qcs0016,qc0012,10,goods0016,30
-qcs0017,qc0013,3,goods0017,30
-qcs0018,qc0013,3,goods0018,30
-qcs0019,qc0013,3,goods0019,30
-qcs0020,qc0014,5,goods0020,30
-qcs0021,qc0014,5,goods0021,30
-qcs0022,qc0015,15,goods0022,30
+﻿퀘스트 내용 단계 및 보상 데이터,,,,,
+퀘스트 내용 단계 데이터 Id,퀘스트 내용 데이터 Id,"$목표오브젝트 Id(건물, 재료, 재화 등 해당하는 오브젝트의 데이터 ID)$",보상 재화 ID,보상 재화 지급 수량,단계 순서
+Id,QuestContentId,TargetAmount,RewardId,RewardAmount,ContentOrder
+string,string,int,string,int,int
+qcs0001,qc0001,1,goods0001,10,0
+qcs0002,qc0002,1,goods0002,10,0
+qcs0003,qc0003,1,goods0003,10,0
+qcs0004,qc0003,2,goods0004,10,1
+qcs0005,qc0003,2,goods0005,10,2
+qcs0006,qc0004,1,goods0004,10,0
+qcs0007,qc0005,1,goods0005,10,0
+qcs0008,qc0006,1,goods0006,10,0
+qcs0009,qc0007,1,goods0007,20,0
+qcs0010,qc0008,5,goods0008,30,1
+qcs0011,qc0008,7,goods0009,30,2
+qcs0012,qc0009,2,goods0010,30,1
+qcs0013,qc0009,5,goods0011,30,2
+qcs0014,qc0009,8,goods0012,30,3
+qcs0015,qc0010,10,goods0013,30,1
+qcs0016,qc0011,5,goods0014,30,1
+qcs0017,qc0011,5,goods0015,30,2
+qcs0018,qc0012,10,goods0016,30,1
+qcs0019,qc0013,3,goods0017,30,1
+qcs0020,qc0013,3,goods0018,30,2
+qcs0021,qc0013,3,goods0019,30,3
+qcs0022,qc0014,5,goods0020,30,1
+,qc0014,5,goods0021,30,2
+,qc0015,15,goods0022,30,1

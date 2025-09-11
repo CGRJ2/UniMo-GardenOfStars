@@ -1,3 +1,6 @@
+using GameNpc;
+using GameQuest;
+using GooglePlayGames.BasicApi;
 using System;
 using UnityEngine;
 
@@ -14,6 +17,10 @@ public partial class StageData : FirebaseData
     public FirebaseDataList<PlaceTileData> PlaceTileList;
     public FirebaseProperty<string> PurchasedBuildingID;
 
+    public NpcData Npc;
+    
+
+
     public StageData(string id, string parentPath) : base(id, parentPath)
     {
         WorkerList = new FirebaseDataList<WorkerData>("WorkerList", Path, (id, parentPath) =>
@@ -28,8 +35,12 @@ public partial class StageData : FirebaseData
 
         PurchasedBuildingID = new FirebaseProperty<string>("PurchasedBuildingID", Path);
 
+        // 해당 스테이지의 id에 존재하는 NPCId
+        Npc = new NpcData("NpcData", Path);
+
         InitList.Add(WorkerList);
         InitList.Add(PlaceTileList);
         InitList.Add(PurchasedBuildingID);
+        InitList.Add(Npc);
     }
 }

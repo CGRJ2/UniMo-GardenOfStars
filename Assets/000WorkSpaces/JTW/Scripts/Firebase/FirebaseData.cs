@@ -11,9 +11,10 @@ public abstract class FirebaseData : IUsableId
     protected string Path => string.IsNullOrEmpty(ParentPath) ? Id : $"{ParentPath}/{Id}";
 
     protected List<FirebaseData> InitList = new();
+    public int ListInitCount;
 
     protected bool IsInitSelf;
-    public bool IsInit => InitList.Count == 0 ? IsInitSelf : InitList.All(data => data.IsInit);
+    public bool IsInit => InitList.Count == 0 ? IsInitSelf : InitList.All(data => data.IsInit) && ListInitCount <= InitList.Count;
 
     public string GetId()
     {

@@ -21,12 +21,12 @@ public class QuestDataCsv : IUsableId
     }
 }
 
-public class QuestContentDataCsv : IUsableId
+public class QuestRewardDataCsv : IUsableId
 {
     public string Id;
     public string QuestId;
-    public string ContentTargetId;
-    public int ContentTargetCount;
+    public string RewardId;
+    public int RewardAmount;
 
     public string GetId()
     {
@@ -34,7 +34,34 @@ public class QuestContentDataCsv : IUsableId
     }
 }
 
-public class QuestUserDataJson : IUsableId
+public class QuestContentDataCsv : IUsableId
+{
+    public string Id;
+    public string QuestId;
+    public string ContentTargetId;
+    //public int ContentTargetCount;
+
+    public string GetId()
+    {
+        return Id;
+    }
+}
+
+public class QuestContentStepDataCsv : IUsableId
+{
+    public string Id;
+    public string QuestContentId;
+    public int TargetAmount;
+    public string RewardId;
+    public int RewardAmount;
+    public int ContentOrder;
+    public string GetId()
+    {
+        return Id;
+    }
+}
+
+/*public class QuestUserDataJson : IUsableId
 {
     public string Id;
     public string QuestId;
@@ -45,9 +72,9 @@ public class QuestUserDataJson : IUsableId
     {
         return Id;
     }
-}
+}*/
 
-public class QuestUserProgressDataJson : IUsableId
+/*public class QuestUserProgressDataJson : IUsableId
 {
     public string Id;
     public int QuestId;
@@ -61,21 +88,31 @@ public class QuestUserProgressDataJson : IUsableId
     {
         return Id;
     }
-}
+}*/
 
 public partial class DataManager
 {
-    [SerializeField] private bool _isQuestAdressable;
-    [SerializeField] private bool _isQuestContentAdressable;
+    [SerializeField] private bool _isQuestAdressable = true;
+    [SerializeField] private bool _isQuestRewardAdressable = true;
+    [SerializeField] private bool _isQuestContentAdressable = true;
+    [SerializeField] private bool _isQuestContentStepAdressable = true;
 
     private const string _questDataTableURL = "https://docs.google.com/spreadsheets/d/14olmAKBDTc8EEL4fDtRC5j_vtVXu5ZZ3EXckaP9uGo8/export?format=csv";
     private const string _questAddress = "CYE/SampleQuestData";
+    
+    private const string _questRewardDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
+    private const string _questRewardAddress = "CYE/SampleQuestRewardData";
 
     private const string _questContentDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
     private const string _questContentAddress = "CYE/SampleQuestContentData";
+    
+    private const string _questContentStepDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
+    private const string _questContentStepAddress = "CYE/SampleQuestContentStepData";
 
     public DataTableParser<QuestDataCsv> Quest;
+    public DataTableParser<QuestRewardDataCsv> QuestReward;
     public DataTableParser<QuestContentDataCsv> QuestContent;
+    public DataTableParser<QuestContentStepDataCsv> QuestContentStep;
 
     public async void QuestRoutine()
     {
@@ -100,7 +137,28 @@ public partial class DataManager
             Quest.Load(rawData);
         }
     }
-    
+
+    public async void QuestRewardRoutine()
+    {
+        string rawData = await GetDataString((_isQuestRewardAdressable), (_isQuestRewardAdressable) ? _questRewardAddress : _questRewardDataTableURL);
+        if (rawData != null)
+        {
+            QuestReward = new DataTableParser<QuestRewardDataCsv>((words, dict) =>
+            {
+                QuestRewardDataCsv questReward = new QuestRewardDataCsv();
+
+                questReward.Id = words[dict["Id"]];
+                questReward.QuestId = words[dict["QuestId"]];
+                questReward.RewardId = words[dict["RewardId"]];
+                int.TryParse(words[dict["RewardAmount"]], out questReward.RewardAmount);
+
+                return questReward;
+            });
+
+            QuestReward.Load(rawData);
+        }
+    }
+
     public async void QuestContentRoutine()
     {
         string rawData = await GetDataString((_isQuestContentAdressable), (_isQuestContentAdressable) ? _questContentAddress : _questContentDataTableURL);
@@ -113,12 +171,34 @@ public partial class DataManager
                 questContent.Id = words[dict["Id"]];
                 questContent.QuestId = words[dict["QuestId"]];
                 questContent.ContentTargetId = words[dict["ContentTargetId"]];
-                int.TryParse(words[dict["ContentTargetCount"]], out questContent.ContentTargetCount);
 
                 return questContent;
             });
 
             QuestContent.Load(rawData);
+        }
+    }
+
+    public async void QuestContentStepRoutine()
+    {
+        string rawData = await GetDataString((_isQuestContentStepAdressable), (_isQuestContentStepAdressable) ? _questContentStepAddress : _questContentStepDataTableURL);
+        if (rawData != null)
+        {
+            QuestContentStep = new DataTableParser<QuestContentStepDataCsv>((words, dict) =>
+            {
+                QuestContentStepDataCsv questContentStep = new QuestContentStepDataCsv();
+
+                questContentStep.Id = words[dict["Id"]];
+                questContentStep.QuestContentId = words[dict["QuestContentId"]];
+                int.TryParse(words[dict["TargetAmount"]], out questContentStep.TargetAmount);
+                questContentStep.RewardId = words[dict["RewardId"]];
+                int.TryParse(words[dict["RewardAmount"]], out questContentStep.RewardAmount);
+                int.TryParse(words[dict["ContentOrder"]], out questContentStep.ContentOrder);
+
+                return questContentStep;
+            });
+
+            QuestContentStep.Load(rawData);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameQuest;
 using UnityEngine;
 
@@ -22,47 +23,48 @@ namespace GameNpc
 
         IEnumerator WaitAndInit()
         {
-            yield return new WaitForSeconds(1.5f);
+            //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
+            yield return new WaitForSeconds(2f);
             Init();
         }
 
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>();
+            UpdateQuestData();
 
-            for (int i =0; i< Manager.quest.CurrentQuest._progresses.Count; i++)
-            {
-                if (Manager.quest.CurrentQuest._progresses.Count > requireTiles.Length) 
-                { Debug.LogError("퀘스트 조건 발판 개수보다 퀘스트 조건이 더 많음"); break; }
+            Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
 
-                requireTiles[i].requirement = Manager.quest.CurrentQuest._progresses[i];
-                requireTiles[i].UpdateView();
-            }
         }
 
-        /// <summary>
-        /// 물품 납품
-        /// </summary>
-        /// <param name="targetId"></param>
-        /// <param name="addCount"></param>
-        public void ReceiveProduct(string targetId, int addCount = 1)
+        public void UpdateQuestData(string questID = null)
         {
-            // 퀘스트 업데이트
-            Manager.quest.UpdateCurrentQuestProgress(targetId, addCount);
-        }
+            // QC데이터가 있는 만큼만 발판 활성화
+            var QCDataList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
+            for (int i = 0; i < QCDataList.Count; i++)
+            {
+                requireTiles[i].gameObject.SetActive(true);
 
-        /// <summary>
-        /// 대화
-        /// </summary>
+                requireTiles[i].QC_Data = QCDataList[i];
+                requireTiles[i].SetUp();
+            }
+            if (QCDataList.Count < requireTiles.Length)
+            {
+                for (int i = QCDataList.Count; i < requireTiles.Length; i++)
+                {
+                    requireTiles[i].gameObject.SetActive(false);
+                }
+            }
+    }
+
+
         public void Talk()
         {
+            Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
             // Dialogue 실행
             Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
-        /// <summary>
-        /// npc 포커스
-        /// </summary>
         public void Focus()
         {
             // 대사 출력

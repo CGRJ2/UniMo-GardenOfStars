@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using GameQuest;
 using UnityEngine;
@@ -28,7 +28,7 @@ namespace GameNpc
             foreach (QuestContentProgressData progressData in Manager.quest.CurrentQuest._progresses)
             {
                 GameObject panel = _itemPanel[progressData.ContentTargetId];
-                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressCount.Value);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressdProdsCount.Value);
             }
         }
         public void InitItemPanel(int currentQuestIndex)
@@ -39,8 +39,8 @@ namespace GameNpc
                 GameObject panel = Instantiate(_cellPrefab, _viewContent.transform);
                 // panel.GetComponent<NpcProgressPanel>()?.UpdateItemImage(itemSprite);
                 panel.GetComponent<QuestProgressPanel>()?.UpdateItemId(progressData.ContentTargetId);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressCount.Value);
-                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData.ContentTargetCount);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateCurrentCountText((int)progressData.ProgressdProdsCount.Value);
+                panel.GetComponent<QuestProgressPanel>()?.UpdateTargetCountText(progressData.CurrentTargetCount);
                 if (!_itemPanel.ContainsKey(progressData.ContentTargetId)) { 
                     _itemPanel.Add(progressData.ContentTargetId, panel);
                 }
@@ -57,3 +57,4 @@ namespace GameNpc
     }    
 }
 
+*/

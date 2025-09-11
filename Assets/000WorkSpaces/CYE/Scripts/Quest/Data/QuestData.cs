@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GameQuest
 {
-    /// <summary>
-    /// 퀘스트 기본 데이터 클래스
-    /// </summary>
     public class QuestBaseData : FirebaseData
     {
         private QuestDataCsv _questCsv => Manager.data.Quest.Values[Id];
@@ -18,15 +16,25 @@ namespace GameQuest
         public QuestType QuestType => _questCsv.QuestType;
         public string Description => _questCsv.Description;
 
-        public FirebaseProperty<long> QuestState;
-        public QuestState State => (QuestState)(int)QuestState.Value;
+        public FirebaseProperty<int> QuestState;
+
+        public FirebaseDataList<QuestContentProgressData> QuestContentList;
+
+        public QuestState State => (QuestState)QuestState.Value;
         #endregion
 
         #region 
         public QuestBaseData(string id, string parentPath = null) : base(id, parentPath)
         {
-            QuestState = new FirebaseProperty<long>("QuestState", Path);
+            QuestState = new FirebaseProperty<int>("QuestState", Path);
             InitList.Add(QuestState);
+
+            QuestContentList = new FirebaseDataList<QuestContentProgressData>("QcList", Path, (id, parentPath) =>
+            {
+                return new QuestContentProgressData(id, parentPath);
+            });
+            InitList.Add(QuestContentList);
+
         }
         #endregion
 

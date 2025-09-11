@@ -1,3 +1,4 @@
+using KYS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,63 +15,86 @@ namespace GameQuest
         private QuestContentDataCsv _questContentCsv => Manager.data.QuestContent.Values[Id];
         public string QuestId => _questContentCsv.QuestId;
         public string ContentTargetId => _questContentCsv.ContentTargetId;
-        public int ContentTargetCount => _questContentCsv.ContentTargetCount;
-        public FirebaseProperty<long> ProgressCount;
-        public int Count => (int)ProgressCount.Value;
-        public FirebaseProperty<long> ProgressState;
-        public QuestProgressState State => (QuestProgressState)(int)ProgressState.Value;
+        public int CurrentTargetCount => GetCurrentStepRequireCount(); // Step 클리어를 위한 재료 개수
+        public int StepIndexForClearContent => GetStepIndexForContentClear(); // Content 클리어를 위한 최대 단계의 Index
 
-        /// <summary>
-        /// 퀘스트 내용 데이터와 퀘스트 진행도 데이터를 조합하여 내부적으로 사용할 퀘스트 진행도 데이터를 만듭니다.
-        /// </summary>
-        /// <param name="rawContentData">퀘스트 내용 데이터</param>
-        /// <param name="rawProgressData">퀘스트 진행도 데이터</param>
+        // ProgressdIndex가 CSV의 최대Index를 넘어갈 때 클리어 판정.
+        public FirebaseProperty<int> ProgressdIndex;
+        public FirebaseProperty<int> ProgressdProdsCount;
+        // 이벤트로 `Step 클리어`, `Content 클리어` 구분
+        // `Step 클리어` 시, ProgressdIndex += 1, 램프 불빛 하나 추가, 보상 지급
+        // `Content 클리어` 시, ProgressdIndex = 0, 해당 발판 `완료` 표기, 다른 퀘스트들 클리어 여부 판단,
+
+        public bool IsContentClear => ProgressdIndex.Value > StepIndexForClearContent;
+
         public QuestContentProgressData(string id, string parentPath = null) : base(id, parentPath)
         {
-            ProgressCount = new FirebaseProperty<long>("ProgressCount", Path);
-            InitList.Add(ProgressCount);
+            ProgressdProdsCount = new FirebaseProperty<int>("ProgressdCount", Path);
+            ProgressdIndex = new FirebaseProperty<int>("ProgressIndex", Path);
 
-            ProgressState = new FirebaseProperty<long>("ProgressState", Path);
-            InitList.Add(ProgressState);
+            ProgressdIndex.Subscribe(CheckContentClear);
+            ProgressdProdsCount.Subscribe(CheckStepClear);
+
+            InitList.Add(ProgressdIndex);
+            InitList.Add(ProgressdProdsCount);
         }
 
-        /// <summary>
-        /// 진행 수량 및 진행 상태를 업데이트합니다.
-        /// </summary>
-        /// <param name="addCount">진행 수량</param>
-        public void UpdateData(int addCount)
+        void CheckContentClear(int progressIndex)
         {
-            if (addCount == 0 || State == QuestProgressState.Completed)
+            // 현재 Content 클리어 시 (모든 Step 클리어 완료)
+            if (StepIndexForClearContent < progressIndex)
             {
-                // 진행도를 더할 수량이 0이거나 이미 완료된 상태면 업데이트하지 않음.
-                Debug.Log($"[QuestProgressData.cs] {ContentTargetId}를 업데이트할 수 없습니다.");
-                return;
-            }
-            if (Count == 0 && State == QuestProgressState.BeforeStart)
-            {
-                // 만일 현재 수량이 0이면서 상태가 BeforeStart면 값 업데이트시 상태를 진행중(InProgress)으로 변경함.
-                // State = QuestProgressState.InProgress;
-                UpdateProgressState(QuestProgressState.InProgress);
-            }
+                Debug.LogWarning($"QC(id:{Id}) 클리어");
 
-            // Count += addCount;
-            UpdateProgressCount(addCount);
-
-            if (Count == ContentTargetCount)
-            {
-                // 만일 현재 수량이 목표 수량에 도달했을 경우 상태를 완료(Complete)로 변경함.
-                // State = QuestProgressState.Completed;
-                UpdateProgressState(QuestProgressState.Completed);
+                // 현재 퀘스트의 모든 Content가 Clear상태인지 체크
+                Manager.quest.CheckCurQuestCleared();
             }
         }
 
-        private void UpdateProgressCount(int addCount)
+        void CheckStepClear(int curProdsCount)
         {
-            ProgressCount.Value = (ProgressCount.Value + addCount) >= ContentTargetCount ? ContentTargetCount : (ProgressCount.Value + addCount);
+            if (CurrentTargetCount <= curProdsCount)
+            {
+                // 스텝 클리어 이벤트 실행(보상, 이펙트)
+                Debug.LogWarning("스텝 클리어, 보상 수령");
+
+                ///.../// 스텝 완료 이펙트 종료 후에
+
+
+                // 다음 Step 인덱스로 넘어가기 & 개수 정보 초기화
+                ProgressdIndex.Value += 1;
+
+                // 마지막 스텝인 경우 Value 안바꿔줌
+                if (CurrentTargetCount > 0)  
+                    ProgressdProdsCount.Value = 0;
+            }
         }
-        private void UpdateProgressState(QuestProgressState nextState)
+
+
+        public int GetCurrentStepRequireCount()
         {
-            ProgressState.Value = (int)nextState;
+            foreach (var kvp in Manager.data.QuestContentStep.Values)
+            {
+                if (kvp.Value.QuestContentId == Id && ProgressdIndex.Value == kvp.Value.ContentOrder)
+                {
+                    return kvp.Value.TargetAmount;
+                }
+            }
+            return -99;
+        }
+        
+        public int GetStepIndexForContentClear()
+        {
+            int maxIndex = 0;
+            foreach (var kvp in Manager.data.QuestContentStep.Values)
+            {
+                if (kvp.Value.QuestContentId == Id)
+                {
+                    if (maxIndex < kvp.Value.ContentOrder)
+                    maxIndex = kvp.Value.ContentOrder;
+                }
+            }
+            return maxIndex;
         }
     }
 }

@@ -88,22 +88,33 @@ public class FirebaseManager : Singleton<FirebaseManager>
     {
         yield return new WaitUntil(() => UserData.IsInit);
 
+        Debug.LogWarning("[FirebaseManager] UserData 초기화 완료");
+
         _isUserDataInit = true;
     }
-
-    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, out T value)
+    
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, out T value)
     {
         if (_isUserDataInit)
         {
-            value = default;
-            _database.RootReference.Child(path).ValueChanged += func;
+            value = setValue;
+            _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
+            {
+                if(task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("FirebaseProperty 값 변경 실패");
+                    return;
+                }
+
+                _database.RootReference.Child(path).ValueChanged += func;
+            });
             return true;
         }
         else
         {
             if (!_rootDataSnapshot.Child(path).Exists)
             {
-                value = default;
+                value = setValue;
             }
             else
             {
@@ -146,14 +157,17 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);
     }
 
-    public bool CheckInit(string path)
+    public bool CheckInit(string path, out int count)
     {
+        count = 0;
+
         if (_isUserDataInit) return true;
 
         DataSnapshot data = _rootDataSnapshot.Child(path);
 
         if(!data.Exists || !data.HasChildren) return true;
 
+        count = (int)data.ChildrenCount;
         return false;
     }
 }
