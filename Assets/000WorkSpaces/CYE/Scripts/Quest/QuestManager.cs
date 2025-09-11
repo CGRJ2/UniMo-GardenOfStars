@@ -1,6 +1,7 @@
 // System 
 // Custom
 using GameQuest;
+using KYS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -71,7 +72,8 @@ public class QuestManager : Singleton<QuestManager>
     // 모든 Content의 클리어 여부 판단
     public void CheckCurQuestCleared()
     {
-        var contentList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        var contentList = npc.CurQuestData.QuestContentList.List;
 
         bool allContentCleard = true;
         foreach (var value in contentList)
@@ -85,15 +87,17 @@ public class QuestManager : Singleton<QuestManager>
         // 모든 Content가 클리어된 상황이라면 => 퀘스트 클리어 판정
         if (allContentCleard)
         {
-            Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestState.Value = 3; // Completed
-            Debug.LogWarning($"퀘스트(id: {Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Value})의 모든 Content 클리어");
+            npc.CurQuestData.QuestState.Value = 3; // Completed
+            Debug.LogWarning($"퀘스트(id: {npc.CurrentQuestID.Value})의 모든 Content 클리어");
 
             // 현재 퀘스트 클리어 이벤트 (QuestState에 구독해두기)
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
+            Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
+            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
 
             // 대화 했다 치고
-            StartCoroutine(Temp_MoveToNextQuest());
+            //StartCoroutine(Temp_MoveToNextQuest());
         }
     }
 
@@ -106,6 +110,12 @@ public class QuestManager : Singleton<QuestManager>
             t += 1;
         }
         MoveToNextQuest();
+    }
+
+    void SetNextQuestAfterDialogEnd(DialogueData dialogueData)
+    {
+        MoveToNextQuest();
+        Manager.dialogue.OnDialogueCompleted -= SetNextQuestAfterDialogEnd;
     }
 
     // 다음 순서의 퀘스트를 불러옴
