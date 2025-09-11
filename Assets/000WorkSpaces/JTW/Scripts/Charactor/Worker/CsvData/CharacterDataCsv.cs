@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class CharacterDataCsv : IUsableId
 {
@@ -10,6 +12,9 @@ public class CharacterDataCsv : IUsableId
     public string Name_Kr;
     public string Name_En;
     public string Description;
+
+    public Sprite Sprite;
+    public GameObject Avatar;
 
     public string GetId()
     {
@@ -27,7 +32,7 @@ public partial class DataManager
     // Addressable 에셋 주소
     private const string _characterAdress = "CharacterCsv";
 
-    public DataTableParser<CharacterDataCsv> CharacterCost;
+    public DataTableParser<CharacterDataCsv> Character;
     private async void CharacterRoutine()
     {
         string dataCsv;
@@ -41,7 +46,7 @@ public partial class DataManager
             dataCsv = await GetDataString(_isCharacterAdressable, _characterDataTableURL);
         }
 
-        CharacterCost = new DataTableParser<CharacterDataCsv>((words, dict) =>
+        Character = new DataTableParser<CharacterDataCsv>((words, dict) =>
         {
             CharacterDataCsv character = new CharacterDataCsv();
 
@@ -50,9 +55,35 @@ public partial class DataManager
             character.Name_Kr = words[dict["Name_Kr"]];
             character.Description = words[dict["Desc"]];
 
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"CharacterImage/{words[dict["CharacterID"]]}.png", typeof(Sprite), out var locations)))
+            {
+                Addressables.LoadAssetAsync<Sprite>($"CharacterImage/{words[dict["CharacterID"]]}.png").Completed += task =>
+                {
+                    if (task.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogError("캐릭터 이미지 데이터 다운로드 실패");
+                        return;
+                    }
+                    character.Sprite = task.Result;
+                };
+            }
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"CharacterPrefab/{words[dict["CharacterID"]]}.prefab", typeof(GameObject), out var locations)))
+            {
+                Addressables.LoadAssetAsync<GameObject>($"CharacterPrefab/{words[dict["CharacterID"]]}.prefab").Completed += task =>
+                {
+                    if (task.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogError("캐릭터 이미지 데이터 다운로드 실패");
+                        return;
+                    }
+                    character.Avatar = task.Result;
+                };
+            }
+
             return character;
         });
 
-        CharacterCost.Load(dataCsv);
+        Character.Load(dataCsv);
     }
 }
