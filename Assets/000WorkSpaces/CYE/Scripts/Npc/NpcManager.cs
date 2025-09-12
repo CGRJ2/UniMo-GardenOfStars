@@ -1,9 +1,8 @@
 using System.Collections.Generic;
+using GameNpc;
 
 public class NpcManager : Singleton<NpcManager>
 {
-    // for test
-    public List<CYETestNpcDataSO> _npcRawData = new();
     private void Awake()
     {
         base.SingletonInit();
@@ -11,8 +10,7 @@ public class NpcManager : Singleton<NpcManager>
     }
     private void Init()
     {
-        // // 초기화
-        // SetCurrentNpc("test");
+        // 초기화
     }
 
 }

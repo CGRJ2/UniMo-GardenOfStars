@@ -11,9 +11,11 @@ namespace KYS
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] private string moneyButtonName = "MoneyButton";
+        [SerializeField] private string gemButtonName = "GemButton";
         [SerializeField] private string levelTextName = "LevelText";
         [SerializeField] private string settingButtonName = "SettingButton";
-        [SerializeField] private string PropertyButtonName = "PropertyButton";
+        [SerializeField] private string propertyButtonName = "PropertyButton";
         [SerializeField] private string questProgressTextName = "QuestProgressText";
         [SerializeField] private string HRRooomButtonName = "HRRoomButton";
         [SerializeField] private string compossButtonName = "CompossButton";
@@ -27,13 +29,18 @@ namespace KYS
         private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
 
-        private GameObject PropertyButton => GetUI(PropertyButtonName);
-
+        private GameObject propertyButton => GetUI(propertyButtonName);
+        
         private GameObject HRRoomButton => GetUI(HRRooomButtonName);
         private GameObject StageTransitionPanelButton => GetUI(StageTransitionPanelButtonName);
         private GameObject StoryPanelButton => GetUI(StoryPanelButtonName);
-
+        private GameObject SettingButton => GetUI(settingButtonName);
+        private GameObject moneyButton => GetUI(moneyButtonName);
+        private GameObject gemButton => GetUI(gemButtonName);
+        private GameObject compossButton => GetUI(compossButtonName);
         #endregion
+
+        private bool isInitialized = false;
 
         protected override void Awake()
         {
@@ -44,6 +51,49 @@ namespace KYS
             {
                 layerType = UILayerType.HUD;
             }
+
+            // UIManager의 초기 표시 설정에 따라 활성화/비활성화 처리
+            // UIManager에서 InitializeHUDElements()에서 처리됨
+        }
+
+        private void OnEnable()
+        {
+            // UI 요소들이 활성화된 후 완전 초기화
+            StartCoroutine(CompleteInitializationAfterDelay());
+        }
+
+        private System.Collections.IEnumerator CompleteInitializationAfterDelay()
+        {
+            // 한 프레임 대기하여 UI 요소들이 완전히 활성화된 후 초기화
+            yield return new WaitForEndOfFrame();
+            
+            if (!isInitialized)
+            {
+                // 여기서 완전한 초기화 수행
+                CompleteInitialization();
+            }
+        }
+
+        private void CompleteInitialization()
+        {
+            // BaseUI의 Initialize 대신 여기서 모든 초기화 수행
+            SetupButtons();
+            SetupAutoLocalization();
+
+            // 언어 변경 이벤트 구독
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+            }
+
+            // 초기 값 설정
+            UpdateMoney(Manager.player.Data.Money.Value);
+
+            // ObservableProperty 구독 - 실시간 돈 업데이트
+            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+
+            isInitialized = true;
+            Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -63,26 +113,9 @@ namespace KYS
         {
             base.Initialize();
 
-            SetupButtons();
-            SetupAutoLocalization();
-
-            // 언어 변경 이벤트 구독
-            if (LocalizationManager.Instance != null)
-            {
-                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
-            }
-
-
-            // 초기 값 설정
-            UpdateMoney(Manager.player.Data.Money.Value);
-
-            // ObservableProperty 구독 - 실시간 돈 업데이트
-            Manager.player.Data.Money.Subscribe(OnMoneyChanged);
-
-            //UpdateLevel(1);
-            //UpdateQuestProgress("진행 중");
-
-            //Debug.Log("[HUDAllPanel] HUD 초기화 완료");
+            // OnEnable에서 CompleteInitialization이 호출되므로 여기서는 기본 초기화만
+            // 실제 초기화는 CompleteInitialization()에서 수행
+            Debug.Log("[HUDAllPanel] Initialize 호출됨 (CompleteInitialization에서 실제 초기화 수행)");
         }
 
         public override void Cleanup()
@@ -109,7 +142,7 @@ namespace KYS
                 settingEventHandler.Click += (data) => OnSettingButtonClicked();
             }
 
-            var PropertyEventHandler = GetEventWithSFX(PropertyButtonName, "SFX_ButtonClick");
+            var PropertyEventHandler = GetEventWithSFX(propertyButtonName, "SFX_ButtonClick");
             if (PropertyEventHandler != null)
             {
                 PropertyEventHandler.Click += (data) => OnPropertyButtonClicked();
@@ -331,7 +364,7 @@ namespace KYS
 
         private void OnStageTransitionPanelButtonClicked()
         {
-            
+
 
             if (UIManager.Instance == null)
             {
@@ -345,7 +378,7 @@ namespace KYS
             {
                 if (panel is StageTransitionPanel)
                 {
-                    
+
                     return;
                 }
             }
@@ -356,7 +389,7 @@ namespace KYS
             {
                 if (panel != null)
                 {
-                    
+
 
                 }
                 else
@@ -368,7 +401,7 @@ namespace KYS
 
         private void OnStoryPanelButtonClicked(PointerEventData data)
         {
-           
+
             if (UIManager.Instance == null)
             {
                 Debug.LogError("[HUDAllPanel] UIManager.Instance가 null입니다!");
@@ -380,7 +413,7 @@ namespace KYS
             {
                 if (panel is StoryPanel)
                 {
-                    
+
                     return;
                 }
             }
@@ -389,7 +422,7 @@ namespace KYS
             {
                 if (panel != null)
                 {
-                    
+
                 }
                 else
                 {
@@ -411,26 +444,26 @@ namespace KYS
         private void OnCompossButtonPressed()
         {
             //Debug.Log("[HUDAllPanel] CompossButton 눌림");
-          
+
             compossButtonPressStartTime = Time.time;
-           
-                StartCompossButtonHoldEffect();
-            
-            
+
+            StartCompossButtonHoldEffect();
+
+
             // 버튼을 누르고 있을 때의 효과 시작
-            
+
         }
 
         private void OnCompossButtonReleased()
         {
             //Debug.Log("[HUDAllPanel] CompossButton 해제됨");
-      
-            
-         
-                // 버튼을 놓았을 때의 효과 정리
-                StopCompossButtonHoldEffect();
-           
-            
+
+
+
+            // 버튼을 놓았을 때의 효과 정리
+            StopCompossButtonHoldEffect();
+
+
         }
 
         private void OnCompossButtonLongPressed()
@@ -480,38 +513,93 @@ namespace KYS
         [ContextMenu("일반 모드로 전환 (모든 버튼 표시)")]
         public void SwitchToNormalMode()
         {
-            if (PropertyButton != null)
+            if (propertyButton != null)
             {
-                PropertyButton.SetActive(true);
+                propertyButton.SetActive(true);
             }
             if (HRRoomButton != null)
             {
                 HRRoomButton.SetActive(true);
             }
-            if (StageTransitionPanelButton != null)
+            if (SettingButton != null)
             {
-                StageTransitionPanelButton.SetActive(true);
+                SettingButton.SetActive(true);
             }
-
+            if (gemButton != null)
+            {
+                gemButton.SetActive(true);
+            }
+            if (moneyButton != null)
+            {
+                moneyButton.SetActive(true);
+            }
+            if (compossButton != null)
+            {
+                compossButton.SetActive(true);
+            }
 
         }
 
         [ContextMenu("튜토리얼 모드로 전환 (일부 버튼 숨김)")]
         public void SwitchToTutorialMode()
         {
-            if (PropertyButton != null)
+            if (propertyButton != null)
             {
-                PropertyButton.SetActive(false);
+                propertyButton.SetActive(false);
             }
             if (HRRoomButton != null)
             {
                 HRRoomButton.SetActive(false);
             }
-            if (StageTransitionPanelButton != null)
+  
+            if (SettingButton != null)
             {
-                StageTransitionPanelButton.SetActive(false);
-            }   
+                SettingButton.SetActive(false);
+            }
+            if (gemButton != null)
+            {
+                gemButton.SetActive(false);
+            }
+            if (moneyButton != null)
+            {
+                moneyButton.SetActive(false);
+            }
+            if(compossButton != null)
+            {
+                compossButton.SetActive(false);
+            }
+        }
 
+        [ContextMenu("튜토리얼 진행후 (돈이랑 잼 활성화)")]
+        public void SwitchToTutorialProgressMode()
+        {
+
+
+            if (propertyButton != null)
+            {
+                propertyButton.SetActive(false);
+            }
+            if (HRRoomButton != null)
+            {
+                HRRoomButton.SetActive(false);
+            }
+ 
+            if (SettingButton != null)
+            {
+                SettingButton.SetActive(false);
+            }
+            if (gemButton != null)
+            {
+                gemButton.SetActive(true);
+            }
+            if (moneyButton != null)
+            {
+                moneyButton.SetActive(true);
+            }
+            if (compossButton != null)
+            {
+                compossButton.SetActive(false);
+            }
 
         }
 
@@ -539,7 +627,7 @@ namespace KYS
             Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
             Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
             Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - PropertyButton: {PropertyButtonName} -> {(GetUI<UnityEngine.UI.Button>(PropertyButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - PropertyButton: {propertyButtonName} -> {(GetUI<UnityEngine.UI.Button>(propertyButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - HRRoomButton: {HRRooomButtonName} -> {(GetUI<UnityEngine.UI.Button>(HRRooomButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
