@@ -375,7 +375,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 1000, y: 300}
+  m_CellSize: {x: 1000, y: 400}
   m_Spacing: {x: 0, y: 20}
   m_Constraint: 1
   m_ConstraintCount: 1
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
-  m_VerticalFit: 2
+  m_VerticalFit: 1
 --- !u!1 &1745854482926647971
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,7 +776,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3841616409223996929}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
@@ -1276,7 +1276,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7358538886811433100}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
@@ -1489,7 +1489,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1948680426924612346
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1588,10 +1588,6 @@ MonoBehaviour:
   runGemButtonTextName: RunGemButtonText
   runMoneyButtonTextName: RunMoneyButtonText
   closeButtonName: CloseButton
-  hrScrollViewName: HR Scroll View
-  hrViewportName: HR Viewport
-  workerUpgradePanelName: WorkerUpgradePanel
-  currentMoney: 0
 --- !u!225 &7509073896363503145
 CanvasGroup:
   m_ObjectHideFlags: 0

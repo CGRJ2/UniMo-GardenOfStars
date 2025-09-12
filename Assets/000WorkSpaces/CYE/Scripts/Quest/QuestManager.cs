@@ -8,12 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 // Unity
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// 현 스테이지의 퀘스트 목록 및 진행도를 관리하는 Singleton Class
 /// </summary>
 public class QuestManager : Singleton<QuestManager>
 {
+    public Action QuestClearAction;
+
     private void Awake()
     {
         base.SingletonInit();
@@ -23,22 +26,35 @@ public class QuestManager : Singleton<QuestManager>
     {
         Debug.LogWarning("퀘스트 데이터 초기화 진행됨");
         Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded?.RemoveListener(QuestDataInitEvent);
+        Debug.LogWarning("1111");
+
         Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
+        Debug.LogWarning("2222");
+
+        Debug.LogWarning(Manager.firebase.UserData.CurStage.Value);
 
         string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
+        Debug.LogWarning($"npcDataId: {npcDataId}");
+        Debug.LogWarning("3333");
+
+
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
         var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
-        //Debug.LogError($"curStageQuestDatas개수: {curStageQuestDatas.Count()}");
+        Debug.LogWarning($"curStageQuestDatas개수: {curStageQuestDatas.Count()}");
+        Debug.LogWarning("4444");
+
 
         foreach (var questDataKVP in curStageQuestDatas)
         {
+            //Debug.LogWarning("QuestList 초기화 시작");
             // 퀘스트 데이터 초기화
             QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(questDataKVP.Key);
             if (questData == null)
             {
                 //Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
                 Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(questDataKVP.Key);
+                //Debug.LogWarning($"QuestData({questDataKVP.Key}) 추가");
             }
         }
     }
@@ -56,6 +72,7 @@ public class QuestManager : Singleton<QuestManager>
             var QCSParsedData = Manager.data.QuestContentStep.Values.Where(item => item.Value.QuestContentId == QCDataKVP.Key);
 
             //Debug.LogError($"QCSParsedData개수: {QCSParsedData.Count()}");
+            //Debug.LogError($"QuestContentList 초기화 시작");
             foreach (var QCSDataKVP in QCSParsedData)
             {
                 // QCS 초기화
@@ -64,6 +81,7 @@ public class QuestManager : Singleton<QuestManager>
                 if (data == null)
                 {
                     npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCSDataKVP.Value.QuestContentId);
+                    //Debug.LogError($"QuestContent({QCSDataKVP.Value.QuestContentId}) 추가");
                 }
             }
         }
@@ -90,26 +108,14 @@ public class QuestManager : Singleton<QuestManager>
             npc.CurQuestData.QuestState.Value = 3; // Completed
             Debug.LogWarning($"퀘스트(id: {npc.CurrentQuestID.Value})의 모든 Content 클리어");
 
-            // 현재 퀘스트 클리어 이벤트 (QuestState에 구독해두기)
+            // 현재 퀘스트 클리어 이벤트 실행
+            QuestClearAction?.Invoke();
+
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
             Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
-
-            // 대화 했다 치고
-            //StartCoroutine(Temp_MoveToNextQuest());
         }
-    }
-
-    IEnumerator Temp_MoveToNextQuest()  // 임시 코루틴, 대화가 종료된 후 다음 퀘스트로 업데이트 되는걸 잠깐 딜레이되는 시간으로 표현함
-    {
-        int t = 0;
-        while(t > 2)
-        {
-            yield return new WaitForSeconds(1f);
-            t += 1;
-        }
-        MoveToNextQuest();
     }
 
     void SetNextQuestAfterDialogEnd(DialogueData dialogueData)
@@ -133,7 +139,19 @@ public class QuestManager : Singleton<QuestManager>
                 break;
             }
             // 마지막 스테이지가 완료되었다?
-            else if (i == questList.Count - 1) { Debug.LogWarning("현재 스테이지의 모든 퀘스트를 완료함!"); }
+            else if (i == questList.Count - 1) 
+            {
+                Debug.LogWarning("현재 스테이지의 모든 퀘스트를 완료함!");
+
+                foreach(var kvp in Manager.data.Stage.Values)
+                {
+                    if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
+                    {
+                        Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
+                        break;
+                    }
+                }
+            }
         }
     }
 

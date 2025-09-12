@@ -36,6 +36,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _app = FirebaseApp.DefaultInstance;
                 _auth = FirebaseAuth.DefaultInstance;
                 _database = FirebaseDatabase.DefaultInstance;
+                _database.SetPersistenceEnabled(false);
+                _database.GoOnline();
                 Debug.Log("파이어베이스 연결 성공");
 
                 // 테스트를 원활하게 하기위해 일단 실행

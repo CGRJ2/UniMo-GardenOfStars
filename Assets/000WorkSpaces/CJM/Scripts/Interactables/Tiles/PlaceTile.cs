@@ -30,8 +30,10 @@ public class PlaceTile : InteractableBase
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.Count > 0);
 
         //yield return new WaitForSeconds(1f);
         Init();

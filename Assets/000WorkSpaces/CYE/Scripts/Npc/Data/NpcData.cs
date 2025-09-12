@@ -32,7 +32,7 @@ namespace GameNpc
             IsTalked = new FirebaseProperty<bool>("IsTalked", Path);
             InitList.Add(IsTalked);
 
-            CurrentQuestID = new FirebaseProperty<string>("CurrentQuestID", Path, "quest9999");
+            CurrentQuestID = new FirebaseProperty<string>("CurrentQuestID", Path);
             InitList.Add(CurrentQuestID);
 
             QuestList = new FirebaseDataList<QuestBaseData>("QuestDataList", Path, (id, parentPath) =>

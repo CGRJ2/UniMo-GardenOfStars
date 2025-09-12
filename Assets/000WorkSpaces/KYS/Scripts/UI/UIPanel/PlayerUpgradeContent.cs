@@ -1,40 +1,40 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using TMPro;
-using UnityEngine.EventSystems;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace KYS
 {
+    public enum PlayerUpgradeStats
+    {
+        Speed, Capacity, Nego
+    }
+
     public class PlayerUpgradeContent : BaseUI
     {
-        [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
-        [SerializeField] private string titleTextName = "TitleText";
-        [SerializeField] private string descriptionTextName = "DescriptionText";
-        [SerializeField] private string upgradeButtonName = "UpgradeButton";
-        [SerializeField] private string costTextName = "CostText";
-        [SerializeField] private string levelTextName = "LevelText";
-        [SerializeField] private string effectTextName = "EffectText";
-        [SerializeField] private string iconImageName = "IconImage";
+        [SerializeField] private PlayerUpgradeStats _upgradeTarget;
+
+        private string _upgradeButtonName = "UpgradeButton";
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
-        private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
-        private TextMeshProUGUI descriptionText => GetUI<TextMeshProUGUI>(descriptionTextName);
-        private Button upgradeButton => GetUI<Button>(upgradeButtonName);
-        private TextMeshProUGUI costText => GetUI<TextMeshProUGUI>(costTextName);
-        private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
-        private TextMeshProUGUI effectText => GetUI<TextMeshProUGUI>(effectTextName);
-        private Image iconImage => GetUI<Image>(iconImageName);
+        private Button _upgradeButton => GetUI<Button>(_upgradeButtonName);
+        private TextMeshProUGUI _costText => GetUI<TextMeshProUGUI>("CostText");
+        private TextMeshProUGUI _beforeText => GetUI<TextMeshProUGUI>("RunBeforeUpgradeNum");
+        private TextMeshProUGUI _afterText => GetUI<TextMeshProUGUI>("RunAfterUpgradeNum");
 
-        [Header("Upgrade Settings")]
-        [SerializeField] private string upgradeName = "";
-        [SerializeField] private int currentLevel = 0;
-        [SerializeField] private int upgradeCost = 100;
-        [SerializeField] private float effectValue = 1f;
-        [SerializeField] private Sprite upgradeIcon;
+        private FirebaseProperty<int> _targerLv;
+
+        private int _cost;
+        private float _curStat;
+        private float _upgradeStat;
+
+        private bool _isInPregress;
 
         protected override void Awake()
         {
             base.Awake();
+            SetupButtons();
+            UpdateUI();
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -53,8 +53,6 @@ namespace KYS
         public override void Initialize()
         {
             base.Initialize();
-            SetupButtons();
-            UpdateUI();
         }
 
         public override void Cleanup()
@@ -65,7 +63,7 @@ namespace KYS
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var upgradeEventHandler = GetEventWithSFX(upgradeButtonName, "SFX_ButtonClick");
+            var upgradeEventHandler = GetEventWithSFX(_upgradeButtonName, "SFX_ButtonClick");
             if (upgradeEventHandler != null)
             {
                 upgradeEventHandler.Click += (data) => OnUpgradeButtonClicked();
@@ -74,55 +72,107 @@ namespace KYS
 
         private void UpdateUI()
         {
-            if (titleText != null)
-                titleText.text = $"{GetLocalizedText("ui_upgrade_title")} {upgradeName}";
+            Dictionary<string, PlayerUpgradeCostDataCsv> upgradeCostdict = Manager.data.PlayerUpgradeCost.Values;
+            Dictionary<string, CharacterLvDataCsv> characterLvDict = Manager.data.CharacterLv.Values;
+            PlayerData playerData = Manager.player.Data;
 
-            if (descriptionText != null)
-                descriptionText.text = $"{GetLocalizedText("ui_upgrade_description")} {upgradeName}";
+            switch (_upgradeTarget)
+            {
+                case PlayerUpgradeStats.Speed:
+                    _cost = upgradeCostdict[playerData.MoveSpeedLv.Value.ToString()].Speed;
+                    _curStat = playerData.MoveSpeed;
+                    if (playerData.IsMoveSpeedMaxLv)
+                    {
+                        _upgradeStat = -1;
+                    }
+                    else
+                    {
+                        _upgradeStat = characterLvDict[(playerData.MoveSpeedLv.Value + 3).ToString()].Speed;
+                    }
 
-            if (costText != null)
-                costText.text = $"{GetLocalizedText("ui_cost_label")}: {upgradeCost}";
+                    _targerLv = playerData.MoveSpeedLv;
+                    break;
+                case PlayerUpgradeStats.Capacity:
+                    _cost = upgradeCostdict[playerData.MaxCapacityLv.Value.ToString()].Capacity;
+                    _curStat = playerData.MaxCapacity;
+                    if (playerData.IsMaxCapacityMaxLv)
+                    {
+                        _upgradeStat = -1;
+                    }
+                    else
+                    {
+                        _upgradeStat = characterLvDict[(playerData.MaxCapacityLv.Value + 1).ToString()].Capacity;
+                    }
 
-            if (levelText != null)
-                levelText.text = $"{GetLocalizedText("ui_level_label")}: {currentLevel}";
+                    _targerLv = playerData.MaxCapacityLv;
+                    break;
+                case PlayerUpgradeStats.Nego:
+                    _cost = upgradeCostdict[playerData.NegoLv.Value.ToString()].Nego;
+                    _curStat = playerData.Nego;
+                    if (playerData.IsNegoMaxLv)
+                    {
+                        _upgradeStat = -1;
+                    }
+                    else
+                    {
+                        _upgradeStat = characterLvDict[(playerData.NegoLv.Value + 1).ToString()].Nego;
+                    }
 
-            if (effectText != null)
-                effectText.text = $"{GetLocalizedText("ui_effect_label")}: {effectValue:F1}";
+                    _targerLv = playerData.NegoLv;
+                    break;
+            }
 
-            if (iconImage != null && upgradeIcon != null)
-                iconImage.sprite = upgradeIcon;
-        }
+            _beforeText.text = _curStat.ToString();
+            if(_upgradeStat == -1)
+            {
+                _afterText.text = "Max";
+                _costText.text = "Max";
+            }
+            else
+            {
+                _afterText.text = _upgradeStat.ToString();
+                _costText.text = _cost.ToString();
+            }
 
-        public void SetUpgradeData(string name, int level, int cost, float effect, Sprite icon = null)
-        {
-            upgradeName = name;
-            currentLevel = level;
-            upgradeCost = cost;
-            effectValue = effect;
-            upgradeIcon = icon;
-            UpdateUI();
+            _upgradeButton.interactable = true;
+            _isInPregress = false;
         }
 
         private void OnUpgradeButtonClicked()
         {
-            // 업그레이드 로직
-            currentLevel++;
-            upgradeCost = Mathf.RoundToInt(upgradeCost * 1.5f);
-            effectValue += 0.5f;
+            if (_isInPregress) return;
+
+            if (Manager.player.Data.Money.Value < _cost || _upgradeStat == -1)
+            {
+                return;
+            }
+
+            _isInPregress = true;
+
+            _upgradeButton.interactable = false;
+
+            Manager.player.Data.Money.Subscribe(UpgradeLv);
+            Manager.player.Data.Money.Value -= _cost;
+        }
+
+        private void UpgradeLv(int value)
+        {
+            Manager.player.Data.Money.Unsubscribe(UpgradeLv);
+            _targerLv.Subscribe(EndUpgrade);
+            _targerLv.Value++;
+        }
+
+        private void EndUpgrade(int value)
+        {
+            _targerLv.Unsubscribe(EndUpgrade);
             UpdateUI();
-            Debug.Log($"[PlayerUpgradeContent] 업그레이드 완료: {upgradeName} (레벨 {currentLevel})");
         }
 
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
-            Debug.Log($"[PlayerUpgradeContent] TitleText: {titleText != null}");
-            Debug.Log($"[PlayerUpgradeContent] DescriptionText: {descriptionText != null}");
-            Debug.Log($"[PlayerUpgradeContent] UpgradeButton: {upgradeButton != null}");
-            Debug.Log($"[PlayerUpgradeContent] CostText: {costText != null}");
-            Debug.Log($"[PlayerUpgradeContent] LevelText: {levelText != null}");
-            Debug.Log($"[PlayerUpgradeContent] EffectText: {effectText != null}");
-            Debug.Log($"[PlayerUpgradeContent] IconImage: {iconImage != null}");
+            Debug.Log($"[PlayerUpgradeContent] UpgradeButton: {_upgradeButton != null}");
+            Debug.Log($"[PlayerUpgradeContent] CostText: {_costText != null}");
         }
     }
 }
