@@ -68,11 +68,11 @@ namespace KYS
 
                 //uiRoot.offsetMin = new Vector2(uiRoot.offsetMin.x, bannerHeight);  //하단여백
                 //uiRoot.offsetMin = new Vector2(0, bannerHeight);  //하단여백
-                Debug.Log("하단적용");
-                Debug.Log($"[UI 조정] bannerHeight: {bannerHeight}");
-                Debug.Log($"offsetMin: {uiRoot.offsetMin}");
-                Debug.Log($"anchoredPosition: {uiRoot.anchoredPosition}");
-                Debug.Log($"sizeDelta: {uiRoot.sizeDelta}");
+                //Debug.Log("하단적용");
+                //Debug.Log($"[UI 조정] bannerHeight: {bannerHeight}");
+                //Debug.Log($"offsetMin: {uiRoot.offsetMin}");
+                //Debug.Log($"anchoredPosition: {uiRoot.anchoredPosition}");
+                //Debug.Log($"sizeDelta: {uiRoot.sizeDelta}");
 
             }
         }

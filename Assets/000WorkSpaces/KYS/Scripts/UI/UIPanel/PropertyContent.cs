@@ -81,12 +81,23 @@ namespace KYS
             // 구매 불가능한 상황들
             if (!string.IsNullOrEmpty(purchasedBuildingID))
             {
-                Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다");
+                
+                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_already_have_building", () =>
+                {
+                    Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다.");
+                });
+
                 return;
             }
             if (estate.IsOnHand())
             {
-                Debug.LogWarning("손에 뭔가 쥐고 있을 때는 건물을 구매할 수 없습니다");
+                
+
+                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_cannot_purchase_building_holding", () =>
+                {
+                    Debug.LogWarning("손에 뭔가 쥐고 있을 때는 건물을 구매할 수 없습니다");
+                });
+
                 return;
             }
 
@@ -105,7 +116,11 @@ namespace KYS
                 }
                 else
                 {
-                    Debug.LogWarning("돈이 모자랍니다");
+                   
+                    Manager.ui.ShowMessagePopUpWithKeyAsync("msg_not_enough_money", () =>
+                    {
+                        Debug.LogWarning("돈이 모자랍니다");
+                    });
                 }
             };
         }

@@ -28,6 +28,14 @@ namespace KYS
         public string UseTypingEffect => Manager.data.Dialogue.Values[Id].UseTypingEffect;
         public string BackgroundImage => Manager.data.Dialogue.Values[Id].BackgroundImage;
         public string ConstellationImage => Manager.data.Dialogue.Values[Id].ConstellationImage;
+        public string CenterImage => Manager.data.Dialogue.Values[Id].CenterImage;
+        public float CenterImageDuration => float.TryParse(Manager.data.Dialogue.Values[Id].CenterImageDuration, out float duration) ? duration : 3f;
+        public bool CenterImageInfinite => string.IsNullOrEmpty(Manager.data.Dialogue.Values[Id].CenterImageDuration) || 
+                                          Manager.data.Dialogue.Values[Id].CenterImageDuration.ToLower() == "infinite" ||
+                                          Manager.data.Dialogue.Values[Id].CenterImageDuration.ToLower() == "inf";
+        public float CenterImageFadeInTime => float.TryParse(Manager.data.Dialogue.Values[Id].CenterImageFadeInTime, out float fadeIn) ? fadeIn : 0.5f;
+        public float CenterImageFadeOutTime => float.TryParse(Manager.data.Dialogue.Values[Id].CenterImageFadeOutTime, out float fadeOut) ? fadeOut : 0.5f;
+        public bool HideCharacterImages => bool.TryParse(Manager.data.Dialogue.Values[Id].HideCharacterImages, out bool hide) ? hide : false;
         public float AutoAdvanceDelay => Manager.data.Dialogue.Values[Id].AutoAdvanceDelay;
         public string ConditionType => Manager.data.Dialogue.Values[Id].ConditionType;
         public string ConditionValue => Manager.data.Dialogue.Values[Id].ConditionValue;
@@ -312,6 +320,11 @@ namespace KYS
         public string UseTypingEffect; // true, false
         public string BackgroundImage; // 배경 이미지 Addressable 키
         public string ConstellationImage; // 별자리 이미지 Addressable 키
+        public string CenterImage; // 가운데 이미지 Addressable 키
+        public string CenterImageDuration; // 가운데 이미지 표시 시간 (초)
+        public string CenterImageFadeInTime; // 가운데 이미지 페이드인 시간
+        public string CenterImageFadeOutTime; // 가운데 이미지 페이드아웃 시간
+        public string HideCharacterImages; // 캐릭터 이미지 숨김 여부 (true/false)
         public float AutoAdvanceDelay;
         public string ConditionType;
         public string ConditionValue;

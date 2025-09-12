@@ -247,6 +247,9 @@ namespace KYS
             OnDialogueNodeChanged?.Invoke(nodeId);
             OnDialogueStarted?.Invoke(dialogueData);
 
+            // 가운데 이미지 처리
+            ProcessCenterImage(dialogueData);
+
             return true;
         }
 
@@ -623,6 +626,56 @@ namespace KYS
             catch (System.Exception e)
             {
                 Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 가운데 이미지 처리
+        /// </summary>
+        private void ProcessCenterImage(DialogueData dialogueData)
+        {
+            // StoryPanel 찾기
+            StoryPanel storyPanel = FindObjectOfType<StoryPanel>();
+            if (storyPanel == null)
+            {
+                Debug.LogWarning("[DialogueManager] StoryPanel을 찾을 수 없어 가운데 이미지를 표시할 수 없습니다.");
+                return;
+            }
+
+            // 가운데 이미지 표시 (빈 값이어도 ShowCenterImage 호출하여 기존 이미지 숨김)
+            storyPanel.ShowCenterImage(
+                dialogueData.CenterImage,
+                dialogueData.CenterImageDuration,
+                dialogueData.CenterImageFadeInTime,
+                dialogueData.CenterImageFadeOutTime,
+                dialogueData.HideCharacterImages,
+                dialogueData.CenterImageInfinite
+            );
+
+            if (enableDebugLogs)
+            {
+                string durationText = dialogueData.CenterImageInfinite ? "무한" : $"{dialogueData.CenterImageDuration}초";
+                Debug.Log($"[DialogueManager] 가운데 이미지 표시: {dialogueData.CenterImage}, " +
+                         $"지속시간: {durationText}, " +
+                         $"페이드인: {dialogueData.CenterImageFadeInTime}초, " +
+                         $"페이드아웃: {dialogueData.CenterImageFadeOutTime}초, " +
+                         $"캐릭터 숨김: {dialogueData.HideCharacterImages}");
+            }
+        }
+
+        /// <summary>
+        /// 가운데 이미지 수동 숨김
+        /// </summary>
+        public void HideCenterImage()
+        {
+            StoryPanel storyPanel = FindObjectOfType<StoryPanel>();
+            if (storyPanel != null)
+            {
+                storyPanel.ForceHideCenterImage();
+                if (enableDebugLogs)
+                {
+                    Debug.Log("[DialogueManager] 가운데 이미지 수동 숨김");
+                }
             }
         }
 
