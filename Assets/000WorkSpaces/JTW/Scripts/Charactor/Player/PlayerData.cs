@@ -114,6 +114,8 @@ public partial class DataManager
         {
             PlayerDataCsv player = new PlayerDataCsv();
 
+            player.Id = words[dict["CharacterFixedID"]];
+
             float.TryParse(words[dict["BMSpeed"]], out player.BMSpeed);
             int.TryParse(words[dict["MaxSpeedLV"]], out player.MaxSpeedMaxLv);
 

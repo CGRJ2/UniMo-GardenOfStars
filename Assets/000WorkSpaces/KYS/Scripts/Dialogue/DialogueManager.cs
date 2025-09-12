@@ -596,6 +596,36 @@ namespace KYS
             return (float)completedCount / npcNodes.Count;
         }
 
+
+        public async void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000 )
+        {
+
+            try
+            {
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+
+                // 1. 튜토리얼 팝업 열기
+                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
+                var popup = popupObj.GetComponent<TutorialPopUp>();
+                popup.SetTutorialPosition(positionType);
+                popup.SetTutorialNode(nodeID);
+
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+
+                // 2. 3초 대기 후 자동 종료
+                await System.Threading.Tasks.Task.Delay(deley);
+
+                // 3. 플레이어 행동 완료 시뮬레이션
+                popup.CompleteTutorialAction();
+                Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+            }
+        }
+
         /// <summary>
         /// 디버그 정보 출력
         /// </summary>

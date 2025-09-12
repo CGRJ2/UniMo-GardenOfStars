@@ -14,6 +14,7 @@ public class StageManager : MonoBehaviour
         // 타이틀에서 시작할 때
         //Init();
 
+
         // 스테이지 씬에서 시작할 때
         StartCoroutine(WaitAndInit());
     }
@@ -29,6 +30,7 @@ public class StageManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         Debug.LogWarning("CurStageData Inited");
+        //Manager.firebase.UserData.CurStage.Value = "Stage00";
 
 
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.IsInit);
@@ -38,8 +40,8 @@ public class StageManager : MonoBehaviour
 
         Manager.quest.CurStageQuestDataInit();
 
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
         Debug.LogWarning("QuestList Inited");
 
         Init();
@@ -50,9 +52,19 @@ public class StageManager : MonoBehaviour
         // 임시 테스트용(인게임씬으로 바로 실행하는 경우)
         if (string.IsNullOrEmpty(Manager.firebase.UserData.CurStage.Value))
         {
-            Manager.firebase.UserData.CurStage.Value = "Tutorial";
-            Addressables.LoadSceneAsync($"MapScene_Tutorial", LoadSceneMode.Additive);
+            Debug.LogError("현재 스테이지 ID가 적용되지 않음");
+            //Manager.firebase.UserData.CurStage.Value = "Tutorial";
+            //Addressables.LoadSceneAsync($"MapScene_Tutorial", LoadSceneMode.Additive);
         }
+        // 튜토리얼 씬을 불러온다
+        else if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            Addressables.LoadSceneAsync($"TutorialScene", LoadSceneMode.Additive).Completed += task =>
+            {
+                // 맵 씬 로드 완료 이후에 로딩 해제
+            };
+        }
+
         // 타이틀 씬에서 인게임씬으로 이동 시, 아래 적용
         else
         {

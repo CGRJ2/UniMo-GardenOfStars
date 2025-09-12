@@ -965,7 +965,7 @@ namespace KYS
         {
 
 
-           Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
 
@@ -983,8 +983,52 @@ namespace KYS
 
         [ContextMenu("대화 시스템 로드 테스트 NPC004")]
         public void Temp_DialogueSystemTest4()
-            {
+        {
             Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
         }
+
+
+        [ContextMenu("TutorialPopUpAfterActionClose")]
+        public async void Temp_DialogueSystemTest6()
+        {
+            try
+            {
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+
+                // 1. 튜토리얼 팝업 열기
+                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
+                var popup = popupObj.GetComponent<TutorialPopUp>();
+                popup.SetTutorialPosition(TutorialPopUp.TutorialPositionType.Top);
+                popup.SetTutorialNode("npc001_quest0001");
+
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+
+                // 2. 3초 대기 후 자동 종료
+                await System.Threading.Tasks.Task.Delay(3000);
+
+                // 3. 플레이어 행동 완료 시뮬레이션
+                popup.CompleteTutorialAction();
+                Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+
+                // 4. 2초 대기 후 강제 종료
+                await System.Threading.Tasks.Task.Delay(2000);
+                popup.ForceEndTutorial();
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 강제 종료");
+
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 완료");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+            }
+        }
+
+        [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
+            public void Temp_ShowHUDUI()
+        {
+
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+        }
+
     }
 }

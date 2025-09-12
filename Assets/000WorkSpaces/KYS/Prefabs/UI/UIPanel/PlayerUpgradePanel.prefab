@@ -924,7 +924,7 @@ GameObject:
   - component: {fileID: 5627953418549394810}
   - component: {fileID: 1986548807292959178}
   m_Layer: 5
-  m_Name: RunMoneyButtonText
+  m_Name: RunMoneyBottonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1491,7 +1491,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1948680426924612346
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1586,16 +1586,8 @@ MonoBehaviour:
   defaultCloseSound: SFX_UI_Close
   enableAutoLocalization: 1
   autoLocalizeKeys: []
-  titleTextName: TitleText
   closeButtonName: CloseButton
-  upgradeListName: UpgradeList
-  playerLevelTextName: PlayerLevelText
-  playerExpTextName: PlayerExpText
-  playerMoneyTextName: PlayerMoneyText
   moneyTextName: RunMoneyBottonText
-  playerLevel: 1
-  playerExp: 0
-  playerMoney: 1000
 --- !u!225 &7016664277707962837
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1621,7 +1613,7 @@ GameObject:
   - component: {fileID: 6398984313393767891}
   - component: {fileID: 1942516252042600877}
   m_Layer: 5
-  m_Name: PlayerUpgradeText
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1750,7 +1742,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8343844132176883501}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
   m_Name: 
@@ -1921,6 +1913,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2776264579605000129}
     m_Modifications:
+    - target: {fileID: 2117714861841524180, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1935,7 +1931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1943,15 +1939,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1983,11 +1979,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 540
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -150
       objectReference: {fileID: 0}
     - target: {fileID: 5626357616614821352, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2001,9 +1997,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7416614992674008474, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
+      propertyPath: m_Name
+      value: UpgradeButton
+      objectReference: {fileID: 0}
     - target: {fileID: 8279631505264968660, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
       propertyPath: m_Name
       value: PlayerRunUpgradeContent
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753920910843004346, guid: 6dde0c1009c801c4581595fd28774c84, type: 3}
+      propertyPath: m_Name
+      value: CostText
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2023,6 +2027,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2776264579605000129}
     m_Modifications:
+    - target: {fileID: 2174243221609452057, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
+      propertyPath: _upgradeTarget
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2037,7 +2045,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_AnchorMin.x
@@ -2045,15 +2053,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2085,11 +2093,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 540
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -470
       objectReference: {fileID: 0}
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2102,6 +2110,14 @@ PrefabInstance:
     - target: {fileID: 2925042688132422347, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3029530856305225523, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
+      propertyPath: m_Name
+      value: CostText
+      objectReference: {fileID: 0}
+    - target: {fileID: 3862468871448069907, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
+      propertyPath: m_Name
+      value: UpgradeButton
       objectReference: {fileID: 0}
     - target: {fileID: 6899182830874016507, guid: 471b2c72a7e8ce54fba4f503b79b20ff, type: 3}
       propertyPath: m_Name
@@ -2139,7 +2155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_AnchorMin.x
@@ -2147,15 +2163,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2187,11 +2203,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 540
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -790
       objectReference: {fileID: 0}
     - target: {fileID: 505960784257677274, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2205,9 +2221,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3471508101325906455, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
+      propertyPath: _upgradeTarget
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5911095648896080373, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
       propertyPath: m_Name
       value: PlayerMoneyUpgradeContent
+      objectReference: {fileID: 0}
+    - target: {fileID: 7624208730926588462, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
+      propertyPath: m_Name
+      value: UpgradeButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 8529696509536324110, guid: bd48e2f346ee6d3468b42f4da422671b, type: 3}
+      propertyPath: m_Name
+      value: CostText
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
