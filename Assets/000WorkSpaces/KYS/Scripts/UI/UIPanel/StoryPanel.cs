@@ -17,6 +17,7 @@ namespace KYS
         [SerializeField] private string storyTopAreaName = "StoryTopArea";
         [SerializeField] private string backgroundImageName = "BackgroundImage"; // 배경 이미지 추가
         [SerializeField] private string constellationImageName = "ConstellationImage"; // 별자리 이미지 추가
+        [SerializeField] private string centerImageName = "CenterImage"; // 가운데 이미지 추가
 
         // ChatWindowArea (NextButton 역할)
         private GameObject chatWindowArea => GetUI(chatWindowAreaName);
@@ -56,6 +57,9 @@ namespace KYS
         
         // 별자리 이미지
         private Image constellationImage => GetUI<Image>(constellationImageName);
+        
+        // 가운데 이미지
+        private Image centerImage => GetUI<Image>(centerImageName);
 
         [Header("Story Settings")]
         [SerializeField] private string[] storyPages = new string[0];
@@ -75,6 +79,11 @@ namespace KYS
         private DialogueNode currentNode;
         private bool isNodeBasedDialogueActive = false;
         private bool isUpdatingUI = false; // UI 업데이트 중복 방지 플래그
+        
+        // 가운데 이미지 관련 변수
+        private Coroutine centerImageCoroutine;
+        private bool isCenterImageActive = false;
+        private string currentCenterImageKey = ""; // 현재 표시 중인 이미지 키
         
         // 초기화 완료 이벤트
         public System.Action OnInitializationCompleted;
@@ -106,6 +115,10 @@ namespace KYS
         {
             base.Initialize();
             SetupButtons();
+            
+            // 초기화 시 모든 캐릭터 이미지 숨기기 (프리팹 기본 이미지 방지)
+            HideAllCharacterImages();
+            
             UpdateUI();
             
             // 언어 변경 이벤트 구독
@@ -699,6 +712,17 @@ namespace KYS
                         Debug.Log($"[StoryPanel] 이름 위치 설정 - isLeftCharacter: {isLeftCharacter} (imagePosition: '{imagePosition}')");
                         SetDialogueCharacterName(localizedSpeaker, isLeftCharacter);
                         SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // CharacterImage 처리 (이 case 블록 내에서)
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
                         break;
 
                     case "choice":
@@ -720,11 +744,33 @@ namespace KYS
                         Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", choiceNextIds)}]");
 
                         SetupChoices(choiceTexts, OnCSVChoiceSelected);
+                        
+                        // CharacterImage 처리 (이 case 블록 내에서)
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
                         break;
 
                     case "story":
                         SwitchToStoryMode();
                         SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // CharacterImage 처리 (이 case 블록 내에서)
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
                         break;
 
                     case "end":
@@ -750,24 +796,7 @@ namespace KYS
                 StartCoroutine(AutoAdvanceCoroutine(dialogueData.AutoAdvanceDelay));
             }
 
-            // 텍스트 표시 후 이미지 로드 (비동기) - 시스템 메시지가 아닌 경우에만
-            if (dialogueData.Speaker.ToLower() != "system")
-            {
-                // 이미지가 비어있으면 모든 캐릭터 이미지 숨기기
-                if (string.IsNullOrEmpty(dialogueData.CharacterImage))
-                {
-                    Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
-                    HideAllCharacterImages();
-                }
-                else
-                {
-                    LoadAndSetCharacterImage(dialogueData.CharacterImage);
-                }
-            }
-            else
-            {
-                Debug.Log("[StoryPanel] 시스템 메시지이므로 이미지를 로드하지 않습니다.");
-            }
+            // CharacterImage 처리는 각 case 블록에서 이미 처리됨
 
             // 배경 이미지 효과 처리
             if (!string.IsNullOrEmpty(dialogueData.BackgroundImage))
@@ -1136,11 +1165,8 @@ namespace KYS
             if (dialogueModePanel != null)
                 dialogueModePanel.SetActive(true);
 
-            // 왼쪽 캐릭터 이미지와 오른쪽 캐릭터 이름 활성화
-            if (dialogueLCharacterImage != null)
-                dialogueLCharacterImage.gameObject.SetActive(true);  // ✅ 왼쪽 이미지 활성화
-            if (dialogueRCharacterImage != null)
-                dialogueRCharacterImage.gameObject.SetActive(false); // ✅ 오른쪽 이미지 비활성화
+            // 캐릭터 이미지는 CharacterImage 설정에 따라 나중에 처리됨
+            // 여기서는 이름 영역만 설정
             if (RDialoguCharacternameArea != null)
                 RDialoguCharacternameArea.SetActive(true);  // ✅ 오른쪽 이름 활성화
             if (LDialoguCharacternameArea != null)
@@ -1159,11 +1185,8 @@ namespace KYS
             if (dialogueModePanel != null)
                 dialogueModePanel.SetActive(true);
 
-            // 오른쪽 캐릭터 이미지와 왼쪽 캐릭터 이름 활성화
-            if (dialogueLCharacterImage != null)
-                dialogueLCharacterImage.gameObject.SetActive(false); // ✅ 왼쪽 이미지 비활성화
-            if (dialogueRCharacterImage != null)
-                dialogueRCharacterImage.gameObject.SetActive(true);  // ✅ 오른쪽 이미지 활성화
+            // 캐릭터 이미지는 CharacterImage 설정에 따라 나중에 처리됨
+            // 여기서는 이름 영역만 설정
             if (RDialoguCharacternameArea != null)
                 RDialoguCharacternameArea.SetActive(false); // ✅ 오른쪽 이름 비활성화
             if (LDialoguCharacternameArea != null)
@@ -1692,6 +1715,7 @@ namespace KYS
             }
             else if (IsChoiceMode())
             {
+                // 선택지 모드: 왼쪽 캐릭터 이미지 설정
                 SetChoiceLeftCharacterImage(characterSprite);
             }
 
@@ -1850,7 +1874,268 @@ namespace KYS
             DialogueLeftCharacter,
             DialogueRightCharacter,
             ChoiceLeftCharacter,
+            CenterImage,
             All
+        }
+        
+        #endregion
+        
+        #region 가운데 이미지 관리
+        
+        /// <summary>
+        /// 가운데 이미지 표시 (페이드인/아웃 포함)
+        /// </summary>
+        public void ShowCenterImage(string imageKey, float duration = 3f, float fadeInTime = 0.0f, float fadeOutTime = 0.0f, bool hideCharacterImages = true, bool infinite = false)
+        {
+            // 빈 값이거나 null인 경우 기존 이미지 숨기기
+            if (string.IsNullOrEmpty(imageKey))
+            {
+                Debug.Log("[StoryPanel] 가운데 이미지 키가 비어있음 - 기존 이미지 숨김");
+                HideCenterImage();
+                return;
+            }
+            
+            // 이전 센터 이미지가 활성화되어 있으면 먼저 숨기기
+            if (isCenterImageActive)
+            {
+                Debug.Log("[StoryPanel] 이전 센터 이미지가 활성화되어 있어서 먼저 숨김");
+                HideCenterImage();
+            }
+            
+            // 같은 이미지가 이미 표시 중인 경우
+            if (isCenterImageActive && currentCenterImageKey == imageKey)
+            {
+                Debug.Log($"[StoryPanel] 같은 이미지가 이미 표시 중: {imageKey} - 연속 표시 모드");
+                
+                // 무한 표시가 아닌 경우에만 시간 연장
+                if (!infinite)
+                {
+                    // 기존 코루틴을 중단하고 새로운 시간으로 재시작
+                    if (centerImageCoroutine != null)
+                    {
+                        StopCoroutine(centerImageCoroutine);
+                    }
+                    centerImageCoroutine = StartCoroutine(ShowCenterImageCoroutine(imageKey, duration, fadeInTime, fadeOutTime, hideCharacterImages, infinite, true)); // 연속 표시 플래그
+                }
+                return;
+            }
+            
+            // 다른 이미지이거나 처음 표시하는 경우
+            if (centerImageCoroutine != null)
+            {
+                StopCoroutine(centerImageCoroutine);
+            }
+            
+            currentCenterImageKey = imageKey;
+            centerImageCoroutine = StartCoroutine(ShowCenterImageCoroutine(imageKey, duration, fadeInTime, fadeOutTime, hideCharacterImages, infinite, false)); // 새 이미지 플래그
+        }
+        
+        /// <summary>
+        /// 가운데 이미지 즉시 숨김
+        /// </summary>
+        public void HideCenterImage()
+        {
+            if (centerImageCoroutine != null)
+            {
+                StopCoroutine(centerImageCoroutine);
+                centerImageCoroutine = null;
+            }
+            
+            if (centerImage != null)
+            {
+                centerImage.gameObject.SetActive(false);
+                centerImage.color = new Color(1f, 1f, 1f, 0f);
+            }
+            
+            isCenterImageActive = false;
+            currentCenterImageKey = ""; // 현재 이미지 키 초기화
+            ShowCharacterImages(); // 캐릭터 이미지 다시 표시
+        }
+        
+        /// <summary>
+        /// 가운데 이미지 표시 코루틴
+        /// </summary>
+        private System.Collections.IEnumerator ShowCenterImageCoroutine(string imageKey, float duration, float fadeInTime, float fadeOutTime, bool hideCharacterImages, bool infinite, bool isContinuous = false)
+        {
+            isCenterImageActive = true;
+            
+            // 캐릭터 이미지 숨기기 (무한 모드이거나 hideCharacterImages가 true일 때)
+            if (infinite || hideCharacterImages)
+            {
+                HideCharacterImages();
+            }
+            
+            // 연속 표시가 아닌 경우에만 이미지 로드 및 설정
+            if (!isContinuous)
+            {
+                // 이미지 로드
+                Sprite sprite = null;
+                
+                // 먼저 캐시에서 확인
+                sprite = Manager.data.GetCachedCharacterImage(imageKey);
+                if (sprite == null)
+                {
+                    // Addressable에서 로드 (동기적으로 처리)
+                    var loadTask = Manager.data.LoadCharacterImageAsync(imageKey);
+                    yield return new WaitUntil(() => loadTask.IsCompleted);
+                    
+                    try
+                    {
+                        sprite = loadTask.Result;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError($"[StoryPanel] 가운데 이미지 로드 중 오류: {ex.Message}");
+                        yield break;
+                    }
+                }
+                
+                if (sprite == null)
+                {
+                    Debug.LogWarning($"[StoryPanel] 가운데 이미지 로드 실패: {imageKey}");
+                    yield break;
+                }
+                
+                // 이미지 설정
+                centerImage.sprite = sprite;
+                centerImage.gameObject.SetActive(true);
+                centerImage.color = new Color(1f, 1f, 1f, 0f);
+                
+                // 페이드인
+                yield return centerImage.DOFade(1f, fadeInTime).WaitForCompletion();
+            }
+            else
+            {
+                // 연속 표시인 경우 - 이미 표시 중이므로 페이드인 생략
+                Debug.Log($"[StoryPanel] 연속 표시 모드 - 페이드인 생략: {imageKey}");
+            }
+            
+            if (infinite)
+            {
+                // 무한 표시 - 수동으로 숨길 때까지 대기
+                Debug.Log($"[StoryPanel] 가운데 이미지 무한 표시 모드: {imageKey}");
+                yield return new WaitUntil(() => !isCenterImageActive); // 수동으로 숨길 때까지 대기
+            }
+            else
+            {
+                // 지정된 시간 동안 표시
+                yield return new WaitForSeconds(duration);
+            }
+            
+            // 페이드아웃
+            yield return centerImage.DOFade(0f, fadeOutTime).WaitForCompletion();
+            
+            // 이미지 숨기기
+            centerImage.gameObject.SetActive(false);
+            isCenterImageActive = false;
+            currentCenterImageKey = ""; // 현재 이미지 키 초기화
+            
+            // 캐릭터 이미지 다시 표시 (무한 모드가 아닐 때)
+            if (!infinite)
+            {
+                ShowCharacterImages();
+            }
+            
+            centerImageCoroutine = null;
+        }
+        
+        /// <summary>
+        /// 캐릭터 이미지들 숨기기
+        /// </summary>
+        private void HideCharacterImages()
+        {
+            if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
+            if (dialogueLCharacterImage != null) dialogueLCharacterImage.gameObject.SetActive(false);
+            if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(false);
+            if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(false);
+        }
+        
+        /// <summary>
+        /// 캐릭터 이미지들 다시 표시
+        /// </summary>
+        private void ShowCharacterImages()
+        {
+            // 센터 이미지가 활성화되어 있으면 캐릭터 이미지 표시하지 않음
+            if (isCenterImageActive)
+            {
+                Debug.Log("[StoryPanel] 센터 이미지가 활성화되어 있어서 캐릭터 이미지를 표시하지 않습니다.");
+                return;
+            }
+            
+            // CharacterImage가 설정되어 있는지 확인
+            if (Manager.dialogue?.CurrentDialogueData != null)
+            {
+                string characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
+                if (string.IsNullOrEmpty(characterImage))
+                {
+                    Debug.Log("[StoryPanel] CharacterImage가 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
+                    HideAllCharacterImages();
+                    return;
+                }
+            }
+            
+            // 현재 대화 데이터에서 캐릭터 위치 정보 가져오기
+            string characterPosition = "";
+            if (Manager.dialogue?.CurrentDialogueData != null)
+            {
+                characterPosition = Manager.dialogue.CurrentDialogueData.CharacterImagePosition?.ToLower() ?? "";
+            }
+            
+            // 모든 캐릭터 이미지 먼저 숨기기
+            if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
+            if (dialogueLCharacterImage != null) dialogueLCharacterImage.gameObject.SetActive(false);
+            if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(false);
+            if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(false);
+            
+            // 현재 모드에 따라 다른 캐릭터 이미지 표시
+            if (IsChoiceMode())
+            {
+                // 선택지 모드: 왼쪽 캐릭터 이미지 표시
+                if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(true);
+            }
+            else if (IsStoryMode())
+            {
+                // 스토리 모드: 오른쪽 캐릭터 이미지 표시
+                if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+            }
+            else if (IsDialogueMode())
+            {
+                // 대화 모드: 위치에 따라 해당 캐릭터만 표시
+                switch (characterPosition)
+                {
+                    case "left":
+                        if (dialogueLCharacterImage != null) dialogueLCharacterImage.gameObject.SetActive(true);
+                        break;
+                    case "right":
+                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        break;
+                    case "center":
+                        if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+                        break;
+                    default:
+                        // 기본값: 오른쪽 캐릭터 표시
+                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        break;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 가운데 이미지가 활성화되어 있는지 확인
+        /// </summary>
+        public bool IsCenterImageActive => isCenterImageActive;
+        
+        /// <summary>
+        /// 가운데 이미지 수동 숨김 (무한 표시 모드에서 사용)
+        /// </summary>
+        public void ForceHideCenterImage()
+        {
+            if (isCenterImageActive)
+            {
+                isCenterImageActive = false; // 무한 대기 상태를 강제로 종료
+                currentCenterImageKey = ""; // 현재 이미지 키 초기화
+                HideCenterImage();
+            }
         }
         
         #endregion
