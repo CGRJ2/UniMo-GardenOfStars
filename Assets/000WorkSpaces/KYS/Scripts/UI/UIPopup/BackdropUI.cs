@@ -99,6 +99,7 @@ namespace KYS
         public void SetBackdropClickable(bool clickable)
         {
             enableBackdropClick = clickable;
+            SetRaycastTarget(clickable); // 클릭 가능할 때만 raycastTarget 활성화
         }
 
         /// <summary>

@@ -28,6 +28,7 @@ namespace KYS
 
         protected override void OnDestroy()
         {
+            base.OnDestroy();
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
         }
 
