@@ -1,11 +1,7 @@
 using GoogleMobileAds.Api;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class AdManager : Singleton<AdManager>
 {
@@ -21,14 +17,14 @@ public class AdManager : Singleton<AdManager>
 
 
     [Header("광고 ID")]
-    [SerializeField] private string interstitialID = "ca-app-pub-2311991605326908/8865499863";
-    [SerializeField] private string rewardedID = "ca-app-pub-2311991605326908/2818712678";
-    [SerializeField] private string bannerID = "ca-app-pub-2311991605326908/1856984798";
-    [SerializeField] private string appopenId = "ca-app-pub-2311991605326908/4548395610";
+    [SerializeField] private string interstitialID; 
+    [SerializeField] private string rewardedID;
+    [SerializeField] private string bannerID;
+    [SerializeField] private string appopenId; //개발중지
 
 
     [Header("배너광고 조정")]
-    [SerializeField] private BannerSize bannerSize = BannerSize.Banner;
+    [SerializeField] public BannerSize bannerSize = BannerSize.BANNER;
     [SerializeField] private BannerPosition bannerPosition = BannerPosition.Bottom;
 
     // Start is called before the first frame update
@@ -191,10 +187,10 @@ IEnumerator NotifyBannerHeightDelayed(AdPosition position)
     {
         switch (size)
         {
-            case BannerSize.MediumRectangle: return AdSize.MediumRectangle;
-            case BannerSize.Leaderboard: return AdSize.Leaderboard;
-            case BannerSize.IABBanner: return AdSize.IABBanner;
-            case BannerSize.Adaptive:
+            case BannerSize.MEDIUMRECTANGLE: return AdSize.MediumRectangle;
+            case BannerSize.LEADERBOARD: return AdSize.Leaderboard;
+            case BannerSize.IABBANNER: return AdSize.IABBanner;
+            case BannerSize.ADAPTIVE:
                 int width = (int)(Screen.width / (Screen.dpi / 160));
                 return AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width);
 
@@ -219,11 +215,11 @@ IEnumerator NotifyBannerHeightDelayed(AdPosition position)
 }
 public enum BannerSize
 {
-    Banner,
-    MediumRectangle,
-    Leaderboard,
-    IABBanner,
-    Adaptive
+    BANNER,
+    MEDIUMRECTANGLE,
+    LEADERBOARD,
+    IABBANNER,
+    ADAPTIVE
 }
 public enum BannerPosition
 {
