@@ -40,8 +40,8 @@ public class StageManager : MonoBehaviour
 
         Manager.quest.CurStageQuestDataInit();
 
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
         Debug.LogWarning("QuestList Inited");
 
         Init();

@@ -49,11 +49,10 @@ namespace GameNpc
             Debug.LogWarning("CurQuestData Inited");
 
 
-            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
-            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
-            Debug.LogWarning($"QuestContentList: {npc.CurQuestData.QuestContentList.Count}");
-
-            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
+            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
+            //Debug.LogWarning($"QuestContentList: {npc.CurQuestData.QuestContentList.Count}");
+            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
             Debug.LogWarning("QuestContentList Inited");
 
             Init();
