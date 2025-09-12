@@ -366,6 +366,12 @@ namespace KYS
                     Debug.LogWarning("[BaseUI] Backdrop Prefab에 BackdropUI 컴포넌트가 없습니다. 추가합니다.");
                     ownBackdrop = backdropGO.AddComponent<BackdropUI>();
                 }
+                
+                // UIManager의 기본 투명도 적용
+                if (UIManager.Instance != null)
+                {
+                    ownBackdrop.SetBackdropColor(UIManager.Instance.GetDefaultBackdropColor());
+                }
 
                 // Popup을 Backdrop의 자식으로 이동
                 transform.SetParent(backdropGO.transform);
@@ -410,6 +416,12 @@ namespace KYS
 
             // BackdropUI 컴포넌트 추가 및 저장
             ownBackdrop = backdropGO.AddComponent<BackdropUI>();
+            
+            // UIManager의 기본 투명도 적용
+            if (UIManager.Instance != null)
+            {
+                ownBackdrop.SetBackdropColor(UIManager.Instance.GetDefaultBackdropColor());
+            }
 
             // Popup을 Backdrop의 자식으로 이동
             transform.SetParent(backdropGO.transform);

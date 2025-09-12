@@ -14,7 +14,8 @@ public class TestUi : MonoBehaviour
     }
     public void Reward()
     {
-        textMeshPro.text = "°ñµå100 ¼ö·É(test)";
+        //textMeshPro.text = "°ñµå100 ¼ö·É(test)";
+        Manager.player.Data.Money.Value += 333;
     }
 
     void OnEnable()
