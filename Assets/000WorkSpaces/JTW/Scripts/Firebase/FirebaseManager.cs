@@ -90,7 +90,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
     {
         yield return new WaitUntil(() => UserData.IsInit);
 
-        Debug.LogWarning("[FirebaseManager] UserData 초기화 완료");
+        Debug.LogWarning($"[FirebaseManager] UserData 초기화 완료. 현재 스테이지 {UserData.CurStage.Value}");
 
         _isUserDataInit = true;
     }
