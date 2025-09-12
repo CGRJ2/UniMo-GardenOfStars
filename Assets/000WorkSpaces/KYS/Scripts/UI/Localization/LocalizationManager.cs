@@ -5,6 +5,9 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace KYS
@@ -17,8 +20,8 @@ namespace KYS
         #region Serialized Fields
 
         [Header("Addressable Localization Settings")]
-        [SerializeField] private AssetReferenceT<TextAsset> csvLanguageFileReference;
         [SerializeField] private SystemLanguage defaultLanguage = SystemLanguage.Korean;
+        private const string LANGUAGE_DATA_ADDRESSABLE_KEY = "KYS/LanguageData";
         
         [Header("Behavior Settings")]
         [Tooltip("최초 실행 시 시스템 언어 대신 기본 언어를 우선 적용할지 여부")]
@@ -148,17 +151,11 @@ namespace KYS
         /// </summary>
         private async System.Threading.Tasks.Task LoadCSVFileFromAddressable()
         {
-            if (csvLanguageFileReference == null || !csvLanguageFileReference.RuntimeKeyIsValid())
-            {
-                Debug.LogError("[LocalizationManager] CSV 파일 참조가 설정되지 않았습니다.");
-                return;
-            }
-
             try
             {
                 ////Debug.Log("[LocalizationManager] Addressable에서 CSV 파일 로드 시작");
                 
-                csvHandle = Addressables.LoadAssetAsync<TextAsset>(csvLanguageFileReference);
+                csvHandle = Addressables.LoadAssetAsync<TextAsset>(LANGUAGE_DATA_ADDRESSABLE_KEY);
                 TextAsset csvFile = await csvHandle.Task;
                 
                 if (csvFile != null)
@@ -175,7 +172,7 @@ namespace KYS
             }
             catch (Exception e)
             {
-                Debug.LogError($"[LocalizationManager] CSV 파일 로드 중 오류: {e.Message}");
+                Debug.LogError($"[LocalizationManager] CSV 파일 로드 중 오류 (키: {LANGUAGE_DATA_ADDRESSABLE_KEY}): {e.Message}");
             }
         }
 
@@ -724,6 +721,79 @@ namespace KYS
 
         #region Addressable Management
 
+        /// <summary>
+        /// Addressable을 통해 CSV 파일의 실제 경로 가져오기
+        /// </summary>
+        private async System.Threading.Tasks.Task<string> GetCSVFilePathAsync()
+        {
+#if UNITY_EDITOR
+            try
+            {
+                var handle = Addressables.LoadAssetAsync<TextAsset>(LANGUAGE_DATA_ADDRESSABLE_KEY);
+                var csvFile = await handle.Task;
+                
+                if (csvFile != null)
+                {
+                    // Addressable에서 로드된 에셋의 실제 경로 반환
+                    return AssetDatabase.GetAssetPath(csvFile);
+                }
+                
+                Addressables.Release(handle);
+                return null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[LocalizationManager] CSV 파일 경로 가져오기 실패: {e.Message}");
+                return null;
+            }
+#else
+            // 빌드에서는 Addressable 경로를 직접 사용할 수 없으므로 null 반환
+            return null;
+#endif
+        }
+
+        /// <summary>
+        /// Addressable을 통해 CSV 파일의 실제 경로 가져오기 (동기 버전)
+        /// </summary>
+        private string GetCSVFilePath()
+        {
+#if UNITY_EDITOR
+            try
+            {
+                // 이미 로드된 핸들이 있으면 해당 에셋의 경로 사용
+                if (csvHandle.IsValid())
+                {
+                    var csvFile = csvHandle.Result;
+                    if (csvFile != null)
+                    {
+                        return AssetDatabase.GetAssetPath(csvFile);
+                    }
+                }
+                
+                // 로드된 핸들이 없으면 직접 로드
+                var handle = Addressables.LoadAssetAsync<TextAsset>(LANGUAGE_DATA_ADDRESSABLE_KEY);
+                var loadedCsvFile = handle.WaitForCompletion();
+                
+                if (loadedCsvFile != null)
+                {
+                    string path = AssetDatabase.GetAssetPath(loadedCsvFile);
+                    Addressables.Release(handle);
+                    return path;
+                }
+                
+                Addressables.Release(handle);
+                return null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[LocalizationManager] CSV 파일 경로 가져오기 실패: {e.Message}");
+                return null;
+            }
+#else
+            // 빌드에서는 Addressable 경로를 직접 사용할 수 없으므로 null 반환
+            return null;
+#endif
+        }
 
         /// <summary>
         /// Addressable 리소스 해제
@@ -777,7 +847,12 @@ namespace KYS
         [ContextMenu("Remove Duplicate Keys from CSV")]
         public void RemoveDuplicateKeysFromCSV()
         {
-            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string csvPath = GetCSVFilePath();
+            if (string.IsNullOrEmpty(csvPath))
+            {
+                Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                return;
+            }
             
             try
             {
@@ -964,7 +1039,12 @@ namespace KYS
                 }
                 
                 // CSV 파일에서 현재 지원 언어 확인
-                string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+                string csvPath = GetCSVFilePath();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                    return;
+                }
                 try
                 {
                     if (System.IO.File.Exists(csvPath))
@@ -1060,7 +1140,12 @@ namespace KYS
                 Debug.Log($"[LocalizationManager] {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
                 
                 // CSV 파일 경로
-                string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+                string csvPath = GetCSVFilePath();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                    return;
+                }
                 
                 try
                 {
@@ -1114,7 +1199,12 @@ namespace KYS
         [ContextMenu("Backup CSV File")]
         public void BackupCSVFile()
         {
-            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string csvPath = GetCSVFilePath();
+            if (string.IsNullOrEmpty(csvPath))
+            {
+                Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                return;
+            }
             string backupPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData_backup_" + 
                                System.DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv";
             
@@ -1134,7 +1224,12 @@ namespace KYS
         /// </summary>
         public void UpdateTranslationInCSV(string key, SystemLanguage language, string translation)
         {
-            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string csvPath = GetCSVFilePath();
+            if (string.IsNullOrEmpty(csvPath))
+            {
+                Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                return;
+            }
             
             try
             {
@@ -1203,7 +1298,12 @@ namespace KYS
         private int GetLanguageColumnIndex(SystemLanguage language)
         {
             // CSV 파일에서 헤더를 읽어서 동적으로 인덱스 찾기
-            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string csvPath = GetCSVFilePath();
+            if (string.IsNullOrEmpty(csvPath))
+            {
+                Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                return -1;
+            }
             
             try
             {
@@ -1268,7 +1368,12 @@ namespace KYS
         /// </summary>
         public void AddNewLanguageToCSV(SystemLanguage language, string languageCode)
         {
-            string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+            string csvPath = GetCSVFilePath();
+            if (string.IsNullOrEmpty(csvPath))
+            {
+                Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                return;
+            }
             
             try
             {
@@ -1492,7 +1597,12 @@ namespace KYS
                 Debug.Log($"[LocalizationManager] 팝업 '{popupUI.name}'에서 {missingKeys.Count}개의 누락된 키를 CSV에 추가합니다:");
                 
                 // CSV 파일 경로
-                string csvPath = Application.dataPath + "/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+                string csvPath = GetCSVFilePath();
+                if (string.IsNullOrEmpty(csvPath))
+                {
+                    Debug.LogError("[LocalizationManager] CSV 파일 경로를 가져올 수 없습니다.");
+                    return;
+                }
                 
                 try
                 {
