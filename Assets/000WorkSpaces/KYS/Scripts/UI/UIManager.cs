@@ -45,6 +45,9 @@ namespace KYS
         [SerializeField] private string initialLoadingMessage = "loading_data"; // 초기 로딩 메시지 키
         [SerializeField] private float loadingScreenHideDelay = 1f; // 로딩 화면 숨김 지연 시간
 
+        [Header("HUD Display Settings")]
+        [SerializeField] private bool showHUDAllPanelOnStart = true; // 게임 시작 시 HUDAllPanel 표시 여부
+
         // Canvas 참조들
         private Canvas hudCanvas;
         private Canvas panelCanvas;
@@ -241,7 +244,27 @@ namespace KYS
                         var hud = await CreateHUDAsync<BaseUI>(key);
                         if (hud != null)
                         {
-                            //hud.gameObject.SetActive(false); // 생성 후 즉시 숨김
+                            // HUDAllPanel의 경우 초기 표시 설정에 따라 처리
+                            if (key == "KYS/HUDAllPanel")
+                            {
+                                if (showHUDAllPanelOnStart)
+                                {
+                                    // 설정에 따라 표시
+                                    hud.gameObject.SetActive(true);
+                                    Debug.Log("[UIManager] HUDAllPanel 초기 표시 활성화");
+                                }
+                                else
+                                {
+                                    // 설정에 따라 숨김
+                                    hud.gameObject.SetActive(false);
+                                    Debug.Log("[UIManager] HUDAllPanel 초기 표시 비활성화");
+                                }
+                            }
+                            else
+                            {
+                                // 다른 HUD 요소들은 기본적으로 숨김
+                                hud.gameObject.SetActive(false);
+                            }
                         }
                     }
                     catch (System.Exception e)
@@ -2790,6 +2813,79 @@ namespace KYS
             else
             {
                 Debug.LogWarning($"[UIManager] HUD UI를 찾을 수 없음: {typeof(T).Name}");
+            }
+        }
+
+        /// <summary>
+        /// HUDAllPanel 초기 표시 설정 변경
+        /// </summary>
+        public void SetHUDAllPanelInitialDisplay(bool showOnStart)
+        {
+            showHUDAllPanelOnStart = showOnStart;
+            Debug.Log($"[UIManager] HUDAllPanel 초기 표시 설정 변경: {showOnStart}");
+        }
+
+        /// <summary>
+        /// HUDAllPanel 초기 표시 설정 가져오기
+        /// </summary>
+        public bool GetHUDAllPanelInitialDisplay()
+        {
+            return showHUDAllPanelOnStart;
+        }
+
+        /// <summary>
+        /// HUDAllPanel 강제 표시 (설정과 관계없이)
+        /// </summary>
+        public void ForceShowHUDAllPanel()
+        {
+            ShowHUDUI<HUDAllPanel>();
+            Debug.Log("[UIManager] HUDAllPanel 강제 표시");
+        }
+
+        /// <summary>
+        /// HUDAllPanel 강제 숨김 (설정과 관계없이)
+        /// </summary>
+        public void ForceHideHUDAllPanel()
+        {
+            HideHUDUI<HUDAllPanel>();
+            Debug.Log("[UIManager] HUDAllPanel 강제 숨김");
+        }
+
+                [ContextMenu("ShowHUDUI 활용 Toturial UI 활성화")]
+        public void SwitchToTutorialProgressHUD()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToTutorialProgressMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
+            }
+        }
+
+        [ContextMenu("ShowHUDUI 활용 일반 UI 활성화")]
+        public void SwitchToNormalHUD()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToNormalMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
             }
         }
 
