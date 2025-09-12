@@ -68,6 +68,6 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
             await Task.Delay(50);
         }
 
-        OnAdded.Invoke(child);
+        OnAdded?.Invoke(child);
     }
 }

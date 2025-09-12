@@ -26,6 +26,8 @@ public partial class DataManager : Singleton<DataManager>
         StageRoutine();
         QuestContentStepRoutine();
         CharacterRoutine();
+        PlayerUpgradeCostRoutine();
+        PlayerRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)
