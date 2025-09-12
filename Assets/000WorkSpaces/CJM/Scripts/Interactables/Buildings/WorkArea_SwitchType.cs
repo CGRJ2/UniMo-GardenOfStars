@@ -18,7 +18,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
     // 소요 시간 = (produceTime * PrepareTime) / 작업 속도
     float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / characterRD.GetProductionSpeed();
-    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / characterRD.GetProductionSpeed();
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / Manager.player.Data.ProductionSpeed;
 
 
     float prepareProgressedTime = 0f;   // 준비 단계 진행도

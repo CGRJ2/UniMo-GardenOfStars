@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using GameQuest;
 using UnityEngine;
 
 namespace GameNpc
@@ -26,45 +23,48 @@ namespace GameNpc
             yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
             yield return new WaitUntil(() => Manager.firebase.UserData != null);
             yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
-            Debug.LogWarning("UserData Inited");
+            //Debug.LogWarning("UserData Inited");
 
             yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
             yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
-            Debug.LogWarning("CurStageData Inited");
+            //Debug.LogWarning("CurStageData Inited");
 
             yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc != null);
-            Debug.LogWarning("Npc Inited");
+            //Debug.LogWarning("Npc Inited");
 
             var npc = Manager.firebase.UserData.CurStageData.Npc;
             //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
 
             yield return new WaitUntil(() => !string.IsNullOrEmpty(npc.CurrentQuestID.Value));
-            Debug.LogWarning("CurQuestID Inited");
+            //Debug.LogWarning("CurQuestID Inited");
 
-            Debug.LogWarning($"QuestList: {npc.QuestList.Count}");
-            //yield return new WaitUntil(() => npc.QuestList.IsInit); // <<<<<<=== Error
-            yield return new WaitUntil(() => npc.QuestList.Count > 0);
+            yield return new WaitUntil(() => npc.QuestList.IsInit); // <<<<<<=== Error
+            //Debug.LogWarning("QuestList Inited");
 
             yield return new WaitUntil(() => npc.CurQuestData != null);
-            Debug.LogWarning("CurQuestData Inited");
-
+            //Debug.LogWarning("CurQuestData Inited");
 
             yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
-            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
-            //Debug.LogWarning($"QuestContentList: {npc.CurQuestData.QuestContentList.Count}");
-            //yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.Count > 0);
-            Debug.LogWarning("QuestContentList Inited");
+            //Debug.LogWarning("QuestContentList Inited");
+
 
             Init();
         }
 
         private void Init()
         {
-            requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>();
-            UpdateQuestData();
+            requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>(true);
+
+            if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
+            {
+                UpdateQuestData();
+            }
+            else
+            {
+                TutorialManager.Instance.tutorialNPC = this;
+            }
 
             Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
-
         }
 
         public void UpdateQuestData(string questID = null)
@@ -88,15 +88,15 @@ namespace GameNpc
                     requireTiles[i].gameObject.SetActive(false);
                 }
             }
-    }
+        }
 
 
-        public void Talk()
+        /*public void Talk()
         {
-            Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
+            //Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
             // Dialogue 실행
             Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
-        }
+        }*/
 
         public void Focus()
         {

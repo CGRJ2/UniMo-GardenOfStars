@@ -7,9 +7,13 @@ using UnityEngine.AddressableAssets;
 public class ProdsArea : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return ProdsCount > 0; } }
-    public bool isReserved;
+    bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
-    public bool GetReserveState() { return isReserved; }
+    public bool GetReserveState() 
+    {
+        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.restrictedProdID; 
+        return isReserved; 
+    }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
     public Vector3 GetPosition() { return transform.position; }
 

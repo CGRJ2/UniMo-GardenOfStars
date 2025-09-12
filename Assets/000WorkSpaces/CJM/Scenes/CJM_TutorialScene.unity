@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Sequence: 0
   _cinemachineBrain: {fileID: 0}
+  tutorialNPC: {fileID: 0}
 --- !u!4 &73881841
 Transform:
   m_ObjectHideFlags: 0
@@ -1021,7 +1022,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.59
+      value: 11.6
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2461,7 +2462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6600966664417299578, guid: b8eaeaa40d310c241a98aa2fd25c4a24, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21.22
+      value: 11.58
       objectReference: {fileID: 0}
     - target: {fileID: 6600966664417299578, guid: b8eaeaa40d310c241a98aa2fd25c4a24, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2514,7 +2515,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1073938627709246169, guid: c7968fec85c3bd342b424801f9061010, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21.07
+      value: 11.43
       objectReference: {fileID: 0}
     - target: {fileID: 1073938627709246169, guid: c7968fec85c3bd342b424801f9061010, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2756,7 +2757,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 338763460754311474, guid: f1ae3bb0b1863294099d7c5863a10b87, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.17
+      value: 4.78
       objectReference: {fileID: 0}
     - target: {fileID: 338763460754311474, guid: f1ae3bb0b1863294099d7c5863a10b87, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2801,6 +2802,10 @@ PrefabInstance:
     - target: {fileID: 4753763416895158382, guid: f1ae3bb0b1863294099d7c5863a10b87, type: 3}
       propertyPath: ProdsCount
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4753763416895158382, guid: f1ae3bb0b1863294099d7c5863a10b87, type: 3}
+      propertyPath: isReserved
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
