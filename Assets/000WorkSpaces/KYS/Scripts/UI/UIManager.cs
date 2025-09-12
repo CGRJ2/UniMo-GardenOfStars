@@ -2240,6 +2240,42 @@ namespace KYS
 
         #endregion
 
+        #region MessagePopUp Methods
+
+        /// <summary>
+        /// 메시지 팝업 표시 (비동기 버전)
+        /// </summary>
+        public void ShowMessagePopUpAsync(string message, System.Action closeCallback = null, System.Action<MessagePopUp> onComplete = null)
+        {
+            ShowPopUpAsync<MessagePopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessage(message);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 사용)
+        /// </summary>
+        public void ShowMessagePopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<MessagePopUp> onComplete = null)
+        {
+            ShowPopUpAsync<MessagePopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        #endregion
+
         #region Input Handling
 
         /// <summary>
