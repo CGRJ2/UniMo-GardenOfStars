@@ -14,7 +14,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     [SerializeField] Slider taskProgressBar;
-    [SerializeField] Slider prepareProgressBar;
+    [SerializeField] CircularProgressUI prepareProgressBar;
     [SerializeField] float prepareTime = 1f;
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
 
@@ -88,7 +88,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 }
 
                 // 진행도 게이지 업데이트
-                prepareProgressBar.value = prepareProgressedTime / prepareTime;
+                prepareProgressBar.SetValue(prepareProgressedTime / prepareTime);
 
                 yield return null;
             }

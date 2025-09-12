@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class WaitingTile : InteractableBase
 {
-    [SerializeField] Slider progressBar;
+    [SerializeField] CircularProgressUI progressBar;
     [SerializeField] float interactTime;
     [SerializeField] float progressedTime;
 
@@ -52,7 +52,7 @@ public class WaitingTile : InteractableBase
             }
 
             // 진행도 게이지 업데이트
-            progressBar.value = progressedTime / interactTime;
+            progressBar.SetValue(progressedTime / interactTime);
 
             yield return null;
         }

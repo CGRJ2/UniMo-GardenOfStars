@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlaceTile : InteractableBase
 {
-    [SerializeField] Slider progressBar;
+    [SerializeField] CircularProgressUI progressBar;
     [SerializeField] CanvasGroup activatedView;
     [SerializeField] CanvasGroup deactivatedView;
     public string tileId => gameObject.name;
@@ -119,7 +119,7 @@ public class PlaceTile : InteractableBase
             }
 
             // 진행도 게이지 업데이트
-            progressBar.value = progressedTime / installingTime;
+            progressBar.SetValue(progressedTime / installingTime);
         }
 
         // 진행도 표기 비활성화
