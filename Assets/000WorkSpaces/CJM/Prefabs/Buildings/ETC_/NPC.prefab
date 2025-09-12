@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 8695448737171651276}
   - component: {fileID: 526754675017632675}
-  - component: {fileID: 1405371758711587021}
   - component: {fileID: 1019408056982116548}
+  - component: {fileID: 8664925334770371883}
   m_Layer: 8
-  m_Name: ConstellationBuilding
+  m_Name: NPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,21 +58,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1405371758711587021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759035074364551180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 025fd79eca62c9a4ca568b4c3ef26329, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  personalTaskOwner: {fileID: 0}
-  _OriginData: {fileID: 0}
-  activatePopUI: {fileID: 7207778602852924812}
 --- !u!114 &1019408056982116548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,6 +71,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requireTilesParent: {fileID: 5826745044255315397}
+--- !u!114 &8664925334770371883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1759035074364551180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e43f41d68b2ee49418978c886a306e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  personalTaskOwner: {fileID: 0}
+  activatePopUI: {fileID: 25203673637707511}
 --- !u!1 &2317433995198843734
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +123,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 50}
+  m_SizeDelta: {x: 100, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3195950858498561529
 CanvasRenderer:
@@ -154,7 +153,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 8e7d85f09c398b84fa9f74e6b347197f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -237,9 +236,9 @@ GameObject:
   - component: {fileID: 4052427326583419927}
   - component: {fileID: 2525383580313191519}
   - component: {fileID: 3037874047689530503}
-  - component: {fileID: 7207778602852924812}
+  - component: {fileID: 25203673637707511}
   m_Layer: 8
-  m_Name: Canvas_ActiveAreaPop
+  m_Name: Canvas_TalkButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,7 +327,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7207778602852924812
+--- !u!114 &25203673637707511
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -337,11 +336,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2334250300514474957}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6a694ac7b3541a43835fd80737fb1d6, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b4b297426e621f4eb003b75e187029c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btn_Info: {fileID: 8886597461215792448}
-  tmp_BtnState: {fileID: 0}
+  btn_Talk: {fileID: 8886597461215792448}
 --- !u!1 &2461193928607062720
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,10 +474,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6154199895196942268}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 6}
+  m_SizeDelta: {x: 100, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6038564950737192463
 CanvasRenderer:
@@ -509,10 +507,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Talk
+  m_text: "\uB300\uD654\uD558\uAE30"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
+  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
