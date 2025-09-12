@@ -62,35 +62,7 @@ namespace KYS
                 buyButton.onClick.AddListener(() =>
                 {
                     Debug.LogWarning($"구매 버튼 실행 - buildingID: {buildingID}");
-                    string purchasedBuildingID = Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value;
-
-                    if (!string.IsNullOrEmpty(purchasedBuildingID))
-                    {
-                        Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있습니다");
-                        return;
-                    }
-
-
-                    int curMoney = Manager.player.Data.Money.Value;
-                    Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
-                    {
-                        int cost = task.Result.Cost;
-
-                        Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
-
-                        if (cost <= curMoney)
-                        {
-                            Manager.player.Data.Money.Value -= cost;
-                            Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
-                            Manager.ui.ClosePanel();
-                        }
-                        else
-                        {
-                            Debug.LogWarning("돈이 모자랍니다");
-                        }
-                    };
-
-
+                    BuyBuilding();
                 });
                 //Debug.LogWarning($"[PropertyContent] buyButton 이벤트 등록 완료: {buildBuyButtonName}");
             }
@@ -98,6 +70,44 @@ namespace KYS
             {
                 Debug.LogError($"[PropertyContent] buyButton을 찾을 수 없습니다: {buildBuyButtonName}");
             }
+        }
+
+        // 그냥 구매버튼 & First구매버튼 둘 다 이 함수를 사용하도록 바꿨습니다.
+        void BuyBuilding()
+        {
+            string purchasedBuildingID = Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value;
+            BuildingSeller estate = Manager.buildings.buildingSeller;
+
+            // 구매 불가능한 상황들
+            if (!string.IsNullOrEmpty(purchasedBuildingID))
+            {
+                Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다");
+                return;
+            }
+            if (estate.IsOnHand())
+            {
+                Debug.LogWarning("손에 뭔가 쥐고 있을 때는 건물을 구매할 수 없습니다");
+                return;
+            }
+
+            // 돈 체크 후 구매 진행
+            int curMoney = Manager.player.Data.Money.Value;
+            Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
+            {
+                int cost = task.Result.Cost;
+
+                Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
+                if (cost <= curMoney)
+                {
+                    Manager.player.Data.Money.Value -= cost;
+                    estate.SpawnBuildingItem(buildingID);
+                    Manager.ui.ClosePanel();
+                }
+                else
+                {
+                    Debug.LogWarning("돈이 모자랍니다");
+                }
+            };
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -233,24 +243,7 @@ namespace KYS
         private void OnFirstBuyClicked()
         {
             Debug.LogWarning($"[PropertyContent] OnFirstBuyClicked 실행 - buildingID: {buildingID}");
-
-            int curMoney = Manager.player.Data.Money.Value;
-            Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
-            {
-                int cost = task.Result.Cost;
-                if (cost < curMoney)
-                {
-                    Manager.player.Data.Money.Value -= cost;
-                    Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
-                    Manager.ui.ClosePanel();
-                }
-                else
-                {
-                    Debug.LogWarning("돈이 모자랍니다");
-                }
-            };
-
-            
+            BuyBuilding();
         }
 
         private void OnCancelButtonClicked()
