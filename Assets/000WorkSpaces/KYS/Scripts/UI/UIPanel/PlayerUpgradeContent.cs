@@ -149,8 +149,6 @@ namespace KYS
 
             _isInPregress = true;
 
-            Debug.LogWarning($"{_cost} 일때 강화");
-
             _upgradeButton.interactable = false;
 
             Manager.player.Data.Money.Subscribe(UpgradeLv);
