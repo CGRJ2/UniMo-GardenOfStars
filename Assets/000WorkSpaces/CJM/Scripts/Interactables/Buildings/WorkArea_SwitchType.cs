@@ -17,8 +17,11 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     [SerializeField] CircularProgressUI prepareProgressBar;
 
     // 소요 시간 = (produceTime * PrepareTime) / 작업 속도
-    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / characterRD.GetProductionSpeed();
-    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / Manager.player.Data.ProductionSpeed;
+
+    float curCharacterProdSpeed;
+
+    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / curCharacterProdSpeed;
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / curCharacterProdSpeed;
 
 
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
@@ -42,6 +45,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         isReserved = false;
         curWorker = characterRD;
         curWorker.IsWork.Value = true;
+        curCharacterProdSpeed = characterRD.GetProductionSpeed();
 
         while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
         {
