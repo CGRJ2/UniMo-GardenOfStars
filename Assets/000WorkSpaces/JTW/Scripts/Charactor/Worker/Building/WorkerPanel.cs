@@ -63,12 +63,6 @@ public class WorkerPanel : KYS.BaseUI
         // 버튼 이벤트 등록
         if (_upgradeBtn != null) _upgradeBtn.onClick.AddListener(OnUpgradeClick);
         if (_buyBtn != null) _buyBtn.onClick.AddListener(OnBuyClick);
-
-        // Firebase 데이터가 초기화된 후에만 리스너 등록
-        if (Manager.firebase?.UserData?.CurStageData?.WorkerList != null)
-        {
-            Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(OnWorkerAdded);
-        }
     }
 
     public void Init(string key, WorkerUpgradePresenter presenter)
@@ -158,7 +152,6 @@ public class WorkerPanel : KYS.BaseUI
                 break;
         }
     }
-
 
     private void OnUpgradeClick()
     {
