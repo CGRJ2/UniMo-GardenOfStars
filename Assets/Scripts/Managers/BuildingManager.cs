@@ -21,6 +21,9 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public UnityAction<int> upgradeEvent;
 
+    // 건물 구매 시, 건축모드 On / 설치 시, 건축모드 Off
+    public Action<bool> BuildModEvent;
+
     private void Awake() => Init();
     void Init()
     {

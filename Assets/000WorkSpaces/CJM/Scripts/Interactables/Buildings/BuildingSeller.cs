@@ -25,15 +25,23 @@ public class BuildingSeller : InteractableBase
         }
     }
 
-    // 건물(재료) 생성하기
-    public void SpawnBuildingItem(string buildingId)
+    public bool IsOnHand()
     {
+        // 손 스택 먼저 체크
         if (characterRD.IngrediantStack.Count > 0)
         {
             // 손에 뭐가 있으면 구매 불가 판정
             Debug.LogWarning("손에 이미 물건이 있어서 구매 못함");
-            return;
+            return true;
         }
+        else return false;
+    }
+
+    // 구매 확정 후 건물(재료) 인스턴스 생성하기
+    public void SpawnBuildingItem(string buildingId)
+    {
+        // 건축모드 활성화
+        Manager.buildings.BuildModEvent?.Invoke(true);
 
         // 모델 생성 (메쉬&매터리얼만 교체하는 방법으로 바꿔야함)
         Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
