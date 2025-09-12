@@ -1760,8 +1760,56 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e88334ba9f4f3f440ae4bd42e8181730, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5533997447072719634}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e88334ba9f4f3f440ae4bd42e8181730, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4824710287843010998}
   m_SourcePrefab: {fileID: 100100000, guid: e88334ba9f4f3f440ae4bd42e8181730, type: 3}
+--- !u!1 &1662229993603331505 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e88334ba9f4f3f440ae4bd42e8181730, type: 3}
+  m_PrefabInstance: {fileID: 2004106844992489696}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &5533997447072719634
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662229993603331505}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2514164, y: 1.5360203, z: 1.5112135}
+  m_Center: {x: 0.037712514, y: -0.23633158, z: -0.121517956}
+--- !u!208 &4824710287843010998
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662229993603331505}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.625708, y: 0.76801, z: 0.755607}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.03771251, y: -0.2363316, z: -0.121518}
+  m_TimeToStationary: 0.5
 --- !u!4 &2043154235914825483 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e88334ba9f4f3f440ae4bd42e8181730, type: 3}

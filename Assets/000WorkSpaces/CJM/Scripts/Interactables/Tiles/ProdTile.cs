@@ -81,6 +81,8 @@ public class ProdTile : InteractableBase
         // 손에 다른 뭔가가 있다면 줍지 않게 만들기
         if (characterRD.IngrediantStack.Count > 0) return;
 
+        if (buildingItem == null) return;
+
         // 인스턴스 움직임 효과 정지
         floatTween?.Kill();
         rotateTween?.Kill();
@@ -95,6 +97,7 @@ public class ProdTile : InteractableBase
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
+        
         PickUp();
     }
 
