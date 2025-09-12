@@ -68,21 +68,13 @@ public class QuestManager : Singleton<QuestManager>
         //Debug.LogError($"QCParsedData개수: {QCParsedData.Count()}");
         foreach (var QCDataKVP in QCParsedData)
         {
-            // 현재 QC의 QCS들
-            var QCSParsedData = Manager.data.QuestContentStep.Values.Where(item => item.Value.QuestContentId == QCDataKVP.Key);
-
-            //Debug.LogError($"QCSParsedData개수: {QCSParsedData.Count()}");
-            //Debug.LogError($"QuestContentList 초기화 시작");
-            foreach (var QCSDataKVP in QCSParsedData)
+            // Qc리스트 초기화
+            var npc = Manager.firebase.UserData.CurStageData.Npc;
+            var data = npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCDataKVP.Value.Id);
+            if (data == null)
             {
-                // QCS 초기화
-                var npc = Manager.firebase.UserData.CurStageData.Npc;
-                var data = npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCSDataKVP.Value.QuestContentId);
-                if (data == null)
-                {
-                    npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCSDataKVP.Value.QuestContentId);
-                    //Debug.LogError($"QuestContent({QCSDataKVP.Value.QuestContentId}) 추가");
-                }
+                npc.QuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCDataKVP.Value.Id);
+                //Debug.LogError($"QuestContent({QCSDataKVP.Value.QuestContentId}) 추가");
             }
         }
     }

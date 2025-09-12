@@ -15,7 +15,12 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
     [SerializeField] Slider taskProgressBar;
     [SerializeField] CircularProgressUI prepareProgressBar;
-    [SerializeField] float prepareTime = 1f;
+
+    // 소요 시간 = (produceTime * PrepareTime) / 작업 속도
+    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / characterRD.GetProductionSpeed();
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / characterRD.GetProductionSpeed();
+
+
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
 
     bool isOperating;
@@ -76,7 +81,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 prepareProgressBar.gameObject.SetActive(true);
                 prepareProgressedTime += Time.deltaTime;
 
-                if (prepareTime < prepareProgressedTime)
+                if (calculatedPrepareTime < prepareProgressedTime)
                 {
                     //CompleteTask(); // 결과물 생성
                     StartCoroutine(ProgressingTask());
@@ -88,7 +93,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 }
 
                 // 진행도 게이지 업데이트
-                prepareProgressBar.SetValue(prepareProgressedTime / prepareTime);
+                prepareProgressBar.SetValue(prepareProgressedTime / calculatedPrepareTime);
 
                 yield return null;
             }
@@ -119,7 +124,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         {
             ownerInstance.progressedTime += Time.deltaTime;
 
-            if (ownerInstance.ProdTime < ownerInstance.progressedTime)
+            if (calculatedProduceTime < ownerInstance.progressedTime)
             {
                 CompleteTask(); // 결과물 생성
                 ownerInstance.progressedTime = 0; // 진행도 초기화
@@ -127,7 +132,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             }
 
             // 진행도 게이지 업데이트
-            taskProgressBar.value = ownerInstance.progressedTime / ownerInstance.ProdTime;
+            taskProgressBar.value = ownerInstance.progressedTime / calculatedProduceTime;
             yield return null;
         }
 

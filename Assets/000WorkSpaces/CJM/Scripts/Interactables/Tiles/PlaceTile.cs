@@ -170,6 +170,10 @@ public class PlaceTile : InteractableBase
         StopAllCoroutines();
     }
 
+    private void OnDestroy()
+    {
+        Manager.buildings.BuildModEvent -= OnBuildModChanged;
+    }
 
     public void OnBuildModChanged(bool isBuildMod)
     {
