@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
-public class TutorialGuide : MonoBehaviour
+public class TutorialManager : Singleton<TutorialManager>
 {
+    public int Sequence = 0;
+    [SerializeField] private CinemachineBrain _cinemachineBrain;
+
     private void Start()
     {
         StartCoroutine(Init());
@@ -16,7 +20,6 @@ public class TutorialGuide : MonoBehaviour
 
     private void StartGuide()
     {
-        // 카메라 무빙 => 플레이어 포커스        
+             
     }
-
 }
