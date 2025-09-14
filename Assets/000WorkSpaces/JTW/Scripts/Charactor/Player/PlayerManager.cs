@@ -9,6 +9,9 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public PlayerData Data => Manager.firebase.UserData.Player;
 
+    private GameObject _playerObj;
+    public GameObject PlayerObj => _playerObj;
+
     public bool IsControl = true;
 
     private void Awake() => Init();
@@ -20,6 +23,6 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public void SpawnPlayer(Vector3 position = default)
     {
-        Instantiate(_playerPrefab, position, Quaternion.identity);
+        _playerObj = Instantiate(_playerPrefab, position, Quaternion.identity);
     }
 }
