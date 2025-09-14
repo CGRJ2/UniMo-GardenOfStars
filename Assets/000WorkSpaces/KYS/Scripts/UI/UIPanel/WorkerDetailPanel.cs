@@ -142,7 +142,7 @@ namespace KYS
 
         private void OnUpgradeSpeedButtonClicked()
         {
-            if (Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) return;
+            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _speedUpgradeButton.interactable = false;
 
@@ -152,7 +152,7 @@ namespace KYS
 
         private void OnUpgradeCapacityButtonClicked()
         {
-            if (Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) return;
+            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _capacityUpgradeButton.interactable = false;
 

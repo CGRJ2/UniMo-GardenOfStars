@@ -160,7 +160,7 @@ public class WorkerPanel : KYS.BaseUI
 
     private void OnBuyClick()
     {
-        if (Manager.player.Data.Money.Value < _employCost)
+        if (Manager.player.Data.Money.Value < _employCost && Manager.firebase.UserData.CurStage.Value != "Tutorial")
         {
             Debug.LogWarning("잔액이 부족합니다.");
             return;
