@@ -20,8 +20,8 @@ public class NpcInteractArea : InteractableBase
             activatePopUI.gameObject.SetActive(false);
     }
 
-    
 
+    bool isTutoInteracted;
     // 활성화 범위 상호작용
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
@@ -34,12 +34,17 @@ public class NpcInteractArea : InteractableBase
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
                 if (TutorialManager.Instance.Sequence.Value != 0) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
+                
+                // 딱 한번만 실행되게
+                if (isTutoInteracted) return;
+                isTutoInteracted = true;
 
                 var npc = Manager.firebase.UserData.CurStageData.Npc;
-                Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
+                Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd; // 대화 완료 시, 시퀀스 00종료
                 
                 // 그냥 키를 넣었음
                 Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_game_01_001");
+                // 해당 대화가 종료되면 콜백함수로 Sequence00 종료
                 return;
             }
 

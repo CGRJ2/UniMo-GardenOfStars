@@ -44,11 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb2edb9cdc9c8e84ca1ddb444fea5aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Sequence: 0
+  Sequence:
+    _value: 2
   tutorialNPC: {fileID: 0}
   cineBrain: {fileID: 0}
   cameras_TutoCutScene:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   _Cut01_CamMoveWaitTime: 1
   _Cut01_InteractTutoPopWaitTime: 2
+  prodsArea: {fileID: 0}
+  tutoHarvestBuildingID: b10011

@@ -102,8 +102,8 @@ public class QuestManager : Singleton<QuestManager>
             // 튜토리얼 스테이지의 퀘스트인 경우
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                // 튜토 퀘01 = 시퀀스01 -> 시퀀스02
-                // 튜토 퀘02 = 시퀀스0? -> 시퀀스0?
+                // 튜토 퀘01 = 시퀀스01 종료 -> 시퀀스02
+                // 튜토 퀘02 = 시퀀스05 종료 -> 시퀀스06
                 // 튜토 퀘03 = 시퀀스0? -> 시퀀스0?
                 Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
 

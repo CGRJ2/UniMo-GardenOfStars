@@ -13,7 +13,13 @@ public class BuildingSeller : InteractableBase
 
         interactTile.WaitingCompletedAction = OpenEstatePanel;
         interactTile.Init();
+
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            HideWaitingTile();
+        }
     }
+    
 
 
     // 테스트용 코드
@@ -60,6 +66,25 @@ public class BuildingSeller : InteractableBase
             // 구매한 건물 ID => DB에 갱신
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = buildingId;
         };
+
+        // 튜토리얼 씬에서 구매한 경우 (구매버튼을 눌러 건물(재료)가 나온 시점)
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            TutorialManager.Instance.SequenceEnd(); // 시퀀스02 종료(저장)
+
+            // 부동산 상호작용 발판 제거
+            HideWaitingTile();
+        }
+    }
+
+
+    public void ShowWaitingTile()
+    {
+        interactTile.gameObject.SetActive(true);
+    }
+    public void HideWaitingTile()
+    {
+        interactTile.gameObject.SetActive(false);
     }
 
     // 부동산 패널 열기
@@ -102,10 +127,40 @@ public class BuildingSeller : InteractableBase
     }
 
 
-    // 건물 활성화 범위 상호작용
+    private bool isTutorialPopDone;
+    // 접근 시 튜토리얼 팝업 메세지(Squence02)
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
+        // 상호작용한 주체가 플레이어라면 (플레이어 한정)
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            {
+                if (TutorialManager.Instance.Sequence.Value != 2) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
+
+                // 1회만 나오도록 막아주는 용도
+                if (isTutorialPopDone) return;
+                isTutorialPopDone = true;
+
+                // 플레이어 조작 막기
+                Manager.player.IsControl = false;
+
+                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+                {
+                    Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+                    // 플레이어 조작 활성화
+                    Manager.player.IsControl = true;
+                }, (msg) =>
+                {
+                    // 부동산 상호작용 발판 활성화
+                    Manager.buildings.buildingSeller.ShowWaitingTile();
+                });
+
+                return;
+            }
+        }
     }
 
     // 건물 활성화 범위 상호작용

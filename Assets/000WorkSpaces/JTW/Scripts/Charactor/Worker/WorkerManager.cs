@@ -198,6 +198,20 @@ public class WorkerManager : MonoBehaviour
                 }
             }
         });
+
+        // 0914 최재민: 튜토리얼 시퀀스06 종료 를 위한 로직 추가
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            if (TutorialManager.Instance.Sequence.Value != 6) return;
+
+            TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+
+            // 상호작용 발판 비활성화
+            Manager.buildings.workerBuilding.HideWaitingTile();
+
+            // 일꾼 포커싱 카메라에 맞춰주기
+            TutorialManager.Instance.cameras_TutoCutScene[5].Follow = worker.transform;
+        }
     }
 
     private IEnumerator AssignWorkerCoroutine()

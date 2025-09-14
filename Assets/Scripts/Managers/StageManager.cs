@@ -23,6 +23,8 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
+        Manager.player.SpawnPlayer();
+
         // 타이틀에서 시작할 때
         //Init();
 

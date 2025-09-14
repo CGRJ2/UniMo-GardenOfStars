@@ -68,6 +68,8 @@ namespace GameNpc
             }
 
             Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
+
+            Manager.camera.cam_NpcFocus.Follow = transform;
         }
 
         public void UpdateQuestData(string questID = null)

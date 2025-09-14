@@ -49,6 +49,7 @@ public class ProdsArea : InteractableBase, IWorkStation
         };
         
         Manager.buildings.workStatinLists.prodsAreas.Add(this);
+        UpdateView(ProdsCount.Value);
         ProdsCount.Subscribe(UpdateView);
     }
 
