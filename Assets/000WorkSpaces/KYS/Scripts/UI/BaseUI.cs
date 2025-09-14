@@ -71,6 +71,9 @@ namespace KYS
         private Dictionary<string, GameObject> goDict;
         private Dictionary<string, Component> compDict;
 
+        // 이벤트
+        public System.Action OnClosed;
+
         // Properties
         public UILayerType LayerType => layerType;
         public UIPanelGroup PanelGroup => panelGroup;
@@ -450,6 +453,8 @@ namespace KYS
                 ownBackdrop.OnBackdropClicked += () =>
                 {
                     //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
+                    // OnClosed 이벤트 호출
+                    OnClosed?.Invoke();
                     UIManager.Instance?.ClosePopup();
                 };
 
