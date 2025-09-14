@@ -19,7 +19,7 @@ public class PlayerState_Move : PlayerStateBase
 
     public override void Update()
     {
-        if(PlayerData.Direction == Vector3.zero)
+        if(PlayerData.Direction == Vector3.zero || !Manager.player.IsControl)
         {
             if (PlayerData.IsWork.Value)
             {
