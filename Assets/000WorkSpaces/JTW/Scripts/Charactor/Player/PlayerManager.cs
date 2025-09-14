@@ -9,6 +9,8 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public PlayerData Data => Manager.firebase.UserData.Player;
 
+    public bool IsControl = true;
+
     private void Awake() => Init();
 
     public void Init()

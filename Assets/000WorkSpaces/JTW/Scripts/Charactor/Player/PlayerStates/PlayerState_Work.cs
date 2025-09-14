@@ -14,11 +14,11 @@ public class PlayerState_Work : PlayerStateBase
 
     public override void Update()
     {
-        if(PlayerData.Direction != Vector3.zero)
+        if(PlayerData.Direction != Vector3.zero && Manager.player.IsControl)
         {
             StateMachine.ChangeState(PlayerStates.Move);
         }
-        else if (PlayerData.IsWork.Value)
+        else if (!PlayerData.IsWork.Value)
         {
             StateMachine.ChangeState(PlayerStates.Idle);
         }
