@@ -172,7 +172,8 @@ public class PlaceTile : InteractableBase
 
     private void OnDestroy()
     {
-        Manager.buildings.BuildModEvent -= OnBuildModChanged;
+        if (Manager.buildings != null)
+            Manager.buildings.BuildModEvent -= OnBuildModChanged;
     }
 
     public void OnBuildModChanged(bool isBuildMod)

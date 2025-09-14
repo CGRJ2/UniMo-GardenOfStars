@@ -88,7 +88,7 @@ public class WorkArea : InteractableBase, IWorkStation
     public void CompleteTask()
     {
         // 회수영역에 개수 늘려주기
-        ownerInstance.prodsArea.ProdsCount += 1;
+        ownerInstance.prodsArea.ProdsCount.Value += 1;
 
         // 재료 소모
         ownerInstance.ingrediantStack.Pop().Despawn();

@@ -98,6 +98,19 @@ public class QuestManager : Singleton<QuestManager>
             // 현재 퀘스트 클리어 이벤트 실행
             QuestClearAction?.Invoke();
 
+
+            // 튜토리얼 스테이지의 퀘스트인 경우
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            {
+                // 튜토 퀘01 = 시퀀스01 -> 시퀀스02
+                // 튜토 퀘02 = 시퀀스0? -> 시퀀스0?
+                // 튜토 퀘03 = 시퀀스0? -> 시퀀스0?
+                Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
+
+                Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+                return;
+            }
+
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;

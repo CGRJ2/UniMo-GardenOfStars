@@ -62,6 +62,9 @@ namespace GameNpc
             else
             {
                 TutorialManager.Instance.tutorialNPC = this;
+
+                // 튜토리얼 진행도가 1 이상으로 저장되어있는 경우엔 퀘스트 발판 바로 띄우기
+                if (TutorialManager.Instance.Sequence.Value > 1) UpdateQuestData();
             }
 
             Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
