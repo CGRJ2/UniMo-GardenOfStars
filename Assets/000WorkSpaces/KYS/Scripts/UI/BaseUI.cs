@@ -926,77 +926,77 @@ namespace KYS
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultClickSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultClickSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlayBackSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultBackSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultBackSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlayHoverSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultHoverSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultHoverSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlayErrorSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultErrorSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultErrorSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlaySuccessSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultSuccessSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultSuccessSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlayOpenSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultOpenSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultOpenSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         protected void PlayCloseSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            string soundToPlay = soundName ?? defaultCloseSound;
-            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            {
-                Manager.Audio.SfxPlay(soundToPlay);
-            }
+            //string soundToPlay = soundName ?? defaultCloseSound;
+            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            //{
+            //    Manager.Audio.SfxPlay(soundToPlay);
+            //}
         }
 
         /// <summary>
