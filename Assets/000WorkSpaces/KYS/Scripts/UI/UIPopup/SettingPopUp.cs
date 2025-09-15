@@ -78,7 +78,7 @@ public class SettingPopUp : BaseUI
 
     private void SetupButtons()
     {
-        var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+        var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
         if (confirmEventHandler != null)
         {
             confirmEventHandler.Click += OnCloseButton;

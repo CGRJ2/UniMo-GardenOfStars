@@ -162,8 +162,8 @@ namespace KYS
                 if (rectTransform != null) rectTransform.localScale = originalScale;
             }
 
-            // UI 열기 사운드 재생
-            PlayOpenSound();
+            // UI 열기 사운드 재생 (버튼 클릭으로만 효과음 재생하도록 주석 처리)
+            // PlayOpenSound();
 
             // 이벤트 호출
             OnShow();
@@ -175,8 +175,8 @@ namespace KYS
         {
             if (!IsActive) return;
 
-            // UI 닫기 사운드 재생
-            PlayCloseSound();
+            // UI 닫기 사운드 재생 (버튼 클릭으로만 효과음 재생하도록 주석 처리)
+            // PlayCloseSound();
 
             if (useAnimation && useHideAnimation)
             {
@@ -453,6 +453,10 @@ namespace KYS
                 ownBackdrop.OnBackdropClicked += () =>
                 {
                     //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭으로 Popup 닫기");
+                    
+                    // Backdrop 클릭 효과음 재생
+                    PlayBackSound("SFX_ButtonClickBack");
+                    
                     // OnClosed 이벤트 호출
                     OnClosed?.Invoke();
                     UIManager.Instance?.ClosePopup();
@@ -923,10 +927,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultClickSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayBackSound(string soundName = null)
@@ -934,10 +938,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultBackSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayHoverSound(string soundName = null)
@@ -945,10 +949,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultHoverSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayErrorSound(string soundName = null)
@@ -956,10 +960,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultErrorSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlaySuccessSound(string soundName = null)
@@ -967,10 +971,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultSuccessSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayOpenSound(string soundName = null)
@@ -978,10 +982,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultOpenSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayCloseSound(string soundName = null)
@@ -989,10 +993,10 @@ namespace KYS
             if (!enableSFX) return;
 
             string soundToPlay = soundName ?? defaultCloseSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         /// <summary>

@@ -116,30 +116,16 @@ namespace KYS
         {
             //Debug.Log("[TitlePanel] SetupButtons() 시작");
 
-            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
-            if (confirmEventHandler != null)
-            {
-                confirmEventHandler.Click += OnCloseButton;
-    
-            }
-            else
-            {
-                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
-            }
-
-            var closeEventHandler = GetBackEvent(closeButtonName, "SFX_ButtonClickBack");
+            // 닫기 버튼에 효과음 설정
+            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
-                //closeEventHandler.Click += OnCancelClicked;
-           
+                closeEventHandler.Click += OnCloseButton;
             }
             else
             {
                 Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
             }
-
-
         }
 
 

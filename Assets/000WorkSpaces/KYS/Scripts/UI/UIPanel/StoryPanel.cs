@@ -235,7 +235,7 @@ namespace KYS
         private void SetupButtons()
         {
             // ChatWindowArea 전체가 NextButton 역할
-            var chatAreaHandler = GetEventWithSFX(chatWindowAreaName, "SFX_ButtonClick");
+            var chatAreaHandler = GetEvent(chatWindowAreaName);
             if (chatAreaHandler != null)
             {
                 chatAreaHandler.Click += (data) => OnChatWindowClicked();
