@@ -2,6 +2,7 @@
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using TMPro;
@@ -287,34 +288,23 @@ namespace KYS
         }
 
         /// <summary>
-        /// CSV 라인 파싱 (쉼표와 따옴표 처리)
+        /// CSV 라인 파싱 (쉼표와 따옴표, $ 기호 처리)
         /// </summary>
         private string[] ParseCSVLine(string line)
         {
-            List<string> result = new List<string>();
-            bool inQuotes = false;
-            string currentValue = "";
+            // $ 기호로 감싸진 문자열 내의 쉼표를 무시하는 정규식 사용
+            string[] fields = Regex.Split(line, @",(?=(?:[^$]*\$[^$]*\$)*[^$]*$)");
             
-            for (int i = 0; i < line.Length; i++)
+            List<string> result = new List<string>();
+            
+            foreach (string field in fields)
             {
-                char c = line[i];
-                
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                }
-                else if (c == ',' && !inQuotes)
-                {
-                    result.Add(currentValue);
-                    currentValue = "";
-                }
-                else
-                {
-                    currentValue += c;
-                }
+                // $ 기호 제거 및 따옴표 처리
+                string processedField = field.Trim().Trim('"').Trim('$');
+                processedField = processedField.Replace("$", "");
+                result.Add(processedField);
             }
             
-            result.Add(currentValue);
             return result.ToArray();
         }
 
