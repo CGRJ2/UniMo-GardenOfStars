@@ -107,6 +107,8 @@ public class QuestManager : Singleton<QuestManager>
                 // 튜토 퀘01 = 시퀀스01 종료 -> 시퀀스02
                 // 튜토 퀘02 = 시퀀스05 종료 -> 시퀀스06
                 // 튜토 퀘03 = 시퀀스08 종료 -> 시퀀스09
+                TutorialManager.Instance.arrows[2].SetActive(false);
+
                 Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
                 Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
                 

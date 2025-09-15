@@ -135,6 +135,8 @@ public class BuildingSeller : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
+            // 리팩토링 필요 => 전부 TutorialManager에서 처리할 수 있도록
+
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
                 if (Manager.firebase.UserData.TutorialSequence.Value != 2) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
@@ -156,6 +158,10 @@ public class BuildingSeller : InteractableBase
                 {
                     // 부동산 상호작용 발판 활성화
                     Manager.buildings.buildingSeller.ShowWaitingTile();
+
+                    // 화살표 비활성화
+                    TutorialManager.Instance.arrows[3].SetActive(false);
+
                 });
 
                 return;

@@ -30,6 +30,10 @@ public class NpcInteractArea : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
+            // 리팩토링 필요 => 전부 TutorialManager에서 처리할 수 있도록
+
+            TutorialManager.Instance.arrows[0].SetActive(false);    
+
             // 튜토리얼 NPC면 바로 첫대화 진행
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {

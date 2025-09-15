@@ -23,6 +23,9 @@ public class TutorialManager : MonoBehaviour
     public NpcController tutorialNPC;
     [SerializeField] CinemachineBrain cineBrain;
     public List<CinemachineVirtualCamera> cameras_TutoCutScene = new();
+
+    public List<GameObject> arrows;
+
     [Header("튜토리얼 #0 설정")]
     [Tooltip("튜토리얼 씬이 시작되고 첫 카메라가 이동을 시작할 때 까지 대기하는 시간")]
     [SerializeField] float _Cut01_CamMoveWaitTime;
@@ -165,6 +168,7 @@ public class TutorialManager : MonoBehaviour
         (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때 NPC 방향 화살표 발판 보여주기");
+            arrows[0].SetActive(true);
         });
 
         // 이후에 NPC 영역에 접근하면 대화 진행 후, 대화 종료 시 Sequence00 완료, Sequence01로 전환
@@ -228,6 +232,7 @@ public class TutorialManager : MonoBehaviour
                 Debug.LogWarning("팝업 닫음 콜백 함수 실행");
                 Debug.LogWarning("마지막 팝업 닫을 때 생산 건물 방향 화살표 발판 보여주기");
 
+                arrows[1].SetActive(true);
             });
         });
     }
@@ -237,6 +242,7 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.LogError("시퀀스02 시작");
         Manager.camera.cam_PlayerFocus.Priority = 11;
+
 
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
@@ -250,13 +256,14 @@ public class TutorialManager : MonoBehaviour
 
             // 플레이어 조작 활성화
             Manager.player.IsControl = true;
-
-            // 퀘스트 발판 활성화
-            tutorialNPC.ShowQuestTiles();
         },
         (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때 부동산 방향 화살표 발판 보여주기");
+            arrows[3].SetActive(true);
+
+            // 퀘스트 발판 활성화
+            tutorialNPC.ShowQuestTiles();
         });
     }
 
@@ -385,6 +392,9 @@ public class TutorialManager : MonoBehaviour
         // 이건 퀘스트 매니저에서 처리해서 따로 추가할 게 없음
         Debug.LogError("시퀀스05 시작");
 
+        // NPC 방향 화살표 활성화
+        arrows[2].SetActive(true);
+
         StartCoroutine(Sequence05());
 
     }
@@ -462,6 +472,8 @@ public class TutorialManager : MonoBehaviour
             // 플레이어 조작 가능상태로 전환
             Manager.player.IsControl = true;
 
+            // 인력사무소 방향 화살표 활성화
+            arrows[4].SetActive(true);
 
 
         }, (msg) =>
@@ -482,6 +494,9 @@ public class TutorialManager : MonoBehaviour
         Debug.LogError("시퀀스07 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        // 인력사무소 방향 화살표 비활성화
+        arrows[4].SetActive(false);
 
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
@@ -555,6 +570,9 @@ public class TutorialManager : MonoBehaviour
         Debug.LogError("시퀀스08 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        // NPC 방향 화살표 활성화
+        arrows[2].SetActive(true);
 
         // 플레이어 조작 활성화
         Manager.player.IsControl = true;

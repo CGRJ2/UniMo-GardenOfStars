@@ -213,7 +213,10 @@ public class WorkerManager : MonoBehaviour
 
             // 시퀀스 06일때만 일꾼 소환 시 시퀀스 종료
             if (Manager.firebase.UserData.TutorialSequence.Value == 6)
+            {
                 TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+                Manager.ui.ClosePanel();
+            }
         }
     }
 
