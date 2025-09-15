@@ -151,13 +151,7 @@ namespace KYS
 
             _upgradeButton.interactable = false;
 
-            Manager.player.Data.Money.Subscribe(UpgradeLv);
-            Manager.player.Data.Money.Value -= _cost;
-        }
-
-        private void UpgradeLv(int value)
-        {
-            Manager.player.Data.Money.Unsubscribe(UpgradeLv);
+            Manager.player.Data.Money.Value -= _cost; 
             _targerLv.Subscribe(EndUpgrade);
             _targerLv.Value++;
         }

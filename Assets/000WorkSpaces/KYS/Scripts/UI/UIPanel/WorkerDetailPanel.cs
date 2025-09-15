@@ -32,9 +32,22 @@ namespace KYS
         private int _upgradeSpeedCost;
         private int _upgradeCapacityCost;
 
+        private bool _isInSpeedProgress;
+        private bool _isInCapacityProgress;
+
         protected override void Awake()
         {
             base.Awake();
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
+
         }
 
         public override void Initialize()
@@ -142,22 +155,40 @@ namespace KYS
 
         private void OnUpgradeSpeedButtonClicked()
         {
+            if (_isInSpeedProgress) return;
+
             if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _speedUpgradeButton.interactable = false;
+            _isInSpeedProgress = true;
 
             Manager.player.Data.Money.Value -= _upgradeSpeedCost;
             _worker.MoveSpeedLv.Value++;
         }
 
+        private void OnSpeedChanged(int value)
+        {
+            _isInSpeedProgress = false;
+            _speedUpgradeButton.interactable = true;
+        }
+
         private void OnUpgradeCapacityButtonClicked()
         {
+            if (_isInCapacityProgress) return;
+
             if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _capacityUpgradeButton.interactable = false;
+            _isInCapacityProgress = true;
 
             Manager.player.Data.Money.Value -= _upgradeCapacityCost;
             _worker.MaxCapacityLv.Value++;
+        }
+
+        private void OnCapacityChanged(int value)
+        {
+            _isInCapacityProgress = false;
+            _capacityUpgradeButton.interactable = true;
         }
     }
 
