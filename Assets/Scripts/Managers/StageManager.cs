@@ -1,4 +1,3 @@
-using Cinemachine;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -6,11 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class StageManager : MonoBehaviour
 {
-    //string stageId;
-    //StageData stageData;
+    private static StageManager _instance;
+    public static StageManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<StageManager>();
+            }
+            return _instance;
+        }
+    }
+
+    // 임시로 넣어둠. StageDataCSV에서 최종 생산물(일꾼이 들면 안되는 생산물) ID를 지정해줘야 함
+    public string restrictedProdID = "it10121";
 
     private void Awake()
     {
+        Manager.player.SpawnPlayer();
+
         // 타이틀에서 시작할 때
         //Init();
 
@@ -38,10 +52,11 @@ public class StageManager : MonoBehaviour
 
         Debug.LogWarning("Npc Inited");
 
+
         Manager.quest.CurStageQuestDataInit();
 
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
+        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
         Debug.LogWarning("QuestList Inited");
 
         Init();
@@ -65,39 +80,30 @@ public class StageManager : MonoBehaviour
             };
         }
 
-        // 타이틀 씬에서 인게임씬으로 이동 시, 아래 적용
+        // 일반 스테이지 씬의 경우
         else
         {
+            Manager.ui.SwitchToNormalHUD();
+
             Addressables.LoadSceneAsync($"MapScene_{Manager.firebase.UserData.CurStage.Value}", LoadSceneMode.Additive).Completed += task =>
             {
                 // 맵 씬 로드 완료 이후에 로딩 해제
             };
         }
-        
-        Manager.ui.ShowAllHUDElements();
-        
-        // 현재 스테이지의 NPC 설정
-        foreach (var kvp in Manager.data.Npc.Values)
-        {
-            if (kvp.Value.StageId == Manager.firebase.UserData.CurStage.Value)
-            {
-                // 현재 스테이지의 NpcID 넣어주기
-                var npc = Manager.firebase.UserData.CurStageData.Npc;
-                npc.NpcID.Value = kvp.Value.Id;
-                Debug.LogWarning($"현재 스테이지({Manager.firebase.UserData.CurStage.Value})의 NpcID 설정됨: {kvp.Value.Id}");
 
-                foreach (var value in npc.QuestList.List)
-                {
-                    if (value.QuestState.Value != 3) // 클리어된 퀘스트가 아니라면
-                    {
-                        npc.CurrentQuestID.Value = value.QuestId;
-                        Debug.LogWarning($"CurrentQuestID 설정됨: {value.QuestId}");
-                        break;
-                    }
-                }
+        // 현재 스테이지의 Npc에서, 진행중인 퀘스트 ID 등록
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        foreach (var value in npc.QuestList.List)
+        {
+            if (value.QuestState.Value != 3) // 클리어된 퀘스트가 아니라면
+            {
+                npc.CurrentQuestID.Value = value.QuestId;
+                Debug.LogWarning($"CurrentQuestID 설정됨: {value.QuestId}");
                 break;
             }
         }
+
+        Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
     }
 
     public void TryUnlockNextStage(int curQuestIndex)

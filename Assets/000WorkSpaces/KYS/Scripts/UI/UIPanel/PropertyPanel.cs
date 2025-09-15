@@ -1,6 +1,4 @@
-﻿using KYS;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -36,7 +34,7 @@ namespace KYS
                 layerType = UILayerType.Panel;
             }
 
-           Initialize();
+            Initialize();
 
         }
         public override string[] GetAutoLocalizeKeys()
@@ -60,38 +58,69 @@ namespace KYS
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
 
 
-            // 건물 데이터 불러오기
-            Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+            // 튜토리얼 씬의 경우, 건물데이터 하나의 슬롯만 생성
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                foreach (BuildingData bd in task.Result)
+                Addressables.LoadAssetAsync<BuildingData>(TutorialManager.Instance.tutoHarvestBuildingID).Completed += task =>
                 {
-                    if (!buildingDatas.ContainsKey(bd.ID))
-                    {
-                        buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
-                    }
-                    
-                    // 건물 정보 슬롯 생성 (중복 생성 방지)
-                    if (!contentInstances.ContainsKey(bd.ID))
-                    {
-                        PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
-                        contentInstances.Add(bd.ID, content);
-                        
-                        // PropertyContent 초기화
-                        content.Initialize();
+                    BuildingData bd = task.Result;
+                    PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+                    contentInstances.Add(bd.ID, content);
 
-                        // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
-                        Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
-                        if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                    // PropertyContent 초기화
+                    content.Initialize();
+
+                    // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                    Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                    if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                    {
+                        content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                    }
+                    else
+                    {
+                        content.SetBuildingData(bd);
+                    }
+                };
+
+                return;
+            }
+
+            // 일반 스테이지의 경우
+            else
+            {
+                // 건물 데이터 불러오기
+                Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+                {
+                    foreach (BuildingData bd in task.Result)
+                    {
+                        if (!buildingDatas.ContainsKey(bd.ID))
                         {
-                            content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                            buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
                         }
-                        else
+
+                        // 건물 정보 슬롯 생성 (중복 생성 방지)
+                        if (!contentInstances.ContainsKey(bd.ID))
                         {
-                            content.SetBuildingData(bd);
+                            PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();
+                            contentInstances.Add(bd.ID, content);
+
+                            // PropertyContent 초기화
+                            content.Initialize();
+
+                            // 업그레이드 정보가 있는 건물이라면 해당 정보도 같이 업데이트
+                            Dictionary<string, UpgradeData> upgradeDic = Manager.buildings.upgradeDataDic;
+                            if (upgradeDic.ContainsKey(bd.ID)) // 현재 건물에 업그레이드 정보가 있다면
+                            {
+                                content.SetBuildingData(bd, upgradeDic[bd.ID]);
+                            }
+                            else
+                            {
+                                content.SetBuildingData(bd);
+                            }
                         }
                     }
-                }
-            };
+                };
+            }
         }
         public override void Cleanup()
         {
@@ -116,16 +145,30 @@ namespace KYS
         {
             //Debug.Log("[TitlePanel] SetupButtons() 시작");
 
-            // 닫기 버튼에 효과음 설정
-            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
+            // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
+            var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+            if (confirmEventHandler != null)
+            {
+                confirmEventHandler.Click += OnCloseButton;
+
+            }
+            else
+            {
+                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+            }
+
+            var closeEventHandler = GetBackEvent(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
-                closeEventHandler.Click += OnCloseButton;
+                //closeEventHandler.Click += OnCancelClicked;
+
             }
             else
             {
                 Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
             }
+
+
         }
 
 

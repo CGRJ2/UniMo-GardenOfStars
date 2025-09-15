@@ -2,7 +2,9 @@
 퀘스트 내용 단계 데이터 Id,퀘스트 내용 데이터 Id,"$목표오브젝트 Id(건물, 재료, 재화 등 해당하는 오브젝트의 데이터 ID)$",보상 재화 ID,보상 재화 지급 수량,단계 순서
 Id,QuestContentId,TargetAmount,RewardId,RewardAmount,ContentOrder
 string,string,int,string,int,int
-qcs0000,qc0000,1,goods0023,0,0
+qcs_Tuto01,qc_Tuto01,4,goods0023,10,0
+qcs_Tuto02,qc_Tuto02,4,goods0024,10,0
+qcs_Tuto03,qc_Tuto03,4,goods0025,10,0
 qcs0001,qc0001,1,goods0001,10,0
 qcs0002,qc0002,1,goods0002,10,0
 qcs0003,qc0003,1,goods0003,10,0

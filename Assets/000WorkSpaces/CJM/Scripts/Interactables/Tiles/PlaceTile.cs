@@ -149,6 +149,13 @@ public class PlaceTile : InteractableBase
             // 건축모드 비활성화
             Manager.buildings.BuildModEvent?.Invoke(false);
         });
+
+
+        // 튜토리얼 씬에서 설치 완료한 경우 
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            TutorialManager.Instance.SequenceEnd(); // 시퀀스03 종료(저장)
+        }
     }
 
     
@@ -172,7 +179,8 @@ public class PlaceTile : InteractableBase
 
     private void OnDestroy()
     {
-        Manager.buildings.BuildModEvent -= OnBuildModChanged;
+        if (Manager.buildings != null)
+            Manager.buildings.BuildModEvent -= OnBuildModChanged;
     }
 
     public void OnBuildModChanged(bool isBuildMod)

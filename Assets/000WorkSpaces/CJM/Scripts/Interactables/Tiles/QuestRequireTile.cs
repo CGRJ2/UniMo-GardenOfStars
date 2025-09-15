@@ -120,7 +120,10 @@ public class QuestRequireTile : InteractableBase
                 {
                     QC_Data.ProgressdProdsCount.Value += 1;
                     IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-                    popedProd.MoveToTargetAndShrink(attachPoint);
+                    popedProd.MoveToTargetAndShrink(attachPoint, () =>
+                    {
+
+                    });
                 }
                 else // 필요 재료 수량만큼 다 넣으면 조건 완료처리 후 정지
                 {
@@ -142,7 +145,10 @@ public class QuestRequireTile : InteractableBase
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
-        Debug.Log("타일 들어옴");
-        StartCoroutine(AutoInserting());
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            Debug.LogError("타일 들어옴");
+            StartCoroutine(AutoInserting());
+        }
     }
 }
