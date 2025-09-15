@@ -137,7 +137,7 @@ public class BuildingSeller : InteractableBase
         {
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                if (TutorialManager.Instance.Sequence.Value != 2) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
+                if (Manager.firebase.UserData.TutorialSequence.Value != 2) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
 
                 // 1회만 나오도록 막아주는 용도
                 if (isTutorialPopDone) return;

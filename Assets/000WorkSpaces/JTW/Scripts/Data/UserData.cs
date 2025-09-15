@@ -13,6 +13,8 @@ public partial class UserData : FirebaseData
     public FirebaseDataList<StageData> StageList;
 
     public FirebaseProperty<string> CurStage;
+
+    public FirebaseProperty<int> TutorialSequence;
     public StageData CurStageData => StageList.Get(CurStage.Value);
 
 
@@ -36,5 +38,8 @@ public partial class UserData : FirebaseData
 
         CurStage = new FirebaseProperty<string>("CurStage", Path, "Tutorial");
         InitList.Add(CurStage);
+
+        TutorialSequence = new FirebaseProperty<int>("TutorialSequence", Path);
+        InitList.Add(TutorialSequence);
     }
 }

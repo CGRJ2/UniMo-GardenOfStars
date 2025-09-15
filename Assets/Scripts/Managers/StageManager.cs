@@ -102,6 +102,8 @@ public class StageManager : MonoBehaviour
                 break;
             }
         }
+
+        Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
     }
 
     public void TryUnlockNextStage(int curQuestIndex)

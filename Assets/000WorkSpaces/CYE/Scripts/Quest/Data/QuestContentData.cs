@@ -46,8 +46,10 @@ namespace GameQuest
             {
                 Debug.LogWarning($"QC(id:{Id}) 클리어");
 
+                bool questCleared;
+
                 // 현재 퀘스트의 모든 Content가 Clear상태인지 체크
-                Manager.quest.CheckCurQuestCleared();
+                Manager.quest.CheckCurQuestCleared(out questCleared);
             }
         }
 

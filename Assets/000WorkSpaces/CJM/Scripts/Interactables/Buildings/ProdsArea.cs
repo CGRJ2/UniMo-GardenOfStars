@@ -105,7 +105,7 @@ public class ProdsArea : InteractableBase, IWorkStation
             // 튜토리얼 NPC면 바로 첫대화 진행
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                if (TutorialManager.Instance.Sequence.Value != 1) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
+                if (Manager.firebase.UserData.TutorialSequence.Value != 1) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
 
                 // 발판 활성화
                 TutorialManager.Instance.tutorialNPC.UpdateQuestData();
@@ -129,6 +129,7 @@ public class ProdsArea : InteractableBase, IWorkStation
             if (prodObjectView == null)
             {
                 prodObjectView = pool.DisposePooledObj(transform.position, transform.rotation);
+
                 // 이미 실행 중이라면 무시
                 if (floatTween != null && floatTween.IsActive()) return;
 

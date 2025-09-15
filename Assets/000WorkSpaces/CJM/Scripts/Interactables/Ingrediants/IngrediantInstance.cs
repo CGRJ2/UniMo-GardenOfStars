@@ -63,7 +63,7 @@ public class IngrediantInstance : PooledObject
 
     public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
-        transform.SetParent(parent);
+        //transform.SetParent(parent);
         ownerCharacterRD = null;
         isOnHand = false;
         StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent, completed));

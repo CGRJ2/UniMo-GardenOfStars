@@ -202,15 +202,18 @@ public class WorkerManager : MonoBehaviour
         // 0914 최재민: 튜토리얼 시퀀스06 종료 를 위한 로직 추가
         if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
         {
-            if (TutorialManager.Instance.Sequence.Value != 6) return;
-
-            TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+            // 시퀀스 06 부터는 일꾼을 소환한 상태이므로 계속 실행
+            if (Manager.firebase.UserData.TutorialSequence.Value < 6) return;
 
             // 상호작용 발판 비활성화
             Manager.buildings.workerBuilding.HideWaitingTile();
 
             // 일꾼 포커싱 카메라에 맞춰주기
             TutorialManager.Instance.cameras_TutoCutScene[5].Follow = worker.transform;
+
+            // 시퀀스 06일때만 일꾼 소환 시 시퀀스 종료
+            if (Manager.firebase.UserData.TutorialSequence.Value == 6)
+                TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
         }
     }
 

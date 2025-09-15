@@ -33,7 +33,7 @@ public class NpcInteractArea : InteractableBase
             // 튜토리얼 NPC면 바로 첫대화 진행
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                if (TutorialManager.Instance.Sequence.Value != 0) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
+                if (Manager.firebase.UserData.TutorialSequence.Value != 0) return; // 튜토 진행도는 Firebase에서 관리. 추후에 수정해야됨
                 
                 // 딱 한번만 실행되게
                 if (isTutoInteracted) return;

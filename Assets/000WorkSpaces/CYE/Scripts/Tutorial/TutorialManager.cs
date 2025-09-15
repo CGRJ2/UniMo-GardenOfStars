@@ -20,10 +20,6 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    public ObservableProperty<int> Sequence = new(); // firebaseProperty로 바꾸면 됨
-
-    public PlayerController pc; // 0914 최재민 추가 : IsMove 상태를 튜토리얼 매니저에서 조건으로 사용하기 위해 달아둠
-
     public NpcController tutorialNPC;
     [SerializeField] CinemachineBrain cineBrain;
     public List<CinemachineVirtualCamera> cameras_TutoCutScene = new();
@@ -40,12 +36,20 @@ public class TutorialManager : MonoBehaviour
     [Header("튜토리얼 #2 설정")]
     public string tutoHarvestBuildingID;
 
+    [Header("튜토리얼 #9 설정")]
+    [SerializeField] GameObject portal;
+    [SerializeField] float portalFocusTime = 2f;
 
-    private void Awake() => Init();
-
-    private void Start()
+    private void Awake() => StartCoroutine(WaitAndInit());
+    IEnumerator WaitAndInit()
     {
+        yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        Init();
     }
+
     private void Init()
     {
         Debug.LogError("튜토매니저 초기화");
@@ -56,8 +60,8 @@ public class TutorialManager : MonoBehaviour
         // 카메라 순서대로 정렬(게임오브젝트 이름 기준)
         cameras_TutoCutScene.Sort((p1, p2) => p1.gameObject.name.CompareTo(p2.gameObject.name));
 
-        SwitchTutorialSequence(Sequence.Value);
-        Sequence.Subscribe(SwitchTutorialSequence);
+        SwitchTutorialSequence(Manager.firebase.UserData.TutorialSequence.Value);
+        Manager.firebase.UserData.TutorialSequence.Subscribe(SwitchTutorialSequence);
     }
 
     private void SwitchTutorialSequence(int value)
@@ -84,16 +88,19 @@ public class TutorialManager : MonoBehaviour
             case 5:
                 TutorialSequence05();
                 break;
-
             case 6:
                 TutorialSequence06();
                 break;
-
             case 7:
                 TutorialSequence07();
                 break;
+            case 8:
+                TutorialSequence08();
+                break;
+            case 9:
+                TutorialSequence09();
+                break;
         }
-
     }
 
     // Sequence 마지막에 대화 종료를 기점으로 진행도 저장
@@ -101,9 +108,10 @@ public class TutorialManager : MonoBehaviour
     {
         //tutorialNPC.UpdateQuestData();
         Manager.dialogue.OnDialogueCompleted -= SequenceEnd;
-        Debug.LogError($"시퀀스 0{Sequence.Value} 종료");
+        Debug.LogError($"시퀀스 0{Manager.firebase.UserData.TutorialSequence.Value} 종료");
+
         // 튜토리얼 진행도 상승 & 저장
-        Sequence.Value += 1; // 튜토 진행도는 Firebase에서 관리. 이부분은 추후에 수정해야됨
+        Manager.firebase.UserData.TutorialSequence.Value += 1;
     }
 
     private void TutorialSequence00()
@@ -187,6 +195,15 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => currentQuest.IsInit);
         yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
 
+        /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
+        bool questCleared;
+        Manager.quest.CheckCurQuestCleared(out questCleared);
+        if (questCleared)
+        {
+            yield break;
+        }
+        ////////////////////////////////////////////////////
+
         // 목표 수량만큼 생산물 미리 설정(퀘스트 진행중이었다면 진행중인 양 빼고 넣어두기)
         prodsArea.ProdsCount.Value = currentQuest.QuestContentList.List[0].CurrentTargetCount - currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value;
 
@@ -224,6 +241,7 @@ public class TutorialManager : MonoBehaviour
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
 
+
         Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
@@ -232,6 +250,9 @@ public class TutorialManager : MonoBehaviour
 
             // 플레이어 조작 활성화
             Manager.player.IsControl = true;
+
+            // 퀘스트 발판 활성화
+            tutorialNPC.ShowQuestTiles();
         },
         (msg) =>
         {
@@ -252,7 +273,7 @@ public class TutorialManager : MonoBehaviour
     {
         // 플레이어가 건물(재료)를 손에 넣을 때 까지 대기
         while (true)
-        { 
+        {
             IngrediantInstance building;
             Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IngrediantStack.TryPeek(out building);
             if (building == null)
@@ -280,7 +301,7 @@ public class TutorialManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
-        
+
 
         // 포커스 완료 시 팝업 메세지 띄우기
         Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
@@ -363,6 +384,32 @@ public class TutorialManager : MonoBehaviour
 
         // 이건 퀘스트 매니저에서 처리해서 따로 추가할 게 없음
         Debug.LogError("시퀀스05 시작");
+
+        StartCoroutine(Sequence05());
+
+    }
+
+    IEnumerator Sequence05()
+    {
+        yield return new WaitUntil(() => prodsArea.pool != null);
+        var userData = Manager.firebase.UserData;
+        yield return new WaitUntil(() => userData.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.Npc.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.Npc.QuestList.IsInit);
+        var currentQuest = userData.CurStageData.Npc.CurQuestData;
+        yield return new WaitUntil(() => currentQuest.IsInit);
+        yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
+
+        /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
+        bool questCleared;
+        Manager.quest.CheckCurQuestCleared(out questCleared);
+        if (questCleared)
+        {
+            yield break;
+        }
+        ////////////////////////////////////////////////////
+        
         Debug.LogWarning("작업형 건물에서 재단 방향으로 화살표 정도만 띄워주면 될듯");
     }
 
@@ -414,6 +461,9 @@ public class TutorialManager : MonoBehaviour
 
             // 플레이어 조작 가능상태로 전환
             Manager.player.IsControl = true;
+
+
+
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
@@ -431,6 +481,8 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.LogError("시퀀스07 시작");
 
+        Manager.camera.cam_PlayerFocus.Priority = 11;
+
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
 
@@ -439,13 +491,44 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator Sequence07()
     {
+        // 일꾼 카메라 Follow 등록까지 대기
+        yield return new WaitUntil(() => cameras_TutoCutScene[5].Follow != null);
+
         // 일꾼 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[5].Priority = 11;
         Manager.camera.cam_NpcFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
+        {
+            Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+            //StartCoroutine(Sequence07_CutScene01());
+
+            // 카메라 복귀
+            cameras_TutoCutScene[5].Priority = 10;
+            Manager.camera.cam_PlayerFocus.Priority = 11;
+
+            // 우선 업그레이드 관한 설명 없이 다음 단계로 진행
+            // 원래대로라면 업그레이드 진행 후, 시퀀스 적용? 모르겠다
+            SequenceEnd();
+
+        }, (msg) =>
+        {
+            //Debug.LogWarning("팝업 열었을 때, ");
+        });
+    }
+
+    IEnumerator Sequence07_CutScene01()
+    {
+        // 일꾼 건물 포커스 카메라 컷씬 진행
+        cameras_TutoCutScene[4].Priority = 11;
+        cameras_TutoCutScene[5].Priority = 10;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -461,8 +544,81 @@ public class TutorialManager : MonoBehaviour
 
             // 인력사무소 상호작용 발판 활성화
             Manager.buildings.workerBuilding.ShowWaitingTile();
+
+            // 이후에 인력사무소 패널에서 업그레이드 진행
         });
     }
+
+    // 퀘스트 3번 진행
+    public void TutorialSequence08()
+    {
+        Debug.LogError("시퀀스08 시작");
+
+        Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        // 플레이어 조작 활성화
+        Manager.player.IsControl = true;
+
+        StartCoroutine(Sequence08());
+    }
+
+    IEnumerator Sequence08()
+    {
+        yield return new WaitUntil(() => prodsArea.pool != null);
+        var userData = Manager.firebase.UserData;
+        yield return new WaitUntil(() => userData.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.Npc.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.Npc.QuestList.IsInit);
+        var currentQuest = userData.CurStageData.Npc.CurQuestData;
+        yield return new WaitUntil(() => currentQuest.IsInit);
+        yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
+
+        /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
+        bool questCleared;
+        Manager.quest.CheckCurQuestCleared(out questCleared);
+        if (questCleared)
+        {
+            yield break;
+        }
+        ////////////////////////////////////////////////////
+
+        // 퀘스트 발판 활성화
+        tutorialNPC.ShowQuestTiles();
+    }
+
+
+    public void TutorialSequence09()
+    {
+        Debug.LogError("시퀀스09 시작");
+
+        Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        // 플레이어 조작 비활성화
+        Manager.player.IsControl = false;
+
+        StartCoroutine(Sequence09());
+    }
+
+    IEnumerator Sequence09()
+    {
+        portal.SetActive(true);
+
+        // 포탈 포커스 카메라 컷씬 진행
+        cameras_TutoCutScene[7].Priority = 11;
+        Manager.camera.cam_PlayerFocus.Priority = 10;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+        yield return new WaitForSeconds(portalFocusTime);
+
+        // 카메라 복귀
+        cameras_TutoCutScene[7].Priority = 10;
+        Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        // 플레이어 조작 활성화
+        Manager.player.IsControl = true;
+    }
+
 
     private void OnDestroy()
     {
