@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7146294196069385617}
   - component: {fileID: 5953072283573131390}
   - component: {fileID: 2549089045933044897}
+  - component: {fileID: 7516172410980076033}
   m_Layer: 5
   m_Name: HUDCanvas
   m_TagString: Untagged
@@ -114,8 +115,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73dda412eff07a94797c5c1885546fd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableTouchDetection: 1
-  enableClickDetection: 1
+  enableTouchDetection: 0
+  enableClickDetection: 0
   touchableLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -143,3 +144,41 @@ MonoBehaviour:
   defaultHUDKey: TouchInfoHUD
   enableDebugLogs: 0
   showTouchGizmos: 0
+--- !u!114 &7516172410980076033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376463022110047056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f91237770535d2840a267cea96cf05a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fullScreenadUnitId: ca-app-pub-3940256099942544/1033173712
+  bannerAdUnitId: ca-app-pub-3940256099942544/6300978111
+  rewardedAdUnitId: ca-app-pub-3940256099942544/5224354917
+  nativeAdUnitId: ca-app-pub-3940256099942544/2247696110
+  enableAdsRemoval: 1
+  isNativeAdRemoved: 0
+  isFullScreenAdRemoved: 0
+  isBannerAdRemoved: 0
+  isRewardedAdRemoved: 0
+  adCompletionTimeout: 30
+  showAdProgress: 1
+  coinRewardMultiplier: 1
+  gemRewardMultiplier: 1
+  energyRewardMultiplier: 1
+  enableTimeBasedReward: 0
+  shortAdTime: 15
+  longAdTime: 30
+  shortAdMultiplier: 0.8
+  normalAdMultiplier: 1
+  longAdMultiplier: 1.2
+  minCoinReward: 10
+  maxCoinReward: 100
+  minGemReward: 1
+  maxGemReward: 10
+  minEnergyReward: 5
+  maxEnergyReward: 20

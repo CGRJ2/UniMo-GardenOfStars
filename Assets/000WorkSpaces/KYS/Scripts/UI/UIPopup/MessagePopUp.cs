@@ -12,9 +12,6 @@ namespace KYS
         
         [Header("Close Settings")]
         [SerializeField] private bool canCloseWithPanelClick = true; // 패널 클릭으로 닫기 가능 여부
-        
-        // 이벤트
-        public System.Action OnClosed;
 
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
@@ -37,6 +34,7 @@ namespace KYS
             createBackdropForPopup = true;
             canCloseWithBackdrop = true;
         }
+
 
         public override void Initialize()
         {

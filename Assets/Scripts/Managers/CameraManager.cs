@@ -1,4 +1,5 @@
 using Cinemachine;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : Singleton<CameraManager>
@@ -23,4 +24,5 @@ public class CameraManager : Singleton<CameraManager>
         cam_PlayerFocus.Priority = 10;
         cam_NpcFocus.Priority = 11;
     }
+
 }

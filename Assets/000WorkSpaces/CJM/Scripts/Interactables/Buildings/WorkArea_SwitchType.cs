@@ -150,7 +150,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         //GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
         // 회수영역에 개수 늘려주기
-        ownerInstance.prodsArea.ProdsCount += 1;
+        ownerInstance.prodsArea.ProdsCount.Value += 1;
 
         // 재료 소모
         ownerInstance.ingrediantStack.Pop().Despawn();

@@ -59,7 +59,7 @@ namespace KYS
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
                 closeEventHandler.Click += (data) => OnCloseButtonClicked();

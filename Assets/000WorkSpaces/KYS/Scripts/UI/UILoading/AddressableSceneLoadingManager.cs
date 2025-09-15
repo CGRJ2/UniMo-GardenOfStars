@@ -965,14 +965,14 @@ namespace KYS
         {
 
 
-            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "tutorial_scn001");
+            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "npc000_quest_Tuto01");
         }
 
 
         [ContextMenu("대화 시스템 로드 테스트 NPC002")]
         public void Temp_DialogueSystemTest2()
         {
-            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc002_start");
+            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc000_quest_Tuto03");
         }
 
         [ContextMenu("대화 시스템 로드 테스트 NPC003")]

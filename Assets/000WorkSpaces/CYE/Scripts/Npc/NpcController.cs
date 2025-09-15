@@ -62,9 +62,14 @@ namespace GameNpc
             else
             {
                 TutorialManager.Instance.tutorialNPC = this;
+
+                // 튜토리얼 진행도가 1 이상으로 저장되어있는 경우엔 퀘스트 발판 바로 띄우기
+                if (Manager.firebase.UserData.TutorialSequence.Value > 1) UpdateQuestData();
             }
 
             Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
+
+            Manager.camera.cam_NpcFocus.Follow = transform;
         }
 
         public void UpdateQuestData(string questID = null)
@@ -90,6 +95,15 @@ namespace GameNpc
             }
         }
 
+        public void HideQuestTiles()
+        {
+            requireTilesParent.gameObject.SetActive(false);
+        }
+
+        public void ShowQuestTiles()
+        {
+            requireTilesParent.gameObject.SetActive(true);
+        }
 
         /*public void Talk()
         {

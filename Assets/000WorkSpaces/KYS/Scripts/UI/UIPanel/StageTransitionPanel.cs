@@ -125,7 +125,7 @@ namespace KYS
         private void SetupButtons()
         {
             // 뒤로가기 버튼 설정
-            var backEventHandler = GetEventWithSFX(backButtonName, "SFX_ButtonClick");
+            var backEventHandler = GetEventWithSFX(backButtonName, "SFX_ButtonClickBack");
             if (backEventHandler != null)
             {
                 backEventHandler.Click += (data) => OnBackButtonClicked();
