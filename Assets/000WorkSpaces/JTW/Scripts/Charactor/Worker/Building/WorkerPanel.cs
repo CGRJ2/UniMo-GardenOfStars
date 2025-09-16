@@ -36,6 +36,9 @@ public class WorkerPanel : KYS.BaseUI
     private string _workerKey;
 
     private int _employCost;
+    private int _employBMCost;
+
+    private bool _isBMCost;
 
     protected override void Awake()
     {
@@ -115,12 +118,25 @@ public class WorkerPanel : KYS.BaseUI
         }
         
         // 고용 비용 설정
-        if (Manager.data?.WorkerEmployCost?.Values != null && Manager.data.WorkerEmployCost.Values.ContainsKey(_workerKey))
+        if (Manager.data?.WorkerEmployCost?.Values != null)
         {
-            _employCost = Manager.data.WorkerEmployCost.Values[_workerKey].Cost;
-            if (_runWorkerCostText != null) 
+            string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
+
+            _employCost = Manager.data.WorkerEmployCost.Values[key].Cost;
+            _employBMCost = Manager.data.WorkerEmployCost.Values[key].BMCost;
+
+            
+            if (_runWorkerCostText != null)
             {
-                _runWorkerCostText.text = _employCost.ToString();
+                if (_employCost == -1)
+                {
+                    _isBMCost = true;
+                    _runWorkerCostText.text = _employBMCost.ToString();
+                }
+                else
+                {
+                    _runWorkerCostText.text = _employCost.ToString();
+                }
             }
         }
     }
@@ -143,8 +159,6 @@ public class WorkerPanel : KYS.BaseUI
                 
             case WorkerPanelStates.Purchase:
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
-                // 고용 비용 업데이트
-                if (_runWorkerCostText != null) _runWorkerCostText.text = _employCost.ToString();
                 break;
                 
             case WorkerPanelStates.Locked:
@@ -160,21 +174,51 @@ public class WorkerPanel : KYS.BaseUI
 
     private void OnBuyClick()
     {
-        if (Manager.player.Data.Money.Value < _employCost && Manager.firebase.UserData.CurStage.Value != "Tutorial")
+        if (_isBMCost)
         {
-            Debug.LogWarning("잔액이 부족합니다.");
-            return;
-        }
-       
-        Manager.player.Data.Money.Value -= _employCost;
+            if(Manager.player.Data.Gem.Value < _employBMCost)
+            {
+                Debug.LogWarning("유료 재화 잔액이 부족합니다.");
+                return;
+            }
 
+            if (Manager.player.Data.Gem.IsInUpdate)
+            {
+                Debug.LogWarning("유료 재화 갱신 중입니다.");
+                return;
+            }
+
+            Manager.player.Data.Gem.Subscribe(EmployWorker);
+            Manager.player.Data.Gem.Value -= _employBMCost;
+        }
+        else
+        {
+            if (Manager.player.Data.Money.Value < _employCost)
+            {
+                Debug.LogWarning("인게임 머니 잔액이 부족합니다.");
+                return;
+            }
+
+            Manager.player.Data.Money.Value -= _employCost;
+
+            EmployWorker();
+        }
+    }
+
+    private void EmployWorker(int value = 0)
+    {
         Manager.firebase.UserData.CurStageData.WorkerList.Add(_workerKey);
 
         // 구매 후 상태를 Upgrade로 변경
         SetInfo(WorkerPanelStates.Upgrade);
-        
+
         // Presenter에 데이터 변경 알림
         _presenter?.OnWorkerDataChanged();
+
+        if (_isBMCost)
+        {
+            Manager.player.Data.Gem.Unsubscribe(EmployWorker);
+        }
     }
 
     private async Task ShowUpgradePopUp()

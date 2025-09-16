@@ -24,6 +24,7 @@ public class PlayerData : FirebaseData
     public bool IsNegoMaxLv => NegoLv.Value >= NegoMaxLv;
 
     public FirebaseProperty<int> Money;
+    public FirebaseProperty<int> Gem;
 
     public PlayerData(string id, string parentPath) : base(id, parentPath)
     {
@@ -35,10 +36,13 @@ public class PlayerData : FirebaseData
 
         Money = new FirebaseProperty<int>("Money", Path, 0, true);
 
+        Gem = new FirebaseProperty<int>("Gem", Path, 0);
+
         InitList.Add(MoveSpeedLv);
         InitList.Add(MaxCapacityLv);
         InitList.Add(NegoLv);
         InitList.Add(Money);
+        InitList.Add(Gem);
     }
 
     public void UpgradeMoveSpeed()

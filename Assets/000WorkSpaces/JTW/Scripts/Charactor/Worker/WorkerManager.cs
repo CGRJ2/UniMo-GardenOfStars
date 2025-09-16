@@ -130,6 +130,8 @@ public class WorkerManager : MonoBehaviour
         {
             if (!prod.GetWorkableState() || prod.GetReserveState()) continue;
 
+            if (!CanInsert(prod.ownerInstance.originData.ProductID)) continue;
+
             if (!(worker.IngrediantStack.Count == 0
                 || prod.ownerInstance.originData.ProductID == worker.IngrediantStack.Peek().Data.ID)) continue;
 
@@ -154,6 +156,8 @@ public class WorkerManager : MonoBehaviour
         {
             if (!gene.GetWorkableState() || gene.GetReserveState()) continue;
 
+            if (!CanInsert(gene._SpawnedProduct.Data.ID)) continue;
+
             if (!(worker.IngrediantStack.Count == 0 
                 || gene._SpawnedProduct.Data.ID == worker.IngrediantStack.Peek().Data.ID)) continue;
 
@@ -168,6 +172,20 @@ public class WorkerManager : MonoBehaviour
         if (workstation != null)
         {
             worker.SetWorkstation(workstation);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CanInsert(string productId)
+    {
+        foreach (InsertArea insert in WorkStatinLists.insertAreas)
+        {
+            if (!insert.GetWorkableState()) continue;
+
+            if (insert.ownerInstance.originData.RequireProdID != productId) continue;
+
             return true;
         }
 

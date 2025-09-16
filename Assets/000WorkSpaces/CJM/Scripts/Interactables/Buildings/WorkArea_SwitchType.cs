@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
-    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0 && !isOperating); } }
+    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }

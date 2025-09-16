@@ -162,6 +162,8 @@ public class ProdsArea : InteractableBase, IWorkStation
             {
                 prodObjectView.GetComponent<IngrediantInstance>().Despawn();
 
+                prodObjectView = null;
+
                 // 인스턴스 움직임 효과 정지
                 floatTween?.Kill();
                 rotateTween?.Kill();

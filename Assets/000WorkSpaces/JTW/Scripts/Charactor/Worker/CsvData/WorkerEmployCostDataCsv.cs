@@ -8,6 +8,8 @@ public class WorkerEmployCostDataCsv : IUsableId
 
     public int Cost;
 
+    public int BMCost;
+
     public string GetId()
     {
         return Id;
@@ -44,6 +46,7 @@ public partial class DataManager
 
             cost.Id = words[dict["CharacterID"]];
             int.TryParse(words[dict["Cost"]], out cost.Cost);
+            int.TryParse(words[dict["BMCost"]], out cost.BMCost);
 
             return cost;
         });

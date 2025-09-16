@@ -50,6 +50,12 @@ namespace KYS
 
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -64,6 +70,11 @@ namespace KYS
         public void SetInfo(WorkerData worker)
         {
             _worker = worker;
+
+            _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
 
             _workerImage.sprite = _worker.Sprite;
 
@@ -95,7 +106,10 @@ namespace KYS
                 _upgradeSpeedText.text = Manager.data.CharacterLv
                     .Values[(_worker.MoveSpeedLv.Value + 1).ToString()].Speed.ToString();
 
-                _upgradeSpeedCost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
+                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
+
+                _upgradeSpeedCost = (int)(Multi * cost);
 
                 _upgradeSpeedCostText.text = _upgradeSpeedCost.ToString();
             }
@@ -117,7 +131,10 @@ namespace KYS
                 _upgradeCapacityText.text = Manager.data.CharacterLv
                     .Values[(_worker.MaxCapacityLv.Value + 1).ToString()].Capacity.ToString();
 
-                _upgradeCapacityCost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
+                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
+
+                _upgradeCapacityCost = (int)(Multi * cost);
 
                 _upgradeCapacityCostText.text = _upgradeCapacityCost.ToString();
             }
