@@ -14,14 +14,22 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     [SerializeField] Slider taskProgressBar;
-    [SerializeField] Slider prepareProgressBar;
-    [SerializeField] float prepareTime = 1f;
+    [SerializeField] CircularProgressUI prepareProgressBar;
+
+    // 소요 시간 = (produceTime * PrepareTime) / 작업 속도
+
+    float curCharacterProdSpeed;
+
+    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / curCharacterProdSpeed;
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / curCharacterProdSpeed;
+
+
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
 
     bool isOperating;
 
     // 현재 작업 중인 일꾼 정보
-    CharaterRuntimeData curWorker;
+    public CharaterRuntimeData curWorker;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -37,6 +45,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         isReserved = false;
         curWorker = characterRD;
         curWorker.IsWork.Value = true;
+        curCharacterProdSpeed = characterRD.GetProductionSpeed();
 
         while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
         {
@@ -60,8 +69,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
             }
-            Debug.LogWarning(ownerInstance);
-            Debug.LogWarning(ownerInstance.ingrediantStack);
+
             // 재료 소진 시
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
@@ -77,7 +85,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 prepareProgressBar.gameObject.SetActive(true);
                 prepareProgressedTime += Time.deltaTime;
 
-                if (prepareTime < prepareProgressedTime)
+                if (calculatedPrepareTime < prepareProgressedTime)
                 {
                     //CompleteTask(); // 결과물 생성
                     StartCoroutine(ProgressingTask());
@@ -89,7 +97,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 }
 
                 // 진행도 게이지 업데이트
-                prepareProgressBar.value = prepareProgressedTime / prepareTime;
+                prepareProgressBar.SetValue(prepareProgressedTime / calculatedPrepareTime);
 
                 yield return null;
             }
@@ -120,7 +128,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         {
             ownerInstance.progressedTime += Time.deltaTime;
 
-            if (ownerInstance.ProdTime < ownerInstance.progressedTime)
+            if (calculatedProduceTime < ownerInstance.progressedTime)
             {
                 CompleteTask(); // 결과물 생성
                 ownerInstance.progressedTime = 0; // 진행도 초기화
@@ -128,7 +136,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             }
 
             // 진행도 게이지 업데이트
-            taskProgressBar.value = ownerInstance.progressedTime / ownerInstance.ProdTime;
+            taskProgressBar.value = ownerInstance.progressedTime / calculatedProduceTime;
             yield return null;
         }
 
@@ -158,7 +166,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         }
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.workAreas_SwitchType?.Remove(this);

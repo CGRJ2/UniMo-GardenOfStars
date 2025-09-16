@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using GameNpc;
 using GameQuest;
 using UnityEngine;
@@ -51,11 +51,11 @@ public class QuestProdsInsertArea : InteractableBase
                 //     }
                 // }
 
-                QuestProgressData targetRequirement = null;
-                foreach (QuestProgressData requirement in Manager.quest.CurrentQuest._questProgresses)
+                QuestContentProgressData targetRequirement = null;
+                foreach (QuestContentProgressData requirement in Manager.quest.CurrentQuest._progresses)
                 {
                     // 손에 있는 재료가 퀘스트 조건에 있는 재료이고 && 충족되지 않은 상황이면
-                    if (instanceProd.Data.ID == requirement._targetId && requirement._currentState!=QuestProgressState.Completed)
+                    if (instanceProd.Data.ID == requirement.ContentTargetId *//*&& requirement.State != QuestProgressState.Completed*//*)
                     {
                         targetRequirement = requirement;    // 타겟으로 설정
                         break;
@@ -63,10 +63,11 @@ public class QuestProdsInsertArea : InteractableBase
                 }
                 if (targetRequirement != null)
                 {
+                    Debug.Log($"{targetRequirement.Count}/{targetRequirement.CurrentTargetCount}");
                     // 현재 진행도에 개수 추가
-                    if (targetRequirement._currentCount < targetRequirement._targetCount)
+                    if (targetRequirement.Count < targetRequirement.CurrentTargetCount)
                     {
-                        GetComponentInParent<Npc>()?.ReceiveEachProduct(targetRequirement._targetId);
+                        GetComponentInParent<NpcController>()?.ReceiveProduct(targetRequirement.ContentTargetId);
                         // targetRequirement._currentCount += 1;
                         IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                         popedProd.MoveToTargetAndShrink(attachPoint);
@@ -108,9 +109,10 @@ public class QuestProdsInsertArea : InteractableBase
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 팝업형 상호작용 비활성화");
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         //Manager.buildings?.workStatinLists.insertAreas?.Remove(this);
     }
 }
+*/

@@ -5,16 +5,21 @@ using UnityEngine;
 public class WorkerData : FirebaseData
 {
     private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[Id];
+    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[$"{Id}_{Manager.firebase.UserData.CurStage.Value}"];
 
+    public string Name => CharacterCsv.Name_Kr;
     public int Rank => WorkerCsv.Rank;
 
+    public Sprite Sprite => CharacterCsv.Sprite;
+    public GameObject Avatar => CharacterCsv.Avatar;
+
     public float MoveSpeed => Manager.data.CharacterLv.Values[MoveSpeedLv.Value.ToString()].Speed;
-    public FirebaseProperty<long> MoveSpeedLv;
+    public FirebaseProperty<int> MoveSpeedLv;
     public int MoveSpeedMaxLv => WorkerCsv.SpeedMaxLv;
     public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
     public int MaxCapacity => Manager.data.CharacterLv.Values[MaxCapacityLv.Value.ToString()].Capacity;
-    public FirebaseProperty<long> MaxCapacityLv;
+    public FirebaseProperty<int> MaxCapacityLv;
     public int MaxCapacityMaxLv => WorkerCsv.MaxCapacityMaxLv;
     public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;
 
@@ -27,10 +32,10 @@ public class WorkerData : FirebaseData
 
     public WorkerData(string id, string parentPath = null) : base(id, parentPath)
     {
-        MoveSpeedLv = new FirebaseProperty<long>("MoveSpeedLv", Path, 1);
+        MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
         InitList.Add(MoveSpeedLv);
 
-        MaxCapacityLv = new FirebaseProperty<long>("MaxCapacityLv", Path, 1);
+        MaxCapacityLv = new FirebaseProperty<int>("MaxCapacityLv", Path, 1);
         InitList.Add(MaxCapacityLv);
     }
 

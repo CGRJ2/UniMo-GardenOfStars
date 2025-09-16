@@ -15,21 +15,22 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
     public UnityEvent<T> OnAdded = new();
 
+    public int Count => _list.Count;
+
+    public List<T> List { 
+        get
+        {
+            return _list;
+        } 
+    }
+
     public FirebaseDataList(string id, string parentPath, Func<string, string, T> factory) : base(id, parentPath)
     {
         _factory = factory;
 
         Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
 
-        Manager.firebase.CheckInit(Path, OnInitChecked);
-    }
-
-    private void OnInitChecked(DataSnapshot snapshot)
-    {
-        if(!snapshot.Exists || !snapshot.HasChildren)
-        {
-            IsInitSelf = true;
-        }
+        IsInitSelf = Manager.firebase.CheckInit(Path, out ListInitCount);
     }
 
     private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
@@ -52,6 +53,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     public void Add(string Id)
     {
         Manager.firebase.SaveData($"{Path}/{Id}", true);
+        ListInitCount++;
     }
 
     public T Get(string id)
@@ -66,6 +68,6 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
             await Task.Delay(50);
         }
 
-        OnAdded.Invoke(child);
+        OnAdded?.Invoke(child);
     }
 }

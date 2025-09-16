@@ -28,7 +28,7 @@ public class InteractableBase : MonoBehaviour
         personalTaskOwner = null;
     }
 
-    public virtual void OnDisableAdditionalActions() { }
+    protected virtual void OnDisableAdditionalActions() { }
 
     public void OnDisable()
     {

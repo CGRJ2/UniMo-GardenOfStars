@@ -1,6 +1,8 @@
 ﻿using KYS;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -75,6 +77,11 @@ public partial class DataManager
                 dialogue.UseTypingEffect = GetFieldValue(words, dict, "UseTypingEffect");
                 dialogue.BackgroundImage = GetFieldValue(words, dict, "BackgroundImage");
                 dialogue.ConstellationImage = GetFieldValue(words, dict, "ConstellationImage");
+                dialogue.CenterImage = GetFieldValue(words, dict, "CenterImage");
+                dialogue.CenterImageDuration = GetFieldValue(words, dict, "CenterImageDuration");
+                dialogue.CenterImageFadeInTime = GetFieldValue(words, dict, "CenterImageFadeInTime");
+                dialogue.CenterImageFadeOutTime = GetFieldValue(words, dict, "CenterImageFadeOutTime");
+                dialogue.HideCharacterImages = GetFieldValue(words, dict, "HideCharacterImages");
                 dialogue.AutoAdvanceDelay = float.TryParse(GetFieldValue(words, dict, "AutoAdvanceDelay"), out float delay) ? delay : 0f;
                 dialogue.ConditionType = GetFieldValue(words, dict, "ConditionType");
                 dialogue.ConditionValue = GetFieldValue(words, dict, "ConditionValue");
@@ -122,9 +129,21 @@ public partial class DataManager
             {
                 uniqueImageKeys.Add(dialogue.CharacterImage);
             }
+            if (!string.IsNullOrEmpty(dialogue.BackgroundImage))
+            {
+                uniqueImageKeys.Add(dialogue.BackgroundImage);
+            }
+            if (!string.IsNullOrEmpty(dialogue.ConstellationImage))
+            {
+                uniqueImageKeys.Add(dialogue.ConstellationImage);
+            }
+            if (!string.IsNullOrEmpty(dialogue.CenterImage))
+            {
+                uniqueImageKeys.Add(dialogue.CenterImage);
+            }
         }
 
-        //Debug.Log($"[DataManager] 로드할 캐릭터 이미지: {uniqueImageKeys.Count}개");
+        //Debug.Log($"[DataManager] 로드할 대화 이미지: {uniqueImageKeys.Count}개");
 
         // 병렬로 이미지 로드
         var loadTasks = new List<Task>();
@@ -134,7 +153,7 @@ public partial class DataManager
         }
 
         await Task.WhenAll(loadTasks);
-        //Debug.Log("[DataManager] 모든 캐릭터 이미지 로드 완료");
+        //Debug.Log("[DataManager] 모든 대화 이미지 로드 완료");
     }
 
     /// <summary>
@@ -183,25 +202,29 @@ public partial class DataManager
 
         try
         {
-            // Addressable에서 이미지 로드
-            var handle = Addressables.LoadAssetAsync<Sprite>(imageKey);
-            loadingHandles[imageKey] = handle;
-
-            var sprite = await handle.Task;
-
-            if (sprite != null)
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate(imageKey, typeof(Sprite), out var locations)))
             {
-                imageCache[imageKey] = sprite;
-                //Debug.Log($"[DataManager] 이미지 로드 성공: {imageKey}");
-            }
-            else
-            {
-                Debug.LogWarning($"[DataManager] 이미지 로드 실패: {imageKey}");
-            }
+                // Addressable에서 이미지 로드
+                var handle = Addressables.LoadAssetAsync<Sprite>(imageKey);
+                loadingHandles[imageKey] = handle;
 
-            // 로딩 완료 후 핸들 정리
-            loadingHandles.Remove(imageKey);
-            return sprite;
+                var sprite = await handle.Task;
+
+                if (sprite != null)
+                {
+                    imageCache[imageKey] = sprite;
+                    //Debug.Log($"[DataManager] 이미지 로드 성공: {imageKey}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[DataManager] 이미지 로드 실패: {imageKey}");
+                }
+
+                // 로딩 완료 후 핸들 정리
+                loadingHandles.Remove(imageKey);
+                return sprite;
+            }
+            else return null;
         }
         catch (System.Exception e)
         {

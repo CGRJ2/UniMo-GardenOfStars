@@ -14,7 +14,8 @@ public class TestUi : MonoBehaviour
     }
     public void Reward()
     {
-        textMeshPro.text = "골드100 수령(test)";
+        //textMeshPro.text = "골드100 수령(test)";
+        Manager.player.Data.Money.Value += 333;
     }
 
     void OnEnable()
@@ -30,7 +31,13 @@ public class TestUi : MonoBehaviour
 
     void AdjustUI(float bannerHeight, AdPosition position)
     {
-        if (position == AdPosition.Top)
+        if(bannerHeight == 0)
+        {
+            uiRoot.offsetMax = new Vector2(uiRoot.offsetMax.x, 0);
+            uiRoot.offsetMin = new Vector2(uiRoot.offsetMin.x, 0);
+        }
+
+        else if (position == AdPosition.Top || position == AdPosition.TopLeft || position ==AdPosition.TopRight)
         {//서로 반대로 주면 해결?
             //uiRoot.anchoredPosition += new Vector2(0, -bannerHeight);
 

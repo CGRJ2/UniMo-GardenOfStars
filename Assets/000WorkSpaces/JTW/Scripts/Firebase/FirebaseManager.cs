@@ -6,7 +6,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static FirebaseManager;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
@@ -20,15 +19,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
     public FirebaseDatabase Database => _database;
 
     public UserData UserData;
+    private DataSnapshot _rootDataSnapshot;
+    private bool _isUserDataInit;
 
     public event Action OnFirebaseInit;
 
     public bool IsFirebaseInit;
-
-    private Coroutine _checkInitCoroutine;
-    private WaitForSeconds _delay = new WaitForSeconds(0.1f);
-
-    private Queue<CheckInitData> _checkInitQueue = new Queue<CheckInitData>();
 
     private void Awake()
     {
@@ -40,13 +36,16 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _app = FirebaseApp.DefaultInstance;
                 _auth = FirebaseAuth.DefaultInstance;
                 _database = FirebaseDatabase.DefaultInstance;
+                _database.SetPersistenceEnabled(false);
+                _database.GoOnline();
                 Debug.Log("파이어베이스 연결 성공");
 
                 // 테스트를 원활하게 하기위해 일단 실행
                 // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
-                InitUserData();
 
                 OnFirebaseInit?.Invoke();
+
+                InitUserData();
 
                 IsFirebaseInit = true;
             }
@@ -63,19 +62,85 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     public void InitUserData()
     {
+        _isUserDataInit = false;
+
+        string userPath;
+
         if(_auth.CurrentUser == null)
         {
-            UserData = new UserData($"UserData/testUser1234", "");
+            userPath = $"UserData/testUser1234";
         }
         else
         {
-            UserData = new UserData($"UserData/{_auth.CurrentUser.UserId}", "");
+            userPath = $"UserData/{_auth.CurrentUser.UserId}";
+            Debug.LogWarning($"현재 UserId : {_auth.CurrentUser.UserId}");
         }
+
+        _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
+        {
+            _rootDataSnapshot = task.Result;
+
+            UserData = new UserData(userPath, "");
+
+            StartCoroutine(CheckUserDataInit());
+        });
     }
 
-    public void SetDataEvent(string path, EventHandler<ValueChangedEventArgs> func)
+    private IEnumerator CheckUserDataInit()
     {
-        _database.RootReference.Child(path).ValueChanged += func;
+        yield return new WaitUntil(() => UserData.IsInit);
+
+        Debug.LogWarning($"[FirebaseManager] UserData 초기화 완료. 현재 스테이지 {UserData.CurStage.Value}");
+
+        _isUserDataInit = true;
+    }
+    
+    public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
+    {
+        if (!isInit)
+        {
+            value = setValue;
+            _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
+            {
+                if(task.IsCanceled || task.IsFaulted)
+                {
+                    Debug.LogError("FirebaseProperty 값 변경 실패");
+                    return;
+                }
+
+                _database.RootReference.Child(path).ValueChanged += func;
+            });
+            return true;
+        }
+        else
+        {
+            if (!_rootDataSnapshot.Child(path).Exists)
+            {
+                value = setValue;
+            }
+            else
+            {
+                DataSnapshot snapshot = _rootDataSnapshot.Child(path);
+
+                if (typeof(T) == typeof(int))
+                {
+                    long valueT = (long)snapshot.Value;
+                    value = (T)(object)(int)valueT;
+                }
+                else if (typeof(T) == typeof(float))
+                {
+                    double valueT = (double)snapshot.Value;
+                    value = (T)(object)(float)valueT;
+                }
+                else
+                {
+                    value = (T)snapshot.Value;
+                }
+            }
+
+            return false;
+        }
+        
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
@@ -89,56 +154,57 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _database.RootReference.Child(path).SetValueAsync(value);
     }
 
+    public void SaveTransactionData<T>(string path, object value)
+    {
+        _database.RootReference.Child(path).RunTransaction(data =>
+        {
+            object dataValue = data.Value ?? default(T);
+
+            if (typeof(T) == typeof(int))
+            {
+                int curValue = Convert.ToInt32(dataValue);
+                data.Value = curValue + (int)value;
+            }
+            else if (typeof(T) == typeof(long))
+            {
+                long curValue = Convert.ToInt64(dataValue);
+                data.Value = curValue + (long)value;
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                float curValue = Convert.ToSingle(dataValue);
+                data.Value = curValue + (float)value;
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                double curValue = Convert.ToDouble(dataValue);
+                data.Value = curValue + (double)value;
+            }
+            else
+            {
+                data.Value = value;
+            }
+
+            return TransactionResult.Success(data);
+        });
+    }
+
     public void SaveJsonData(string path, string json)
     {
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);
     }
 
-    public class CheckInitData
+    public bool CheckInit(string path, out int count)
     {
-        public string Path;
-        public Action<DataSnapshot> OnCompleted;
-    }
+        count = 0;
 
-    public void CheckInit(string path, Action<DataSnapshot> onCompleted)
-    {
-        CheckInitData data = new CheckInitData();
-        data.Path = path;
-        data.OnCompleted = onCompleted;
+        if (_isUserDataInit) return true;
 
-        _checkInitQueue.Enqueue(data);
+        DataSnapshot data = _rootDataSnapshot.Child(path);
 
-        if(_checkInitCoroutine == null)
-        {
-            _checkInitCoroutine = StartCoroutine(CheckInitCoroutine());
-        }
-    }
+        if(!data.Exists || !data.HasChildren) return true;
 
-    private IEnumerator CheckInitCoroutine()
-    {
-        while(_checkInitQueue.Count > 0)
-        {
-            CheckInitData data = _checkInitQueue.Dequeue();
-
-            Debug.LogWarning($"{data.Path} 경로 초기화 검색");
-
-            bool done = false;
-            var task = _database.RootReference.Child(data.Path).GetValueAsync();
-
-            yield return task;
-
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                Debug.LogWarning($"{data.Path} 경로 초기화 실패");
-                continue;
-            }
-
-            data.OnCompleted(task.Result);
-            done = true;
-
-            yield return _delay;
-        }
-
-        _checkInitCoroutine = null;
+        count = (int)data.ChildrenCount;
+        return false;
     }
 }

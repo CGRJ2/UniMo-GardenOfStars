@@ -43,7 +43,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
         Manager.buildings.workStatinLists.productGeneraters.Add(this);
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
 
@@ -126,8 +126,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
             if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 
-        _SpawnedProduct.owner = characterRD.gameObject;
-        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
+        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count, characterRD);
         //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
         characterRD.IngrediantStack.Push(_SpawnedProduct);
         _SpawnedProduct = null;

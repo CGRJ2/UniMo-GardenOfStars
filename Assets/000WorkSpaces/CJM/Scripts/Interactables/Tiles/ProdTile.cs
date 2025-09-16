@@ -33,9 +33,12 @@ public class ProdTile : InteractableBase
     IEnumerator WaitAndLoad()
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PurchasedBuildingID.IsInit);
+
+        //yield return new WaitForSeconds(1f);
 
         UpdateInstanceView();
     }
@@ -78,6 +81,8 @@ public class ProdTile : InteractableBase
         // 손에 다른 뭔가가 있다면 줍지 않게 만들기
         if (characterRD.IngrediantStack.Count > 0) return;
 
+        if (buildingItem == null) return;
+
         // 인스턴스 움직임 효과 정지
         floatTween?.Kill();
         rotateTween?.Kill();
@@ -85,13 +90,24 @@ public class ProdTile : InteractableBase
         rotateTween = null;
 
         // 플레이어 보유 스택에 올려주기
-        buildingItem.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
+        buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
         characterRD.IngrediantStack.Push(buildingItem);
+
+        // 건축모드 활성화
+        Manager.buildings.BuildModEvent?.Invoke(true);
     }
 
-    public override void Enter(CharaterRuntimeData characterRuntimeData)
+    public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
-        base.Enter(characterRuntimeData);
+        base.Enter_PersonalTask(characterRuntimeData);
+        
         PickUp();
+    }
+
+    protected override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+
+        StopAllCoroutines();
     }
 }

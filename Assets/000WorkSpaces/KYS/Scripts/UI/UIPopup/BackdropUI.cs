@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -27,7 +27,7 @@ namespace KYS
             
             // Backdrop 이미지 설정
             backdropImage.color = backdropColor;
-            backdropImage.raycastTarget = true;
+            backdropImage.raycastTarget = false; // 기본적으로 RaycastTarget 비활성화
             
         }
 
@@ -99,9 +99,17 @@ namespace KYS
         public void SetBackdropClickable(bool clickable)
         {
             enableBackdropClick = clickable;
+            SetRaycastTarget(clickable); // 클릭 가능할 때만 raycastTarget 활성화
+        }
+
+        /// <summary>
+        /// Backdrop RaycastTarget 설정
+        /// </summary>
+        public void SetRaycastTarget(bool enable)
+        {
             if (backdropImage != null)
             {
-                backdropImage.raycastTarget = clickable;
+                backdropImage.raycastTarget = enable;
             }
         }
     }

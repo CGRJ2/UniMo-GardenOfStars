@@ -247,6 +247,9 @@ namespace KYS
             OnDialogueNodeChanged?.Invoke(nodeId);
             OnDialogueStarted?.Invoke(dialogueData);
 
+            // 가운데 이미지 처리
+            ProcessCenterImage(dialogueData);
+
             return true;
         }
 
@@ -426,22 +429,23 @@ namespace KYS
                 return false;
             }
 
-            // 퀘스트 ID를 int로 변환
-            if (!int.TryParse(questId, out int questIdInt))
-            {
-                Debug.LogWarning($"[DialogueManager] 잘못된 퀘스트 ID 형식: {questId}");
-                return false;
-            }
+            // 250908 CYE -> 퀘스트 아이디 타입 변경으로 인한 주석처리(int -> string)
+            // // 퀘스트 ID를 int로 변환
+            // if (!int.TryParse(questId, out int questIdInt))
+            // {
+            //     Debug.LogWarning($"[DialogueManager] 잘못된 퀘스트 ID 형식: {questId}");
+            //     return false;
+            // }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._baseData._id == questIdInt);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
                 Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {questId}");
                 return false;
             }
 
-            bool isCompleted = quest._questState == QuestState.Completed;
+            bool isCompleted = quest.State == QuestState.Completed;
             Debug.Log($"[DialogueManager] 퀘스트 완료 체크: {questId} = {isCompleted}");
             return isCompleted;
         }
@@ -455,7 +459,8 @@ namespace KYS
             var parts = conditionValue.Split(':');
             if (parts.Length != 2) return false;
 
-            if (!int.TryParse(parts[0], out int questId) || !int.TryParse(parts[1], out int requiredProgress))
+            // if (!int.TryParse(parts[0], out int questId) || !int.TryParse(parts[1], out int requiredProgress))
+            if (!int.TryParse(parts[1], out int requiredProgress))
             {
                 Debug.LogWarning($"[DialogueManager] 잘못된 진행도 조건 형식: {conditionValue}");
                 return false;
@@ -468,20 +473,25 @@ namespace KYS
             }
 
             // 현재 퀘스트 목록에서 해당 퀘스트 찾기
-            var quest = QuestManager.Instance._currentQuestList?.FirstOrDefault(q => q._baseData._id == questId);
+            var quest = Manager.firebase.UserData.CurStageData.Npc.CurQuestData;
             if (quest == null)
             {
-                Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {questId}");
+                Debug.LogWarning($"[DialogueManager] 퀘스트를 찾을 수 없습니다: {parts[0]}");
                 return false;
             }
 
+            // 어떤 진행도인지 잘 모르겠어서 일단 1로 통일해두었습니다 :최재민
             // 퀘스트 진행도 계산 (완료된 진행도 항목 수 / 전체 진행도 항목 수 * 100)
-            int completedCount = quest._questProgresses.Count(p => p._currentState == QuestProgressState.Completed);
-            int totalCount = quest._questProgresses.Count;
+            // int completedCount = quest._progresses.Count(p => p.IsContentClear);
+            // int totalCount = quest._progresses.Count;
+
+            int completedCount = 1;
+            int totalCount = 1;
+
             int currentProgress = totalCount > 0 ? (completedCount * 100) / totalCount : 0;
 
             bool meetsRequirement = currentProgress >= requiredProgress;
-            Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {questId} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
+            Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {parts[0]} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
             return meetsRequirement;
         }
 
@@ -587,6 +597,86 @@ namespace KYS
 
             int completedCount = npcNodes.Count(n => IsNodeCompleted(n.Id));
             return (float)completedCount / npcNodes.Count;
+        }
+
+
+        public async void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000 )
+        {
+
+            try
+            {
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+
+                // 1. 튜토리얼 팝업 열기
+                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
+                var popup = popupObj.GetComponent<TutorialPopUp>();
+                popup.SetTutorialPosition(positionType);
+                popup.SetTutorialNode(nodeID);
+
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+
+                // 2. 3초 대기 후 자동 종료
+                await System.Threading.Tasks.Task.Delay(deley);
+
+                // 3. 플레이어 행동 완료 시뮬레이션
+                popup.CompleteTutorialAction();
+                Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 가운데 이미지 처리
+        /// </summary>
+        private void ProcessCenterImage(DialogueData dialogueData)
+        {
+            // StoryPanel 찾기
+            StoryPanel storyPanel = FindObjectOfType<StoryPanel>();
+            if (storyPanel == null)
+            {
+                Debug.LogWarning("[DialogueManager] StoryPanel을 찾을 수 없어 가운데 이미지를 표시할 수 없습니다.");
+                return;
+            }
+
+            // 가운데 이미지 표시 (빈 값이어도 ShowCenterImage 호출하여 기존 이미지 숨김)
+            storyPanel.ShowCenterImage(
+                dialogueData.CenterImage,
+                dialogueData.CenterImageDuration,
+                dialogueData.CenterImageFadeInTime,
+                dialogueData.CenterImageFadeOutTime,
+                dialogueData.HideCharacterImages,
+                dialogueData.CenterImageInfinite
+            );
+
+            if (enableDebugLogs)
+            {
+                string durationText = dialogueData.CenterImageInfinite ? "무한" : $"{dialogueData.CenterImageDuration}초";
+                Debug.Log($"[DialogueManager] 가운데 이미지 표시: {dialogueData.CenterImage}, " +
+                         $"지속시간: {durationText}, " +
+                         $"페이드인: {dialogueData.CenterImageFadeInTime}초, " +
+                         $"페이드아웃: {dialogueData.CenterImageFadeOutTime}초, " +
+                         $"캐릭터 숨김: {dialogueData.HideCharacterImages}");
+            }
+        }
+
+        /// <summary>
+        /// 가운데 이미지 수동 숨김
+        /// </summary>
+        public void HideCenterImage()
+        {
+            StoryPanel storyPanel = FindObjectOfType<StoryPanel>();
+            if (storyPanel != null)
+            {
+                storyPanel.ForceHideCenterImage();
+                if (enableDebugLogs)
+                {
+                    Debug.Log("[DialogueManager] 가운데 이미지 수동 숨김");
+                }
+            }
         }
 
         /// <summary>

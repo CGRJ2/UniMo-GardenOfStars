@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -25,8 +25,6 @@ public class GameManager : Singleton<GameManager>
     // 스테이지 데이터에 관한 딕셔너리 (CSV파일을 로드해서 스테이지 id별로 데이터를 저장해둔 공간)
     public Dictionary<string, StageData> stageDataDic = new();
 
-    // 현재 스테이지Id
-    public string curStageId;
 
     void Init()
     {
@@ -156,7 +154,7 @@ public class GameManager : Singleton<GameManager>
 
     public IEnumerator Temp_InGameLoad()
     {
-        Manager.game.curStageId = "Stage00";
+        //Manager.game.curStageId = "Stage00";
         Manager.ui.ShowLoadingScreen();
         yield return new WaitForSeconds(0.3f);  // 임시
 
@@ -167,5 +165,97 @@ public class GameManager : Singleton<GameManager>
         }
         yield return loadSceneHanlde;
         Manager.ui.HideLoadingScreen();
+    }
+}
+
+public class StageDataCsv : IUsableId
+{
+    public string Id;
+
+    public string Name_KR;
+    public string Name_En;
+
+    public Sprite WheelSprite;
+    public Sprite CenterSprite;
+
+    public int RequiredQuestIndex;
+
+    public string NextStageId;
+
+    public string GetId()
+    {
+        return Id;
+    }
+}
+
+public partial class DataManager
+{
+    [SerializeField] private bool _isStageAdressable = true;
+
+    // 구글 스프레드 시트 다운로드 주소
+    private const string _stageDataTableURL = "https://docs.google.com/spreadsheets/d/1CwrcyyODjYAwjCgYkofKQl815o-vOWkUH7yy6mdUtY4/export?format=csv&gid=0";
+
+    // Addressable 에셋 주소
+    private const string _stageAdress = "StageCsv";
+
+    public DataTableParser<StageDataCsv> Stage;
+    private async void StageRoutine()
+    {
+        string dataCsv;
+
+        if (_isStageAdressable)
+        {
+            dataCsv = await GetDataString(_isStageAdressable, _stageAdress);
+        }
+        else
+        {
+            dataCsv = await GetDataString(_isStageAdressable, _stageDataTableURL);
+        }
+
+        Stage = new DataTableParser<StageDataCsv>((words, dict) =>
+        {
+            StageDataCsv stage = new StageDataCsv();
+
+            stage.Id = words[dict["ID"]];
+
+            stage.Name_KR = words[dict["Name_Korean"]];
+            stage.Name_En = words[dict["Name_English"]];
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["WheelSprite"]]}", typeof(Sprite), out var locations)))
+            {
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("WheelSprite 로드 실패");
+                        return;
+                    }
+
+                    stage.WheelSprite = task.Result;
+                };*/
+            }
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["CenterSprite"]]}", typeof(Sprite), out var locations)))
+            {
+                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("CenterSprite 로드 실패");
+                        return;
+                    }
+
+                    stage.WheelSprite = task.Result;
+                };*/
+            }
+
+            int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
+
+            stage.NextStageId = words[dict["NextStageId"]];
+
+            return stage;
+        });
+
+        Stage.Load(dataCsv);
     }
 }

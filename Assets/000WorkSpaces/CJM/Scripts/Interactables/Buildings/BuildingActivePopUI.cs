@@ -7,7 +7,10 @@ public class BuildingActivePopUI : MonoBehaviour
 {
     BuildingInstance buildingInstance;
     [SerializeField] Button btn_Info;
-    [SerializeField] TMP_Text tmp_BtnState;
+    [SerializeField] Image image_BtnState;
+
+    [SerializeField] Sprite sprite_Info;
+    [SerializeField] Sprite sprite_Upgrade;
 
     public void Init(BuildingInstance buildingInstance)
     {
@@ -22,6 +25,7 @@ public class BuildingActivePopUI : MonoBehaviour
             btn_Info.onClick.AddListener(OpenInfoPanel_Harvest);
         }
     }
+
     public void OpenInfoPanel_Harvest()
     {
         if (UIManager.Instance == null)
@@ -95,11 +99,11 @@ public class BuildingActivePopUI : MonoBehaviour
 
     public void ActiveUpgradeBtnView()
     {
-        tmp_BtnState.text = "UP"; // 임시
+        image_BtnState.sprite = sprite_Upgrade;
     }
 
     public void ActiveInfoBtnView()
     {
-        tmp_BtnState.text = "!"; // 임시
+        image_BtnState.sprite = sprite_Info;
     }
 }

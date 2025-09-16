@@ -33,7 +33,7 @@ public class PlayerData : FirebaseData
 
         NegoLv = new FirebaseProperty<int>("NegoLv", Path, 1);
 
-        Money = new FirebaseProperty<int>("Money", Path);
+        Money = new FirebaseProperty<int>("Money", Path, 0, true);
 
         InitList.Add(MoveSpeedLv);
         InitList.Add(MaxCapacityLv);
@@ -113,6 +113,8 @@ public partial class DataManager
         Player = new DataTableParser<PlayerDataCsv>((words, dict) =>
         {
             PlayerDataCsv player = new PlayerDataCsv();
+
+            player.Id = words[dict["CharacterFixedID"]];
 
             float.TryParse(words[dict["BMSpeed"]], out player.BMSpeed);
             int.TryParse(words[dict["MaxSpeedLV"]], out player.MaxSpeedMaxLv);

@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 public class PlaceTile : InteractableBase
 {
-    [SerializeField] Slider progressBar;
-    public string tileId;
-
+    [SerializeField] CircularProgressUI progressBar;
+    [SerializeField] CanvasGroup activatedView;
+    [SerializeField] CanvasGroup deactivatedView;
+    public string tileId => gameObject.name;
 
     [SerializeField] float installingTime;
     [SerializeField] float progressedTime;
@@ -16,18 +17,29 @@ public class PlaceTile : InteractableBase
     [Header("상태 디버그용")]
     [SerializeField] PlaceTileState state;
 
+
+    string ownedBuildingID;
+
     private void Awake()
     {
-        StartCoroutine(WaitAndInit());
+        // 타이틀에서 스테이지 씬으로 전환될 때 실행
         //Init();
+
+        // 테스트용으로 바로 스테이지 씬에서 시작할 때 실행
+        StartCoroutine(WaitAndInit());
     }
 
     IEnumerator WaitAndInit()
     {
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.IsInit);
+
+        //yield return new WaitForSeconds(1f);
         Init();
     }
 
@@ -35,6 +47,13 @@ public class PlaceTile : InteractableBase
     {
         Debug.Log("스테이지 데이터 생성 후 초기화");
         progressBar.gameObject.SetActive(false);
+
+        // 초기화할 땐 비활성화 상태로
+        state = PlaceTileState.Deactivated;
+        UpdateViewByState();
+
+        // 건설영역 타일 View 이벤트 연동
+        Manager.buildings.BuildModEvent += OnBuildModChanged;
 
         // 데이터베이스에서 현재 스테이지 저장소에 본인이 있는지 체크, 없으면 데이터 생성
         PlaceTileData placeTileData = Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId);
@@ -45,24 +64,21 @@ public class PlaceTile : InteractableBase
         else
         {
             string buildingID = placeTileData.BuildingID.Value;
-
             // 건물 정보가 있는 타일이라면, 건물 인스턴스 생성해주기
             if (!string.IsNullOrEmpty(buildingID))
             {
                 Addressables.LoadAssetAsync<GameObject>(buildingID).Completed += task =>
                 {
                     GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
-                    ChangeState(PlaceTileState.Constructed); // `건설됨` 상태로 변경
+                    //ChangeState(PlaceTileState.Constructed); // `건설됨` 상태로 변경
                 };
             }
         }
     }
 
+
     IEnumerator ProgressingTask()
     {
-        // 정지 상태까지 대기했다가 작업 실행
-        //yield return new WaitUntil(() => !characterRD.IsMove.Value);
-
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             yield return null;
@@ -103,7 +119,7 @@ public class PlaceTile : InteractableBase
             }
 
             // 진행도 게이지 업데이트
-            progressBar.value = progressedTime / installingTime;
+            progressBar.SetValue(progressedTime / installingTime);
         }
 
         // 진행도 표기 비활성화
@@ -120,7 +136,6 @@ public class PlaceTile : InteractableBase
             () => Addressables.LoadAssetAsync<GameObject>(buildingItem.buildingId).Completed += task =>
         {
             GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
-            ChangeState(PlaceTileState.Constructed);
 
             // 배치 완료 시,
             // 건물 배치 정보 DB에 업데이트
@@ -130,31 +145,15 @@ public class PlaceTile : InteractableBase
 
             // 구매한 건물 ID => DB에서 초기화
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
+
+            // 건축모드 비활성화
+            Manager.buildings.BuildModEvent?.Invoke(false);
         });
     }
 
-    public void UpdateViewByState()
-    {
-        switch (state)
-        {
-            case PlaceTileState.Activated:
-                // 발판 보여주기
-                break;
+    
 
-            case PlaceTileState.Deactivated:
-            case PlaceTileState.Constructed:
-                // 발판 지우기
-                break;
-
-            default: break;
-        }
-    }
-
-    public void ChangeState(PlaceTileState tileState)
-    {
-        state = tileState;
-        UpdateViewByState();
-    }
+    
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
@@ -163,11 +162,73 @@ public class PlaceTile : InteractableBase
         if (state == PlaceTileState.Activated)
             StartCoroutine(ProgressingTask());
     }
+
+    protected override void OnDisableAdditionalActions()
+    {
+        base.OnDisableAdditionalActions();
+
+        StopAllCoroutines();
+    }
+
+    private void OnDestroy()
+    {
+        Manager.buildings.BuildModEvent -= OnBuildModChanged;
+    }
+
+    public void OnBuildModChanged(bool isBuildMod)
+    {
+        if (isBuildMod)
+        {
+            if (string.IsNullOrEmpty(GetBuildingID()))
+                state = PlaceTileState.Activated;
+            else
+                state = PlaceTileState.Constructed;
+        }
+        else
+        {
+            state = PlaceTileState.Deactivated;
+        }
+
+        UpdateViewByState();
+    }
+    public void UpdateViewByState()
+    {
+        switch (state)
+        {
+            case PlaceTileState.Deactivated: // 건설모드가 아님
+                activatedView.gameObject.SetActive(false);
+                deactivatedView.gameObject.SetActive(false);
+                break;
+
+            case PlaceTileState.Activated: // 건설모드 On && 건설 가능 영역
+                activatedView.gameObject.SetActive(true);
+                deactivatedView.gameObject.SetActive(false);
+                break;
+
+            case PlaceTileState.Constructed: // 건설모드 On && 건설 불가능 영역
+                activatedView.gameObject.SetActive(false);
+                deactivatedView.gameObject.SetActive(true);
+                break;
+
+            default: break;
+        }
+    }
+    string GetBuildingID()
+    {
+        PlaceTileData placeTileData = Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId);
+        string buildingID = placeTileData.BuildingID.Value;
+        if (!string.IsNullOrEmpty(buildingID))
+        {
+            return buildingID;
+        }
+        else return null;
+    }
+
 }
 
 public enum PlaceTileState
 {
-    Activated, Deactivated, Constructed
+    Deactivated, Activated, Constructed
 }
 
 public class PlaceTileData : FirebaseData

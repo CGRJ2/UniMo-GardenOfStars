@@ -7,9 +7,13 @@ using UnityEngine.AddressableAssets;
 public class ProdsArea : InteractableBase, IWorkStation
 {
     public bool isWorkable { get { return ProdsCount > 0; } }
-    public bool isReserved;
+    bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
-    public bool GetReserveState() { return isReserved; }
+    public bool GetReserveState() 
+    {
+        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.restrictedProdID; 
+        return isReserved; 
+    }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
     public Vector3 GetPosition() { return transform.position; }
 
@@ -52,7 +56,7 @@ public class ProdsArea : InteractableBase, IWorkStation
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
         IngrediantInstance _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
 
-        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count);
+        _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count, characterRD);
         //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
         characterRD.IngrediantStack.Push(_SpawnedProduct);
         ProdsCount -= 1;
@@ -85,7 +89,7 @@ public class ProdsArea : InteractableBase, IWorkStation
         base.Enter_PersonalTask(singleInteracter);
     }
 
-    public override void OnDisableAdditionalActions()
+    protected override void OnDisableAdditionalActions()
     {
         base.OnDisableAdditionalActions();
         Manager.buildings?.workStatinLists.prodsAreas?.Remove(this);

@@ -805,8 +805,6 @@ namespace KYS
         [ContextMenu("Task 사용")]
         public async System.Threading.Tasks.Task Temp_InGameLoadAsync()
         {
-            Manager.game.curStageId = "Stage00";
-
             // 완전체 로딩 시스템 사용 (자동 숨김 포함)
             await LoadSceneWithCompleteLoadingAsync("StageScene",
                 LoadingLocalizationKeys.STAGE_PREPARE,
@@ -826,8 +824,6 @@ namespace KYS
 
         public IEnumerator Temp_InGameLoad()
         {
-            Manager.game.curStageId = "Stage00";
-
             // 완전체 로딩 시스템 사용 (자동 숨김 포함)
             yield return StartCoroutine(LoadSceneWithCompleteLoading("StageScene",
                 LoadingLocalizationKeys.STAGE_PREPARE,
@@ -964,12 +960,12 @@ namespace KYS
         }
 
 
-        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        [ContextMenu("대화 시스템 로드 테스트 tutorial_scn001")]
         public void Temp_DialogueSystemTest()
         {
 
 
-           Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "tutorial_scn001");
         }
 
 
@@ -987,8 +983,128 @@ namespace KYS
 
         [ContextMenu("대화 시스템 로드 테스트 NPC004")]
         public void Temp_DialogueSystemTest4()
-            {
+        {
             Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
+        }
+
+
+        [ContextMenu("TutorialPopUpAfterActionClose")]
+        public async void Temp_DialogueSystemTest6()
+        {
+            try
+            {
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+
+                // 1. 튜토리얼 팝업 열기
+                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
+                var popup = popupObj.GetComponent<TutorialPopUp>();
+                popup.SetTutorialPosition(TutorialPopUp.TutorialPositionType.Top);
+                popup.SetTutorialNode("npc001_quest0001");
+
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+
+                // 2. 3초 대기 후 자동 종료
+                await System.Threading.Tasks.Task.Delay(3000);
+
+                // 3. 플레이어 행동 완료 시뮬레이션
+                popup.CompleteTutorialAction();
+                Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+
+                // 4. 2초 대기 후 강제 종료
+                await System.Threading.Tasks.Task.Delay(2000);
+                popup.ForceEndTutorial();
+                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 강제 종료");
+
+                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 완료");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+            }
+        }
+
+        [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
+        public void Temp_ShowHUDUI()
+        {
+
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+        }
+
+        [ContextMenu("ShowHUDUI 활용 Toturial UI 활성화")]
+        public void Temp_ShowTutorialHUD()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToTutorialProgressMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
+            }
+        }
+
+        [ContextMenu("ShowHUDUI 활용 일반 UI 활성화")]
+        public void Temp_HideHUDUI()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToNormalMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
+            }
+        }
+
+
+
+        [ContextMenu("CheckPopUp 메시지 주입 확인")]
+        public void OnSaveButtonClicked()
+        {
+            Manager.ui.ShowConfirmPopUpAsync("저장하시겠습니까?", "저장", "취소",
+                () =>
+                {
+                    Debug.Log("저장 실행");
+                    // 저장 로직
+                },
+                () =>
+                {
+                    Debug.Log("저장 취소");
+                });
+        }
+
+        [ContextMenu("MessagePopUp 메시지 주입 확인")]
+        public void OnMessagePopUpTest()
+        {
+            // MessagePopUp 테스트용 메서드
+            UIManager.Instance.ShowMessagePopUpAsync("메시지 내용", () =>
+            {
+                Debug.Log("팝업이 닫혔습니다.");
+            });
+
+
+        }
+
+        [ContextMenu("ShowPopUpAsync 메시지 키로 주입 확인")]
+        public void OnMessagePopUpTest2()
+        {
+            // MessagePopUp 테스트용 메서드
+            Manager.ui.ShowMessagePopUpWithKeyAsync("stage_prepare", () =>
+            {
+                Debug.Log("이게 되네");
+            });
         }
     }
 }
