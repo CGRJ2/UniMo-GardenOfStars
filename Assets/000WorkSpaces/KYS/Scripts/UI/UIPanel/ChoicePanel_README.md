@@ -266,6 +266,6 @@ public void DisableAllChoices()
 ---
 
 **버전**: 2.0  
-**최종 업데이트**: 2025년 8월  
+**최종 업데이트**: 2025년 9월 15일  
 **Unity 버전**: 2022.3 LTS 이상  
 **주요 기능**: 풀링 시스템, SetActive(false) 관리, 고급 제어 기능

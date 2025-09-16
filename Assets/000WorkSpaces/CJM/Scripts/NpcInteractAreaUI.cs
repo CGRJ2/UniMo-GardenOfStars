@@ -1,4 +1,3 @@
-using KYS;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +13,10 @@ public class NpcInteractAreaUI : MonoBehaviour
 
     public void StartConversation()
     {
-        
+        //if ()
+        //Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+
+        /*if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            TutorialManager.Instance.tutorialNPC.UpdateQuestData();*/
     }
 }

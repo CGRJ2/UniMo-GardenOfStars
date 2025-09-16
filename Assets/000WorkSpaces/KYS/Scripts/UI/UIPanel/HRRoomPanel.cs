@@ -19,6 +19,9 @@ namespace KYS
         private TextMeshProUGUI runMoneyButtonText => GetUI<TextMeshProUGUI>(runMoneyButtonTextName);
         private Button closeButton => GetUI<Button>(closeButtonName);
 
+        // 이벤트 핸들러 저장용
+        private System.Action<UnityEngine.EventSystems.PointerEventData> closeButtonHandler;
+
         protected override void Awake()
         {
             base.Awake();
@@ -64,11 +67,19 @@ namespace KYS
 
         private void SetupButtons()
         {
-            // CloseButton 이벤트 설정
-            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+            // CloseButton 이벤트 설정 (중복 등록 방지)
+            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
-                closeEventHandler.Click += (data) => OnCloseButtonClicked();
+                // 기존 이벤트 해제
+                if (closeButtonHandler != null)
+                {
+                    closeEventHandler.Click -= closeButtonHandler;
+                }
+                
+                // 새 이벤트 핸들러 생성 및 등록
+                closeButtonHandler = (data) => OnCloseButtonClicked();
+                closeEventHandler.Click += closeButtonHandler;
             }
         }
 

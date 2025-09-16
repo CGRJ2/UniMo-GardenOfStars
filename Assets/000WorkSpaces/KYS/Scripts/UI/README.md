@@ -8,7 +8,7 @@
 5. [InfoHUD 시스템](#infohud-시스템)
 6. [중복 생성 방지](#중복-생성-방지)
 7. [로컬라이제이션](#로컬라이제이션)
-8. [포인터 핸들러 사용법](#포인터-핸들러-사용법)
+8. [MVP 패턴 사용 (선택적)](#mvp-패턴-사용-선택적)
 9. [Addressable 설정](#addressable-설정)
 10. [SafeArea 설정](#safearea-설정)
 11. [예제](#예제)
@@ -70,33 +70,77 @@ public class UIManager : Singleton<UIManager>
 {
     // Addressable 기반 UI 로드
     public async Task<T> LoadUIAsync<T>(string addressableKey);
+    public async Task<T> LoadUIAsync<T>(AssetReferenceGameObject reference);
     
     // 패널/팝업 관리 (중복 생성 방지 포함)
-    public void OpenPanel(BaseUI panel);
+    public async Task<T> ShowPanelAsync<T>(System.Action<T> onComplete = null);
+    public async Task<T> ShowPopUpAsync<T>(System.Action<T> onComplete = null);
     public void ClosePanel();
-    public void OpenPopup(BaseUI popup);
     public void ClosePopup();
+    
+    // LoadingScreen 관리
+    public async Task<LoadingScreen> ShowLoadingScreenAsync(string message = null);
+    public void HideLoadingScreen();
     
     // InfoHUD 전용 관리
     public async Task<T> ShowSingleInfoHUDAsync<T>(Vector2 screenPosition, string title, string description, Sprite icon);
     public bool DestroyAllInfoHUDs();
+    
+    // Stack 관리
+    public void CloseAllPanels();
+    public void CloseAllPopups();
+    public void CleanAllUI();
+    
+    // Backdrop 관리
+    public void ShowBackdrop(Color? color = null);
+    public void HideBackdrop();
 }
 ```
 
 ### BaseUI
 ```csharp
-// 모든 UI의 기본 클래스
+// 모든 UI의 기본 클래스 (MVP 패턴 지원)
 public class BaseUI : MonoBehaviour, IUIView
 {
-    [SerializeField] protected UILayerType layerType;
-    [SerializeField] protected bool canCloseWithESC = true;
+    [Header("UI Layer Settings")]
+    [SerializeField] protected UILayerType layerType = UILayerType.Panel;
+    [SerializeField] protected UIPanelGroup panelGroup = UIPanelGroup.Other;
     
-    // UI 요소 접근
+    [Header("UI Animation Settings")]
+    [SerializeField] protected bool useAnimation = true;
+    [SerializeField] protected bool useShowAnimation = true;
+    [SerializeField] protected bool useHideAnimation = true;
+    [SerializeField] protected float animationDuration = 0.3f;
+    
+    [Header("UI Behavior Settings")]
+    [SerializeField] protected bool canCloseWithESC = false;
+    [SerializeField] protected bool canCloseWithBackdrop = false;
+    [SerializeField] protected bool hidePreviousUI = false;
+    [SerializeField] protected bool disablePreviousUI = false;
+    [SerializeField] protected bool createBackdropForPopup = false;
+    
+    // UI 요소 접근 (캐시된 결과 반환)
     public T GetUI<T>(string name) where T : Component;
     public GameObject GetUI(string name);
+    public PointerHandler GetEvent(string name);
+    public PointerHandler GetEventWithSFX(string name, string sfxKey = null);
     
     // 자동 로컬라이제이션
     protected virtual string[] GetAutoLocalizeKeys();
+    
+    // MVP 패턴 지원
+    public void SetPresenter(IUIPresenter presenter);
+    public void SetModel(IUIModel model);
+    
+    // 애니메이션 제어
+    protected virtual void PlayShowAnimation();
+    protected virtual void PlayHideAnimation(System.Action onComplete = null);
+    
+    // Properties
+    public UILayerType LayerType => layerType;
+    public UIPanelGroup PanelGroup => panelGroup;
+    public bool CanCloseWithESC => canCloseWithESC;
+    public bool IsActive => gameObject.activeInHierarchy;
 }
 ```
 
@@ -212,21 +256,58 @@ public async Task<T> ShowSingleInfoHUDAsync<T>(Vector2 screenPosition, string ti
 
 ### 사용법
 
+#### 1. 패널 표시
 ```csharp
-// 패널 중복 생성 방지
-public static void ShowTitlePanel()
-{
-    if (UIManager.Instance != null)
+// 기본 패널 표시
+UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
+    if (panel != null)
     {
-        // 중복 확인 후 생성
-        UIManager.Instance.ShowPanelAsync<TitlePanel>((panel) => {
-            if (panel != null)
-            {
-                Debug.Log("TitlePanel 표시됨");
-            }
-        });
+        Debug.Log("TitlePanel 표시됨");
     }
-}
+});
+
+// 콜백 없이 패널 표시
+var panel = await UIManager.Instance.ShowPanelAsync<SettingsPanel>();
+```
+
+#### 2. 팝업 표시
+```csharp
+// 기본 팝업 표시
+UIManager.Instance.ShowPopUpAsync<MessagePopUp>((popup) => {
+    popup?.SetMessage("안녕하세요!");
+});
+
+// 콜백 없이 팝업 표시
+var popup = await UIManager.Instance.ShowPopUpAsync<CheckPopUp>();
+```
+
+#### 3. LoadingScreen 사용
+```csharp
+// 로딩 화면 표시
+var loadingScreen = await UIManager.Instance.ShowLoadingScreenAsync("데이터 로딩 중...");
+
+// 로딩 완료 후 숨기기
+UIManager.Instance.HideLoadingScreen();
+```
+
+#### 4. InfoHUD 사용
+```csharp
+// InfoHUD 표시
+await UIManager.Instance.ShowSingleInfoHUDAsync<TouchInfoHUD>(
+    screenPosition, 
+    "오브젝트 이름", 
+    "오브젝트 설명", 
+    iconSprite
+);
+```
+
+#### 5. Backdrop 관리
+```csharp
+// Backdrop 표시
+UIManager.Instance.ShowBackdrop(new Color(0, 0, 0, 0.5f));
+
+// Backdrop 숨기기
+UIManager.Instance.HideBackdrop();
 ```
 
 ## 🌐 로컬라이제이션
@@ -271,110 +352,108 @@ public string GetLocalizedLanguageName(SystemLanguage language)
 
 ### 사용법
 
+#### 1. 기본 로컬라이제이션
 ```csharp
 // 수동 로컬라이제이션
-string translatedText = LocalizationManager.Instance.GetLocalizedText("ui_title");
+string translatedText = LocalizationManager.Instance.GetText("ui_title");
 
 // 언어 설정
 LocalizationManager.Instance.SetLanguage(SystemLanguage.English);
 
-// 언어별 언어명 가져오기
-string koreanName = LocalizationManager.Instance.GetLocalizedLanguageName(SystemLanguage.Korean);
-// 한국어 환경: "한국어"
-// 영어 환경: "Korean"
+// 언어 변경 이벤트 구독
+LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
 ```
 
-## 📖 사용법
-
-### 1. 기본 UI 로드 및 표시
-
+#### 2. CSV 기반 로컬라이제이션
 ```csharp
-// Addressable 키로 UI 로드
-BaseUI mainMenu = await UIManager.Instance.LoadUIAsync<BaseUI>("UI/Panel/MainMenu");
-UIManager.Instance.OpenPanel(mainMenu);
+// CSV 파일에서 로컬라이제이션 데이터 로드
+// Assets/StreamingAssets/Localization/ 폴더에 CSV 파일 배치
+// 예: Localization_Korean.csv, Localization_English.csv
 
-// AssetReference로 UI 로드
-BaseUI settings = await UIManager.Instance.LoadUIAsync<BaseUI>(settingsReference);
-UIManager.Instance.OpenPanel(settings);
+// 자동 로컬라이제이션 키 생성 규칙
+// UI 요소 이름에서 "Text" 접미사 제거 후 소문자 변환
+// "TitleText" → "ui_title"
+// "ConfirmButtonText" → "ui_confirmbutton"
 ```
 
-### 2. 팝업 표시
-
+#### 3. 다국어 지원
 ```csharp
-// 제네릭 팝업
-UIManager.Instance.ShowPopUpAsync<MessagePopup>((popup) => {
-    if (popup != null) {
-        popup.SetMessage("메시지입니다.");
-    }
-});
+// 지원 언어 목록
+SystemLanguage[] supportedLanguages = {
+    SystemLanguage.Korean,
+    SystemLanguage.English,
+    SystemLanguage.Chinese,
+    SystemLanguage.Japanese
+};
 
-// 확인 팝업
-UIManager.Instance.ShowConfirmPopUpAsync(
-    "정말 삭제하시겠습니까?",
-    "확인",
-    "취소",
-    () => Debug.Log("확인됨"),
-    () => Debug.Log("취소됨")
-);
+// 현재 언어 확인
+SystemLanguage currentLanguage = LocalizationManager.Instance.CurrentLanguage;
+
+// 언어 변경
+LocalizationManager.Instance.SetLanguage(SystemLanguage.English);
 ```
 
-### 3. BaseUI 상속하여 커스텀 UI 만들기
 
-```csharp
-public class CustomPanel : BaseUI
-{
-    [SerializeField] private TextMeshProUGUI titleText;
-    [SerializeField] private Button closeButton;
-    
-    protected override void Awake()
-    {
-        base.Awake();
-        SetupUI();
-    }
-    
-    private void SetupUI()
-    {
-        // UI 요소 설정
-        closeButton.onClick.AddListener(() => Hide());
-    }
-    
-    public void SetTitle(string title)
-    {
-        if (titleText != null)
-            titleText.text = title;
-    }
-}
-```
-
-### 4. MVP 패턴 사용 (선택적)
+## 🏗️ MVP 패턴 사용 (선택적)
 
 현재 프로젝트에서는 **선택적으로 MVP 패턴을 사용**합니다:
 
-#### **간단한 UI (View만 사용) - 권장**
+### **간단한 UI (View만 사용) - 권장**
 ```csharp
 // MenuPopUp.cs - View만 사용 (현재 대부분의 UI)
 public class MenuPopUp : BaseUI
 {
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button settingsButton;
+    
+    protected override void Awake()
+    {
+        base.Awake();
+        SetupButtons();
+    }
+    
+    private void SetupButtons()
+    {
+        startButton.onClick.AddListener(OnStartButtonClicked);
+        settingsButton.onClick.AddListener(OnSettingsButtonClicked);
+    }
+    
     private void OnStartButtonClicked()
     {
         Debug.Log("[MenuPopUp] 시작 버튼 클릭");
         Manager.ui.ClosePopup();
     }
+    
+    private void OnSettingsButtonClicked()
+    {
+        Debug.Log("[MenuPopUp] 설정 버튼 클릭");
+        // 설정 패널 열기
+    }
 }
 ```
 
-#### **복잡한 UI (MVP 전체 사용) - 필요시에만**
+### **복잡한 UI (MVP 전체 사용) - 필요시에만**
 ```csharp
 // Model
 public class GameDataModel : BaseUIModel
 {
     public int Score { get; private set; }
+    public int Level { get; private set; }
     public event Action<int> OnScoreChanged;
+    public event Action<int> OnLevelChanged;
     
     public void AddScore(int points)
     {
         Score += points;
         OnScoreChanged?.Invoke(Score);
+        
+        // 레벨업 체크
+        int newLevel = Score / 1000;
+        if (newLevel > Level)
+        {
+            Level = newLevel;
+            OnLevelChanged?.Invoke(Level);
+        }
     }
 }
 
@@ -390,11 +469,18 @@ public class GameUIPresenter : BaseUIPresenter
         model = GetModel<GameDataModel>();
         
         model.OnScoreChanged += OnScoreChanged;
+        model.OnLevelChanged += OnLevelChanged;
     }
     
     private void OnScoreChanged(int newScore)
     {
         view.UpdateScore(newScore);
+    }
+    
+    private void OnLevelChanged(int newLevel)
+    {
+        view.UpdateLevel(newLevel);
+        view.ShowLevelUpEffect();
     }
 }
 
@@ -402,321 +488,32 @@ public class GameUIPresenter : BaseUIPresenter
 public class GameUI : BaseUI
 {
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private GameObject levelUpEffect;
     
     public void UpdateScore(int score)
     {
         if (scoreText != null)
             scoreText.text = $"Score: {score}";
     }
-}
-```
-
-#### **사용 기준**
-- **간단한 UI**: 버튼 클릭만, 데이터 저장/로드 없음 → View만 사용
-- **복잡한 UI**: 데이터 저장/로드, 복잡한 비즈니스 로직 → MVP 전체 사용
-
-## 🖱️ 포인터 핸들러 사용법
-
-### 1. 포인터 핸들러 개요
-
-`PointerHandler`는 Unity UI 이벤트를 간편하게 처리할 수 있도록 도와주는 컴포넌트입니다. BaseUI에서 제공하는 메서드들을 통해 다양한 포인터 이벤트를 쉽게 처리할 수 있습니다.
-
-### 2. 기본 사용법
-
-```csharp
-public class MyUI : BaseUI
-{
-    protected override void Awake()
+    
+    public void UpdateLevel(int level)
     {
-        base.Awake();
-        SetupPointerEvents();
+        if (levelText != null)
+            levelText.text = $"Level: {level}";
     }
     
-    private void SetupPointerEvents()
+    public void ShowLevelUpEffect()
     {
-        // 클릭 이벤트
-        GetEvent("Button").Click += (data) => OnButtonClicked();
-        
-        // 드래그 이벤트
-        GetEvent("DraggablePanel").BeginDrag += (data) => OnBeginDrag(data);
-        GetEvent("DraggablePanel").Drag += (data) => OnDrag(data);
-        GetEvent("DraggablePanel").EndDrag += (data) => OnEndDrag(data);
-        
-        // 호버 이벤트
-        GetEvent("HoverButton").Enter += (data) => OnButtonHover();
-        GetEvent("HoverButton").Exit += (data) => OnButtonExit();
-    }
-    
-    private void OnButtonClicked()
-    {
-        Debug.Log("버튼이 클릭되었습니다!");
-    }
-    
-    private void OnBeginDrag(PointerEventData data)
-    {
-        Debug.Log("드래그 시작");
-    }
-    
-    private void OnDrag(PointerEventData data)
-    {
-        // 드래그 중 처리
-        transform.position += (Vector3)data.delta;
-    }
-    
-    private void OnEndDrag(PointerEventData data)
-    {
-        Debug.Log("드래그 종료");
-    }
-    
-    private void OnButtonHover()
-    {
-        Debug.Log("버튼에 마우스가 올라갔습니다");
-    }
-    
-    private void OnButtonExit()
-    {
-        Debug.Log("마우스가 버튼에서 벗어났습니다");
+        if (levelUpEffect != null)
+            levelUpEffect.SetActive(true);
     }
 }
 ```
 
-### 3. SFX가 포함된 이벤트 처리
-
-```csharp
-private void SetupSFXEvents()
-{
-    // 클릭 사운드와 함께 이벤트 처리
-    GetEventWithSFX("ConfirmButton", "SFX_ButtonClick").Click += (data) => OnConfirmClicked();
-    
-    // 뒤로가기 사운드와 함께 이벤트 처리
-    GetBackEvent("BackButton", "SFX_ButtonBack").Click += (data) => OnBackClicked();
-    
-    // 기본 사운드 사용
-    GetEventWithSFX("MenuButton").Click += (data) => OnMenuClicked();
-}
-```
-
-### 4. 자체 이벤트 처리
-
-```csharp
-private void SetupSelfEvents()
-{
-    // UI 자체에 이벤트 처리
-    GetSelfEvent().Click += (data) => OnUIClicked();
-    GetSelfEvent().Enter += (data) => OnUIHover();
-    GetSelfEvent().Exit += (data) => OnUIExit();
-}
-
-private void OnUIClicked()
-{
-    Debug.Log("UI 자체가 클릭되었습니다");
-}
-
-private void OnUIHover()
-{
-    Debug.Log("UI에 마우스가 올라갔습니다");
-}
-
-private void OnUIExit()
-{
-    Debug.Log("마우스가 UI에서 벗어났습니다");
-}
-```
-
-### 5. 동적 UI 요소에 이벤트 추가
-
-```csharp
-public class DynamicUIExample : BaseUI
-{
-    private void CreateDynamicButton()
-    {
-        // 동적으로 버튼 생성
-        GameObject button = new GameObject("DynamicButton");
-        button.transform.SetParent(transform);
-        
-        // UI 요소로 등록
-        AddUIToDictionary(button);
-        
-        // 이벤트 추가
-        GetEvent("DynamicButton").Click += (data) => OnDynamicButtonClicked();
-    }
-    
-    private void OnDynamicButtonClicked()
-    {
-        Debug.Log("동적 버튼이 클릭되었습니다!");
-    }
-}
-```
-
-### 6. 고급 이벤트 처리
-
-```csharp
-public class AdvancedUIExample : BaseUI
-{
-    private void SetupAdvancedEvents()
-    {
-        // 여러 이벤트를 한 번에 처리
-        var buttonHandler = GetEvent("AdvancedButton");
-        buttonHandler.Click += OnButtonClick;
-        buttonHandler.Enter += OnButtonEnter;
-        buttonHandler.Exit += OnButtonExit;
-        buttonHandler.Down += OnButtonDown;
-        buttonHandler.Up += OnButtonUp;
-        
-        // 드래그 가능한 패널
-        var panelHandler = GetEvent("DraggablePanel");
-        panelHandler.BeginDrag += OnBeginDrag;
-        panelHandler.Drag += OnDrag;
-        panelHandler.EndDrag += OnEndDrag;
-    }
-    
-    private void OnButtonClick(PointerEventData data)
-    {
-        Debug.Log($"버튼 클릭: {data.position}");
-    }
-    
-    private void OnButtonEnter(PointerEventData data)
-    {
-        // 호버 효과
-        transform.localScale = Vector3.one * 1.1f;
-    }
-    
-    private void OnButtonExit(PointerEventData data)
-    {
-        // 호버 효과 제거
-        transform.localScale = Vector3.one;
-    }
-    
-    private void OnButtonDown(PointerEventData data)
-    {
-        // 버튼 누름 효과
-        transform.localScale = Vector3.one * 0.95f;
-    }
-    
-    private void OnButtonUp(PointerEventData data)
-    {
-        // 버튼 놓음 효과
-        transform.localScale = Vector3.one;
-    }
-}
-```
-
-### 7. 이벤트 정리
-
-```csharp
-protected override void OnDestroy()
-{
-    base.OnDestroy();
-    
-    // 이벤트 정리
-    var buttonHandler = GetEvent("Button");
-    if (buttonHandler != null)
-    {
-        buttonHandler.Click -= OnButtonClicked;
-        buttonHandler.Enter -= OnButtonEnter;
-        buttonHandler.Exit -= OnButtonExit;
-    }
-}
-```
-
-### 8. 포인터 핸들러 메서드 목록
-
-**BaseUI에서 제공하는 메서드들:**
-
-```csharp
-// 기본 이벤트 처리
-GetEvent(string name)                    // 특정 UI 요소의 이벤트 핸들러
-GetSelfEvent()                          // UI 자체의 이벤트 핸들러
-
-// SFX가 포함된 이벤트 처리
-GetEventWithSFX(string name, string soundName = null)  // 클릭 사운드와 함께
-GetBackEvent(string name, string soundName = null)     // 뒤로가기 사운드와 함께
-
-// 지원하는 이벤트 타입
-Click      // 클릭
-Up         // 마우스/터치 업
-Down       // 마우스/터치 다운
-Enter      // 포인터 진입
-Exit       // 포인터 나감
-Move       // 포인터 이동
-BeginDrag  // 드래그 시작
-Drag       // 드래그 중
-EndDrag    // 드래그 종료
-```
-
-### 9. 실제 사용 예제
-
-```csharp
-public class GameMenuPanel : BaseUI
-{
-    protected override void Awake()
-    {
-        base.Awake();
-        SetupMenuEvents();
-    }
-    
-    private void SetupMenuEvents()
-    {
-        // 메뉴 버튼들
-        GetEventWithSFX("StartButton").Click += (data) => OnStartGame();
-        GetEventWithSFX("SettingsButton").Click += (data) => OnOpenSettings();
-        GetEventWithSFX("ExitButton").Click += (data) => OnExitGame();
-        
-        // 뒤로가기 버튼
-        GetBackEvent("BackButton").Click += (data) => OnBackClicked();
-        
-        // 호버 효과가 있는 버튼들
-        GetEvent("StartButton").Enter += (data) => OnButtonHover("StartButton");
-        GetEvent("StartButton").Exit += (data) => OnButtonExit("StartButton");
-        
-        GetEvent("SettingsButton").Enter += (data) => OnButtonHover("SettingsButton");
-        GetEvent("SettingsButton").Exit += (data) => OnButtonExit("SettingsButton");
-    }
-    
-    private void OnStartGame()
-    {
-        Debug.Log("게임 시작!");
-        // 게임 시작 로직
-    }
-    
-    private void OnOpenSettings()
-    {
-        Debug.Log("설정 열기!");
-        // 설정 패널 열기
-    }
-    
-    private void OnExitGame()
-    {
-        Debug.Log("게임 종료!");
-        // 게임 종료 로직
-    }
-    
-    private void OnBackClicked()
-    {
-        Debug.Log("뒤로가기!");
-        Hide();
-    }
-    
-    private void OnButtonHover(string buttonName)
-    {
-        // 호버 효과
-        GetUI<Image>(buttonName).color = Color.yellow;
-    }
-    
-    private void OnButtonExit(string buttonName)
-    {
-        // 호버 효과 제거
-        GetUI<Image>(buttonName).color = Color.white;
-    }
-}
-```
-
-### 10. 주의사항
-
-1. **이벤트 정리**: UI가 파괴될 때 반드시 이벤트를 정리해야 합니다.
-2. **성능 고려**: 많은 UI 요소에 이벤트를 추가할 때는 성능을 고려해야 합니다.
-3. **메모리 누수 방지**: 람다 표현식을 사용할 때는 클로저로 인한 메모리 누수를 주의해야 합니다.
-4. **UI 요소 등록**: 동적으로 생성한 UI 요소는 `AddUIToDictionary()`로 등록해야 합니다.
+### **사용 기준**
+- **간단한 UI**: 버튼 클릭만, 데이터 저장/로드 없음 → **View만 사용 (권장)**
+- **복잡한 UI**: 데이터 저장/로드, 복잡한 비즈니스 로직 → **MVP 전체 사용**
 
 ## ⚙️ Addressable 설정
 
@@ -747,11 +544,20 @@ UI/Canvas/PopupCanvas
 UI/Canvas/LoadingCanvas
 UI/HUD/StatusPanel
 UI/Panel/MainMenu
-UI/Panel/Settings
 UI/Popup/MessagePopup
-UI/Popup/CheckPopUp
 UI/Loading/LoadingScreen
 ```
+
+### 4. Addressable 그룹 설정
+
+```
+UI_Canvas/          # Canvas 프리팹들
+UI_HUD/            # HUD 프리팹들
+UI_Panel/          # Panel 프리팹들
+UI_Popup/          # Popup 프리팹들
+UI_Loading/        # Loading 프리팹들
+```
+
 
 ## 📱 SafeArea 설정
 
@@ -806,6 +612,7 @@ public class SettingsPanel : BaseUI
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private Button applyButton;
+    [SerializeField] private Button closeButton;
     
     protected override void Awake()
     {
@@ -815,29 +622,107 @@ public class SettingsPanel : BaseUI
     
     private void SetupControls()
     {
-        applyButton.onClick.AddListener(() => {
-            // 설정 적용 로직
-            Hide();
-        });
+        // 슬라이더 값 변경 이벤트
+        bgmSlider.onValueChanged.AddListener(OnBGMVolumeChanged);
+        sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+        
+        // 토글 변경 이벤트
+        fullscreenToggle.onValueChanged.AddListener(OnFullscreenToggled);
+        
+        // 버튼 이벤트
+        applyButton.onClick.AddListener(OnApplyButtonClicked);
+        closeButton.onClick.AddListener(OnCloseButtonClicked);
+    }
+    
+    private void OnBGMVolumeChanged(float value)
+    {
+        // BGM 볼륨 설정
+        AudioManager.Instance.SetBGMVolume(value);
+    }
+    
+    private void OnSFXVolumeChanged(float value)
+    {
+        // SFX 볼륨 설정
+        AudioManager.Instance.SetSFXVolume(value);
+    }
+    
+    private void OnFullscreenToggled(bool isFullscreen)
+    {
+        // 전체화면 토글
+        Screen.fullScreen = isFullscreen;
+    }
+    
+    private void OnApplyButtonClicked()
+    {
+        // 설정 저장
+        SaveSettings();
+        Hide();
+    }
+    
+    private void OnCloseButtonClicked()
+    {
+        Hide();
+    }
+    
+    private void SaveSettings()
+    {
+        // 설정 저장 로직
+        PlayerPrefs.SetFloat("BGMVolume", bgmSlider.value);
+        PlayerPrefs.SetFloat("SFXVolume", sfxSlider.value);
+        PlayerPrefs.SetInt("Fullscreen", fullscreenToggle.isOn ? 1 : 0);
     }
 }
 ```
 
-### 3. 로딩 화면
+### 3. LoadingScreen (DoTween 애니메이션 포함)
 
 ```csharp
 public class LoadingScreen : BaseUI
 {
     [SerializeField] private Slider progressSlider;
     [SerializeField] private TextMeshProUGUI progressText;
+    [SerializeField] private TextMeshProUGUI loadingMessageText;
+    [SerializeField] private Image loadingIcon;
     
     public void SetProgress(float progress)
     {
         if (progressSlider != null)
-            progressSlider.value = progress;
+        {
+            // DoTween으로 부드러운 진행률 애니메이션
+            progressSlider.DOValue(progress, 0.3f).SetEase(Ease.OutQuad);
+        }
         
         if (progressText != null)
+        {
             progressText.text = $"{progress * 100:F0}%";
+        }
+    }
+    
+    public void SetLoadingMessage(string message)
+    {
+        if (loadingMessageText != null)
+        {
+            loadingMessageText.text = message;
+        }
+    }
+    
+    public void StartLoadingIconAnimation()
+    {
+        if (loadingIcon != null)
+        {
+            // 회전 애니메이션
+            loadingIcon.transform.DORotate(new Vector3(0, 0, -360), 1f, RotateMode.FastBeyond360)
+                .SetLoops(-1, LoopType.Restart)
+                .SetEase(Ease.Linear);
+        }
+    }
+    
+    public void StopLoadingIconAnimation()
+    {
+        if (loadingIcon != null)
+        {
+            loadingIcon.transform.DOKill();
+        }
     }
 }
 ```
@@ -967,20 +852,39 @@ Assets/000WorkSpaces/KYS/Scripts/UI/
 │   ├── IUIModel.cs           # Model 인터페이스
 │   ├── BaseUIPresenter.cs    # 기본 Presenter
 │   └── BaseUIModel.cs        # 기본 Model
-├── Localization/
+├── UILocalization/
 │   ├── LocalizationManager.cs # 로컬라이제이션 관리 (언어별 언어명 포함)
 │   ├── AutoLocalizedText.cs  # 자동 로컬라이제이션 컴포넌트
-│   └── LanguageSettingsPanel.cs # 언어 설정 패널
+│   ├── LanguageSettingsPanel.cs # 언어 설정 패널
+│   └── Comprehensive_Localization_Guide.md # 통합된 로컬라이제이션 가이드
 ├── UIHUD/
 │   ├── TouchInfoHUD.cs       # 터치 기반 정보 HUD
 │   ├── TouchInfoManager.cs   # 터치 감지 및 HUD 관리
 │   ├── HUDBackdropUI.cs      # HUD용 Backdrop
-│   └── HUDAllPanel.cs        # 전체 HUD 패널
+│   ├── HUDAllPanel.cs        # 전체 HUD 패널
+│   └── LayerSpecificHUD_Usage_Guide.md # HUD 사용 가이드
+├── UIPanel/
+│   └── ChoicePanel_README.md # ChoicePanel 사용 가이드
+├── UIPopup/
+│   ├── MessagePopUp.cs
+│   └── CheckPopUp.cs
 ├── Examples/
 │   ├── AddressableUIExamples.cs
 │   ├── BaseUIUsageExamples.cs
 │   ├── TouchGestureExamples.cs
 │   └── PopupExamples.cs
+├── Archives/                 # 보관된 문서들
+│   ├── UI_Reference_Comparison.md
+│   ├── AssetReference_vs_String_Key.md
+│   ├── MVP_Setup_Guide.md
+│   ├── README_AutoLocalization.md
+│   ├── Localization_Examples_Guide.md
+│   └── AutoLocalizedText_Usage_Guide.md
+├── Current_Usage_Pattern_Guide.md    # 현재 프로젝트 사용 패턴
+├── Unity_Editor_Setup_Guide.md # Unity 에디터 설정 가이드
+├── Addressable_UI_Setup_Guide.md # Addressable UI 설정 가이드
+├── SafeArea_Setup_Guide.md   # SafeArea 설정 가이드
+├── UIManager_LoadingScreen_Usage.md # DoTween 애니메이션 적용 로딩 화면 사용 가이드
 └── README.md                 # 이 파일
 ```
 
@@ -1042,18 +946,42 @@ Assets/000WorkSpaces/KYS/Scripts/UI/
 - **성능 최적화**: 메모리 사용량 모니터링 및 최적화
 - **테스트 코드**: 자동화된 테스트 케이스 추가
 
+## 📚 문서 관리
+
+### 현재 활성 문서
+- **README.md**: 메인 시스템 가이드
+- **Current_Usage_Pattern_Guide.md**: 프로젝트별 사용 패턴
+- **Comprehensive_Localization_Guide.md**: 통합된 로컬라이제이션 가이드
+- **Unity_Editor_Setup_Guide.md**: Unity 에디터 설정
+- **Addressable_UI_Setup_Guide.md**: Addressable UI 설정
+- **SafeArea_Setup_Guide.md**: SafeArea 설정
+- **UIManager_LoadingScreen_Usage.md**: DoTween 애니메이션 적용 로딩 화면 사용법
+- **LayerSpecificHUD_Usage_Guide.md**: HUD 사용 가이드
+- **ChoicePanel_README.md**: ChoicePanel 사용 가이드
+
+### Archives 폴더
+중복되거나 통합된 문서들은 `Archives/` 폴더에 보관되어 있습니다:
+- **UI_Reference_Comparison.md**: UI 참조 방식 비교 (통합됨)
+- **AssetReference_vs_String_Key.md**: AssetReference vs String Key 비교 (통합됨)
+- **MVP_Setup_Guide.md**: MVP 설정 가이드 (현재 사용 패턴에 통합됨)
+- **README_AutoLocalization.md**: 자동 로컬라이제이션 가이드 (통합됨)
+- **Localization_Examples_Guide.md**: 로컬라이제이션 예제 (통합됨)
+- **AutoLocalizedText_Usage_Guide.md**: AutoLocalizedText 사용법 (통합됨)
+
 ## 📞 지원
 
 문제가 발생하거나 추가 도움이 필요한 경우:
 1. 이 README 문서 확인
-2. 예제 코드 참조
-3. Unity Console 로그 확인
-4. Addressable Groups 설정 확인
-5. 로컬라이제이션 CSV 파일 확인
+2. 관련 가이드 문서 확인
+3. Archives 폴더의 상세 문서 참조
+4. 예제 코드 참조
+5. Unity Console 로그 확인
+6. Addressable Groups 설정 확인
+7. 로컬라이제이션 CSV 파일 확인
 
 ---
 
-**버전**: 2.1  
-**최종 업데이트**: 2025년 8월  
+**버전**: 2.3  
+**최종 업데이트**: 2025년 9월 15일  
 **Unity 버전**: 2022.3 LTS 이상  
-**주요 업데이트**: 선택적 MVP 패턴 적용, InfoHUD 시스템, 중복 생성 방지, 로컬라이제이션 개선, 메모리 누수 방지
+**주요 업데이트**: UIManager API 최신화, BaseUI 기능 확장, DoTween 애니메이션 지원, 로컬라이제이션 시스템 개선, 예제 코드 현대화

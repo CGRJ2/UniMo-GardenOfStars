@@ -12,6 +12,7 @@ public class BuildingManager : Singleton<BuildingManager>
     public WorkStatoinLists workStatinLists = new ();
 
     public BuildingSeller buildingSeller;
+    public WorkerManageBuilding workerBuilding;
 
     // 건물id(string)에 해당하는 업그레이드 정보를 저장
     public Dictionary<string, UpgradeData> upgradeDataDic = new();
@@ -156,8 +157,6 @@ public class UpgradeData : FirebaseData
     {
         Level_ProdTime = new FirebaseProperty<int>("Level_ProdTime", Path);
 
-        Level_ProdTime.Subscribe((a) => Debug.LogWarning("???"));
-
         Level_ProdTime.Subscribe((value) => Manager.buildings.upgradeEvent?.Invoke(value));
         InitList.Add(Level_ProdTime);
 
@@ -170,31 +169,5 @@ public class UpgradeData : FirebaseData
     {
         Level_ProdTime.Value += statProdTimeAdd;
         Level_Capacity.Value += statCapacityAdd;
-    }
-}
-
-[Serializable]
-public class BiPlacementData
-{
-    public string buildingId;
-    public float posX, posY, posZ;
-    public float rotX, rotY, rotZ;
-
-    public BiPlacementData(Transform t, string buildingId)
-    {
-        this.buildingId = buildingId;
-        var e = t.rotation.eulerAngles;
-        posX = t.position.x;
-        posY = t.position.y;
-        posZ = t.position.z;
-        rotX = e.x;
-        rotY = e.y;
-        rotZ = e.z;
-    }
-
-    public void ApplyTo(Transform t)
-    {
-        t.position = new Vector3(posX, posY, posZ);
-        t.rotation = Quaternion.Euler(rotX, rotY, rotZ);
     }
 }

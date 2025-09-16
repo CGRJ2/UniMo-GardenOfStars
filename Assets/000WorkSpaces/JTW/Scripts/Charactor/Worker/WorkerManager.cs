@@ -130,6 +130,8 @@ public class WorkerManager : MonoBehaviour
         {
             if (!prod.GetWorkableState() || prod.GetReserveState()) continue;
 
+            if (!CanInsert(prod.ownerInstance.originData.ProductID)) continue;
+
             if (!(worker.IngrediantStack.Count == 0
                 || prod.ownerInstance.originData.ProductID == worker.IngrediantStack.Peek().Data.ID)) continue;
 
@@ -154,6 +156,8 @@ public class WorkerManager : MonoBehaviour
         {
             if (!gene.GetWorkableState() || gene.GetReserveState()) continue;
 
+            if (!CanInsert(gene._SpawnedProduct.Data.ID)) continue;
+
             if (!(worker.IngrediantStack.Count == 0 
                 || gene._SpawnedProduct.Data.ID == worker.IngrediantStack.Peek().Data.ID)) continue;
 
@@ -168,6 +172,20 @@ public class WorkerManager : MonoBehaviour
         if (workstation != null)
         {
             worker.SetWorkstation(workstation);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CanInsert(string productId)
+    {
+        foreach (InsertArea insert in WorkStatinLists.insertAreas)
+        {
+            if (!insert.GetWorkableState()) continue;
+
+            if (insert.ownerInstance.originData.RequireProdID != productId) continue;
+
             return true;
         }
 
@@ -198,6 +216,26 @@ public class WorkerManager : MonoBehaviour
                 }
             }
         });
+
+        // 0914 최재민: 튜토리얼 시퀀스06 종료 를 위한 로직 추가
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            // 시퀀스 06 부터는 일꾼을 소환한 상태이므로 계속 실행
+            if (Manager.firebase.UserData.TutorialSequence.Value < 6) return;
+
+            // 상호작용 발판 비활성화
+            Manager.buildings.workerBuilding.HideWaitingTile();
+
+            // 일꾼 포커싱 카메라에 맞춰주기
+            TutorialManager.Instance.cameras_TutoCutScene[5].Follow = worker.transform;
+
+            // 시퀀스 06일때만 일꾼 소환 시 시퀀스 종료
+            if (Manager.firebase.UserData.TutorialSequence.Value == 6)
+            {
+                TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+                Manager.ui.ClosePanel();
+            }
+        }
     }
 
     private IEnumerator AssignWorkerCoroutine()

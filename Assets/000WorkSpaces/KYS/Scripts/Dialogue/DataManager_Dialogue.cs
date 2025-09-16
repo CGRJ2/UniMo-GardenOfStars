@@ -77,6 +77,11 @@ public partial class DataManager
                 dialogue.UseTypingEffect = GetFieldValue(words, dict, "UseTypingEffect");
                 dialogue.BackgroundImage = GetFieldValue(words, dict, "BackgroundImage");
                 dialogue.ConstellationImage = GetFieldValue(words, dict, "ConstellationImage");
+                dialogue.CenterImage = GetFieldValue(words, dict, "CenterImage");
+                dialogue.CenterImageDuration = GetFieldValue(words, dict, "CenterImageDuration");
+                dialogue.CenterImageFadeInTime = GetFieldValue(words, dict, "CenterImageFadeInTime");
+                dialogue.CenterImageFadeOutTime = GetFieldValue(words, dict, "CenterImageFadeOutTime");
+                dialogue.HideCharacterImages = GetFieldValue(words, dict, "HideCharacterImages");
                 dialogue.AutoAdvanceDelay = float.TryParse(GetFieldValue(words, dict, "AutoAdvanceDelay"), out float delay) ? delay : 0f;
                 dialogue.ConditionType = GetFieldValue(words, dict, "ConditionType");
                 dialogue.ConditionValue = GetFieldValue(words, dict, "ConditionValue");
@@ -124,9 +129,21 @@ public partial class DataManager
             {
                 uniqueImageKeys.Add(dialogue.CharacterImage);
             }
+            if (!string.IsNullOrEmpty(dialogue.BackgroundImage))
+            {
+                uniqueImageKeys.Add(dialogue.BackgroundImage);
+            }
+            if (!string.IsNullOrEmpty(dialogue.ConstellationImage))
+            {
+                uniqueImageKeys.Add(dialogue.ConstellationImage);
+            }
+            if (!string.IsNullOrEmpty(dialogue.CenterImage))
+            {
+                uniqueImageKeys.Add(dialogue.CenterImage);
+            }
         }
 
-        //Debug.Log($"[DataManager] 로드할 캐릭터 이미지: {uniqueImageKeys.Count}개");
+        //Debug.Log($"[DataManager] 로드할 대화 이미지: {uniqueImageKeys.Count}개");
 
         // 병렬로 이미지 로드
         var loadTasks = new List<Task>();
@@ -136,7 +153,7 @@ public partial class DataManager
         }
 
         await Task.WhenAll(loadTasks);
-        //Debug.Log("[DataManager] 모든 캐릭터 이미지 로드 완료");
+        //Debug.Log("[DataManager] 모든 대화 이미지 로드 완료");
     }
 
     /// <summary>

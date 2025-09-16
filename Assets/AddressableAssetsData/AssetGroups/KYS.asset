@@ -17,6 +17,11 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 047e1abc37e3a0443b7877f31be25f54
   m_SerializeEntries:
+  - m_GUID: 0e94195b43fb07e4fbc8c016f8b246ed
+    m_Address: IngrediantDataLocalizationCsv
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 107c37bcd3eb23d46a814ff196f09e53
     m_Address: BuildingDataLocalizationCsv
     m_ReadOnly: 0
@@ -29,6 +34,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 12345678901234567890123456789012
     m_Address: KYS/Backdrop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14b66e6340d73164285d847a1f0ad2e3
+    m_Address: KYS/LogoutPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -127,6 +137,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a23c94e349910c44adf6e3ef3ba1b65
+    m_Address: Audio/SFX_ButtonClickBack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89d35830eb43a88488de50459cb47e09
     m_Address: KYS/PropertyPanel
     m_ReadOnly: 0
@@ -142,13 +157,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aa893b6b1d61a646842ef0162f241e2
+    m_Address: KYS/GuestLoginPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9b760d7d062271346a524620ea827f31
     m_Address: KYS/SettingPopUp
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9e532c359c2b55245b209b99724870d1
-    m_Address: Assets/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv
+    m_Address: KYS/LanguageData
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -189,6 +209,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bd964c1888445cc4e8ab4370c17b7723
     m_Address: KYS/ChoiceButton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf48ec1f12941874db35e5546e02f6d6
+    m_Address: Audio/SFX_ButtonClick
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

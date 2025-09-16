@@ -167,13 +167,28 @@ namespace KYS
             }
 
 
-            // CompossButton 설정 - 누르고 있을 때 기능
-            var compossEventHandler = GetEventWithSFX(compossButtonName, "SFX_ButtonClick");
+            // CompossButton 설정 - 누르고 있을 때 기능 (커스텀 효과음)
+            var compossEventHandler = GetEvent(compossButtonName);
             if (compossEventHandler != null)
             {
-                compossEventHandler.TouchStart += (data) => OnCompossButtonPressed();
-                compossEventHandler.TouchEnd += (data) => OnCompossButtonReleased();
-                compossEventHandler.LongPress += (data) => OnCompossButtonLongPressed();
+                compossEventHandler.TouchStart += (data) => 
+                {
+                    // 컴퍼스 버튼 전용 효과음 재생
+                    //PlayClickSound("SFX_Compass_Start");
+                    OnCompossButtonPressed();
+                };
+                compossEventHandler.TouchEnd += (data) => 
+                {
+                    // 컴퍼스 버튼 해제 효과음 재생
+                    //PlayClickSound("SFX_Compass_End");
+                    OnCompossButtonReleased();
+                };
+                compossEventHandler.LongPress += (data) => 
+                {
+                    // 컴퍼스 롱프레스 효과음 재생
+                    //PlayClickSound("SFX_Compass_LongPress");
+                    OnCompossButtonLongPressed();
+                };
             }
         }
 

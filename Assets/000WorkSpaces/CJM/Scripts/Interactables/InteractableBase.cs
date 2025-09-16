@@ -33,6 +33,8 @@ public class InteractableBase : MonoBehaviour
     public void OnDisable()
     {
         OnDisableAdditionalActions();
+        characterRD = null;
+        personalTaskOwner = null;
     }
 
     private void OnTriggerEnter(Collider other)

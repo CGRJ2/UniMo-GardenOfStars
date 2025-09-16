@@ -14,7 +14,7 @@ public class PlayerState_Idle : PlayerStateBase
 
     public override void Update()
     {
-        if(PlayerData.Direction != Vector3.zero)
+        if(PlayerData.Direction != Vector3.zero && Manager.player.IsControl)
         {
             StateMachine.ChangeState(PlayerStates.Move);
         }

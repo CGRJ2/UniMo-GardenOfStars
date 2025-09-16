@@ -7,8 +7,25 @@ public class WorkerManageBuilding : InteractableBase
 
     private void Awake()
     {
+        Manager.buildings.workerBuilding = this;
+
+
         interactTile.WaitingCompletedAction = OpenWorkerPanel;
         interactTile.Init();
+
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+        {
+            HideWaitingTile();
+        }
+    }
+
+    public void ShowWaitingTile()
+    {
+        interactTile.gameObject.SetActive(true);
+    }
+    public void HideWaitingTile()
+    {
+        interactTile.gameObject.SetActive(false);
     }
 
     public void OpenWorkerPanel()

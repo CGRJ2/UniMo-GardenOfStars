@@ -154,6 +154,41 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _database.RootReference.Child(path).SetValueAsync(value);
     }
 
+    public void SaveTransactionData<T>(string path, object value)
+    {
+        _database.RootReference.Child(path).RunTransaction(data =>
+        {
+            object dataValue = data.Value ?? default(T);
+
+            if (typeof(T) == typeof(int))
+            {
+                int curValue = Convert.ToInt32(dataValue);
+                data.Value = curValue + (int)value;
+            }
+            else if (typeof(T) == typeof(long))
+            {
+                long curValue = Convert.ToInt64(dataValue);
+                data.Value = curValue + (long)value;
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                float curValue = Convert.ToSingle(dataValue);
+                data.Value = curValue + (float)value;
+            }
+            else if (typeof(T) == typeof(double))
+            {
+                double curValue = Convert.ToDouble(dataValue);
+                data.Value = curValue + (double)value;
+            }
+            else
+            {
+                data.Value = value;
+            }
+
+            return TransactionResult.Success(data);
+        });
+    }
+
     public void SaveJsonData(string path, string json)
     {
         _database.RootReference.Child(path).SetRawJsonValueAsync(json);

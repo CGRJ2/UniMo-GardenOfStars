@@ -16,7 +16,8 @@ public class SettingPopUp : BaseUI
     [SerializeField] private string BGMSliderName = "BGMSlider";
     [SerializeField] private string SFXSliderName = "SFXSlider";
     [SerializeField] private string VibrationToggleName = "VibrationToggle";
-
+    [SerializeField] private string LogoutButtonName = "LogoutButton";
+    [SerializeField] private string LogoutButtonText = "LogoutButtonText";
     private SystemLanguage selectedLanguage;
     private Dictionary<SystemLanguage, float> languageCompleteness = new Dictionary<SystemLanguage, float>();
     
@@ -50,7 +51,8 @@ public class SettingPopUp : BaseUI
     private Slider BGMSlider => GetUI<Slider>(BGMSliderName);
     private Slider SFXSlider => GetUI<Slider>(SFXSliderName);
     private Toggle VibrationToggle => GetUI<Toggle>(VibrationToggleName);
-
+    private Button LogoutButton => GetUI<Button>(LogoutButtonName);
+    private TextMeshProUGUI LogoutButtonT => GetUI<TextMeshProUGUI>(LogoutButtonText);
     public override string[] GetAutoLocalizeKeys()
     {
         return new string[]
@@ -76,7 +78,7 @@ public class SettingPopUp : BaseUI
 
     private void SetupButtons()
     {
-        var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
+        var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
         if (confirmEventHandler != null)
         {
             confirmEventHandler.Click += OnCloseButton;
@@ -87,11 +89,30 @@ public class SettingPopUp : BaseUI
             Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
         }
 
-    }
+        var logoutEventHandler = GetEventWithSFX(LogoutButtonName, "SFX_ButtonClick");
+        if (LogoutButton != null)
+            {
+            logoutEventHandler.Click += OnLogoutButton;
+
+            }
+        else
+            {
+                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+            }
+
+        }
 
     private void OnCloseButton(PointerEventData data)
     {
         Manager.ui.ClosePopup();
+    }
+
+    private void OnLogoutButton(PointerEventData data)
+    {
+        Manager.ui.ShowPopUpAsync<LogoutPopup>((popup) =>
+        {
+
+        });
     }
 
 

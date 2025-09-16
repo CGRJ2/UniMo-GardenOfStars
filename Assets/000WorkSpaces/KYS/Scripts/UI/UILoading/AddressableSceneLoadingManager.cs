@@ -960,19 +960,19 @@ namespace KYS
         }
 
 
-        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        [ContextMenu("대화 시스템 로드 테스트 tutorial_scn001")]
         public void Temp_DialogueSystemTest()
         {
 
 
-            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "npc000_quest_Tuto01");
         }
 
 
         [ContextMenu("대화 시스템 로드 테스트 NPC002")]
         public void Temp_DialogueSystemTest2()
         {
-            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc002_start");
+            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc000_quest_Tuto03");
         }
 
         [ContextMenu("대화 시스템 로드 테스트 NPC003")]
@@ -985,6 +985,12 @@ namespace KYS
         public void Temp_DialogueSystemTest4()
         {
             Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
+        }
+
+        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        public void Temp_DialogueSystemTest5()
+        {
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
 
@@ -1023,12 +1029,104 @@ namespace KYS
             }
         }
 
+
+        [ContextMenu("TutorialPopUpAfterActionClose2")]
+        public  void Temp_TutorialPopUpTest2()
+        {
+            
+             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp.TutorialPositionType.Top);
+        }
+
+
         [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
-            public void Temp_ShowHUDUI()
+        public void Temp_ShowHUDUI()
         {
 
             UIManager.Instance.ShowHUDUI<HUDAllPanel>();
         }
 
+        [ContextMenu("ShowHUDUI 활용 Toturial UI 활성화")]
+        public void Temp_ShowTutorialHUD()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToTutorialProgressMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
+            }
+        }
+
+        [ContextMenu("ShowHUDUI 활용 일반 UI 활성화")]
+        public void Temp_HideHUDUI()
+        {
+            // HUDAllPanel 활성화
+            UIManager.Instance.ShowHUDUI<HUDAllPanel>();
+
+            // HUDAllPanel 찾기 (GetHUDUI 대신 직접 찾기)
+            HUDAllPanel hudAllPanel = UIManager.Instance.HUDCanvas.GetComponentInChildren<HUDAllPanel>();
+
+            if (hudAllPanel != null)
+            {
+                hudAllPanel.SwitchToNormalMode();
+            }
+            else
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] HUDAllPanel을 찾을 수 없습니다.");
+            }
+        }
+
+
+
+        [ContextMenu("CheckPopUp 메시지 주입 확인")]
+        public void OnSaveButtonClicked()
+        {
+            Manager.ui.ShowConfirmPopUpAsync("저장하시겠습니까?", "저장", "취소",
+                () =>
+                {
+                    Debug.Log("저장 실행");
+                    // 저장 로직
+                },
+                () =>
+                {
+                    Debug.Log("저장 취소");
+                });
+        }
+
+        [ContextMenu("MessagePopUp 메시지 주입 확인")]
+        public void OnMessagePopUpTest()
+        {
+            // MessagePopUp 테스트용 메서드
+            UIManager.Instance.ShowMessagePopUpAsync("메시지 내용", () =>
+            {
+                Debug.Log("팝업이 닫혔습니다.");
+            });
+
+
+        }
+
+        [ContextMenu("ShowPopUpAsync 메시지 키로 주입 확인")]
+        public void OnMessagePopUpTest2()
+        {
+            // MessagePopUp 테스트용 메서드
+            Manager.ui.ShowMessagePopUpWithKeyAsync("stage_prepare", () =>
+            {
+                Debug.Log("이게 되네");
+            });
+        }
+
+        [ContextMenu("ShowPanel PlayerUpgradePanel")]
+        public void OnPlayerUpgradePanelTest()
+        {
+            // PlayerUpgradePanel 테스트용 메서드
+            UIManager.Instance.ShowPanelAsync<PlayerUpgradePanel>();
+        }
     }
 }

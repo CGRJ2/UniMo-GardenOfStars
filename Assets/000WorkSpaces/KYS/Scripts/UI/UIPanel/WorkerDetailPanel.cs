@@ -32,9 +32,21 @@ namespace KYS
         private int _upgradeSpeedCost;
         private int _upgradeCapacityCost;
 
+        private bool _isInSpeedProgress;
+        private bool _isInCapacityProgress;
+
         protected override void Awake()
         {
             base.Awake();
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
         }
 
         public override void Initialize()
@@ -51,6 +63,11 @@ namespace KYS
         public void SetInfo(WorkerData worker)
         {
             _worker = worker;
+
+            _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
 
             _workerImage.sprite = _worker.Sprite;
 
@@ -82,7 +99,10 @@ namespace KYS
                 _upgradeSpeedText.text = Manager.data.CharacterLv
                     .Values[(_worker.MoveSpeedLv.Value + 1).ToString()].Speed.ToString();
 
-                _upgradeSpeedCost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
+                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
+
+                _upgradeSpeedCost = (int)(Multi * cost);
 
                 _upgradeSpeedCostText.text = _upgradeSpeedCost.ToString();
             }
@@ -104,7 +124,10 @@ namespace KYS
                 _upgradeCapacityText.text = Manager.data.CharacterLv
                     .Values[(_worker.MaxCapacityLv.Value + 1).ToString()].Capacity.ToString();
 
-                _upgradeCapacityCost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
+                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
+
+                _upgradeCapacityCost = (int)(Multi * cost);
 
                 _upgradeCapacityCostText.text = _upgradeCapacityCost.ToString();
             }
@@ -115,7 +138,7 @@ namespace KYS
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var eventHandler = GetEventWithSFX(_closeButtonName, "SFX_ButtonClick");
+            var eventHandler = GetEventWithSFX(_closeButtonName, "SFX_ButtonClickBack");
             if (eventHandler != null)
             {
                 eventHandler.Click += (data) => OnCloseButtonClicked();
@@ -142,22 +165,40 @@ namespace KYS
 
         private void OnUpgradeSpeedButtonClicked()
         {
-            if (Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) return;
+            if (_isInSpeedProgress) return;
+
+            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _speedUpgradeButton.interactable = false;
+            _isInSpeedProgress = true;
 
             Manager.player.Data.Money.Value -= _upgradeSpeedCost;
             _worker.MoveSpeedLv.Value++;
         }
 
+        private void OnSpeedChanged(int value)
+        {
+            _isInSpeedProgress = false;
+            _speedUpgradeButton.interactable = true;
+        }
+
         private void OnUpgradeCapacityButtonClicked()
         {
-            if (Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) return;
+            if (_isInCapacityProgress) return;
+
+            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
 
             _capacityUpgradeButton.interactable = false;
+            _isInCapacityProgress = true;
 
             Manager.player.Data.Money.Value -= _upgradeCapacityCost;
             _worker.MaxCapacityLv.Value++;
+        }
+
+        private void OnCapacityChanged(int value)
+        {
+            _isInCapacityProgress = false;
+            _capacityUpgradeButton.interactable = true;
         }
     }
 

@@ -1,4 +1,4 @@
-// System 
+﻿// System 
 // Custom
 using GameQuest;
 using KYS;
@@ -26,24 +26,17 @@ public class QuestManager : Singleton<QuestManager>
     {
         //Debug.LogWarning("퀘스트 데이터 초기화 진행됨");
         Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded?.RemoveListener(QuestDataInitEvent);
-        //Debug.LogWarning("1111");
-
         Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
-        //Debug.LogWarning("2222");
-
-        //Debug.LogWarning(Manager.firebase.UserData.CurStage.Value);
 
         string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
-        //Debug.LogWarning($"npcDataId: {npcDataId}");
-        //Debug.LogWarning("3333");
 
-
+        // 현재 스테이지의 NpcID 등록
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        npc.NpcID.Value = npcDataId;
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
         var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
         //Debug.LogWarning($"curStageQuestDatas개수: {curStageQuestDatas.Count()}");
-        //Debug.LogWarning("4444");
-
 
         foreach (var questDataKVP in curStageQuestDatas)
         {
@@ -52,8 +45,7 @@ public class QuestManager : Singleton<QuestManager>
             QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(questDataKVP.Key);
             if (questData == null)
             {
-                //Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
-                Debug.LogError($"QuestData({questDataKVP.Key}) 추가");
+                //Debug.LogError($"QuestData({questDataKVP.Key}) 추가");
                 Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(questDataKVP.Key);
             }
         }
@@ -82,7 +74,7 @@ public class QuestManager : Singleton<QuestManager>
     }
 
     // 모든 Content의 클리어 여부 판단
-    public void CheckCurQuestCleared()
+    public void CheckCurQuestCleared(out bool isCleared)
     {
         var npc = Manager.firebase.UserData.CurStageData.Npc;
         var contentList = npc.CurQuestData.QuestContentList.List;
@@ -99,17 +91,42 @@ public class QuestManager : Singleton<QuestManager>
         // 모든 Content가 클리어된 상황이라면 => 퀘스트 클리어 판정
         if (allContentCleard)
         {
+            isCleared = true;
+
             npc.CurQuestData.QuestState.Value = 3; // Completed
             //Debug.LogWarning($"퀘스트(id: {npc.CurrentQuestID.Value})의 모든 Content 클리어");
 
             // 현재 퀘스트 클리어 이벤트 실행
             QuestClearAction?.Invoke();
 
+
+            // 튜토리얼 스테이지의 퀘스트인 경우
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            {
+                // 튜토 퀘01 = 시퀀스01 종료 -> 시퀀스02
+                // 튜토 퀘02 = 시퀀스05 종료 -> 시퀀스06
+                // 튜토 퀘03 = 시퀀스08 종료 -> 시퀀스09
+                TutorialManager.Instance.arrows[2].SetActive(false);
+
+                Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
+                Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
+                
+                // 튜토 퀘스트 대화 종료 시 마다 100원씩 보상으로 지급
+                Manager.dialogue.OnDialogueCompleted += (dialogData) => Manager.firebase.UserData.Player.Money.Value += 100;
+                
+                Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+
+                TutorialManager.Instance.tutorialNPC.HideQuestTiles();
+
+                return;
+            }
+
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
             Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
         }
+        else isCleared = false;
     }
 
     void SetNextQuestAfterDialogEnd(DialogueData dialogueData)
