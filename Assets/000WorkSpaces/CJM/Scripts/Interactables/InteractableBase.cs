@@ -34,6 +34,7 @@ public class InteractableBase : MonoBehaviour
     {
         OnDisableAdditionalActions();
         characterRD = null;
+        personalTaskOwner = null;
     }
 
     private void OnTriggerEnter(Collider other)
