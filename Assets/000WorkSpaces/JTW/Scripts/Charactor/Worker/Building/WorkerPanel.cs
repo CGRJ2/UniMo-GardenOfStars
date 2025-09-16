@@ -118,7 +118,7 @@ public class WorkerPanel : KYS.BaseUI
         }
         
         // 고용 비용 설정
-        if (Manager.data?.WorkerEmployCost?.Values != null && Manager.data.WorkerEmployCost.Values.ContainsKey(_workerKey))
+        if (Manager.data?.WorkerEmployCost?.Values != null)
         {
             string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
 
@@ -130,12 +130,12 @@ public class WorkerPanel : KYS.BaseUI
             {
                 if (_employCost == -1)
                 {
-                    _runWorkerCostText.text = _employCost.ToString();
+                    _isBMCost = true;
+                    _runWorkerCostText.text = _employBMCost.ToString();
                 }
                 else
                 {
-                    _isBMCost = true;
-                    _runWorkerCostText.text = _employBMCost.ToString();
+                    _runWorkerCostText.text = _employCost.ToString();
                 }
             }
         }
@@ -159,8 +159,6 @@ public class WorkerPanel : KYS.BaseUI
                 
             case WorkerPanelStates.Purchase:
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
-                // 고용 비용 업데이트
-                if (_runWorkerCostText != null) _runWorkerCostText.text = _employCost.ToString();
                 break;
                 
             case WorkerPanelStates.Locked:
