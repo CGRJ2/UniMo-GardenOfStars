@@ -1106,5 +1106,12 @@ namespace KYS
                 Debug.Log("이게 되네");
             });
         }
+
+        [ContextMenu("ShowPanel PlayerUpgradePanel")]
+        public void OnPlayerUpgradePanelTest()
+        {
+            // PlayerUpgradePanel 테스트용 메서드
+            UIManager.Instance.ShowPanelAsync<PlayerUpgradePanel>();
+        }
     }
 }
