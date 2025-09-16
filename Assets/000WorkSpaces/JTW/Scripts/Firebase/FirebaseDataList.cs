@@ -1,9 +1,9 @@
 using Firebase.Database;
+using Firebase.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +20,16 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         _factory = factory;
 
         Manager.firebase.SetDataListEvent(Path, OnFirebaseChanged);
+
+        Manager.firebase.CheckInit(Path, OnInitChecked);
+    }
+
+    private void OnInitChecked(DataSnapshot snapshot)
+    {
+        if(!snapshot.Exists || !snapshot.HasChildren)
+        {
+            IsInitSelf = true;
+        }
     }
 
     private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)

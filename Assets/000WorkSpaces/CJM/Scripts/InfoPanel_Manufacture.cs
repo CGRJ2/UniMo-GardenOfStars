@@ -60,6 +60,8 @@ public class InfoPanel_Manufacture : BaseUI
 
     public void Init() // 초기화를 어디서 해줘야 할까요?
     {
+        Manager.buildings.upgradeEvent += OnUpgradeEvent;
+
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_CapacityUpgrade.onClick.AddListener(UpgradeCapacity);
         btn_Close.onClick.AddListener(Close);
@@ -69,7 +71,9 @@ public class InfoPanel_Manufacture : BaseUI
     void UpgradeProdTime()
     {
         // 돈 차감
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(targetBD.ID).level_ProdTime;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
@@ -82,7 +86,9 @@ public class InfoPanel_Manufacture : BaseUI
     void UpgradeCapacity()
     {
         // 돈 차감
-        int curLevel_Capacity = Manager.buildings.GetUpgradeData(targetBD.ID).level_Capacity;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
+
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
 
         // 업그레이드 스탯 적용
@@ -97,8 +103,9 @@ public class InfoPanel_Manufacture : BaseUI
         ManufactureBD data = manufacture;
         targetBD = data;
         int curMoney = Manager.player.Data.Money.Value;
-        int curLevel_ProdTime = Manager.buildings.GetUpgradeData(data.ID).level_ProdTime;
-        int curLevel_Capacity = Manager.buildings.GetUpgradeData(data.ID).level_Capacity;
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
 
         string manufacturebuildingNamekey = $"RunManufactureBuildingName{data.Name}";
         string manufacturerbuildingDesckey = $"RunManufactureBuildingDesc{data.Description}";
@@ -179,6 +186,11 @@ public class InfoPanel_Manufacture : BaseUI
         }
     }
 
+    void OnUpgradeEvent(int value)
+    {
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+    }
 
     private void Close()
     {

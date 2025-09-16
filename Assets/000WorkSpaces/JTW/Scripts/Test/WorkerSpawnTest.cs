@@ -25,15 +25,15 @@ public class WorkerSpawnTest : MonoBehaviour
 
                 Debug.Log("Space");
 
-                WorkerData worker = Manager.firebase.UserData.WorkerList.Get("10101_F");
+                WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get("10101_F");
 
                 if (worker == null)
                 {
                     // 테스트를 위한 이벤트 구조.
                     // 실제에서는 UserData가 이미 초기화 되었을테니 OnEnable 같은데서 추가하면 된다.
-                    Manager.firebase.UserData.WorkerList.OnAdded.AddListener(WorkerSpawnEvent);
+                    Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(WorkerSpawnEvent);
 
-                    Manager.firebase.UserData.WorkerList.Add("10101_F");
+                    Manager.firebase.UserData.CurStageData.WorkerList.Add("10101_F");
                 }
                 else
                 {
@@ -51,6 +51,6 @@ public class WorkerSpawnTest : MonoBehaviour
     {
         Debug.Log("처음 생성");
         _workerManager.InstantiateWorker(worker);
-        Manager.firebase.UserData.WorkerList.OnAdded.RemoveListener(WorkerSpawnEvent);
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(WorkerSpawnEvent);
     }
 }

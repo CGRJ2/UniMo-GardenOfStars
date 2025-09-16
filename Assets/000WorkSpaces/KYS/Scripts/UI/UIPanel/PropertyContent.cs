@@ -2,26 +2,26 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.AddressableAssets;
+using UnityEngine.TextCore.Text;
 
 namespace KYS
 {
     public class PropertyContent : BaseUI
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
-        [SerializeField] private string titleTextName = "TitleText";
-        [SerializeField] private string descriptionTextName = "DescriptionText";
-        [SerializeField] private string buildButtonName = "BuildButton";
-        [SerializeField] private string cancelButtonName = "CancelButton";
-        [SerializeField] private string costTextName = "CostText";
-        [SerializeField] private string levelTextName = "LevelText";
+        [SerializeField] private string runBuildingNameText = "RunBuildingNameText";
+        [SerializeField] private string buyButtonName = "BuyButton";
+        [SerializeField] private string costTextName = "MoenyButtonText";
+
+        [SerializeField] Button buyButton;
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
-        private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
-        private TextMeshProUGUI descriptionText => GetUI<TextMeshProUGUI>(descriptionTextName);
-        private Button buildButton => GetUI<Button>(buildButtonName);
-        private Button cancelButton => GetUI<Button>(cancelButtonName);
+        private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(runBuildingNameText);
+        //private Button buyButton => GetUI<Button>(buyButtonName);
         private TextMeshProUGUI costText => GetUI<TextMeshProUGUI>(costTextName);
-        private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
+
+        private string buildingID;
 
         [Header("Build Settings")]
         [SerializeField] private string buildingName = "";
@@ -31,6 +31,14 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
+            Debug.LogWarning("초기화 실행");
+
+            buyButton.onClick.AddListener(() =>
+            {
+                Debug.LogWarning("구매 버튼 클릭");
+                Manager.buildings.buildingSeller.SpawnBuildingItem(buildingID);
+                Manager.ui.ClosePanel();
+            });
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -61,17 +69,12 @@ namespace KYS
         private void SetupButtons()
         {
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var buildEventHandler = GetEventWithSFX(buildButtonName, "SFX_ButtonClick");
+            var buildEventHandler = GetEventWithSFX(buyButtonName, "SFX_ButtonClick");
             if (buildEventHandler != null)
             {
                 buildEventHandler.Click += (data) => OnBuildButtonClicked();
             }
 
-            var cancelEventHandler = GetEventWithSFX(cancelButtonName, "SFX_ButtonClick");
-            if (cancelEventHandler != null)
-            {
-                cancelEventHandler.Click += (data) => OnCancelButtonClicked();
-            }
         }
 
         private void UpdateUI()
@@ -79,23 +82,52 @@ namespace KYS
             if (titleText != null)
                 titleText.text = $"{GetLocalizedText("ui_build_title")} {buildingName}";
 
-            if (descriptionText != null)
-                descriptionText.text = $"{GetLocalizedText("ui_build_description")} {buildingName}";
-
             if (costText != null)
                 costText.text = $"{GetLocalizedText("ui_cost_label")}: {buildingCost}";
 
-            if (levelText != null)
-                levelText.text = $"{GetLocalizedText("ui_level_label")}: {buildingLevel}";
         }
 
-        public void SetBuildingData(string name, int cost, int level)
+        public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
         {
-            buildingName = name;
-            buildingCost = cost;
-            buildingLevel = level;
+            buildingID = buildingData.ID;
+            buildingName = buildingData.Name;
+            buildingCost = buildingData.Cost;
+
+            if (buildingData is HarvestBD harvestBD)
+            {
+                // 재료(생산품) 이름, 스프라이트
+                /*Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
+                {
+                    string prodNameKey = $"RunIngrediantName{prodData.Result.Name}";
+
+                    tmp_ProdName.text = Manager.localization.GetText(prodNameKey);
+                    image_Prod.sprite = prodData.Result.Sprite;
+                };*/
+
+
+                //업그레이드 데이터를 받아올 때 적용
+                if (upgradeData != null)
+                {
+                    //buildingLevel = level; 
+                }
+            }
+            else if (buildingData is ManufactureBD)
+            {
+                // 재료(생산품) 이름, 스프라이트
+
+                // 재료(투입용) 이름, 스프라이트
+
+
+                //업그레이드 데이터를 받아올 때 적용
+                if (upgradeData != null)
+                {
+                    //buildingLevel = level; 
+                }
+            }
+            
             UpdateUI();
         }
+
 
         private void OnBuildButtonClicked()
         {
@@ -114,11 +146,8 @@ namespace KYS
         public void PrintUIElementInfo()
         {
             Debug.Log($"[BuildContent] TitleText: {titleText != null}");
-            Debug.Log($"[BuildContent] DescriptionText: {descriptionText != null}");
-            Debug.Log($"[BuildContent] BuildButton: {buildButton != null}");
-            Debug.Log($"[BuildContent] CancelButton: {cancelButton != null}");
+            Debug.Log($"[BuildContent] BuildButton: {buyButton != null}");
             Debug.Log($"[BuildContent] CostText: {costText != null}");
-            Debug.Log($"[BuildContent] LevelText: {levelText != null}");
         }
     }
 }
