@@ -45,7 +45,6 @@ public class QuestManager : Singleton<QuestManager>
             QuestBaseData questData = Manager.firebase.UserData.CurStageData.Npc.QuestList.Get(questDataKVP.Key);
             if (questData == null)
             {
-                //Manager.firebase.UserData.CurStageData.Npc.QuestList.OnAdded.AddListener(QuestDataInitEvent);
                 //Debug.LogError($"QuestData({questDataKVP.Key}) 추가");
                 Manager.firebase.UserData.CurStageData.Npc.QuestList.Add(questDataKVP.Key);
             }

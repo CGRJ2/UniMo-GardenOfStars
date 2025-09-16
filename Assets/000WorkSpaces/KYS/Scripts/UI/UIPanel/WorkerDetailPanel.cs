@@ -47,13 +47,6 @@ namespace KYS
             base.OnDestroy();
             _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
             _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
-
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
         }
 
         public override void Initialize()
