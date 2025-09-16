@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-
+using System.Collections;
 namespace KYS
 {
     public class LogoutPopup : BaseUI
@@ -134,12 +134,24 @@ namespace KYS
 
             //// 로그아웃 처리
             //ProcessLogout();
+            //Manager.firebase.Auth.SignOut();
+            //StartCoroutine(WaitLogin());
+
+
 
             //// 이벤트 호출
             //OnLogoutConfirmed?.Invoke();
 
             //// 팝업 닫기
             //Manager.ui.ClosePopup();
+        }
+
+
+        private IEnumerator WaitLogin()
+        {
+            Manager.firebase.InitUserData();   
+            yield return new WaitForSeconds(1f);
+
         }
 
         private void OnCancelClicked()

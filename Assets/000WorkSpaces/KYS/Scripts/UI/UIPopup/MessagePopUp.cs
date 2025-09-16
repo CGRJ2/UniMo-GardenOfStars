@@ -20,6 +20,7 @@ namespace KYS
 
         // 로컬라이제이션 키 관리
         private string messageLocalizationKey;
+        private object[] messageFormatArgs; // Format 인수 저장
 
         protected override void Awake()
         {
@@ -107,7 +108,16 @@ namespace KYS
             if (messageText != null && !string.IsNullOrEmpty(messageLocalizationKey))
             {
                 string localizedText = GetLocalizedText(messageLocalizationKey);
-                messageText.text = localizedText;
+                
+                // Format 인수가 있으면 적용
+                if (messageFormatArgs != null && messageFormatArgs.Length > 0)
+                {
+                    messageText.text = string.Format(localizedText, messageFormatArgs);
+                }
+                else
+                {
+                    messageText.text = localizedText;
+                }
             }
         }
 
@@ -120,6 +130,20 @@ namespace KYS
             {
                 messageText.text = message;
                 messageLocalizationKey = null; // 일반 텍스트로 설정
+                messageFormatArgs = null; // Format 인수 초기화
+            }
+        }
+
+        /// <summary>
+        /// 메시지 설정 (Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public void SetMessage(string format, params object[] args)
+        {
+            if (messageText != null)
+            {
+                messageText.text = string.Format(format, args);
+                messageLocalizationKey = null; // 일반 텍스트로 설정
+                messageFormatArgs = null; // Format 인수 초기화
             }
         }
 
@@ -131,6 +155,20 @@ namespace KYS
             if (messageText != null)
             {
                 messageLocalizationKey = localizationKey;
+                messageFormatArgs = null; // Format 인수 초기화
+                UpdateMessageText();
+            }
+        }
+
+        /// <summary>
+        /// 메시지 설정 (로컬라이제이션 키 + Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public void SetMessageKey(string localizationKey, params object[] args)
+        {
+            if (messageText != null)
+            {
+                messageLocalizationKey = localizationKey;
+                messageFormatArgs = args; // Format 인수 저장
                 UpdateMessageText();
             }
         }
@@ -171,11 +209,34 @@ namespace KYS
         }
 
         /// <summary>
+        /// 정적 메서드 - 메시지 팝업 표시 (Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public static void ShowMessagePopUp(string format, System.Action closeCallback, params object[] args)
+        {
+            string message = string.Format(format, args);
+            UIManager.Instance.ShowMessagePopUpAsync(message, closeCallback);
+        }
+
+        /// <summary>
         /// 정적 메서드 - 메시지 팝업 표시 (로컬라이제이션 키 사용)
         /// </summary>
         public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback = null)
         {
             UIManager.Instance.ShowMessagePopUpWithKeyAsync(messageKey, closeCallback);
+        }
+
+        /// <summary>
+        /// 정적 메서드 - 메시지 팝업 표시 (로컬라이제이션 키 + Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback, params object[] args)
+        {
+            UIManager.Instance.ShowPopUpAsync<MessagePopUp>((popup) => {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
+                    popup.SetCloseCallback(closeCallback);
+                }
+            });
         }
     }
 }

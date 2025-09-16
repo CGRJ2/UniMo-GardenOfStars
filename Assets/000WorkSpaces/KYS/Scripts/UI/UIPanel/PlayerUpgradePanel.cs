@@ -10,9 +10,11 @@ namespace KYS
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string closeButtonName = "CloseButton";
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] private string titleTextName = "PlayerUpgradeTitleText";
 
         private Button closeButton => GetUI<Button>(closeButtonName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
+        private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
 
         protected override void Awake()
         {
@@ -49,10 +51,18 @@ namespace KYS
         public override void Initialize()
         {
             base.Initialize();
+            
+            // 언어 변경 이벤트 구독
+            LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
         }
 
         public override void Cleanup()
         {
+            // 언어 변경 이벤트 구독 해제
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+            }
             base.Cleanup();
         }
 
@@ -68,6 +78,11 @@ namespace KYS
 
         private void UpdateUI()
         {
+            // 제목 텍스트 업데이트
+            if (titleText != null)
+            {
+                titleText.text = Manager.localization.GetText(titleTextName);
+            }
         }
 
         public void UpdateMoney(int amount)
@@ -90,6 +105,14 @@ namespace KYS
         {
             Debug.Log("[PlayerUpgradePanel] 패널 닫기");
             Hide();
+        }
+
+        /// <summary>
+        /// 언어 변경 이벤트 핸들러
+        /// </summary>
+        private void OnLanguageChanged(SystemLanguage newLanguage)
+        {
+            UpdateUI();
         }
 
         [ContextMenu("UI 요소 정보 출력")]

@@ -126,7 +126,7 @@ namespace KYS
                     var hudHandle = hudCanvasReference.InstantiateAsync();
                     await hudHandle.Task;
                     hudCanvas = hudHandle.Result.GetComponent<Canvas>();
-                    hudCanvas.sortingOrder = 0;
+                    hudCanvas.sortingOrder = 10;
                     addressableHandles["HUDCanvas"] = hudHandle;
                     DontDestroyOnLoad(hudHandle.Result);
                     //HideAllHUDElements();
@@ -138,7 +138,7 @@ namespace KYS
                     var panelHandle = panelCanvasReference.InstantiateAsync();
                     await panelHandle.Task;
                     panelCanvas = panelHandle.Result.GetComponent<Canvas>();
-                    panelCanvas.sortingOrder = 10;
+                    panelCanvas.sortingOrder = 20;
                     addressableHandles["PanelCanvas"] = panelHandle;
                     DontDestroyOnLoad(panelHandle.Result);
                 }
@@ -149,7 +149,7 @@ namespace KYS
                     var popupHandle = popupCanvasReference.InstantiateAsync();
                     await popupHandle.Task;
                     popupCanvas = popupHandle.Result.GetComponent<Canvas>();
-                    popupCanvas.sortingOrder = 20;
+                    popupCanvas.sortingOrder = 30;
                     addressableHandles["PopupCanvas"] = popupHandle;
                     DontDestroyOnLoad(popupHandle.Result);
                 }
@@ -183,7 +183,7 @@ namespace KYS
                         var loadingHandle = loadingCanvasReference.InstantiateAsync();
                         await loadingHandle.Task;
                         loadingCanvas = loadingHandle.Result.GetComponent<Canvas>();
-                        loadingCanvas.sortingOrder = 30;
+                        loadingCanvas.sortingOrder = 40;
                         addressableHandles["LoadingCanvas"] = loadingHandle;
                         DontDestroyOnLoad(loadingHandle.Result);
                     }
