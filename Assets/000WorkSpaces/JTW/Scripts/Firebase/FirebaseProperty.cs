@@ -59,6 +59,8 @@ public class FirebaseProperty<T> : FirebaseData
                 return;
             }
 
+            IsInUpdate = true;
+
             if (!_isFirebaseConnected)
             {
                 _isFirebaseConnected = Manager.firebase.SetDataEvent<T>(Path, OnFirebaseChanged, value, false, out _value);
@@ -71,6 +73,8 @@ public class FirebaseProperty<T> : FirebaseData
     private UnityEvent<T> _onValueChanged = new();
 
     private bool _isFirebaseConnected;
+
+    public bool IsInUpdate;
 
     public FirebaseProperty(string id, string parentPath, T value = default, bool isImmediate = false) : base(id, parentPath)
     {
@@ -107,9 +111,9 @@ public class FirebaseProperty<T> : FirebaseData
             _value = (T)args.Snapshot.Value;
         }
 
-        IsInitSelf = true;
-
         Notify();
+
+        IsInUpdate = false;
     }
 
     public void Subscribe(UnityAction<T> action)
