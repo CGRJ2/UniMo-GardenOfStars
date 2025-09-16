@@ -793,7 +793,21 @@ namespace KYS
                         bool isLeftCharacter = (imagePosition == "left");
                         Debug.Log($"[StoryPanel] 이름 위치 설정 - isLeftCharacter: {isLeftCharacter} (imagePosition: '{imagePosition}')");
                         SetDialogueCharacterName(localizedSpeaker, isLeftCharacter);
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), bool.Parse(dialogueData.UseTypingEffect));
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectDialogue = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectDialogue = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectDialogue);
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -841,7 +855,21 @@ namespace KYS
 
                     case "story":
                         SwitchToStoryMode();
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), bool.Parse(dialogueData.UseTypingEffect));
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectStory = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectStory = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectStory);
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -883,7 +911,21 @@ namespace KYS
                         bool endIsLeftCharacter = (endImagePosition == "left");
                         Debug.Log($"[StoryPanel] end 노드 이름 위치 설정 - isLeftCharacter: {endIsLeftCharacter} (imagePosition: '{endImagePosition}')");
                         SetDialogueCharacterName(endLocalizedSpeaker, endIsLeftCharacter);
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), bool.Parse(dialogueData.UseTypingEffect));
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectEnd = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectEnd = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectEnd);
                         
                         // CharacterImage 처리
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -904,7 +946,21 @@ namespace KYS
                         string defaultLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
                         Debug.Log($"[StoryPanel] 기본 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{defaultLocalizedSpeaker}', 언어: {currentLanguage}");
                         SetDialogueCharacterName(defaultLocalizedSpeaker, dialogueData.Speaker == "player");
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectDefault = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectDefault = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectDefault);
                         break;
                 }
 

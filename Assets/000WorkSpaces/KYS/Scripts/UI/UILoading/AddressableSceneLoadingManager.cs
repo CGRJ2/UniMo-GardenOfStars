@@ -987,6 +987,12 @@ namespace KYS
             Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
         }
 
+        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        public void Temp_DialogueSystemTest5()
+        {
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
+        }
+
 
         [ContextMenu("TutorialPopUpAfterActionClose")]
         public async void Temp_DialogueSystemTest6()
@@ -1022,6 +1028,15 @@ namespace KYS
                 Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
             }
         }
+
+
+        [ContextMenu("TutorialPopUpAfterActionClose2")]
+        public  void Temp_TutorialPopUpTest2()
+        {
+            
+             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp.TutorialPositionType.Top);
+        }
+
 
         [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
         public void Temp_ShowHUDUI()
