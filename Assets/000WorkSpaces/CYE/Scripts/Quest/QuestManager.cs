@@ -1,4 +1,4 @@
-// System 
+﻿// System 
 // Custom
 using GameQuest;
 using KYS;
@@ -111,6 +111,9 @@ public class QuestManager : Singleton<QuestManager>
 
                 Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
                 Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
+                
+                // 튜토 퀘스트 대화 종료 시 마다 100원씩 보상으로 지급
+                Manager.dialogue.OnDialogueCompleted += (dialogData) => Manager.firebase.UserData.Player.Money.Value += 100;
                 
                 Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
 
