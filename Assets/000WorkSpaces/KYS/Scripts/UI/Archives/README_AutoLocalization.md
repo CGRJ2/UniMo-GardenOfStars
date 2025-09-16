@@ -362,6 +362,6 @@ public string GetCachedTranslation(string key)
 ---
 
 **버전**: 2.1  
-**최종 업데이트**: 2025년 8월  
+**최종 업데이트**: 2025년 9월 15일  
 **Unity 버전**: 2022.3 LTS 이상  
 **주요 업데이트**: InfoHUD 시스템 통합, 중복 생성 방지, 동적 언어 변경 지원, 성능 최적화

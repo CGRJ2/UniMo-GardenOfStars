@@ -26,6 +26,7 @@ namespace KYS
         private string messageLocalizationKey;
         private string confirmLocalizationKey;
         private string cancelLocalizationKey;
+        private object[] messageFormatArgs; // Format 인수 저장
 
         protected override void Awake()
         {
@@ -121,7 +122,16 @@ namespace KYS
             if (messageText != null && !string.IsNullOrEmpty(messageLocalizationKey))
             {
                 string localizedText = GetLocalizedText(messageLocalizationKey);
-                messageText.text = localizedText;
+                
+                // Format 인수가 있으면 적용
+                if (messageFormatArgs != null && messageFormatArgs.Length > 0)
+                {
+                    messageText.text = string.Format(localizedText, messageFormatArgs);
+                }
+                else
+                {
+                    messageText.text = localizedText;
+                }
             }
         }
 
@@ -134,6 +144,20 @@ namespace KYS
             {
                 messageText.text = message;
                 messageLocalizationKey = null; // 일반 텍스트로 설정
+                messageFormatArgs = null; // Format 인수 초기화
+            }
+        }
+
+        /// <summary>
+        /// 메시지 설정 (Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public void SetMessage(string format, params object[] args)
+        {
+            if (messageText != null)
+            {
+                messageText.text = string.Format(format, args);
+                messageLocalizationKey = null; // 일반 텍스트로 설정
+                messageFormatArgs = null; // Format 인수 초기화
             }
         }
 
@@ -145,6 +169,20 @@ namespace KYS
             if (messageText != null)
             {
                 messageLocalizationKey = localizationKey;
+                messageFormatArgs = null; // Format 인수 초기화
+                UpdateMessageText();
+            }
+        }
+
+        /// <summary>
+        /// 메시지 설정 (로컬라이제이션 키 + Format 지원, 줄바꿈 가능)
+        /// </summary>
+        public void SetMessageKey(string localizationKey, params object[] args)
+        {
+            if (messageText != null)
+            {
+                messageLocalizationKey = localizationKey;
+                messageFormatArgs = args; // Format 인수 저장
                 UpdateMessageText();
             }
         }
@@ -245,6 +283,25 @@ namespace KYS
         }
 
         /// <summary>
+        /// Format 지원 체크팝업 표시 (줄바꿈 가능)
+        /// </summary>
+        public static void ShowCheckPopUp(string format, string confirmText, string cancelText,
+                                        System.Action confirmCallback, System.Action cancelCallback, params object[] args)
+        {
+            string message = string.Format(format, args);
+            UIManager.Instance.ShowPopUpAsync<CheckPopUp>((popup) => {
+                if (popup != null)
+                {
+                    popup.SetMessage(message);
+                    popup.SetConfirmText(confirmText);
+                    popup.SetCancelText(cancelText);
+                    popup.SetConfirmCallback(confirmCallback);
+                    popup.SetCancelCallback(cancelCallback);
+                }
+            });
+        }
+
+        /// <summary>
         /// 로컬라이제이션 키를 사용하는 정적 메서드
         /// </summary>
         public static void ShowCheckPopUpWithKeys(string messageKey, string confirmKey = "popup_confirm", 
@@ -255,6 +312,24 @@ namespace KYS
                 if (popup != null)
                 {
                     popup.SetMessageKey(messageKey);
+                    popup.SetConfirmTextKey(confirmKey);
+                    popup.SetCancelTextKey(cancelKey);
+                    popup.SetConfirmCallback(confirmCallback);
+                    popup.SetCancelCallback(cancelCallback);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 로컬라이제이션 키 + Format 지원 체크팝업 표시 (줄바꿈 가능)
+        /// </summary>
+        public static void ShowCheckPopUpWithKeys(string messageKey, string confirmKey, string cancelKey,
+                                                System.Action confirmCallback, System.Action cancelCallback, params object[] args)
+        {
+            UIManager.Instance.ShowPopUpAsync<CheckPopUp>((popup) => {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
                     popup.SetConfirmTextKey(confirmKey);
                     popup.SetCancelTextKey(cancelKey);
                     popup.SetConfirmCallback(confirmCallback);

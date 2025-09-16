@@ -38,12 +38,15 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
+            _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
         }
 
         public override void Initialize()
