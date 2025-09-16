@@ -147,12 +147,14 @@ namespace KYS
             
             // 언어 변경 이벤트 구독
             BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
+            IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
         }
 
         public override void Cleanup()
         {
             // 언어 변경 이벤트 구독 해제
             BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+            IngrediantLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
             base.Cleanup();
         }
 
@@ -212,8 +214,7 @@ namespace KYS
                 Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
                 {
                     SwitchAfrterBuyModeHarvestMode();
-                    string prodNameKey = $"RunIngrediantName{prodData.Result.Name}";
-                    ProdNameText.text = Manager.localization.GetText(prodNameKey);
+                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
                     image_Prod.sprite = prodData.Result.Sprite;
                 };
 
@@ -231,16 +232,13 @@ namespace KYS
 
                 Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
                 {
-                    string RunInputmaterials = $"RunInputmaterials{requireData.Result.Name}";
                     SwitchAfrterBuyModeManufactureMode();
-                    MaterialsNameText.text = Manager.localization.GetText(RunInputmaterials);
+                    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
                     image_Material.sprite = requireData.Result.Sprite;
                 };
                 Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
                 {
-                    string RunProductionMaterial = $"RunProductionMaterial{prodData.Result.Name}";
-
-                    ProdNameText.text = Manager.localization.GetText(RunProductionMaterial);
+                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
                     image_Prod.sprite = prodData.Result.Sprite;
                 };
 
@@ -385,6 +383,26 @@ namespace KYS
             {
                 // 건물 이름 다시 로드
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(currentBuildingData.ID);
+                
+                // 재료 이름도 다시 로드
+                if (currentBuildingData is HarvestBD harvestBD)
+                {
+                    Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
+                    {
+                        ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+                    };
+                }
+                else if (currentBuildingData is ManufactureBD manufactureBD)
+                {
+                    Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
+                    {
+                        MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
+                    };
+                    Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
+                    {
+                        ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+                    };
+                }
             }
         }
     }
