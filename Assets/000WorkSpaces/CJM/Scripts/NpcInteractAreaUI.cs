@@ -16,7 +16,7 @@ public class NpcInteractAreaUI : MonoBehaviour
         //if ()
         //Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
 
-        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
-            TutorialManager.Instance.tutorialNPC.UpdateQuestData();
+        /*if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            TutorialManager.Instance.tutorialNPC.UpdateQuestData();*/
     }
 }

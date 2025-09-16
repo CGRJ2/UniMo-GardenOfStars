@@ -53,6 +53,7 @@ public class InfoPanel_Harvest : BaseUI
         
         // 언어 변경 이벤트 구독
         BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
     }
 
     void UpgradeProdTime()
@@ -86,9 +87,7 @@ public class InfoPanel_Harvest : BaseUI
 
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
-            string prodNameKey = $"RunIngrediantName{prodData.Result.Name}";
-
-            tmp_ProdName.text = Manager.localization.GetText(prodNameKey);
+            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
             image_Prod.sprite = prodData.Result.Sprite;
         };
 
@@ -132,6 +131,7 @@ public class InfoPanel_Harvest : BaseUI
     {
         // 언어 변경 이벤트 구독 해제
         BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
     }
     
     /// <summary>
@@ -144,6 +144,12 @@ public class InfoPanel_Harvest : BaseUI
             // 건물 정보 다시 로드
             tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
             tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
+            
+            // 재료 이름도 다시 로드
+            Addressables.LoadAssetAsync<IngrediantData>(targetBD.ProductID).Completed += prodData =>
+            {
+                tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+            };
         }
     }
 }

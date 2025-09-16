@@ -68,6 +68,7 @@ public class InfoPanel_Manufacture : BaseUI
         
         // 언어 변경 이벤트 구독
         BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
     }
 
 
@@ -115,16 +116,12 @@ public class InfoPanel_Manufacture : BaseUI
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
         Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
         {
-            string RunInputmaterials = $"RunInputmaterials{requireData.Result.Name}";
-
-            tmp_RequireName.text = Manager.localization.GetText(RunInputmaterials);
+            tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
             image_Require.sprite = requireData.Result.Sprite;
         };
         Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
         {
-            string RunProductionMaterial = $"RunProductionMaterial{prodData.Result.Name}";
-
-            tmp_ProdName.text = Manager.localization.GetText(RunProductionMaterial);
+            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
             image_Prod.sprite = prodData.Result.Sprite;
         };
 
@@ -202,6 +199,7 @@ public class InfoPanel_Manufacture : BaseUI
     {
         // 언어 변경 이벤트 구독 해제
         BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
     }
 
     private void OnLanguageChanged(SystemLanguage newLanguage)
@@ -211,6 +209,16 @@ public class InfoPanel_Manufacture : BaseUI
         {
             tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
             tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
+            
+            // 재료 이름도 다시 로드
+            Addressables.LoadAssetAsync<IngrediantData>(targetBD.RequireProdID).Completed += requireData =>
+            {
+                tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
+            };
+            Addressables.LoadAssetAsync<IngrediantData>(targetBD.ProductID).Completed += prodData =>
+            {
+                tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+            };
         }
     }
 

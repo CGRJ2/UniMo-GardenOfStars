@@ -965,14 +965,14 @@ namespace KYS
         {
 
 
-            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "tutorial_scn001");
+            Manager.dialogue.StartDialogueWithPanel("narration", "scn_01", "npc000_quest_Tuto01");
         }
 
 
         [ContextMenu("대화 시스템 로드 테스트 NPC002")]
         public void Temp_DialogueSystemTest2()
         {
-            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc002_start");
+            Manager.dialogue.StartDialogueWithPanel("npc002", "stage_01", "npc000_quest_Tuto03");
         }
 
         [ContextMenu("대화 시스템 로드 테스트 NPC003")]
@@ -985,6 +985,12 @@ namespace KYS
         public void Temp_DialogueSystemTest4()
         {
             Manager.dialogue.StartDialogueWithPanel("npc004", "", "npc004_start");
+        }
+
+        [ContextMenu("대화 시스템 로드 테스트 NPC001")]
+        public void Temp_DialogueSystemTest5()
+        {
+            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
 
@@ -1022,6 +1028,15 @@ namespace KYS
                 Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
             }
         }
+
+
+        [ContextMenu("TutorialPopUpAfterActionClose2")]
+        public  void Temp_TutorialPopUpTest2()
+        {
+            
+             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp.TutorialPositionType.Top);
+        }
+
 
         [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
         public void Temp_ShowHUDUI()
@@ -1105,6 +1120,13 @@ namespace KYS
             {
                 Debug.Log("이게 되네");
             });
+        }
+
+        [ContextMenu("ShowPanel PlayerUpgradePanel")]
+        public void OnPlayerUpgradePanelTest()
+        {
+            // PlayerUpgradePanel 테스트용 메서드
+            UIManager.Instance.ShowPanelAsync<PlayerUpgradePanel>();
         }
     }
 }

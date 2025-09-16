@@ -23,6 +23,8 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
+        Manager.player.SpawnPlayer();
+
         // 타이틀에서 시작할 때
         //Init();
 
@@ -100,6 +102,8 @@ public class StageManager : MonoBehaviour
                 break;
             }
         }
+
+        Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
     }
 
     public void TryUnlockNextStage(int curQuestIndex)

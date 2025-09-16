@@ -1649,7 +1649,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4796872890609447085
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2604,8 +2604,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2738,7 +2738,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.21568628, g: 0.24313726, b: 0.24705882, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3060,7 +3060,6 @@ GameObject:
   - component: {fileID: 1625884420560430521}
   - component: {fileID: 1247416740443681807}
   - component: {fileID: 1618881476985048851}
-  - component: {fileID: 2223732261278314987}
   m_Layer: 5
   m_Name: StoryPanel
   m_TagString: Untagged
@@ -3173,9 +3172,19 @@ MonoBehaviour:
   backgroundImageName: BackgroundImage
   constellationImageName: ConstellationImage
   centerImageName: CenterImage
+  skipButtonName: SkipButton
+  skipButtonTextName: SkipButtonText
   storyPages: []
   currentPage: 0
   typingEffectManager: {fileID: 1618881476985048851}
+  skipSpeedOptions:
+  - 0.05
+  - 0.1
+  - 0.2
+  - 0.5
+  - 1
+  currentSkipSpeedIndex: 3
+  allowTouchToCancelSkip: 1
 --- !u!114 &1618881476985048851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3191,45 +3200,6 @@ MonoBehaviour:
   typingSpeed: 0.05
   enableTypingEffect: 1
   typingSound: {fileID: 0}
---- !u!114 &2223732261278314987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7239767085408448219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 054e4dd4c98e7e546a346bff12e97e3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  testCharacterNames:
-  - NPC
-  - "\uD50C\uB808\uC774\uC5B4"
-  - NPC
-  - "\uD50C\uB808\uC774\uC5B4"
-  testMultiDialogue:
-  - "\uC548\uB155\uD558\uC138\uC694! \uBB34\uC5C7\uC744 \uB3C4\uC640\uB4DC\uB9B4\uAE4C\uC694?"
-  - "\uC548\uB155\uD558\uC138\uC694! \uB9C8\uC744\uC5D0 \uB300\uD574 \uC54C\uACE0
-    \uC2F6\uC5B4\uC694."
-  - "\uC774 \uB9C8\uC744\uC740 \uD3C9\uD654\uB85C\uC6B4 \uACF3\uC785\uB2C8\uB2E4.
-    \uB9CE\uC740 \uBAA8\uD5D8\uAC00\uB4E4\uC774 \uCC3E\uC544\uC624\uC8E0."
-  - "\uC815\uB9D0 \uBA4B\uC9C4 \uB9C8\uC744\uC774\uB124\uC694! \uAC10\uC0AC\uD569\uB2C8\uB2E4."
-  testCharacterPositions: 00010001
-  testDialogueGraph:
-    graphId: 
-    startNodeId: 
-    nodes: []
-  storyPanel: {fileID: 0}
-  testCharacterSprites:
-  - {fileID: 21300000, guid: db1fb43a07d861f44a6770a93de19c32, type: 3}
-  - {fileID: 21300000, guid: 444b480d7709ff34489726c5f42cd8fb, type: 3}
-  testBackgroundSprites:
-  - {fileID: 21300000, guid: db1fb43a07d861f44a6770a93de19c32, type: 3}
-  - {fileID: 21300000, guid: 444b480d7709ff34489726c5f42cd8fb, type: 3}
-  testConstellationSprites:
-  - {fileID: 21300000, guid: db1fb43a07d861f44a6770a93de19c32, type: 3}
-  - {fileID: 21300000, guid: 444b480d7709ff34489726c5f42cd8fb, type: 3}
 --- !u!1 &8337046253950950697
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ namespace KYS
         [SerializeField] private string backgroundImageName = "BackgroundImage"; // 배경 이미지 추가
         [SerializeField] private string constellationImageName = "ConstellationImage"; // 별자리 이미지 추가
         [SerializeField] private string centerImageName = "CenterImage"; // 가운데 이미지 추가
+        [SerializeField] private string skipButtonName = "SkipButton"; // 스킵 버튼
 
         // ChatWindowArea (NextButton 역할)
         private GameObject chatWindowArea => GetUI(chatWindowAreaName);
@@ -85,6 +86,19 @@ namespace KYS
         private bool isCenterImageActive = false;
         private string currentCenterImageKey = ""; // 현재 표시 중인 이미지 키
         
+        // 이미지 로딩 상태 추적
+        private bool isCharacterImageLoaded = false;
+        
+        // 스킵 관련 변수
+        private bool isSkipMode = false;
+        private Coroutine autoAdvanceCoroutine;
+        private float skipAutoAdvanceDelay = 0.1f; // 스킵 모드에서 자동 진행 지연 시간
+        
+        [Header("스킵 설정")]
+        [SerializeField] private float[] skipSpeedOptions = { 0.05f, 0.1f, 0.2f, 0.5f, 1.0f }; // 스킵 속도 옵션들 (초)
+        [SerializeField] private int currentSkipSpeedIndex = 1; // 현재 선택된 스킵 속도 인덱스 (기본: 0.1초)
+        [SerializeField] private bool allowTouchToCancelSkip = true; // 터치로 스킵 취소 허용
+        
         // 초기화 완료 이벤트
         public System.Action OnInitializationCompleted;
         
@@ -106,8 +120,7 @@ namespace KYS
                 "ui_character_name_default",
                 "ui_story_text_default",
                 "ui_dialogue_text_default",
-                "ui_log_button",
-                "ui_skip_button"
+                "ui_log_button"
             };
         }
 
@@ -118,6 +131,9 @@ namespace KYS
             
             // 초기화 시 모든 캐릭터 이미지 숨기기 (프리팹 기본 이미지 방지)
             HideAllCharacterImages();
+            
+            // 스킵 속도 초기화
+            skipAutoAdvanceDelay = GetCurrentSkipSpeed();
             
             UpdateUI();
             
@@ -142,9 +158,53 @@ namespace KYS
             Debug.Log("[StoryPanel] 초기화 완료 - OnInitializationCompleted 이벤트 호출");
         }
 
+        public override void Hide()
+        {
+            // 화면 숨기기 전에 모든 이미지 정리
+            HideAllCharacterImages();
+            HideCenterImage();
+            
+            // 스킵 모드 중지
+            StopSkipMode();
+            
+            base.Hide();
+        }
+        
+        /// <summary>
+        /// 패널 닫기 (Manager.ui.ClosePanel() 호출 시)
+        /// </summary>
+        public void ClosePanel()
+        {
+            Debug.Log("[StoryPanel] ClosePanel 호출 - 이미지 정리 후 패널 닫기");
+            
+            // 스킵 모드 중지 (먼저 중지)
+            StopSkipMode();
+            
+            // 타이핑 효과 중지
+            if (typingEffectManager != null)
+            {
+                typingEffectManager.StopTyping();
+            }
+            
+            // 이미지 정리 (스프라이트 제거 포함)
+            HideAllCharacterImages();
+            HideCenterImage();
+            
+            // 추가로 모든 이미지 UI 강제 비활성화
+            ForceHideAllImages();
+            
+            // UIManager를 통해 패널 닫기
+            Manager.ui.ClosePanel();
+        }
+
         public override void Cleanup()
         {
             base.Cleanup();
+            
+            // 모든 이미지 숨기기 (화면 닫힐 때 이미지가 보이는 문제 방지)
+            HideAllCharacterImages();
+            HideCenterImage();
+            
             // 타이핑 효과 정리
             if (typingEffectManager != null)
             {
@@ -167,12 +227,15 @@ namespace KYS
             // 초기화 완료 이벤트 정리
             OnInitializationCompleted = null;
             IsInitialized = false;
+            
+            // 스킵 모드 정리
+            StopSkipMode();
         }
 
         private void SetupButtons()
         {
             // ChatWindowArea 전체가 NextButton 역할
-            var chatAreaHandler = GetEventWithSFX(chatWindowAreaName, "SFX_ButtonClick");
+            var chatAreaHandler = GetEvent(chatWindowAreaName);
             if (chatAreaHandler != null)
             {
                 chatAreaHandler.Click += (data) => OnChatWindowClicked();
@@ -278,6 +341,14 @@ namespace KYS
         
         private void OnChatWindowClicked()
         {
+            // 스킵 모드일 때 터치로 스킵 취소
+            if (isSkipMode && allowTouchToCancelSkip)
+            {
+                Debug.Log("[StoryPanel] 스킵 모드에서 터치 감지 - 스킵 취소");
+                StopSkipMode();
+                return;
+            }
+            
             if (typingEffectManager == null)
             {
                 Debug.LogWarning("[StoryPanel] TypingEffectManager가 설정되지 않았습니다.");
@@ -479,8 +550,19 @@ namespace KYS
         private void OnSkipButtonClicked()
         {
             Debug.Log("[StoryPanel] 스킵 버튼 클릭");
-            // 스킵 기능 구현
+            
+            if (isSkipMode)
+            {
+                // 스킵 모드 해제
+                StopSkipMode();
+            }
+            else
+            {
+                // 스킵 모드 활성화
+                StartSkipMode();
+            }
         }
+        
 
         #region 타이핑 효과 관련 메서드
 
@@ -601,8 +683,8 @@ namespace KYS
             currentDialogueTexts = null;
             currentCharacterPositions = null;
             
-            // 패널 숨기기
-            Hide();
+            // 패널 닫기
+            ClosePanel();
         }
         
         /// <summary>
@@ -711,7 +793,21 @@ namespace KYS
                         bool isLeftCharacter = (imagePosition == "left");
                         Debug.Log($"[StoryPanel] 이름 위치 설정 - isLeftCharacter: {isLeftCharacter} (imagePosition: '{imagePosition}')");
                         SetDialogueCharacterName(localizedSpeaker, isLeftCharacter);
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectDialogue = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectDialogue = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectDialogue);
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -759,7 +855,21 @@ namespace KYS
 
                     case "story":
                         SwitchToStoryMode();
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectStory = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectStory = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectStory);
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -774,8 +884,60 @@ namespace KYS
                         break;
 
                     case "end":
-                        EndDialogue();
-                        return;
+                        // end 노드는 dialogue와 동일하게 처리 (대사 표시 후 클릭 시 종료)
+                        // CharacterImagePosition에 따라 올바른 모드로 전환
+                        string endImagePosition = dialogueData.CharacterImagePosition?.ToLower() ?? "left";
+                        Debug.Log($"[StoryPanel] end 노드 CharacterImagePosition: '{dialogueData.CharacterImagePosition}' -> 파싱된 위치: '{endImagePosition}'");
+                        
+                        if (endImagePosition == "right")
+                        {
+                            SwitchToDialogueModeRight();
+                        }
+                        else if (endImagePosition == "center")
+                        {
+                            // center는 story 모드로 처리
+                            SwitchToStoryMode();
+                        }
+                        else
+                        {
+                            // left 또는 기타 값들은 왼쪽 모드로 처리
+                            SwitchToDialogueModeLeft();
+                        }
+                        
+                        string endLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
+                        Debug.Log($"[StoryPanel] end 노드 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{endLocalizedSpeaker}', 언어: {currentLanguage}");
+                        
+                        // CharacterImagePosition에 따라 올바른 이름 위치 설정
+                        bool endIsLeftCharacter = (endImagePosition == "left");
+                        Debug.Log($"[StoryPanel] end 노드 이름 위치 설정 - isLeftCharacter: {endIsLeftCharacter} (imagePosition: '{endImagePosition}')");
+                        SetDialogueCharacterName(endLocalizedSpeaker, endIsLeftCharacter);
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectEnd = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectEnd = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectEnd);
+                        
+                        // CharacterImage 처리
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            Debug.Log("[StoryPanel] end 노드 CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
+                        break;
 
                     default:
                         Debug.LogWarning($"[StoryPanel] 알 수 없는 노드 타입: {dialogueData.NodeType}");
@@ -784,7 +946,21 @@ namespace KYS
                         string defaultLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
                         Debug.Log($"[StoryPanel] 기본 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{defaultLocalizedSpeaker}', 언어: {currentLanguage}");
                         SetDialogueCharacterName(defaultLocalizedSpeaker, dialogueData.Speaker == "player");
-                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffect);
+                        
+                        // UseTypingEffect를 안전하게 파싱 (기본값: true)
+                        bool useTypingEffectDefault = true;
+                        if (!string.IsNullOrEmpty(dialogueData.UseTypingEffect))
+                        {
+                            if (bool.TryParse(dialogueData.UseTypingEffect, out bool parsedValue))
+                            {
+                                useTypingEffectDefault = parsedValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[StoryPanel] UseTypingEffect 파싱 실패: '{dialogueData.UseTypingEffect}', 기본값 true 사용");
+                            }
+                        }
+                        SetStoryTextWithTyping(dialogueData.GetLocalizedDialogueText(currentLanguage), useTypingEffectDefault);
                         break;
                 }
 
@@ -915,7 +1091,7 @@ namespace KYS
         private void EndDialogue()
         {
             DialogueManager.Instance.EndDialogue();
-            Hide();
+            ClosePanel();
         }
         
         /// <summary>
@@ -1137,8 +1313,8 @@ namespace KYS
             currentNode = null;
             isNodeBasedDialogueActive = false;
             
-            // 패널 숨기기
-            Hide();
+            // 패널 닫기
+            ClosePanel();
         }
         
         /// <summary>
@@ -1551,7 +1727,15 @@ namespace KYS
             if (storyRCharacterImage != null)
             {
                 storyRCharacterImage.sprite = sprite;
-                storyRCharacterImage.gameObject.SetActive(sprite != null);
+                if (sprite == null)
+                {
+                    Debug.Log("[StoryPanel] 스토리 캐릭터 이미지를 숨깁니다.");
+                    storyRCharacterImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    storyRCharacterImage.gameObject.SetActive(true);
+                }
             }
         }
         
@@ -1563,7 +1747,15 @@ namespace KYS
             if (dialogueLCharacterImage != null)
             {
                 dialogueLCharacterImage.sprite = sprite;
-                dialogueLCharacterImage.gameObject.SetActive(sprite != null);
+                if (sprite == null)
+                {
+                    Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지를 숨깁니다.");
+                    dialogueLCharacterImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    dialogueLCharacterImage.gameObject.SetActive(true);
+                }
             }
         }
         
@@ -1575,7 +1767,15 @@ namespace KYS
             if (dialogueRCharacterImage != null)
             {
                 dialogueRCharacterImage.sprite = sprite;
-                dialogueRCharacterImage.gameObject.SetActive(sprite != null);
+                if (sprite == null)
+                {
+                    Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지를 숨깁니다.");
+                    dialogueRCharacterImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    dialogueRCharacterImage.gameObject.SetActive(true);
+                }
             }
         }
         
@@ -1587,7 +1787,15 @@ namespace KYS
             if (choiceLCharacterImage != null)
             {
                 choiceLCharacterImage.sprite = sprite;
-                choiceLCharacterImage.gameObject.SetActive(sprite != null);
+                if (sprite == null)
+                {
+                    Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지를 숨깁니다.");
+                    choiceLCharacterImage.gameObject.SetActive(false);
+                }
+                else
+                {
+                    choiceLCharacterImage.gameObject.SetActive(true);
+                }
             }
         }
         
@@ -1672,10 +1880,20 @@ namespace KYS
             if (characterSprite == null)
             {
                 Debug.LogWarning($"[StoryPanel] 캐릭터 이미지를 찾을 수 없습니다: {imageName}");
+                // 이미지 로딩 실패 상태 설정
+                isCharacterImageLoaded = false;
                 // 이미지가 없을 때 모든 캐릭터 이미지 UI 비활성화
                 HideAllCharacterImages();
+                // 추가로 null 스프라이트로 설정하여 기본 이미지 제거
+                SetStoryCharacterImage(null);
+                SetDialogueLeftCharacterImage(null);
+                SetDialogueRightCharacterImage(null);
+                SetChoiceLeftCharacterImage(null);
                 return;
             }
+            
+            // 이미지 로딩 성공 상태 설정
+            isCharacterImageLoaded = true;
 
             // 현재 모드에 따라 이미지 설정
             if (IsStoryMode())
@@ -1727,14 +1945,81 @@ namespace KYS
         /// </summary>
         public void HideAllCharacterImages()
         {
+            Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 시작");
+            
             if (storyRCharacterImage != null)
+            {
+                storyRCharacterImage.sprite = null; // 스프라이트 제거
                 storyRCharacterImage.gameObject.SetActive(false);
+                Debug.Log("[StoryPanel] 스토리 오른쪽 캐릭터 이미지 숨김");
+            }
             if (dialogueLCharacterImage != null)
+            {
+                dialogueLCharacterImage.sprite = null; // 스프라이트 제거
                 dialogueLCharacterImage.gameObject.SetActive(false);
+                Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지 숨김");
+            }
             if (dialogueRCharacterImage != null)
+            {
+                dialogueRCharacterImage.sprite = null; // 스프라이트 제거
                 dialogueRCharacterImage.gameObject.SetActive(false);
+                Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지 숨김");
+            }
             if (choiceLCharacterImage != null)
+            {
+                choiceLCharacterImage.sprite = null; // 스프라이트 제거
                 choiceLCharacterImage.gameObject.SetActive(false);
+                Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지 숨김");
+            }
+            
+            // 이미지 로딩 상태 초기화
+            isCharacterImageLoaded = false;
+            
+            Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 완료");
+        }
+        
+        /// <summary>
+        /// 모든 이미지 UI 강제 비활성화 (패널 닫기 시 사용)
+        /// </summary>
+        private void ForceHideAllImages()
+        {
+            Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화");
+            
+            // 모든 캐릭터 이미지 UI 강제 비활성화
+            if (storyRCharacterImage != null)
+            {
+                storyRCharacterImage.sprite = null;
+                storyRCharacterImage.gameObject.SetActive(false);
+                storyRCharacterImage.enabled = false; // Image 컴포넌트 비활성화
+            }
+            if (dialogueLCharacterImage != null)
+            {
+                dialogueLCharacterImage.sprite = null;
+                dialogueLCharacterImage.gameObject.SetActive(false);
+                dialogueLCharacterImage.enabled = false;
+            }
+            if (dialogueRCharacterImage != null)
+            {
+                dialogueRCharacterImage.sprite = null;
+                dialogueRCharacterImage.gameObject.SetActive(false);
+                dialogueRCharacterImage.enabled = false;
+            }
+            if (choiceLCharacterImage != null)
+            {
+                choiceLCharacterImage.sprite = null;
+                choiceLCharacterImage.gameObject.SetActive(false);
+                choiceLCharacterImage.enabled = false;
+            }
+            
+            // 가운데 이미지도 강제 비활성화
+            if (centerImage != null)
+            {
+                centerImage.sprite = null;
+                centerImage.gameObject.SetActive(false);
+                centerImage.enabled = false;
+            }
+            
+            Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화 완료");
         }
         
         /// <summary>
@@ -2072,6 +2357,10 @@ namespace KYS
                     HideAllCharacterImages();
                     return;
                 }
+                
+                // 이미지 로딩이 실패했을 수 있으므로 실제로 이미지가 로드되었는지 확인
+                // 이미지가 로딩되지 않았으면 숨김 상태를 유지
+                Debug.Log($"[StoryPanel] ShowCharacterImages - CharacterImage: {characterImage}");
             }
             
             // 현재 대화 데이터에서 캐릭터 위치 정보 가져오기
@@ -2080,6 +2369,16 @@ namespace KYS
             {
                 characterPosition = Manager.dialogue.CurrentDialogueData.CharacterImagePosition?.ToLower() ?? "";
             }
+            
+            // 이미지 로딩 상태를 명시적으로 확인
+            if (!isCharacterImageLoaded)
+            {
+                Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
+                HideAllCharacterImages();
+                return;
+            }
+            
+            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되었으므로 캐릭터 이미지를 표시합니다.");
             
             // 모든 캐릭터 이미지 먼저 숨기기
             if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
@@ -2137,6 +2436,172 @@ namespace KYS
                 HideCenterImage();
             }
         }
+        
+        #endregion
+        
+        #region 스킵 기능
+        
+        /// <summary>
+        /// 스킵 모드 시작
+        /// </summary>
+        private void StartSkipMode()
+        {
+            if (isSkipMode) return;
+            
+            isSkipMode = true;
+            Debug.Log($"[StoryPanel] 스킵 모드 활성화 - 속도: {GetCurrentSkipSpeed()}초");
+            
+            // 타이핑 효과 즉시 완료
+            if (typingEffectManager != null)
+            {
+                // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
+                TextMeshProUGUI targetText = GetCurrentDialogueText();
+                if (targetText != null)
+                {
+                    typingEffectManager.CompleteTyping(targetText);
+                }
+            }
+            
+            
+            // 자동 진행 시작
+            StartAutoAdvance();
+        }
+        
+        /// <summary>
+        /// 스킵 모드 중지
+        /// </summary>
+        private void StopSkipMode()
+        {
+            if (!isSkipMode) return;
+            
+            isSkipMode = false;
+            Debug.Log("[StoryPanel] 스킵 모드 비활성화");
+            
+            // 자동 진행 중지
+            StopAutoAdvance();
+            
+        }
+        
+        
+        /// <summary>
+        /// 현재 스킵 속도 가져오기
+        /// </summary>
+        private float GetCurrentSkipSpeed()
+        {
+            if (currentSkipSpeedIndex >= 0 && currentSkipSpeedIndex < skipSpeedOptions.Length)
+            {
+                return skipSpeedOptions[currentSkipSpeedIndex];
+            }
+            return skipSpeedOptions[1]; // 기본값: 0.1초
+        }
+        
+        /// <summary>
+        /// 현재 모드에 따른 대화 텍스트 컴포넌트 가져오기
+        /// </summary>
+        private TextMeshProUGUI GetCurrentDialogueText()
+        {
+            if (IsChoiceMode())
+            {
+                return choiceQuestionText;
+            }
+            else if (IsStoryMode())
+            {
+                return storyChatText;
+            }
+            else if (IsDialogueMode())
+            {
+                return dialogueChatText;
+            }
+            
+            // 기본값으로 대화 텍스트 반환
+            return dialogueChatText;
+        }
+        
+        
+        /// <summary>
+        /// 스킵 속도 설정 (설정에서만 사용)
+        /// </summary>
+        public void SetSkipSpeed(int speedIndex)
+        {
+            if (speedIndex >= 0 && speedIndex < skipSpeedOptions.Length)
+            {
+                currentSkipSpeedIndex = speedIndex;
+                skipAutoAdvanceDelay = GetCurrentSkipSpeed();
+                
+                Debug.Log($"[StoryPanel] 스킵 속도 설정: {skipAutoAdvanceDelay}초");
+                
+                // 현재 스킵 모드가 활성화되어 있으면 속도 즉시 적용
+                if (isSkipMode)
+                {
+                    StartAutoAdvance(); // 기존 코루틴 중지하고 새로운 속도로 재시작
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 자동 진행 시작
+        /// </summary>
+        private void StartAutoAdvance()
+        {
+            if (autoAdvanceCoroutine != null)
+            {
+                StopCoroutine(autoAdvanceCoroutine);
+            }
+            autoAdvanceCoroutine = StartCoroutine(AutoAdvanceCoroutine());
+        }
+        
+        /// <summary>
+        /// 자동 진행 중지
+        /// </summary>
+        private void StopAutoAdvance()
+        {
+            if (autoAdvanceCoroutine != null)
+            {
+                StopCoroutine(autoAdvanceCoroutine);
+                autoAdvanceCoroutine = null;
+            }
+        }
+        
+        /// <summary>
+        /// 자동 진행 코루틴
+        /// </summary>
+        private System.Collections.IEnumerator AutoAdvanceCoroutine()
+        {
+            while (isSkipMode)
+            {
+                yield return new WaitForSeconds(skipAutoAdvanceDelay);
+                
+                // 다음 노드로 이동
+                if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
+                {
+                // 타이핑 효과 즉시 완료
+                if (typingEffectManager != null)
+                {
+                    // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
+                    TextMeshProUGUI targetText = GetCurrentDialogueText();
+                    if (targetText != null)
+                    {
+                        typingEffectManager.CompleteTyping(targetText);
+                    }
+                }
+                    
+                    // 다음 노드로 이동
+                    Manager.dialogue.MoveToNextNode();
+                }
+                else
+                {
+                    // 대화가 끝났으면 스킵 모드 자동 해제 후 패널 닫기
+                    StopSkipMode();
+                    ClosePanel();
+                    break;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 스킵 모드 상태 확인
+        /// </summary>
+        public bool IsSkipMode => isSkipMode;
         
         #endregion
         
