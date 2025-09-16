@@ -1,0 +1,15 @@
+﻿캐릭터 강회 비용 증가 수치,,,
+캐릭터ID,강화 비용 증가 수치,,
+CharacterID,UpgradeMultiplier,,
+int,float,,// 계산식     LV에 맞는 속성 Cost x 각 캐릭터에 UngradeMultiplier = 강화 비용
+101_Tutorial,0,,ex) 1렙 Speed 속성 Cost = 100      UpgradeMultiplier = 1.3        100*1.3 = 130  
+101_Stage00,1.1,,4렙 Speed 속성 Cost = 400      UpgradeMultiplier = 1.3        400*1.3 = 520  
+102_Stage00,1.2,,
+103_Stage00,1.3,,
+104_Stage00,1.4,,
+105_Stage00,1.5,,
+106_Stage00,1.6,,
+107_Stage00,1.7,,
+108_Stage00,1.8,,
+109_Stage00,1,,
+110_Stage00,1,,
