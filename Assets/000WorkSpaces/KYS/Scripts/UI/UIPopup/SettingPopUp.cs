@@ -188,7 +188,44 @@ public class SettingPopUp : BaseUI
 
     private void OnEmergencyEscapeButton(PointerEventData data)
     {
-       
+        // 긴급 탈출 - 플레이어를 최초 위치로 이동
+        ResetPlayerToInitialPosition();
+        Manager.ui.ClosePopup();
+    }
+
+    /// <summary>
+    /// 플레이어를 최초 위치로 리셋
+    /// </summary>
+    private void ResetPlayerToInitialPosition()
+    {
+        try
+        {
+            // 플레이어 오브젝트 찾기
+            GameObject playerObj = Manager.player?.PlayerObj;
+            if (playerObj == null)
+            {
+                Debug.LogError("[SettingPopUp] 플레이어 오브젝트를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 최초 위치로 이동 (0, 0, 0 또는 원하는 위치)
+            Vector3 initialPosition = new Vector3(0, 0, 0);
+            playerObj.transform.position = initialPosition;
+
+            // 속도 초기화
+            var rigidbody = playerObj.GetComponent<Rigidbody>();
+            if (rigidbody != null)
+            {
+                rigidbody.velocity = Vector3.zero;
+                rigidbody.angularVelocity = Vector3.zero;
+            }
+
+            Debug.Log($"[SettingPopUp] 플레이어를 {initialPosition}으로 이동 완료");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SettingPopUp] 긴급 탈출 실행 중 오류: {e.Message}");
+        }
     }
 
 
