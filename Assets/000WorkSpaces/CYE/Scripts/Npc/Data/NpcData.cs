@@ -10,7 +10,6 @@ namespace GameNpc
     {
         private NpcDataCsv _npcCsv => Manager.data.Npc.Values[Id];
         public string NpcName => _npcCsv.Name_KR;
-        public string NpcImageLocation => _npcCsv.SpritePath_Default;
         public string Description => _npcCsv.Description;
 
         // 대화 관련

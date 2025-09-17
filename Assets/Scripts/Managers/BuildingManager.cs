@@ -193,7 +193,4 @@ public partial class DataManager
             }
         };
     }
-
-
-
 }
