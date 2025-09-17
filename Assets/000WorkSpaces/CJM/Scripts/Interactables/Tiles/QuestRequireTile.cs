@@ -147,7 +147,7 @@ public class QuestRequireTile : InteractableBase
         base.Enter_PersonalTask(characterRuntimeData);
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            Debug.LogError("타일 들어옴");
+            //Debug.LogError("타일 들어옴");
             StartCoroutine(AutoInserting());
         }
     }

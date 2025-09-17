@@ -13,10 +13,18 @@ public class NpcInteractAreaUI : MonoBehaviour
 
     public void StartConversation()
     {
-        //if ()
-        //Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
-
-        /*if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
-            TutorialManager.Instance.tutorialNPC.UpdateQuestData();*/
+        var stageID = Manager.firebase.UserData.CurStage.Value;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        
+        // 퀘스트가 클리어 상태라면
+        if (npc.CurQuestData.QuestState.Value == 3)
+        {
+            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_{npc.NpcID.Value}_{npc.CurrentQuestID}_Clear");
+        }
+        else
+        {
+            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_{npc.NpcID.Value}_{npc.CurrentQuestID}");
+        }
+            
     }
 }
