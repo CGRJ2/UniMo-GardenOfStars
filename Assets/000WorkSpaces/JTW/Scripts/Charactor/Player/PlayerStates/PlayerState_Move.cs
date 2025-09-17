@@ -8,7 +8,6 @@ public class PlayerState_Move : PlayerStateBase
 
     public PlayerState_Move(StateMachine<PlayerStates> stateMachine, PlayerRunTimeData data) : base(stateMachine, data)
     {
-        HasPhysics = true;
         _rb = PlayerData.gameObject.GetComponent<Rigidbody>();
     }
 
@@ -19,7 +18,9 @@ public class PlayerState_Move : PlayerStateBase
 
     public override void Update()
     {
-        if(PlayerData.Direction == Vector3.zero || !Manager.player.IsControl)
+        _rb.velocity = PlayerData.Direction * Manager.player.Data.MoveSpeed;
+
+        if (PlayerData.Direction == Vector3.zero || !Manager.player.IsControl)
         {
             if (PlayerData.IsWork.Value)
             {
@@ -30,11 +31,6 @@ public class PlayerState_Move : PlayerStateBase
                 StateMachine.ChangeState(PlayerStates.Idle);
             }
         }
-    }
-
-    public override void FixedUpdate()
-    {
-        _rb.velocity = PlayerData.Direction * Manager.player.Data.MoveSpeed;
     }
 
     public override void Exit()
