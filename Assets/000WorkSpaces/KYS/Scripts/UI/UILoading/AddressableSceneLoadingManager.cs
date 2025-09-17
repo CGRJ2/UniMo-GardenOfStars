@@ -1128,5 +1128,26 @@ namespace KYS
             // PlayerUpgradePanel 테스트용 메서드
             UIManager.Instance.ShowPanelAsync<PlayerUpgradePanel>();
         }
+
+        [ContextMenu("튜토리얼 팝업 수동 모드 테스트")]
+        public async void TestTutorialPopUpManual()
+        {
+            // 수동으로만 닫을 수 있는 튜토리얼 팝업 테스트
+            await Manager.dialogue.ShowTutorialPopUpManual("npc000_quest_Tuto01", TutorialPopUp.TutorialPositionType.Center);
+        }
+
+        [ContextMenu("튜토리얼 팝업 자동 종료 테스트")]
+        public async void TestTutorialPopUpAuto()
+        {
+            // 3초 후 자동 종료되는 튜토리얼 팝업 테스트
+            await Manager.dialogue.ShowTutorialPopUp("npc000_quest_Tuto01", TutorialPopUp.TutorialPositionType.Center, 3000, true);
+        }
+
+        [ContextMenu("튜토리얼 팝업 수동 모드 (자동 종료 비활성화)")]
+        public async void TestTutorialPopUpNoAuto()
+        {
+            // 자동 종료가 비활성화된 튜토리얼 팝업 테스트
+            await Manager.dialogue.ShowTutorialPopUp("npc000_quest_Tuto01", TutorialPopUp.TutorialPositionType.Center, 0, false);
+        }
     }
 }
