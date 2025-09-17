@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using GameQuest;
-using System;
 
 public class NpcDataCsv : IUsableId
 {
     public string NpcID;
     public string Name_KR;
     public string Name_EN;
-    public string SpritePath_Default;
+    public Sprite Sprite_Default;
     public string Description;
 
     public string GetId()
@@ -41,9 +37,20 @@ public partial class DataManager
                 npc.NpcID = words[dict["NpcID"]];
                 npc.Name_KR = words[dict["Name_KR"]];
                 npc.Name_EN = words[dict["Name_EN"]];
-                npc.SpritePath_Default = words[dict["SpritePath_Default"]];
                 npc.Description = words[dict["Description"]];
 
+                string spritePath_Default = words[dict["SpritePath_Default"]];
+                if (Addressables.ResourceLocators.Any(locator => locator.Locate($"{spritePath_Default}", typeof(Sprite), out var locations)))
+                {
+                    Addressables.LoadAssetAsync<Sprite>($"{spritePath_Default}").Completed += task =>
+                    {
+                        npc.Sprite_Default = task.Result;
+                    };
+                }
+                else
+                {
+                    Debug.LogError($"[{npc.NpcID}]의 키:[{spritePath_Default}] 에 해당하는 스프라이트 없음");
+                }
                 return npc;
             });
 
