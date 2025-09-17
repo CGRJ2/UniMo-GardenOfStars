@@ -34,6 +34,7 @@ public class WorkerPanel : KYS.BaseUI
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
+    public string WorkerKey => _workerKey;
 
     private int _employCost;
     private int _employBMCost;
