@@ -43,6 +43,8 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         {
             foreach (string key in Manager.data.Worker.Values.Keys.ToList())
             {
+                if (!Manager.data.Character.Values.ContainsKey($"{key}_{Manager.firebase.UserData.CurStage.Value}")) continue;
+
                 WorkerPanel workerPanel = Instantiate(_workerPanelPrefab, _workerUpgradePanel.transform).GetComponent<WorkerPanel>();
                 
                 if (workerPanel != null)
@@ -51,9 +53,6 @@ public class WorkerUpgradePresenter : KYS.BaseUI
                     workerPanel.Init(key, this);
                     _workerPanelList.Add(workerPanel);
                 }
-
-                // 튜토리얼은 일꾼이 하나만 나와야 함
-                if (Manager.firebase.UserData.CurStage.Value == "Tutorial") break;
             }
         }
         
