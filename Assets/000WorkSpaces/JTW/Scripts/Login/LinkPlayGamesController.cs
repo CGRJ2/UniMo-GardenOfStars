@@ -35,6 +35,7 @@ public class LinkPlayGamesController : MonoBehaviour
                 if (task.IsCanceled)
                 {
                     Debug.Log("계정 연동 중단");
+                    Manager.firebase.NetworkDisconnected();
                     return;
                 }
 
@@ -57,6 +58,7 @@ public class LinkPlayGamesController : MonoBehaviour
                                     if(task.IsCanceled || task.IsFaulted)
                                     {
                                         Debug.Log("파이어베이스 로그인 실패");
+                                        Manager.firebase.NetworkDisconnected();
                                         return;
                                     }
 
@@ -74,6 +76,7 @@ public class LinkPlayGamesController : MonoBehaviour
                                         if (guestValue.IsCanceled || guestValue.IsFaulted)
                                         {
                                             Debug.Log("게스트 데이터 불러오기 실패");
+                                            Manager.firebase.NetworkDisconnected();
                                             return;
                                         }
 
@@ -86,6 +89,7 @@ public class LinkPlayGamesController : MonoBehaviour
                                                 if (task.IsCanceled || task.IsFaulted)
                                                 {
                                                     Debug.Log("게스트 데이터 저장 실패");
+                                                    Manager.firebase.NetworkDisconnected();
                                                     return;
                                                 }
 

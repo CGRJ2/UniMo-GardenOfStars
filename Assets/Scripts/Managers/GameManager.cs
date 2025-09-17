@@ -72,11 +72,18 @@ public class GameManager : Singleton<GameManager>
 
     #region Addressable Assets Storage 동기화 체크
 
-    IEnumerator Fetch()
+    public IEnumerator Fetch()
     {
         yield return Addressables.InitializeAsync(true);
         var checkHandle = Addressables.CheckForCatalogUpdates(false);  // 변경된 카탈로그 ID들
         yield return checkHandle;
+
+        if(checkHandle.Status == AsyncOperationStatus.Failed)
+        {
+            Manager.firebase.NetworkDisconnected();
+            yield break;
+        }
+
         Debug.Log($"업데이트 존재 여부 => {checkHandle.Result.Count}");
 
         if (checkHandle.Result.Count > 0)
@@ -84,6 +91,12 @@ public class GameManager : Singleton<GameManager>
             // 새로 로드된 카탈로그의 IResourceLocator들
             var updateCatalogHandle = Addressables.UpdateCatalogs(checkHandle.Result, false);
             yield return updateCatalogHandle;
+
+            if(updateCatalogHandle.Status == AsyncOperationStatus.Failed)
+            {
+                Manager.firebase.NetworkDisconnected();
+                yield break;
+            }
 
             // IResourceLocator들을 IResourceLocation으로 치환
             var locators = updateCatalogHandle.Result;
@@ -102,6 +115,11 @@ public class GameManager : Singleton<GameManager>
             // 다운로드 사이즈 체크
             var sizeCheckHandle = Addressables.GetDownloadSizeAsync(locations);
             yield return sizeCheckHandle;
+            if (sizeCheckHandle.Status == AsyncOperationStatus.Failed)
+            {
+                Manager.firebase.NetworkDisconnected();
+                yield break;
+            }
             Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
 
             if(sizeCheckHandle.Result <= 0)
@@ -123,6 +141,13 @@ public class GameManager : Singleton<GameManager>
                 DownloadStatus downloadStatus = downloadHandle.GetDownloadStatus();
                 Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes 다운됨. 퍼센트:{(int)downloadStatus.Percent * 100}");
                 downloadProgress.Value = downloadStatus.Percent;
+
+                if(downloadHandle.Status == AsyncOperationStatus.Failed)
+                {
+                    inDownloading = false;
+                    Manager.firebase.NetworkDisconnected();
+                    yield break;
+                }
             }
             downloadProgress.Value = 1f;
 
