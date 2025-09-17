@@ -8,16 +8,15 @@ using System;
 
 public class NpcDataCsv : IUsableId
 {
-    public string Id;
-    public string NpcName;
-    public string StageId;
-    public string NpcImageLocation;
-    public string[] FocusText;
+    public string NpcID;
+    public string Name_KR;
+    public string Name_EN;
+    public string SpritePath_Default;
     public string Description;
 
     public string GetId()
     {
-        return Id;
+        return NpcID;
     }
 }
 
@@ -39,11 +38,10 @@ public partial class DataManager
             {
                 NpcDataCsv npc = new NpcDataCsv();
 
-                npc.Id = words[dict["Id"]];
-                npc.NpcName = words[dict["NpcName"]];
-                npc.StageId = words[dict["StageId"]];
-                npc.NpcImageLocation = words[dict["NpcImageLocation"]];
-                npc.FocusText = ConvertTextToArray(words[dict["FocusText"]]);
+                npc.NpcID = words[dict["NpcID"]];
+                npc.Name_KR = words[dict["Name_KR"]];
+                npc.Name_EN = words[dict["Name_EN"]];
+                npc.SpritePath_Default = words[dict["SpritePath_Default"]];
                 npc.Description = words[dict["Description"]];
 
                 return npc;
@@ -51,10 +49,5 @@ public partial class DataManager
 
             Npc.Load(rawData);
         }
-    }
-
-    private string[] ConvertTextToArray(string rawText)
-    {
-        return rawText.Split("@@@");
     }
 }

@@ -1,9 +1,8 @@
 using KYS;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 public class Panel_Estate : BaseUI
 {
@@ -24,16 +23,18 @@ public class Panel_Estate : BaseUI
 
     public void Init()
     {
-        Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+        // 현재 스테이지에 판매 중인 건물들만 불러와서 딕셔너리로 저장
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
+
+        string buildingIDs = Manager.data.Stage.Values[curStageID].BuildingIDs;
+        string[] buildingIdArray = 
+            buildingIDs.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
+
+        buildingDatas = new();
+
+        foreach (string id in buildingIdArray)
         {
-            foreach (BuildingData bd in task.Result)
-            {
-                buildingDatas.Add(bd.ID, bd); // 건물 데이터 추가
-            }
-
-            // 데이터베이스에서 유저가 보유중인 건물 => 업그레이드 딕셔너리 해당하는 애들만 체크
-            //Manager.buildings.upgradeDataDic
-
-        };
+            buildingDatas.Add(id, Manager.data.Building[id]); // 건물 데이터 추가
+        }
     }
 }
