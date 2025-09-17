@@ -25,6 +25,9 @@ public class LoadingCanvas_Title : KYS.BaseUI
 
         if (Manager.game.initialized)
         {
+            yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+            yield return new WaitUntil(() => Manager.firebase.UserData != null);
+            yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
             yield break;
         }
 
@@ -35,6 +38,10 @@ public class LoadingCanvas_Title : KYS.BaseUI
             yield return null;
         }
         _slider.value = 1f;
+
+        yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
 
         yield return delay;
     }
