@@ -305,7 +305,7 @@ namespace KYS
                     return safeAreaPanel.transform;
                 }
             }
-
+            
             Debug.LogWarning($"[UIManager] HUD용 SafeAreaPanel 생성 실패, HUD Canvas를 직접 사용: {hudCanvas.name}");
             return hudCanvas.transform;
         }
@@ -952,13 +952,17 @@ namespace KYS
         /// <summary>
         /// 패널 닫기
         /// </summary>
+        [ContextMenu("Close Panel")]
         public void ClosePanel()
         {
+            Debug.Log($"[UIManager] ClosePanel 호출됨 - Time: {Time.time}, Stack Count: {panelStack.Count}");
+            
             if (panelStack.Count == 0) return;
 
             BaseUI currentPanel = panelStack.Pop();
             if (currentPanel != null)
             {
+                Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name} - Time: {Time.time}");
                 // 스택 구조에서는 항상 파괴
                 UnregisterUI(currentPanel);
                 currentPanel.Hide();
@@ -1053,6 +1057,7 @@ namespace KYS
         /// <summary>
         /// 현재 열린 Popup 닫기
         /// </summary>
+        [ContextMenu("Close Popup")]
         public void ClosePopup()
         {
             if (popupStack.Count == 0)

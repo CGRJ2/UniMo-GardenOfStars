@@ -99,32 +99,27 @@ namespace KYS
 
         private void SetupButtons()
         {
-            //Debug.Log("[TitlePanel] SetupButtons() 시작");
+            Debug.Log($"[PropertyPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[PropertyPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
 
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
-            var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClick");
-            if (confirmEventHandler != null)
-            {
-                confirmEventHandler.Click += OnCloseButton;
-
-            }
-            else
-            {
-                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
-            }
-
-            var closeEventHandler = GetBackEvent(closeButtonName, "SFX_ButtonClickBack");
+            var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
-                //closeEventHandler.Click += OnCancelClicked;
-
+                Debug.Log($"[PropertyPanel] 새 이벤트 구독 추가 - Time: {Time.time}");
+                closeEventHandler.Click += OnCloseButton;
+                isButtonsSetup = true; // 설정 완료 플래그
             }
             else
             {
-                Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
+                Debug.LogError($"[PropertyPanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
             }
-
-
         }
 
 
@@ -151,10 +146,8 @@ namespace KYS
 
         private void OnCloseButton(PointerEventData data)
         {
-            // 확인 버튼 클릭 시 동작
-            Debug.Log("확인 버튼 클릭됨");
+            Debug.Log($"[PropertyPanel] OnCloseButton 호출됨 - Time: {Time.time}");
             Manager.ui.ClosePanel();
-
         }
 
 

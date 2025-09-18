@@ -234,6 +234,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[StoryPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[StoryPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // ChatWindowArea 전체가 NextButton 역할
             var chatAreaHandler = GetEvent(chatWindowAreaName);
             if (chatAreaHandler != null)
@@ -260,6 +269,8 @@ namespace KYS
                     skipHandler.Click += (data) => OnSkipButtonClicked();
                 }
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void UpdateUI()

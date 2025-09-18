@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 using GameQuest;
 
 namespace KYS
@@ -604,11 +605,11 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000 )
+        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
         {
             try
             {
-                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+                Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
 
                 // 1. 튜토리얼 팝업 열기
                 Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
@@ -616,15 +617,21 @@ namespace KYS
                     popup.SetTutorialPosition(positionType);
                     popup.SetTutorialNode(nodeID);
 
-                    Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+                if (autoClose)
+                {
+                    Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley/1000}초 후 자동 종료됩니다...");
 
-                    StartCoroutine(WaitDelay(deley, popup));
-                });
-
+                    // 2. 지정된 시간 대기 후 자동 종료
+                   StartCoroutine(WaitDelay(deley, popup));
+                }
+                else
+                {
+                    Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                }
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+                Debug.LogError($"[DialogueManager] 튜토리얼 팝업 표시 실패: {e.Message}");
             }
         }
 

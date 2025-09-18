@@ -48,6 +48,9 @@ namespace KYS
         [SerializeField] protected bool enableSFX = true;
         [SerializeField] protected string defaultClickSound = "SFX_ButtonClick";
         [SerializeField] protected string defaultBackSound = "SFX_ButtonClickBack";
+        
+        // 이벤트 중복 구독 방지 플래그
+        protected bool isButtonsSetup = false;
         [SerializeField] protected string defaultHoverSound = "SFX_ButtonHover";
         [SerializeField] protected string defaultErrorSound = "SFX_Error";
         [SerializeField] protected string defaultSuccessSound = "SFX_Success";
@@ -235,6 +238,9 @@ namespace KYS
 
         public virtual void Cleanup()
         {
+            // 이벤트 설정 플래그 리셋 (중복 구독 방지)
+            isButtonsSetup = false;
+            
             // Override in derived classes
         }
 
@@ -926,77 +932,77 @@ namespace KYS
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultClickSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultClickSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayBackSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultBackSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultBackSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayHoverSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultHoverSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultHoverSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayErrorSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultErrorSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultErrorSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlaySuccessSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultSuccessSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultSuccessSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayOpenSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultOpenSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultOpenSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         protected void PlayCloseSound(string soundName = null)
         {
             if (!enableSFX) return;
 
-            //string soundToPlay = soundName ?? defaultCloseSound;
-            //if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
-            //{
-            //    Manager.Audio.SfxPlay(soundToPlay);
-            //}
+            string soundToPlay = soundName ?? defaultCloseSound;
+            if (!string.IsNullOrEmpty(soundToPlay) && Manager.Audio != null)
+            {
+                Manager.Audio.SfxPlay(soundToPlay);
+            }
         }
 
         /// <summary>
