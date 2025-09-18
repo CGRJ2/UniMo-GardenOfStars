@@ -617,17 +617,18 @@ namespace KYS
                     popup.SetTutorialPosition(positionType);
                     popup.SetTutorialNode(nodeID);
 
-                if (autoClose)
-                {
-                    Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley/1000}초 후 자동 종료됩니다...");
+                    if (autoClose)
+                    {
+                        Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
 
-                    // 2. 지정된 시간 대기 후 자동 종료
-                   StartCoroutine(WaitDelay(deley, popup));
-                }
-                else
-                {
-                    Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
-                }
+                        // 2. 지정된 시간 대기 후 자동 종료
+                        StartCoroutine(WaitDelay(deley, popup));
+                    }
+                    else
+                    {
+                        Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                    }
+                });
             }
             catch (System.Exception e)
             {
