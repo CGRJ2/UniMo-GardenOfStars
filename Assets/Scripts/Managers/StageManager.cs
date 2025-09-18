@@ -1,7 +1,8 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.DebugUI;
 
 public class StageManager : MonoBehaviour
 {
@@ -18,18 +19,18 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    // ÀÓ½Ã·Î ³Ö¾îµÒ. StageDataCSV¿¡¼­ ÃÖÁ¾ »ı»ê¹°(ÀÏ²ÛÀÌ µé¸é ¾ÈµÇ´Â »ı»ê¹°) ID¸¦ ÁöÁ¤ÇØÁà¾ß ÇÔ
+    // ì„ì‹œë¡œ ë„£ì–´ë‘ . StageDataCSVì—ì„œ ìµœì¢… ìƒì‚°ë¬¼(ì¼ê¾¼ì´ ë“¤ë©´ ì•ˆë˜ëŠ” ìƒì‚°ë¬¼) IDë¥¼ ì§€ì •í•´ì¤˜ì•¼ í•¨
     public string restrictedProdID = "it10121";
 
     private void Awake()
     {
         Manager.player.SpawnPlayer();
 
-        // Å¸ÀÌÆ²¿¡¼­ ½ÃÀÛÇÒ ¶§
+        // íƒ€ì´í‹€ì—ì„œ ì‹œì‘í•  ë•Œ
         //Init();
 
 
-        // ½ºÅ×ÀÌÁö ¾À¿¡¼­ ½ÃÀÛÇÒ ¶§
+        // ìŠ¤í…Œì´ì§€ ì”¬ì—ì„œ ì‹œì‘í•  ë•Œ
         StartCoroutine(WaitAndInit());
     }
 
@@ -64,43 +65,57 @@ public class StageManager : MonoBehaviour
 
     void Init()
     {
-        // ÀÓ½Ã Å×½ºÆ®¿ë(ÀÎ°ÔÀÓ¾ÀÀ¸·Î ¹Ù·Î ½ÇÇàÇÏ´Â °æ¿ì)
+        // ì„ì‹œ í…ŒìŠ¤íŠ¸ìš©(ì¸ê²Œì„ì”¬ìœ¼ë¡œ ë°”ë¡œ ì‹¤í–‰í•˜ëŠ” ê²½ìš°)
         if (string.IsNullOrEmpty(Manager.firebase.UserData.CurStage.Value))
         {
-            Debug.LogError("ÇöÀç ½ºÅ×ÀÌÁö ID°¡ Àû¿ëµÇÁö ¾ÊÀ½");
+            Debug.LogError("í˜„ì¬ ìŠ¤í…Œì´ì§€ IDê°€ ì ìš©ë˜ì§€ ì•ŠìŒ");
             //Manager.firebase.UserData.CurStage.Value = "Tutorial";
             //Addressables.LoadSceneAsync($"MapScene_Tutorial", LoadSceneMode.Additive);
         }
-        // Æ©Åä¸®¾ó ¾ÀÀ» ºÒ·¯¿Â´Ù
+        // íŠœí† ë¦¬ì–¼ ì”¬ì„ ë¶ˆëŸ¬ì˜¨ë‹¤
         else if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
         {
             Addressables.LoadSceneAsync($"TutorialScene", LoadSceneMode.Additive).Completed += task =>
             {
-                // ¸Ê ¾À ·Îµå ¿Ï·á ÀÌÈÄ¿¡ ·Îµù ÇØÁ¦
+                // ë§µ ì”¬ ë¡œë“œ ì™„ë£Œ ì´í›„ì— ë¡œë”© í•´ì œ
             };
         }
 
-        // ÀÏ¹İ ½ºÅ×ÀÌÁö ¾ÀÀÇ °æ¿ì
+        // ì¼ë°˜ ìŠ¤í…Œì´ì§€ ì”¬ì˜ ê²½ìš°
         else
         {
             Manager.ui.SwitchToNormalHUD();
 
             Addressables.LoadSceneAsync($"MapScene_{Manager.firebase.UserData.CurStage.Value}", LoadSceneMode.Additive).Completed += task =>
             {
-                // ¸Ê ¾À ·Îµå ¿Ï·á ÀÌÈÄ¿¡ ·Îµù ÇØÁ¦
+                // ë§µ ì”¬ ë¡œë“œ ì™„ë£Œ ì´í›„ì— ë¡œë”© í•´ì œ
             };
         }
 
-        // ÇöÀç ½ºÅ×ÀÌÁöÀÇ Npc¿¡¼­, ÁøÇàÁßÀÎ Äù½ºÆ® ID µî·Ï
+        // í˜„ì¬ ìŠ¤í…Œì´ì§€ì˜ Npcì—ì„œ, ì§„í–‰ì¤‘ì¸ í€˜ìŠ¤íŠ¸ ID ë“±ë¡
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        foreach (var value in npc.QuestList.List)
+        //foreach (var value in npc.QuestList.List)
+
+        bool allQuestCleared = true;
+        for (int i = 0; i < npc.QuestList.List.Count; i ++)
         {
-            if (value.QuestState.Value != 3) // Å¬¸®¾îµÈ Äù½ºÆ®°¡ ¾Æ´Ï¶ó¸é
+            //if (Manager.data.Quest.Values[value.QuestId].)
+            var value = npc.QuestList.List[i];
+
+            if (value.QuestState.Value != 3) // í´ë¦¬ì–´ëœ í€˜ìŠ¤íŠ¸ê°€ ì•„ë‹ˆë¼ë©´
             {
                 npc.CurrentQuestID.Value = value.QuestId;
-                Debug.LogWarning($"CurrentQuestID ¼³Á¤µÊ: {value.QuestId}");
+                Debug.LogWarning($"CurrentQuestID ì„¤ì •ë¨: {value.QuestId}");
+                allQuestCleared = false;
                 break;
             }
+        }
+
+        // ì „ë¶€ ë‹¤ í´ë¦¬ì–´ ëœ ìƒíƒœì¼ ë•Œ => ë§ˆì§€ë§‰ í€˜ìŠ¤íŠ¸ë§Œ ë„£ì–´ì£¼ê¸°
+        if (allQuestCleared) 
+        {
+            npc.CurrentQuestID.Value = npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId;
+            Debug.LogWarning($"í˜„ì¬ ìŠ¤í…Œì´ì§€ ë‚´ì˜ ëª¨ë“  í€˜ìŠ¤íŠ¸ë¥¼ ì™„ë£Œí•˜ì—¬ ë§ˆì§€ë§‰ í€˜ìŠ¤íŠ¸IDê°€ ì„¤ì •ë¨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
         }
 
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
@@ -108,19 +123,19 @@ public class StageManager : MonoBehaviour
 
     public void TryUnlockNextStage(int curQuestIndex)
     {
-        //Debug.Log($"Å¬¸®¾î ÀÌÈÄ ÁøÇàµµ {curQuestIndex}");
-        // ¾ğ¶ô ÀÎµ¦½º°¡ -¸é ´ÙÀ½ ½ºÅ×ÀÌÁö°¡ ¾øÀ½
+        //Debug.Log($"í´ë¦¬ì–´ ì´í›„ ì§„í–‰ë„ {curQuestIndex}");
+        // ì–¸ë½ ì¸ë±ìŠ¤ê°€ -ë©´ ë‹¤ìŒ ìŠ¤í…Œì´ì§€ê°€ ì—†ìŒ
         StageData curStageData = Manager.firebase.UserData.CurStageData;
         if (curStageData.requiredQuestIndex < 0)
         {
-            Debug.Log("´ÙÀ½ ½ºÅ×ÀÌÁö°¡ ¾øÀ½, ¾ğ¶ô Á¶°Ç Ã¼Å© ¾ÈÇÒ°ÅÀÓ");
+            Debug.Log("ë‹¤ìŒ ìŠ¤í…Œì´ì§€ê°€ ì—†ìŒ, ì–¸ë½ ì¡°ê±´ ì²´í¬ ì•ˆí• ê±°ì„");
             return;
         }
 
-        // ¾ğ¶ôÁ¶°Ç¿¡ µµ´Ş ¾ÈµÇ¸é return
+        // ì–¸ë½ì¡°ê±´ì— ë„ë‹¬ ì•ˆë˜ë©´ return
         if (curStageData.requiredQuestIndex > curQuestIndex) return;
 
-        // ¾ğ¶ô Á¶°Ç¿¡ µµ´Ş ½Ã
+        // ì–¸ë½ ì¡°ê±´ì— ë„ë‹¬ ì‹œ
         Manager.game.StageUnlock(curStageData.nextStageId);
     }
 
