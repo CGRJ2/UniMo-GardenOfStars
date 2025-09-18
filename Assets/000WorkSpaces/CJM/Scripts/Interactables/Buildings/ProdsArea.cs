@@ -21,7 +21,7 @@ public class ProdsArea : InteractableBase, IWorkStation
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() 
     {
-        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.restrictedProdID; 
+        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.finalProdID; 
         return isReserved; 
     }
     public void SetReserveState(bool reserve) { isReserved = reserve; }

@@ -19,10 +19,17 @@ public class LoginController : MonoBehaviour
     private void OnMaunuallyAuthenticate(SignInStatus status)
     {
         IsLoggingIn.Value = true;
-        if (status != SignInStatus.Success)
+
+        if(status == SignInStatus.Canceled)
         {
-            Debug.Log($"PlayGames 로그인 실패 : {status}");
+            Debug.Log($"PlayGames 로그인 중단 : {status}");
             IsLoggingIn.Value = false;
+            return;
+        }
+
+        if (status == SignInStatus.InternalError)
+        {
+            Manager.firebase.NetworkDisconnected();
             return;
         }
 
@@ -45,17 +52,10 @@ public class LoginController : MonoBehaviour
 
             Manager.firebase.Auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
             {
-                if (task.IsCanceled)
+                if (task.IsCanceled || task.IsFaulted)
                 {
-                    Debug.Log("파이어베이스 연동 중단");
-                    IsLoggingIn.Value = false;
-                    return;
-                }
-
-                if (task.IsFaulted)
-                {
-                    Debug.Log($"파이어베이스 연동 실패 : {task.Exception}");
-                    IsLoggingIn.Value = false;
+                    Debug.Log("파이어베이스 로그인 실패");
+                    Manager.firebase.NetworkDisconnected();
                     return;
                 }
 
@@ -81,6 +81,7 @@ public class LoginController : MonoBehaviour
             if (task.IsFaulted)
             {
                 Debug.Log($"익명 로그인 실패 : {task.Exception}");
+                Manager.firebase.NetworkDisconnected();
                 IsLoggingIn.Value = false;
                 return;
             }
