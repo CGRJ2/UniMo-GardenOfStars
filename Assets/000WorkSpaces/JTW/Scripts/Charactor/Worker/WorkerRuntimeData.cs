@@ -26,17 +26,14 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     private WorkerManager _workerManager;
     public WorkerManager WorkerManager => _workerManager;
-
     private WorkerController _workerController;
     public WorkerController WorkerController => _workerController;
 
-
     public ObservableProperty<IWorkStation> CurWorkstation = new ObservableProperty<IWorkStation>();
-
     public int NavMeshPriority;
-
-
     public bool IsHarvest;
+
+    public ObservableProperty<bool> IsStun = new();
 
     public ObservableProperty<bool> IsPlayerTriggered = new();
 
