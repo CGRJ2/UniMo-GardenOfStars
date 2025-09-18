@@ -1943,7 +1943,7 @@ namespace KYS
             }
             
             isCreatingPopup = true;
-            StartCoroutine(ShowPopUpAsyncCoroutine(onComplete));
+            StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
         }
         
         /// <summary>
@@ -1998,7 +1998,7 @@ namespace KYS
             foreach (string addressableKey in possibleKeys)
             {
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-                yield return handle.Task;
+                yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
