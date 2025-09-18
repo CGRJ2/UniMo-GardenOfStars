@@ -1,4 +1,5 @@
 ﻿using KYS;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -85,11 +86,16 @@ public class InfoPanel_Harvest : BaseUI
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
 
-        Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
-        {
-            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-            image_Prod.sprite = prodData.Result.Sprite;
-        };
+        // 새 방법 (0918 최재민)
+        tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
+        image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
+
+        // 어드레서블로 불러올 필요가 없어짐 (0918 최재민)
+        //Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
+        //{
+        //    tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+        //    image_Prod.sprite = prodData.Result.Sprite;
+        //};
 
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
         {
@@ -144,12 +150,7 @@ public class InfoPanel_Harvest : BaseUI
             // 건물 정보 다시 로드
             tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
             tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
-            
-            // 재료 이름도 다시 로드
-            Addressables.LoadAssetAsync<IngrediantData>(targetBD.ProductID).Completed += prodData =>
-            {
-                tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-            };
+            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.ProductID);
         }
     }
 }
