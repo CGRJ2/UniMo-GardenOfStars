@@ -13,6 +13,8 @@ public class WorkerState_Stun : WorkerStateBase
     public override void Enter()
     {
         _timer = 0;
+
+        WorkerData.IsAwake.Value = false;
         WorkerData.IsStun.Value = true;
 
         if (WorkerData.CurWorkstation.Value == null) return;
@@ -47,6 +49,7 @@ public class WorkerState_Stun : WorkerStateBase
 
     public override void Exit()
     {
+        WorkerData.IsAwake.Value = true;
         WorkerData.IsStun.Value = false;
     }
 }
