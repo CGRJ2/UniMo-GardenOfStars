@@ -38,8 +38,6 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
-            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
         }
 
         protected override void OnDestroy()
@@ -63,6 +61,9 @@ namespace KYS
         public void SetInfo(WorkerData worker)
         {
             _worker = worker;
+
+            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
+            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
 
             _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
             _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
@@ -167,7 +168,7 @@ namespace KYS
         {
             if (_isInSpeedProgress) return;
 
-            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
+            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv)) return;
 
             _speedUpgradeButton.interactable = false;
             _isInSpeedProgress = true;
@@ -186,7 +187,7 @@ namespace KYS
         {
             if (_isInCapacityProgress) return;
 
-            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
+            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv)) return;
 
             _capacityUpgradeButton.interactable = false;
             _isInCapacityProgress = true;
