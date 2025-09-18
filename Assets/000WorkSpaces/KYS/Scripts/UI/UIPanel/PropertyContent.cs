@@ -110,6 +110,7 @@ namespace KYS
                 Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
                 if (cost <= curMoney)
                 {
+                    Debug.Log($"[PropertyContent] 구매 성공 - ClosePanel 호출 - Time: {Time.time}");
                     Manager.player.Data.Money.Value -= cost;
                     estate.SpawnBuildingItem(buildingID);
                     Manager.ui.ClosePanel();

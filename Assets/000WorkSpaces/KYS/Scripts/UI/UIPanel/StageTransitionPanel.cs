@@ -124,12 +124,23 @@ namespace KYS
         #region Initialization
         private void SetupButtons()
         {
+            Debug.Log($"[StageTransitionPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[StageTransitionPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // 뒤로가기 버튼 설정
             var backEventHandler = GetEventWithSFX(backButtonName, "SFX_ButtonClickBack");
             if (backEventHandler != null)
             {
                 backEventHandler.Click += (data) => OnBackButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void SetupWheel()

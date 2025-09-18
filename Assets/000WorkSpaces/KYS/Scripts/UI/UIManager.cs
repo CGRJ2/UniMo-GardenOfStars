@@ -955,11 +955,14 @@ namespace KYS
         [ContextMenu("Close Panel")]
         public void ClosePanel()
         {
+            Debug.Log($"[UIManager] ClosePanel 호출됨 - Time: {Time.time}, Stack Count: {panelStack.Count}");
+            
             if (panelStack.Count == 0) return;
 
             BaseUI currentPanel = panelStack.Pop();
             if (currentPanel != null)
             {
+                Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name} - Time: {Time.time}");
                 // 스택 구조에서는 항상 파괴
                 UnregisterUI(currentPanel);
                 currentPanel.Hide();

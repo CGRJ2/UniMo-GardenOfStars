@@ -137,6 +137,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[WorkerDetailPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[WorkerDetailPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var eventHandler = GetEventWithSFX(_closeButtonName, "SFX_ButtonClickBack");
             if (eventHandler != null)
@@ -155,6 +164,8 @@ namespace KYS
             {
                 eventHandler.Click += (data) => OnUpgradeCapacityButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void OnCloseButtonClicked()

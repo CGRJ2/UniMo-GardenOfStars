@@ -67,6 +67,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[CheckPopUp] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[CheckPopUp] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var confirmEventHandler = GetEventWithSFX(confirmButtonName, "SFX_ButtonClick");
             if (confirmEventHandler != null)
@@ -79,6 +88,8 @@ namespace KYS
             {
                 cancelEventHandler.Click += OnCancelButtonClicked;
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void OnConfirmButtonClicked(PointerEventData data)

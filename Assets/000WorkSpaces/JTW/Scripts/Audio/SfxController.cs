@@ -29,6 +29,8 @@ public class SfxController : MonoBehaviour
 
     public void SfxPlay(AudioData data, float volume)
     {
+        Debug.Log($"[SfxController] SfxPlay 호출됨 - clipName: {data.Clip.name}, Time: {Time.time}");
+        
         _sfxSource.Stop();
 
         _sfxSource.clip = data.Clip;
