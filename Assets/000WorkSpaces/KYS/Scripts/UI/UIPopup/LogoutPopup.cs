@@ -1,8 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
-using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 namespace KYS
 {
     public class LogoutPopup : BaseUI
@@ -129,7 +131,7 @@ namespace KYS
 
         private void OnConfirmClicked()
         {
-            //TODO: 로그아웃 기능 구현 필요
+            //TODO: 로그아웃 기능 구현 필요 게스트만 보이게 하거나 예외 처리가 필요함.
             //Debug.Log("[LogoutPopup] 로그아웃 확인");
 
             //// 로그아웃 처리
@@ -144,6 +146,8 @@ namespace KYS
 
             //// 팝업 닫기
             //Manager.ui.ClosePopup();
+            Manager.ui.HideAllHUDElements();
+            SceneManager.LoadScene("JTW_LoginScene");
         }
 
 

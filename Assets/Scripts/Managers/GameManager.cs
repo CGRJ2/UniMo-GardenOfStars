@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,6 +30,8 @@ public class GameManager : Singleton<GameManager>
     void Init()
     {
         base.SingletonInit();
+        Application.targetFrameRate = 60;
+
         StartCoroutine(Fetch());
         StageDatasInit();
     }
@@ -204,12 +207,21 @@ public class StageDataCsv : IUsableId
     public Sprite CenterSprite;
 
     public int RequiredQuestIndex;
-
     public string NextStageId;
 
+    public string NpcID;
+    public string BuildingIDs;
     public string GetId()
     {
         return Id;
+    }
+
+    public string[] GetBuildingIdList()
+    {
+        string[] buildingIdList =
+            BuildingIDs.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
+
+        return buildingIdList;
     }
 }
 
@@ -277,6 +289,9 @@ public partial class DataManager
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
 
             stage.NextStageId = words[dict["NextStageId"]];
+
+            stage.NpcID = words[dict["NpcID"]];
+            stage.BuildingIDs = words[dict["BuildingIDs"]];
 
             return stage;
         });
