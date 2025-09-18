@@ -155,9 +155,16 @@ public class AudioManager : Singleton<AudioManager>
         {
             if (data.Result == null)
             {
-                Debug.Log($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
+                Debug.LogWarning($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
                 return;
             }
+
+            if(data.Result.Clip == null)
+            {
+                Debug.LogWarning($"[AudioManager] {clipName} 오디오 클립이 null입니다.");
+                return;
+            }
+
 
             SfxController sfx = SfxPool.Get();
             sfx.Target = target;
@@ -205,9 +212,16 @@ public class AudioManager : Singleton<AudioManager>
         {
             if (data.Result == null)
             {
-                Debug.Log($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
+                Debug.LogWarning($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
                 return;
             }
+
+            if (data.Result.Clip == null)
+            {
+                Debug.LogWarning($"[AudioManager] {clipName} 오디오 클립이 null입니다.");
+                return;
+            }
+
 
             SfxController sfx = SfxPool.Get();
             sfx.Target = target;

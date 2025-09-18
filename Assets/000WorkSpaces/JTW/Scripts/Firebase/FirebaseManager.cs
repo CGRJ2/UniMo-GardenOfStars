@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
@@ -28,6 +29,13 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     private void Awake()
     {
+        InitFirebase();
+    }
+
+    private void InitFirebase()
+    {
+        if (IsFirebaseInit) return;
+
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
             var dependencyStatus = task.Result;
@@ -40,11 +48,10 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _database.GoOnline();
                 Debug.Log("파이어베이스 연결 성공");
 
-                // 테스트를 원활하게 하기위해 일단 실행
-                // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
-
                 OnFirebaseInit?.Invoke();
 
+                // 테스트를 원활하게 하기위해 일단 실행
+                // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
                 InitUserData();
 
                 IsFirebaseInit = true;
@@ -56,7 +63,24 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _app = null;
                 _auth = null;
                 _database = null;
+                NetworkDisconnected();
             }
+        });
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitFirebase();
+        StartCoroutine(Manager.game.Fetch());
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void NetworkDisconnected()
+    {
+        Manager.ui.ShowMessagePopUpAsync("인터넷 연결을 다시 확인해주세요.", () =>
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("TitleScene");
         });
     }
 
@@ -78,6 +102,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
         {
+            if(task.IsCanceled || task.IsFaulted)
+            {
+                NetworkDisconnected();
+                return;
+            }
+
             _rootDataSnapshot = task.Result;
 
             UserData = new UserData(userPath, "");
@@ -102,9 +132,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
             value = setValue;
             _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
             {
-                if(task.IsCanceled || task.IsFaulted)
+                if (task.IsCanceled || task.IsFaulted)
                 {
-                    Debug.LogError("FirebaseProperty 값 변경 실패");
+                    NetworkDisconnected();
                     return;
                 }
 
@@ -151,7 +181,14 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     public void SaveData(string path, object value)
     {
-        _database.RootReference.Child(path).SetValueAsync(value);
+        _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                NetworkDisconnected();
+                return;
+            }
+        });
     }
 
     public void SaveTransactionData<T>(string path, object value)
@@ -186,12 +223,26 @@ public class FirebaseManager : Singleton<FirebaseManager>
             }
 
             return TransactionResult.Success(data);
+        }).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                NetworkDisconnected();
+                return;
+            }
         });
     }
 
     public void SaveJsonData(string path, string json)
     {
-        _database.RootReference.Child(path).SetRawJsonValueAsync(json);
+        _database.RootReference.Child(path).SetRawJsonValueAsync(json).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                NetworkDisconnected();
+                return;
+            }
+        });
     }
 
     public bool CheckInit(string path, out int count)

@@ -34,6 +34,7 @@ public class WorkerPanel : KYS.BaseUI
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
+    public string WorkerKey => _workerKey;
 
     private int _employCost;
     private int _employBMCost;
@@ -144,7 +145,10 @@ public class WorkerPanel : KYS.BaseUI
     public void SetInfo(WorkerPanelStates state)
     {
         _state = state;
-        
+
+        string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
+        CharacterDataCsv chracterData = Manager.data.Character.Values[key];
+
         // 모든 패널 비활성화
         if (_upgradeButton != null) _upgradeButton.SetActive(false);
         if (_beforeHireScreen != null) _beforeHireScreen.SetActive(false);
@@ -154,14 +158,17 @@ public class WorkerPanel : KYS.BaseUI
         switch (state)
         {
             case WorkerPanelStates.Upgrade:
+                _runWorkerNameText.text = chracterData.GetName();
                 if (_upgradeButton != null) _upgradeButton.SetActive(true);
                 break;
                 
             case WorkerPanelStates.Purchase:
+                _runWorkerNameText.text = chracterData.GetName();
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
                 break;
                 
             case WorkerPanelStates.Locked:
+                _runWorkerNameText.text = "???";
                 if (_lockScreen != null) _lockScreen.SetActive(true);
                 break;
         }
