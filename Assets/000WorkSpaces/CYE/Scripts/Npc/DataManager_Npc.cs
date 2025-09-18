@@ -23,7 +23,7 @@ public class NpcDataCsv : IUsableId
 
 public partial class DataManager
 {
-    [SerializeField] private bool _isNpcAdressable;
+    [SerializeField] private bool _isNpcAdressable = true;
 
     private const string _npcDataTableURL = "https://docs.google.com/spreadsheets/d/1MhKkfv6aIljgeisYmWOvPiUNaa8x4Ydqii7pZkyk4yk/export?format=csv";
     private const string _npcAddress = "CYE/SampleNpcData";
