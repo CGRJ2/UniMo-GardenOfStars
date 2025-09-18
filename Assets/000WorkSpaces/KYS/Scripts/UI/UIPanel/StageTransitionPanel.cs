@@ -321,9 +321,6 @@ namespace KYS
         {
             if (!isDragging) return;
 
-            Vector2 delta = position - lastTouchPos;
-            float rotationDelta = delta.x * rotationSpeed * Time.deltaTime;
-
             Vector2 vector1 = _startTouchPostion - (Vector2)wheelParent.position;
             Vector2 vector2 = position - (Vector2)wheelParent.position;
 
@@ -344,19 +341,6 @@ namespace KYS
 
             lastTouchPos = position;
             return;
-
-            // 회전 속도 제한 (급격한 회전 방지)
-            float maxRotationDelta = 15f; // 한 프레임당 최대 회전 각도
-            rotationDelta = Mathf.Clamp(rotationDelta, -maxRotationDelta, maxRotationDelta);
-
-            currentRotation += rotationDelta;
-
-            // 돌림판 회전 (Z축만 회전, 크기 변화 방지)
-            if (wheelParent != null)
-            {
-                Vector3 currentRotationEuler = wheelParent.rotation.eulerAngles;
-                wheelParent.rotation = Quaternion.Euler(currentRotationEuler.x, currentRotationEuler.y, currentRotation);
-            }
         }
 
         private void OnInputEnded(Vector2 position)
