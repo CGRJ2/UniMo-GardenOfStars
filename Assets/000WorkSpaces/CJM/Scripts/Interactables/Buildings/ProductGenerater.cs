@@ -64,9 +64,16 @@ public class ProductGenerater : InteractableBase, IWorkStation
         // 생산물이 있을 때
         else
         {
-            //state = GenerateState.Completed;
-            isWorkable = true;
-            return false;
+            if (_SpawnedProduct.state.Value == ProdState.Generated)
+            {
+                isWorkable = true;
+                return false;
+            }
+            else
+            {
+                isWorkable = false;
+                return true;
+            }
         }
     }
 
@@ -74,7 +81,6 @@ public class ProductGenerater : InteractableBase, IWorkStation
     {
         while (true)
         {
-            
             // 매 프레임마다, 스탠바이 상태 체크
             yield return new WaitUntil(() => StandByCheck());
 
@@ -84,9 +90,16 @@ public class ProductGenerater : InteractableBase, IWorkStation
             {
                 progressedTime += Time.deltaTime;
 
+
+                // 생산시간 절반 남았을 때 꽃봉오리 소환
+                if (progressedTime > ProdTime / 2f && _SpawnedProduct == null)
+                {
+                    SpawnProduct(); 
+                }
+
                 if (progressedTime > ProdTime)
                 {
-                    SpawnProduct(); // 생산 완료
+                    GenerateComplete(); // 생산 완료
                 }
 
                 yield return null;
@@ -97,7 +110,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
 
     
 
-    public void SpawnProduct()
+    void SpawnProduct()
     {
         // 오브젝트 풀에서 활성화
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
@@ -107,7 +120,12 @@ public class ProductGenerater : InteractableBase, IWorkStation
 
         // 생산물 정보 저장
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
+        _SpawnedProduct.state.Value = ProdState.Growing;
+    }
 
+    void GenerateComplete()
+    {
+        _SpawnedProduct.state.Value = ProdState.Generated;
         isWorkable = true;
     }
 

@@ -73,8 +73,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   moveSpeed: 8
-  minStretch: 0.1
-  maxStretch: 3
+  state:
+    _value: 0
+  animator: {fileID: 7258609363412717403}
 --- !u!1 &6847729581227116773
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,5 +724,10 @@ PrefabInstance:
 --- !u!4 &3628755705600136481 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cfe3d1db7cc57a94c980549ba9942f79, type: 3}
+  m_PrefabInstance: {fileID: 3877976875079480010}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7258609363412717403 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: cfe3d1db7cc57a94c980549ba9942f79, type: 3}
   m_PrefabInstance: {fileID: 3877976875079480010}
   m_PrefabAsset: {fileID: 0}
