@@ -114,16 +114,24 @@ public class InfoPanel_Manufacture : BaseUI
         // 새로운 BuildingLocalizationHelper 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
-        Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
-        {
-            tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
-            image_Require.sprite = requireData.Result.Sprite;
-        };
-        Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
-        {
-            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-            image_Prod.sprite = prodData.Result.Sprite;
-        };
+
+        // (0918 최재민 수정)
+        tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(data.RequireProdID);
+        image_Require.sprite = Manager.data.Ingrediant[data.RequireProdID].Sprite;
+
+        tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
+        image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
+
+        //Addressables.LoadAssetAsync<IngrediantData>(data.RequireProdID).Completed += requireData =>
+        //{
+        //    tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
+        //    image_Require.sprite = requireData.Result.Sprite;
+        //};
+        //Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
+        //{
+        //    tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+        //    image_Prod.sprite = prodData.Result.Sprite;
+        //};
 
         // 생산 속도 업그레이드 정보
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
@@ -209,16 +217,10 @@ public class InfoPanel_Manufacture : BaseUI
         {
             tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
             tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
-            
+
             // 재료 이름도 다시 로드
-            Addressables.LoadAssetAsync<IngrediantData>(targetBD.RequireProdID).Completed += requireData =>
-            {
-                tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
-            };
-            Addressables.LoadAssetAsync<IngrediantData>(targetBD.ProductID).Completed += prodData =>
-            {
-                tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-            };
+            tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.RequireProdID);
+            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.ProductID);
         }
     }
 
