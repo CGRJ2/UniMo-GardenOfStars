@@ -15,6 +15,8 @@ public class WorkerState_Stun : WorkerStateBase
     {
         _timer = 0;
 
+        Manager.Audio.SfxPlay("WorkerStun", WorkerData.transform);
+
         WorkerData.IsAwake.Value = false;
         WorkerData.IsStun.Value = true;
 
