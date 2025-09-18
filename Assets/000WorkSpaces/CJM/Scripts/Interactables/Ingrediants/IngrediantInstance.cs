@@ -18,26 +18,30 @@ public class IngrediantInstance : PooledObject
     [SerializeField] AnimationCurve baseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] float moveSpeed = 4f;
 
-    public ObservableProperty<ProdState> state = new();
     [SerializeField] Animator animator;
+    public ObservableProperty<ProdState> state = new();
     private void Awake() => state.Subscribe(AnimationControll);
+
+    public bool IsReadyToHarvest()
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.IsName("Generated_Idle");
+    }
 
     void AnimationControll(ProdState state)
     {
+        if (animator == null) return;
         switch (state)
         {
-            case ProdState.Growing:
-                animator.SetBool("isActive", true);
+            case ProdState.WaitForComplete:
                 break;
 
-            case ProdState.Generated:
+            case ProdState.Completed:
                 animator.SetTrigger("Blossom");
-
                 break;
 
             case ProdState.Harvested:
-                animator.SetBool("isActive", false);
-                animator.SetBool("isHarvested", true);
+                animator.SetTrigger("Harvest");
                 break;
         }
     }
@@ -56,18 +60,11 @@ public class IngrediantInstance : PooledObject
         ownerCharacterRD = null;
         isOnHand = false;
         // 소멸 효과음
-
-        animator.SetBool("isActive", false);
     }
 
     public void Despawn()
     {
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
-    }
-
-    public void SetIngrediantSO(IngrediantData ingrediantSO)
-    {
-        this.Data = ingrediantSO;
     }
 
     public void AttachToTarget(Transform parent, int stackCount = 0, CharaterRuntimeData characterRD = null)
@@ -135,6 +132,9 @@ public class IngrediantInstance : PooledObject
                 if (ownerCharacterRD != null)
                     SetupWobbleParent(targetAttachTransform, stackOrder);
 
+                // 획득&투입 SFX
+                Manager.Audio.ChainedSFXPlay("Get", targetAttachTransform);
+
                 break;
             }
             yield return null;
@@ -181,11 +181,14 @@ public class IngrediantInstance : PooledObject
                     transform.localScale -= Time.deltaTime * new Vector3(1, 1, 1) / 0.2f/*(축소 시간)*/;
                     yield return null;
                 }
-                Despawn();
                 transform.localScale = new Vector3(1, 1, 1);
                 isAttached = true;
 
+                // 획득&투입 SFX
+                Manager.Audio.ChainedSFXPlay("Get", targetAttachTransform);
+
                 completed?.Invoke();
+                Despawn();
                 break;
             }
 
@@ -233,6 +236,6 @@ public class IngrediantInstance : PooledObject
 
 public enum ProdState
 {
-    Appear, Growing, Generated, Harvested
+    WaitForComplete, Completed, Harvested
 }
 

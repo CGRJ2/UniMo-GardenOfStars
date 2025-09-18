@@ -32,35 +32,48 @@ public class ShopBuilding : BuildingInstance
         {
             int soldItemCount = 0;
             long price = instanceProd.Data.Price;
-            while(characterRD.IngrediantStack.Count > 0)
+            while (characterRD.IngrediantStack.Count > 0)
             {
                 IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-                popedProd.MoveToTargetAndShrink(attachPoint);
+
+                if (characterRD.IngrediantStack.Count > 0)
+                {
+                    popedProd.MoveToTargetAndShrink(attachPoint);
+                }
+                else // 마지막 재료일 때
+                {
+                    popedProd.MoveToTargetAndShrink(attachPoint, () => ShowSoldResultUI(price, soldItemCount));
+                }
                 soldItemCount += 1;
 
                 yield return new WaitForSeconds(insertDelayTime);
-            }
-
-            // 전부 투입 완료 된 후 정산 & UI활성화
-            tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";
-            Manager.player.Data.Money.Value += soldItemCount * (int)price; //long으로 해야하는지? 일단 기획에서 요구한 건 long임
-
-
-            // 가격 정산 UI 페이드아웃 팝핑
-            if (popPricePanelRoutine == null)
-            {
-                popPricePanelRoutine = StartCoroutine(SoldPanelFadeOutRoutine());
-            }
-            else
-            {
-                StopCoroutine(popPricePanelRoutine);
-                popPricePanelRoutine = StartCoroutine(SoldPanelFadeOutRoutine());
             }
         }
         // 플레이어 손에 재료가 없으면 바로 return
         else
         {
             yield return null;
+        }
+    }
+
+    void ShowSoldResultUI(long price, int soldItemCount)
+    {
+        // 전부 투입 완료 된 후 정산 & UI활성화
+        tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";
+        Manager.player.Data.Money.Value += soldItemCount * (int)price; //long으로 해야하는지? 일단 기획에서 요구한 건 long임
+
+        // 정산 SFX 실행
+        Manager.Audio.SfxPlay("SFX_Money", transform);
+
+        // 가격 정산 UI 페이드아웃 팝핑
+        if (popPricePanelRoutine == null)
+        {
+            popPricePanelRoutine = StartCoroutine(SoldPanelFadeOutRoutine());
+        }
+        else
+        {
+            StopCoroutine(popPricePanelRoutine);
+            popPricePanelRoutine = StartCoroutine(SoldPanelFadeOutRoutine());
         }
     }
 

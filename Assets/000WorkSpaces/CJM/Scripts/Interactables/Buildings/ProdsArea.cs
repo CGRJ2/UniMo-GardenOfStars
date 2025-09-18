@@ -84,7 +84,7 @@ public class ProdsArea : InteractableBase, IWorkStation
             PickUp();
             //_SpawnedProduct = null;
             //tmp_Count.text = $"{ProdsCount}";
-            yield return new WaitForSeconds(ownerInstance.prodsAbsorbDelayTime);
+            yield return new WaitForSeconds(ownerInstance.insertDelayTime);
         }
     }
 

@@ -64,7 +64,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
         // 생산물이 있을 때
         else
         {
-            if (_SpawnedProduct.state.Value == ProdState.Generated)
+            if (_SpawnedProduct.IsReadyToHarvest())
             {
                 isWorkable = true;
                 return false;
@@ -72,7 +72,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
             else
             {
                 isWorkable = false;
-                return true;
+                return false;
             }
         }
     }
@@ -90,11 +90,11 @@ public class ProductGenerater : InteractableBase, IWorkStation
             {
                 progressedTime += Time.deltaTime;
 
-
                 // 생산시간 절반 남았을 때 꽃봉오리 소환
-                if (progressedTime > ProdTime / 2f && _SpawnedProduct == null)
+                if (progressedTime > ProdTime / 2f)
                 {
-                    SpawnProduct(); 
+                    if (_SpawnedProduct == null)
+                        SpawnProduct(); 
                 }
 
                 if (progressedTime > ProdTime)
@@ -115,17 +115,18 @@ public class ProductGenerater : InteractableBase, IWorkStation
         // 오브젝트 풀에서 활성화
         GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
 
-        // 진행도 초기화
-        progressedTime = 0;
-
         // 생산물 정보 저장
         _SpawnedProduct = disposedObject.GetComponent<IngrediantInstance>();
-        _SpawnedProduct.state.Value = ProdState.Growing;
+        _SpawnedProduct.state.Value = ProdState.WaitForComplete;
     }
 
     void GenerateComplete()
     {
-        _SpawnedProduct.state.Value = ProdState.Generated;
+        // 진행도 초기화
+        progressedTime = 0;
+
+        // 생산 완료
+        _SpawnedProduct.state.Value = ProdState.Completed;
         isWorkable = true;
     }
 
@@ -134,8 +135,9 @@ public class ProductGenerater : InteractableBase, IWorkStation
         // 생성된 재료가 없으면 실행 안함
         if (_SpawnedProduct == null) return;
 
-        // 일꾼일 경우에도 추가해야함
-
+        // "생성 중" 애니메이션 종료된 상태에서만 수확 가능
+        if (!_SpawnedProduct.IsReadyToHarvest()) return;
+       
         // 들고 있는 재료와 다른 재료라면 or 손에 최대 수량만큼 들고 있을 시 => 줍지 않게 만들기
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
@@ -144,9 +146,12 @@ public class ProductGenerater : InteractableBase, IWorkStation
             if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 
+        _SpawnedProduct.state.Value = ProdState.Harvested;
+
         _SpawnedProduct.AttachToTarget(characterRD.ProdsAttachPoint, characterRD.IngrediantStack.Count, characterRD);
         //Debug.Log($"{pc.ingrediantStack.Count}번째 위치로");
         characterRD.IngrediantStack.Push(_SpawnedProduct);
+
         _SpawnedProduct = null;
     }
 
