@@ -9,6 +9,12 @@ using UnityEngine.UI;
 
 public class TitleCanvas : KYS.BaseUI
 {
+    protected override void Awake()
+    {
+        base.Awake();
+        Manager.Audio.BgmPlay("TitleBgm");
+    }
+
     private void OnEnable()
     {
         GetEvent("Panel").Click += OnClick;

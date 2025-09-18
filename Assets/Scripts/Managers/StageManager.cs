@@ -64,6 +64,8 @@ public class StageManager : MonoBehaviour
 
     void Init()
     {
+        Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
+
         // 임시 테스트용(인게임씬으로 바로 실행하는 경우)
         if (string.IsNullOrEmpty(Manager.firebase.UserData.CurStage.Value))
         {

@@ -76,6 +76,8 @@ namespace KYS
         {
             base.Awake();
 
+            Manager.Audio.BgmPlay("StageTran", 0.5f);
+
             zodiacStages.Clear();
             foreach (StageDataCsv data in Manager.data.Stage.Values.Values)
             {
@@ -892,6 +894,7 @@ namespace KYS
         private void OnBackButtonClicked()
         {
             Debug.Log("뒤로가기");
+            Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
             Manager.ui.ClosePanel();
         }
         #endregion
