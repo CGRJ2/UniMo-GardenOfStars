@@ -28,6 +28,8 @@ namespace KYS
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+
+            Manager.Audio.SfxPlay("DoorBell");
         }
 
         public override string[] GetAutoLocalizeKeys()

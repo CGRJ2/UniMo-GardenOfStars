@@ -27,6 +27,8 @@ namespace KYS
             base.Awake();
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
             Initialize();
+
+            Manager.Audio.SfxPlay("DoorBell");
         }
 
         protected override void OnDestroy()

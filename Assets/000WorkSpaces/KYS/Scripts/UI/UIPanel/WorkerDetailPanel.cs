@@ -62,9 +62,6 @@ namespace KYS
         {
             _worker = worker;
 
-            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
-            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
-
             _worker.MoveSpeedLv.Unsubscribe(OnSpeedChanged);
             _worker.MaxCapacityLv.Unsubscribe(OnCapacityChanged);
             _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
@@ -181,6 +178,8 @@ namespace KYS
 
             if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv)) return;
 
+            Manager.Audio.SfxPlay("Money");
+
             _speedUpgradeButton.interactable = false;
             _isInSpeedProgress = true;
 
@@ -199,6 +198,8 @@ namespace KYS
             if (_isInCapacityProgress) return;
 
             if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv)) return;
+
+            Manager.Audio.SfxPlay("Money");
 
             _capacityUpgradeButton.interactable = false;
             _isInCapacityProgress = true;
