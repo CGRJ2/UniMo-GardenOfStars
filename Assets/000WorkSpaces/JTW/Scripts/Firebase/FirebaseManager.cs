@@ -77,8 +77,11 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     public void NetworkDisconnected()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        SceneManager.LoadScene("TitleScene");
+        Manager.ui.ShowMessagePopUpAsync("인터넷 연결을 다시 확인해주세요.", () =>
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("TitleScene");
+        });
     }
 
     public void InitUserData()
