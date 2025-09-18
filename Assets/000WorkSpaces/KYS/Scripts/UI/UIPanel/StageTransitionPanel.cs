@@ -77,6 +77,7 @@ namespace KYS
             base.Awake();
 
             Manager.Audio.BgmPlay("StageTran", 0.5f);
+            Manager.Audio.SfxPlay("Portal");
 
             zodiacStages.Clear();
             foreach (StageDataCsv data in Manager.data.Stage.Values.Values)
@@ -703,10 +704,7 @@ namespace KYS
             // 로딩 화면 표시 (필요한 경우)
             // ShowLoadingScreen();
 
-            // Addressables 씬 로딩 (실제 구현은 Addressables 패키지에 따라 다름)
-            // TODO: Addressables 패키지 구현 시 사용
-
-            // 임시로 일반 씬 로딩 사용
+            Manager.Audio.SfxPlay("Portal");
             var handle = Addressables.LoadSceneAsync("StageScene");
 
             while (!handle.IsDone)
