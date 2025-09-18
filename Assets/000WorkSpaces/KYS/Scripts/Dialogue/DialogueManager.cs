@@ -38,7 +38,9 @@ namespace KYS
         private void Awake()
         {
             if (enableDebugLogs)
-                Debug.Log("[DialogueManager] 초기화 완료");
+            { 
+                //Debug.Log("[DialogueManager] 초기화 완료"); 
+            }
         }
 
 

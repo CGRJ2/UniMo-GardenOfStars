@@ -55,7 +55,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Init()
     {
-        Debug.LogError("튜토매니저 초기화");
+        Debug.LogWarning("튜토매니저 초기화");
 
 
         cineBrain = Camera.main.GetComponent<CinemachineBrain>();
@@ -111,7 +111,7 @@ public class TutorialManager : MonoBehaviour
     {
         //tutorialNPC.UpdateQuestData();
         Manager.dialogue.OnDialogueCompleted -= SequenceEnd;
-        Debug.LogError($"시퀀스 0{Manager.firebase.UserData.TutorialSequence.Value} 종료");
+        Debug.LogWarning($"시퀀스 0{Manager.firebase.UserData.TutorialSequence.Value} 종료");
 
         // 튜토리얼 진행도 상승 & 저장
         Manager.firebase.UserData.TutorialSequence.Value += 1;
@@ -156,7 +156,7 @@ public class TutorialManager : MonoBehaviour
         // 플레이어 조작 가능상태로 전환
         Manager.player.IsControl = true;
 
-        //Debug.LogError(Manager.player.pc.Data.IsMove.Value);
+        //Debug.LogWarning(Manager.player.pc.Data.IsMove.Value);
         // 플레이어의 조작을 감지하면, 몇 초 후 NPC로 이동하라는 팝업 활성화
         yield return new WaitUntil(() => Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IsMove.Value);
         yield return new WaitForSeconds(_Cut01_InteractTutoPopWaitTime);
@@ -179,6 +179,8 @@ public class TutorialManager : MonoBehaviour
     public void TutorialSequence01()
     {
         Manager.camera.cam_PlayerFocus.Priority = 11;
+
+        Debug.LogWarning("시퀀스01 시작");
 
         // 1. 플레이어 조작 막기
         Manager.player.IsControl = false;
@@ -240,7 +242,7 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence02()
     {
-        Debug.LogError("시퀀스02 시작");
+        Debug.LogWarning("시퀀스02 시작");
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
 
@@ -271,7 +273,7 @@ public class TutorialManager : MonoBehaviour
     {
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        Debug.LogError("시퀀스03 시작");
+        Debug.LogWarning("시퀀스03 시작");
 
         StartCoroutine(Sequence03_CutScene());
     }
@@ -298,8 +300,8 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
-        Debug.LogError("진행됨");
-
+        Debug.LogWarning("진행됨");
+            
         // 플레이어 조작 비활성화
         Manager.player.IsControl = false;
 
@@ -332,7 +334,7 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence04()
     {
-        Debug.LogError("시퀀스04 시작");
+        Debug.LogWarning("시퀀스04 시작");
 
         // 플레이어 조작 비활성화
         Manager.player.IsControl = false;
@@ -390,7 +392,7 @@ public class TutorialManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         // 이건 퀘스트 매니저에서 처리해서 따로 추가할 게 없음
-        Debug.LogError("시퀀스05 시작");
+        Debug.LogWarning("시퀀스05 시작");
 
         // NPC 방향 화살표 활성화
         arrows[2].SetActive(true);
@@ -425,7 +427,7 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence06()
     {
-        Debug.LogError("시퀀스06 시작");
+        Debug.LogWarning("시퀀스06 시작");
 
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
@@ -491,7 +493,7 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence07()
     {
-        Debug.LogError("시퀀스07 시작");
+        Debug.LogWarning("시퀀스07 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
@@ -567,7 +569,7 @@ public class TutorialManager : MonoBehaviour
     // 퀘스트 3번 진행
     public void TutorialSequence08()
     {
-        Debug.LogError("시퀀스08 시작");
+        Debug.LogWarning("시퀀스08 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
@@ -608,7 +610,7 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence09()
     {
-        Debug.LogError("시퀀스09 시작");
+        Debug.LogWarning("시퀀스09 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 

@@ -165,11 +165,11 @@ namespace KYS
                     {
                         hasExistingLoadingCanvas = true;
                         loadingCanvas = canvas;
-                        Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
+                        //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
                         
                         // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
                         DontDestroyOnLoad(canvas.gameObject);
-                        Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
+                        //Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
                         break;
                     }
                 }

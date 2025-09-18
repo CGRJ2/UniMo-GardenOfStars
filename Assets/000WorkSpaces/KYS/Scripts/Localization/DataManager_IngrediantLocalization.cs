@@ -1,4 +1,4 @@
-using KYS;
+﻿using KYS;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,12 +21,12 @@ public partial class DataManager
 
     private async void IngrediantLocalizationRoutine()
     {
-        Debug.Log("[DataManager] IngrediantLocalizationRoutine 시작");
+        //Debug.Log("[DataManager] IngrediantLocalizationRoutine 시작");
         string dataCsv;
 
         if (_isIngrediantLocalizationAddressable)
         {
-            Debug.Log($"[DataManager] Addressable에서 로드 시도: {_ingrediantLocalizationAddress}");
+            //Debug.Log($"[DataManager] Addressable에서 로드 시도: {_ingrediantLocalizationAddress}");
             dataCsv = await GetDataString(true, _ingrediantLocalizationAddress);
         }
         else
@@ -37,7 +37,7 @@ public partial class DataManager
 
         if (dataCsv != null)
         {
-            Debug.Log($"[DataManager] CSV 데이터 로드 성공, 길이: {dataCsv.Length}");
+            //Debug.Log($"[DataManager] CSV 데이터 로드 성공, 길이: {dataCsv.Length}");
             IngrediantLocalization = new DataTableParser<IngrediantLocalizationDataCsv>((words, dict) =>
             {
                 IngrediantLocalizationDataCsv ingrediant = new IngrediantLocalizationDataCsv();
@@ -50,12 +50,12 @@ public partial class DataManager
             });
 
             IngrediantLocalization.Load(dataCsv);
-            Debug.Log($"[DataManager] Ingrediant Localization 데이터 로드 완료 - 총 {IngrediantLocalization.Values.Count}개");
+            //Debug.Log($"[DataManager] Ingrediant Localization 데이터 로드 완료 - 총 {IngrediantLocalization.Values.Count}개");
             
             // 로드된 데이터 확인
             foreach (var kvp in IngrediantLocalization.Values)
             {
-                Debug.Log($"[DataManager] 로드된 재료: {kvp.Key} -> {kvp.Value.NameKorean} / {kvp.Value.NameEnglish}");
+                //Debug.Log($"[DataManager] 로드된 재료: {kvp.Key} -> {kvp.Value.NameKorean} / {kvp.Value.NameEnglish}");
             }
         }
         else

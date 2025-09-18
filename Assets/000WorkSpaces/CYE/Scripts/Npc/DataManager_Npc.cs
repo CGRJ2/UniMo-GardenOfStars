@@ -1,23 +1,18 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using GameQuest;
-using System;
 
 public class NpcDataCsv : IUsableId
 {
-    public string Id;
-    public string NpcName;
-    public string StageId;
-    public string NpcImageLocation;
-    public string[] FocusText;
+    public string NpcID;
+    public string Name_KR;
+    public string Name_EN;
+    public Sprite Sprite_Default;
     public string Description;
 
     public string GetId()
     {
-        return Id;
+        return NpcID;
     }
 }
 
@@ -39,22 +34,27 @@ public partial class DataManager
             {
                 NpcDataCsv npc = new NpcDataCsv();
 
-                npc.Id = words[dict["Id"]];
-                npc.NpcName = words[dict["NpcName"]];
-                npc.StageId = words[dict["StageId"]];
-                npc.NpcImageLocation = words[dict["NpcImageLocation"]];
-                npc.FocusText = ConvertTextToArray(words[dict["FocusText"]]);
+                npc.NpcID = words[dict["NpcID"]];
+                npc.Name_KR = words[dict["Name_KR"]];
+                npc.Name_EN = words[dict["Name_EN"]];
                 npc.Description = words[dict["Description"]];
 
+                string spritePath_Default = words[dict["SpritePath_Default"]];
+                if (Addressables.ResourceLocators.Any(locator => locator.Locate($"{spritePath_Default}", typeof(Sprite), out var locations)))
+                {
+                    Addressables.LoadAssetAsync<Sprite>($"{spritePath_Default}").Completed += task =>
+                    {
+                        npc.Sprite_Default = task.Result;
+                    };
+                }
+                else
+                {
+                    Debug.LogError($"[{npc.NpcID}]의 키:[{spritePath_Default}] 에 해당하는 스프라이트 없음");
+                }
                 return npc;
             });
 
             Npc.Load(rawData);
         }
-    }
-
-    private string[] ConvertTextToArray(string rawText)
-    {
-        return rawText.Split("@@@");
     }
 }

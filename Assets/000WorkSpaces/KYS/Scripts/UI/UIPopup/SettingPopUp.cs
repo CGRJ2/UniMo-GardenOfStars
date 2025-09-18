@@ -1,4 +1,5 @@
 ﻿using KYS;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,16 +17,19 @@ public class SettingPopUp : BaseUI
     [SerializeField] private string BGMSliderName = "BGMSlider";
     [SerializeField] private string SFXSliderName = "SFXSlider";
     [SerializeField] private string VibrationToggleName = "VibrationToggle";
-    [SerializeField] private string LogoutButtonName = "LogoutButton";
-    [SerializeField] private string LogoutButtonText = "LogoutButtonText";
+    [SerializeField] private string logoutButtonName = "LogoutButton";
+    [SerializeField] private string logoutButtonText = "LogoutButtonText";
+    [SerializeField] private string accountButtonName = "AccountButton";
+    [SerializeField] private string supportButtonName = "SupportButton";
+    [SerializeField] private string emergencyEscapeButtonName = "EmergencyEscapeButton";
     private SystemLanguage selectedLanguage;
     private Dictionary<SystemLanguage, float> languageCompleteness = new Dictionary<SystemLanguage, float>();
-    
+
     // 설정값 저장용 키
     private const string BGM_VOLUME_KEY = "BGMVolume";
     private const string SFX_VOLUME_KEY = "SFXVolume";
     private const string VIBRATION_ENABLED_KEY = "VibrationEnabled";
-    
+
     // 기본값
     private const float DEFAULT_BGM_VOLUME = 0.8f;
     private const float DEFAULT_SFX_VOLUME = 0.8f;
@@ -51,8 +55,12 @@ public class SettingPopUp : BaseUI
     private Slider BGMSlider => GetUI<Slider>(BGMSliderName);
     private Slider SFXSlider => GetUI<Slider>(SFXSliderName);
     private Toggle VibrationToggle => GetUI<Toggle>(VibrationToggleName);
-    private Button LogoutButton => GetUI<Button>(LogoutButtonName);
-    private TextMeshProUGUI LogoutButtonT => GetUI<TextMeshProUGUI>(LogoutButtonText);
+    private Button LogoutButton => GetUI<Button>(logoutButtonName);
+    private TextMeshProUGUI LogoutButtonT => GetUI<TextMeshProUGUI>(logoutButtonText);
+    private Button AccountButton => GetUI<Button>(accountButtonName);
+    private Button SupportButton => GetUI<Button>(supportButtonName);
+    private Button EmergencyEscapeButton => GetUI<Button>(emergencyEscapeButtonName);
+
     public override string[] GetAutoLocalizeKeys()
     {
         return new string[]
@@ -89,18 +97,49 @@ public class SettingPopUp : BaseUI
             Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
         }
 
-        var logoutEventHandler = GetEventWithSFX(LogoutButtonName, "SFX_ButtonClick");
+        var logoutEventHandler = GetEventWithSFX(logoutButtonName, "SFX_ButtonClick");
         if (LogoutButton != null)
-            {
+        {
             logoutEventHandler.Click += OnLogoutButton;
 
-            }
+        }
         else
-            {
-                Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
-            }
+        {
+            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+
+        var accountEventHandler = GetEventWithSFX(accountButtonName, "SFX_ButtonClick");
+        if (LogoutButton != null)
+        {
+            accountEventHandler.Click += OnAccountButton;
 
         }
+        else
+        {
+            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+
+        var supportEventHandler = GetEventWithSFX(supportButtonName, "SFX_ButtonClick");
+        if (SupportButton != null)
+        {
+            supportEventHandler.Click += OnSupportButton;
+        }
+        else
+        {
+            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+        
+        var emergencyEscapeEventHandler = GetEventWithSFX(emergencyEscapeButtonName, "SFX_ButtonClick");
+        if(EmergencyEscapeButton != null)
+        {
+            emergencyEscapeEventHandler.Click += OnEmergencyEscapeButton;
+        }
+        else
+        {
+            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+
+    }
 
     private void OnCloseButton(PointerEventData data)
     {
@@ -113,6 +152,43 @@ public class SettingPopUp : BaseUI
         {
 
         });
+    }
+
+    private void OnAccountButton(PointerEventData data)
+    {
+        //TODO: Google Play Game 계정 연결 현재 데이터 처리 부분도 추가 필요해 보임.
+        //StartCoroutine(WaitAutoLogin());
+    }
+
+
+    //private IEnumerator WaitAutoLogin()
+    //{
+    //    yield return new WaitUntil(() => _autoLogin.IsPlayGameLoginEnd);
+
+    //    if (_autoLogin.IsLogined)
+    //    {
+    //        Manager.firebase.InitUserData();
+    //        yield return new WaitForSeconds(1f);
+
+    //    }
+    //    else
+    //    {
+    //        StartCoroutine(WaitLogin());
+    //    }
+
+    //    _loadingCanvas.gameObject.SetActive(false);
+    //}
+
+    private void OnSupportButton(PointerEventData data)
+    {
+        //Application.OpenURL("https://www.");
+
+    }
+
+
+    private void OnEmergencyEscapeButton(PointerEventData data)
+    {
+       
     }
 
 
@@ -182,13 +258,13 @@ public class SettingPopUp : BaseUI
         if (index >= 0 && index < activeLanguages.Length)
         {
             selectedLanguage = activeLanguages[index];
-            
+
             // 즉시 언어 변경 적용
             LocalizationManager.Instance.SetLanguage(selectedLanguage);
-            
+
             // 성공 사운드 재생
             PlaySuccessSound();
-            
+
             Debug.Log($"[SettingPopUp] 언어 변경 완료: {LocalizationManager.Instance.GetLanguageName(selectedLanguage)}");
         }
         else
@@ -294,13 +370,13 @@ public class SettingPopUp : BaseUI
         // 진동 설정 저장
         PlayerPrefs.SetInt(VIBRATION_ENABLED_KEY, isEnabled ? 1 : 0);
         PlayerPrefs.Save();
-        
+
         // 진동 테스트 (토글이 켜질 때만)
         if (isEnabled)
         {
             TestVibration();
         }
-        
+
         Debug.Log($"[SettingPopUp] 진동 설정 변경: {isEnabled}");
     }
 
@@ -309,10 +385,10 @@ public class SettingPopUp : BaseUI
     /// </summary>
     private void TestVibration()
     {
-        #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
         // Android에서 진동 테스트
         Handheld.Vibrate();
-        #elif UNITY_IOS && !UNITY_EDITOR
+#elif UNITY_IOS && !UNITY_EDITOR
         // iOS에서 햅틱 피드백
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
@@ -322,10 +398,10 @@ public class SettingPopUp : BaseUI
                 Handheld.Vibrate();
             }
         }
-        #else
+#else
         // 에디터에서는 로그만 출력
         Debug.Log("[SettingPopUp] 진동 테스트 (에디터에서는 실제 진동이 발생하지 않습니다)");
-        #endif
+#endif
     }
 
     /// <summary>
@@ -402,14 +478,14 @@ public class SettingPopUp : BaseUI
     {
         if (IsVibrationEnabled())
         {
-            #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
             Handheld.Vibrate();
-            #elif UNITY_IOS && !UNITY_EDITOR
+#elif UNITY_IOS && !UNITY_EDITOR
             if (SystemInfo.supportsVibration)
             {
                 Handheld.Vibrate();
             }
-            #endif
+#endif
         }
     }
 

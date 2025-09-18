@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 
 // 건물 데이터를 여기서 관리해야할듯 (업그레이드 상태, 위치정보, <<< 이걸 또 스테이지 별로 나눠야함)
@@ -169,5 +170,27 @@ public class UpgradeData : FirebaseData
     {
         Level_ProdTime.Value += statProdTimeAdd;
         Level_Capacity.Value += statCapacityAdd;
+    }
+}
+
+
+
+public partial class DataManager
+{
+    public Dictionary<string, BuildingData> Building = new();
+
+    public void BuildingDataInitRoutine()
+    {
+        Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
+        {
+            foreach(var data in task.Result)
+            {
+                if (Building.ContainsKey(data.ID)) continue;
+                else
+                {
+                    Building.Add(data.ID, data);
+                }
+            }
+        };
     }
 }

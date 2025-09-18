@@ -36,29 +36,26 @@ public class QuestManager : Singleton<QuestManager>
             return;
         }
 
-        //Debug.LogWarning("퀘스트 데이터 초기화 진행됨");
         CurrentQuestList.OnAdded?.RemoveListener(QuestDataInitEvent);
         CurrentQuestList.OnAdded.AddListener(QuestDataInitEvent);
 
-        string npcDataId = Manager.data.Npc.Values.FirstOrDefault(item => item.Value.StageId == Manager.firebase.UserData.CurStage.Value).Key;
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
+
+        string npcDataId = Manager.data.Stage.Values[curStageID].NpcID;
 
         // 현재 스테이지의 NpcID 등록
-        // var npc = Manager.firebase.UserData.CurStageData.Npc;
-        // npc.NpcID.Value = npcDataId;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
         Manager.npc.CurrentNpc.NpcID.Value = npcDataId;
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
         var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
-        //Debug.LogWarning($"curStageQuestDatas개수: {curStageQuestDatas.Count()}");
 
         foreach (var questDataKVP in curStageQuestDatas)
         {
-            //Debug.LogWarning("QuestList 초기화 시작");
             // 퀘스트 데이터 초기화
             QuestBaseData questData = CurrentQuestList.Get(questDataKVP.Key);
             if (questData == null)
             {
-                //Debug.LogError($"QuestData({questDataKVP.Key}) 추가");
                 CurrentQuestList.Add(questDataKVP.Key);
             }
         }
@@ -66,23 +63,18 @@ public class QuestManager : Singleton<QuestManager>
 
     public void QuestDataInitEvent(QuestBaseData questBaseData)
     {
-        //Debug.LogError($"{questBaseData.Id}, {questBaseData.QuestId}");
         // 현재 퀘스트 데이터의 QC들
         var QCParsedData = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == questBaseData.Id);
 
-        //Debug.LogError($"QCParsedData개수: {QCParsedData.Count()}");
         foreach (var QCDataKVP in QCParsedData)
         {
-            //Debug.LogError($"QuestContent 데이터 추가 실행");
 
             // Qc리스트 초기화
-            // var npc = Manager.firebase.UserData.CurStageData.Npc;
             var data = CurrentQuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCDataKVP.Value.Id);
 
             if (data == null)
             {
                 CurrentQuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCDataKVP.Value.Id);
-                //Debug.LogError($"QuestContent({QCDataKVP.Value.QuestId}/{QCDataKVP.Value.Id}) 추가");
             }
         }
     }
@@ -108,7 +100,6 @@ public class QuestManager : Singleton<QuestManager>
             isCleared = true;
 
             Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestState.Value = 3; // Completed
-            //Debug.LogWarning($"퀘스트(id: {npc.CurrentQuestID.Value})의 모든 Content 클리어");
 
             // 현재 퀘스트 클리어 이벤트 실행
             QuestClearAction?.Invoke();
@@ -125,9 +116,6 @@ public class QuestManager : Singleton<QuestManager>
                 Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
                 Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
                 
-                // 튜토 퀘스트 대화 종료 시 마다 100원씩 보상으로 지급
-                Manager.dialogue.OnDialogueCompleted += (dialogData) => Manager.firebase.UserData.Player.Money.Value += 100;
-                
                 Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
 
                 TutorialManager.Instance.tutorialNPC.HideQuestTiles();
@@ -138,7 +126,7 @@ public class QuestManager : Singleton<QuestManager>
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
-            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
         }
         else isCleared = false;
     }
@@ -146,6 +134,11 @@ public class QuestManager : Singleton<QuestManager>
     void SetNextQuestAfterDialogEnd(DialogueData dialogueData)
     {
         MoveToNextQuest();
+
+        // 튜토 퀘스트 대화 종료 시 마다 100원씩 보상으로 지급
+        if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            Manager.firebase.UserData.Player.Money.Value += 100;
+
         Manager.dialogue.OnDialogueCompleted -= SetNextQuestAfterDialogEnd;
     }
 
