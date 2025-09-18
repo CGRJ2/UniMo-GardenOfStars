@@ -33,6 +33,8 @@ public class WorkerPresenter : MonoBehaviour
 
     private void OnEnable()
     {
+        if (transform.Find("Equip") == null) return;
+
         _data.IsMove.Subscribe(OnMoveChanged);
         _data.IsWork.Subscribe(OnWorkChanged);
         _data.IsStun.Subscribe(OnStunChanged);
