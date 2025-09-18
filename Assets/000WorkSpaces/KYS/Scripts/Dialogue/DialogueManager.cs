@@ -605,28 +605,24 @@ namespace KYS
         }
 
 
-        public async Task ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
         {
             try
             {
                 Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
 
                 // 1. 튜토리얼 팝업 열기
-                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
-                var popup = popupObj.GetComponent<TutorialPopUp>();
-                popup.SetTutorialPosition(positionType);
-                popup.SetTutorialNode(nodeID);
+                Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
+                {
+                    popup.SetTutorialPosition(positionType);
+                    popup.SetTutorialNode(nodeID);
 
                 if (autoClose)
                 {
                     Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley/1000}초 후 자동 종료됩니다...");
 
                     // 2. 지정된 시간 대기 후 자동 종료
-                    await System.Threading.Tasks.Task.Delay(deley);
-
-                    // 3. 플레이어 행동 완료 시뮬레이션
-                    popup.CompleteTutorialAction();
-                    Debug.Log("[DialogueManager] 플레이어 행동 완료 시뮬레이션");
+                   StartCoroutine(WaitDelay(deley, popup));
                 }
                 else
                 {
@@ -639,13 +635,13 @@ namespace KYS
             }
         }
 
-        /// <summary>
-        /// 튜토리얼 팝업을 수동으로만 닫을 수 있도록 표시 (자동 종료 없음)
-        /// </summary>
-        public async Task ShowTutorialPopUpManual(string nodeID, TutorialPopUp.TutorialPositionType positionType)
+        private IEnumerator WaitDelay(float delay, TutorialPopUp popup)
         {
-            // 기존 ShowTutorialPopUp 메서드를 autoClose=false로 호출
-            await ShowTutorialPopUp(nodeID, positionType, 0, false);
+            yield return new WaitForSeconds(delay / 1000);
+
+            // 3. 플레이어 행동 완료 시뮬레이션
+            popup.CompleteTutorialAction();
+            Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
         }
 
         /// <summary>

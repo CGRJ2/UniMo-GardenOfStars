@@ -228,15 +228,14 @@ public class WorkerPanel : KYS.BaseUI
         }
     }
 
-    private async Task ShowUpgradePopUp()
+    private void ShowUpgradePopUp()
     {
-        GameObject obj = await Manager.ui.ShowPopUpAsync<WorkerDetailPanel>();
+        Manager.ui.ShowPopUpAsync<WorkerDetailPanel>(panel =>
+        {
+            panel.SetInfo(Worker);
 
-        WorkerDetailPanel panel = obj.GetComponent<WorkerDetailPanel>();
-
-        panel.SetInfo(Worker);
-
-        _presenter.SetInfo();
+            _presenter.SetInfo();
+        });
     }
 
     private void OnWorkerAdded(WorkerData worker)
