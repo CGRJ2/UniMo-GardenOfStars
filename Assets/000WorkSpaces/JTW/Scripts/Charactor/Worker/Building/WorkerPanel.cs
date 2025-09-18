@@ -210,6 +210,8 @@ public class WorkerPanel : KYS.BaseUI
 
             EmployWorker();
         }
+
+        Manager.Audio.SfxPlay("Money");
     }
 
     private void EmployWorker(int value = 0)
