@@ -19,8 +19,7 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    // 임시로 넣어둠. StageDataCSV에서 최종 생산물(일꾼이 들면 안되는 생산물) ID를 지정해줘야 함
-    public string restrictedProdID = "it10121";
+    public string finalProdID => GetFinalProdID();
 
     private void Awake()
     {
@@ -119,6 +118,26 @@ public class StageManager : MonoBehaviour
         }
 
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
+    }
+
+    // 스테이지 별로 최종 생산물 설정
+    string GetFinalProdID()
+    {
+        string finalProdID = "";
+        foreach (var value in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
+        {
+            if (!Manager.data.Building.ContainsKey(value.BuildingID.Value)) continue;
+
+            // 작업형 건물의 가장 높은 ID의 재료를 반환하도록
+            if (Manager.data.Building[value.BuildingID.Value] is ManufactureBD bd)
+            {
+                int result = finalProdID.CompareTo(bd.ProductID);
+
+                // 기존ID 보다 값이 더 크다면
+                if (result > 0) finalProdID = bd.ProductID;
+            }
+        }
+        return finalProdID;
     }
 
     public void TryUnlockNextStage(int curQuestIndex)

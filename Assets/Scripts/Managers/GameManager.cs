@@ -211,8 +211,6 @@ public class StageDataCsv : IUsableId
 
     public string NpcID;
     public string BuildingIDs;
-    public string FinalProdID;
-
     public string GetId()
     {
         return Id;
@@ -294,9 +292,6 @@ public partial class DataManager
 
             stage.NpcID = words[dict["NpcID"]];
             stage.BuildingIDs = words[dict["BuildingIDs"]];
-            stage.FinalProdID = words[dict["FinalProdID"]];
-            
-
 
             return stage;
         });
