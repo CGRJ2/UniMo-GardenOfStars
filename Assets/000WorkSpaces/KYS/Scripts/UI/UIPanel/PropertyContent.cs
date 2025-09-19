@@ -193,6 +193,7 @@ namespace KYS
 
         private void UpdateUI()
         {
+            object arg = "1";
 
             if (costText != null)
                 costText.text = $"{buildingCost}";
@@ -201,7 +202,7 @@ namespace KYS
             if (runUnlockContentNameText != null)
 
             {
-                runUnlockContentNameText.text = GetLocalizedText("ui_unlock_clearquest", "1");
+                runUnlockContentNameText.text = GetLocalizedText("ui_unlock_clearquest", arg);
             }
             else
             {
@@ -381,6 +382,7 @@ namespace KYS
             {
                 LockScreen.SetActive(true);
             }
+            
 
         }
 

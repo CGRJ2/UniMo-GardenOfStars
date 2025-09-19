@@ -253,7 +253,7 @@ MonoBehaviour:
   imageSwitchInterval: 3
   messageSwitchInterval: 3
   autoSwitchImages: 1
-  autoSwitchMessages: 1
+  autoSwitchMessages: 0
   loadingMessageKeys:
   - loading_progress
   - loading_wait
@@ -267,8 +267,6 @@ MonoBehaviour:
   enableImageFade: 1
   fadeDuration: 1
   enableProgressSimulation: 0
-  enableExternalProgressMonitoring: 1
-  minDisplayTime: 1.5
 --- !u!225 &3280231781164285111
 CanvasGroup:
   m_ObjectHideFlags: 0

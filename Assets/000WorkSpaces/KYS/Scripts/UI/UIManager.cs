@@ -2273,6 +2273,22 @@ namespace KYS
             });
         }
 
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 + 포맷팅 지원)
+        /// </summary>
+        public void ShowMessagePopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<MessagePopUp> onComplete = null, params object[] args)
+        {
+            ShowPopUpAsync<MessagePopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
         #endregion
 
         #region Input Handling
