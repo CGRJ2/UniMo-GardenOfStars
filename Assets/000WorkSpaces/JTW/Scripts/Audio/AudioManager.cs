@@ -258,7 +258,7 @@ public class AudioManager : Singleton<AudioManager>
         source.maxDistance = maxDistance;
     }
 
-    public void SfxStopLoop(string key)
+    public void SfxStopLoop(string key, float fadeDuration = 0)
     {
         if (!_loopingSfxDict.TryGetValue(key, out SfxController sfx))
             return; // 이미 Release된 상태
@@ -267,10 +267,13 @@ public class AudioManager : Singleton<AudioManager>
         {
             AudioSource source = sfx.GetComponent<AudioSource>();
 
-            source.Stop();
-            source.loop = false;
-            source.volume = Mathf.Clamp01(MasterVolume * SfxVolume);
-            SfxPool.Release(sfx);
+            source.DOFade(0f, fadeDuration).OnComplete(() =>
+            {
+                source.Stop();
+                source.loop = false;
+                source.volume = Mathf.Clamp01(MasterVolume * SfxVolume);
+                SfxPool.Release(sfx);
+            });
         }
 
         _loopingSfxDict.Remove(key);
