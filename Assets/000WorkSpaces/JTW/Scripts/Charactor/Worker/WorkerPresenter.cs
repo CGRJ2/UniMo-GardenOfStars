@@ -12,28 +12,27 @@ public class WorkerPresenter : MonoBehaviour
 
     private WorkerRuntimeData _data;
 
+    private GameObject _avatar;
+
     void Start()
     {
         _data = GetComponent<WorkerRuntimeData>();
 
         GameObject avatarPrefab = Manager.data.Character.Values[$"{_data.Id}_{Manager.firebase.UserData.CurStage.Value}"].Avatar;
 
-        GameObject avatar = Instantiate(avatarPrefab, _data.transform);
+        _avatar = Instantiate(avatarPrefab, _data.transform);
 
-        if (avatar.transform.Find("Equip") == null) return;
+        if (_avatar.transform.Find("Equip") == null) return;
 
-        _characterAnimator = avatar.transform.Find("Character").GetComponent<Animator>();
+        Debug.LogWarning(_avatar.transform.Find("CharacterRoot/Character"));
+
+        _characterAnimator = _avatar.transform.Find("CharacterRoot/Character").GetComponent<Animator>();
         _characterAnimator.runtimeAnimatorController = _characterController;
         _characterAnimator.enabled = true;
 
-        _equipAnimator = avatar.transform.Find("Equip").GetComponent<Animator>();
+        _equipAnimator = _avatar.transform.Find("Equip").GetComponent<Animator>();
         _equipAnimator.runtimeAnimatorController = _equipController;
         _equipAnimator.enabled = true;
-    }
-
-    private void OnEnable()
-    {
-        if (transform.Find("Equip") == null) return;
 
         _data.IsMove.Subscribe(OnMoveChanged);
         _data.IsWork.Subscribe(OnWorkChanged);
@@ -63,10 +62,8 @@ public class WorkerPresenter : MonoBehaviour
 
     private void OnStunChanged(bool value)
     {
-        if (!value) return;
-
-        _characterAnimator.SetTrigger("StunTrigger");
-        _equipAnimator.SetTrigger("StunTrigger");
+        _characterAnimator.SetBool("IsStun", value);
+        _equipAnimator.SetBool("IsStun", value);
     }
 
     private void OnAwakeChanged(bool value)
