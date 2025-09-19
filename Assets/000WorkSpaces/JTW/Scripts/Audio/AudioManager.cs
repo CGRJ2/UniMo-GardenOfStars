@@ -236,7 +236,12 @@ public class AudioManager : Singleton<AudioManager>
         if (_loopingSfxDict.ContainsKey(key))
             return;
 
-        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}").Completed += data =>
+        if (target == null)
+        {
+            target = Camera.main.transform;
+        }
+
+        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}.asset").Completed += data =>
         {
             if (data.Result == null)
             {
