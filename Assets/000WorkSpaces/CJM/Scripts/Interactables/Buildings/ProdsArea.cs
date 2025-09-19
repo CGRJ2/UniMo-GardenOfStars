@@ -155,6 +155,8 @@ public class ProdsArea : InteractableBase, IWorkStation
             canvas_ProdsResult.gameObject.SetActive(true);
             tmp_Count.text = $"x{value}";
 
+            // SFX 실행
+            Manager.Audio.SfxPlay("SFX_ProdSpawn", transform);
         }
         else
         {

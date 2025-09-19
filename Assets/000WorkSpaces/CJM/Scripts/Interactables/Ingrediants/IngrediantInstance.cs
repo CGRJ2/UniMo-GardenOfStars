@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class IngrediantInstance : PooledObject
 {
@@ -38,6 +39,10 @@ public class IngrediantInstance : PooledObject
 
             case ProdState.Completed:
                 animator.SetTrigger("Blossom");
+                
+                // 생성 효과음
+                Manager.Audio.SfxPlay("SFX_ProdSpawn", transform);
+
                 break;
 
             case ProdState.Harvested:
@@ -50,7 +55,7 @@ public class IngrediantInstance : PooledObject
     {
         base.OnPooledEnable();
 
-        // 생성 효과음
+        
     }
 
     protected override void OnPooledDisable()
@@ -69,6 +74,10 @@ public class IngrediantInstance : PooledObject
 
     public void AttachToTarget(Transform parent, int stackCount = 0, CharaterRuntimeData characterRD = null)
     {
+        // 획득&투입 SFX
+        if (ownerCharacterRD is PlayerRunTimeData || characterRD is PlayerRunTimeData)
+            Manager.Audio.ChainedSFXPlay("Get", parent);
+
         if (characterRD == null)
         {
             transform.SetParent(parent);
@@ -84,7 +93,10 @@ public class IngrediantInstance : PooledObject
 
     public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
-        //transform.SetParent(parent);
+        // 획득&투입 SFX
+        if (ownerCharacterRD is PlayerRunTimeData)
+            Manager.Audio.ChainedSFXPlay("Get", parent);
+
         ownerCharacterRD = null;
         isOnHand = false;
         StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent, completed));
@@ -132,8 +144,7 @@ public class IngrediantInstance : PooledObject
                 if (ownerCharacterRD != null)
                     SetupWobbleParent(targetAttachTransform, stackOrder);
 
-                // 획득&투입 SFX
-                Manager.Audio.ChainedSFXPlay("Get", targetAttachTransform);
+                
 
                 break;
             }
@@ -183,9 +194,6 @@ public class IngrediantInstance : PooledObject
                 }
                 transform.localScale = new Vector3(1, 1, 1);
                 isAttached = true;
-
-                // 획득&투입 SFX
-                Manager.Audio.ChainedSFXPlay("Get", targetAttachTransform);
 
                 completed?.Invoke();
                 Despawn();

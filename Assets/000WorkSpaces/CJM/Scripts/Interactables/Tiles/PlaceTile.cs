@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
 
 public class PlaceTile : InteractableBase
 {
@@ -98,12 +97,18 @@ public class PlaceTile : InteractableBase
                 continue;
             }
 
+            // 재가동 시, 사운드 이펙트 실행
+            if (progressedTime == 0)
+            {
+                Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
+            }
+
             IngrediantInstance ownedBuilding;
             characterRD.IngrediantStack.TryPeek(out ownedBuilding);
             // 손에 건물이 없을 시, continue
             if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
             else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
-            
+
 
             // 작업 시작 시, 진행도 표기
             progressBar.gameObject.SetActive(true);
@@ -148,6 +153,9 @@ public class PlaceTile : InteractableBase
 
             // 건축모드 비활성화
             Manager.buildings.BuildModEvent?.Invoke(false);
+
+            // 설치 SFX 종료
+            Manager.Audio.SfxStopLoop("Contruct", 0.5f);
         });
 
 
@@ -158,9 +166,9 @@ public class PlaceTile : InteractableBase
         }
     }
 
-    
 
-    
+
+
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {

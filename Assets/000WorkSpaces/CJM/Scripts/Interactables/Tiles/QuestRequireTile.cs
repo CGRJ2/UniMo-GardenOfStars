@@ -58,7 +58,10 @@ public class QuestRequireTile : InteractableBase
     {
         for (int i = 0; i < lamps.Length; i++)
         {
-            if (i < progressIndex) lamps[i].UpdateView(true);
+            if (i < progressIndex)
+            {
+                lamps[i].UpdateView(true);
+            }
             else lamps[i].UpdateView(false);
         }
     }

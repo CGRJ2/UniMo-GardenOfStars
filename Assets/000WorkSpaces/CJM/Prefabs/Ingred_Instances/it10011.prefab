@@ -73,9 +73,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   moveSpeed: 8
+  animator: {fileID: 2510143783416999873}
   state:
     _value: 0
-  animator: {fileID: 2510143783416999873}
 --- !u!1 &6847729581227116773
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,7 +167,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: cfe3d1db7cc57a94c980549ba9942f79, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 8a0c08833f2e4e148a95ce105098647b, type: 2}
+      objectReference: {fileID: 9100000, guid: 8540d966ef34b0d4992c97c44a191b1c, type: 2}
     - target: {fileID: 7540907840371110986, guid: cfe3d1db7cc57a94c980549ba9942f79, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

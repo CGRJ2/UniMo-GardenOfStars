@@ -90,7 +90,7 @@ public class AudioManager : Singleton<AudioManager>
     // 0918 최재민 추가
     public Dictionary<string, int> chainedSoundDic = new();
 
-    public void ChainedSFXPlay(string key, Transform targetTransform)
+    public void ChainedSFXPlay(string key, Transform targetTransform = null)
     {
         StartCoroutine(ChainedSoundRoutine(key, targetTransform));
     }

@@ -904,9 +904,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   moveSpeed: 8
+  animator: {fileID: 3480660963927091476}
   state:
     _value: 0
-  animator: {fileID: 3480660963927091476}
 --- !u!1 &3696278749701093666
 GameObject:
   m_ObjectHideFlags: 0
@@ -1798,7 +1798,7 @@ Animator:
   m_GameObject: {fileID: 7919077246956792276}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: cfe3d1db7cc57a94c980549ba9942f79, type: 3}
-  m_Controller: {fileID: 9100000, guid: 2f8c6fb740351264d8ec4b612ce885cf, type: 2}
+  m_Controller: {fileID: 9100000, guid: 8540d966ef34b0d4992c97c44a191b1c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
