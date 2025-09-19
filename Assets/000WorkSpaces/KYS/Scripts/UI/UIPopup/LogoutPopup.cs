@@ -204,7 +204,7 @@ namespace KYS
                 Manager.ui.HideAllHUDElements();
                 
                 // 로그인 씬으로 이동
-                SceneManager.LoadScene("JTW_LoginScene");
+                SceneManager.LoadScene("TitleScene");
                 
                 Debug.Log("[LogoutPopup] 게스트 계정 로그아웃이 완료되었습니다.");
             }
