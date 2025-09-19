@@ -36,8 +36,6 @@ public class IAPManager : MonoBehaviour, IStoreListener
         if (args.purchasedProduct.definition.id == "noads")
         {
             Debug.Log("✅ 광고 제거 상품 구매 완료");
-            FindAnyObjectByType<testads>().adRemoved = true;
-            FindAnyObjectByType<testads>().ApplyBannerState();
         }
 
         return PurchaseProcessingResult.Complete;
