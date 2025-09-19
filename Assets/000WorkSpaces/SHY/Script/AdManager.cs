@@ -46,6 +46,7 @@ public class AdManager : Singleton<AdManager>
         yield return new WaitUntil(() => Manager.firebase.UserData.AdRemoved.IsInit);
 
         Manager.firebase.UserData.AdRemoved.Subscribe(ApplyBannerState);
+        ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
     }
 
     
@@ -55,7 +56,6 @@ public class AdManager : Singleton<AdManager>
         {
             LoadInterstitialAd();
             LoadRewardedAd();
-            LoadBannerAd();
             LoadAppOpenAd();
 
         });
