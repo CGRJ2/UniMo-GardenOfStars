@@ -2533,10 +2533,19 @@ namespace KYS
         {
             if (dialogueData == null) return;
             
-            // 노드 ID에 "upgrade" 또는 "업그레이드"가 포함되어 있으면 버튼 표시
-            bool shouldShowButton = !string.IsNullOrEmpty(dialogueData.Id) && 
-                                  (dialogueData.Id.ToLower().Contains("upgrade") || 
-                                   dialogueData.Id.ToLower().Contains("업그레이드"));
+            // 업그레이드 버튼 표시 조건들
+            bool hasUpgradeInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                 (dialogueData.Id.ToLower().Contains("upgrade") || 
+                                  dialogueData.Id.ToLower().Contains("업그레이드"));
+            
+            bool hasNormalInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                dialogueData.Id.ToLower().Contains("normal");
+            
+            bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
+            
+
+            // OR 조건으로 버튼 표시
+            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && isStartNode);
             
             // 버튼 상태 업데이트 (다음 노드 유무와 관계없이 표시)
             SetUpgradeButtonVisible(shouldShowButton, dialogueData.Id);
@@ -2725,16 +2734,27 @@ namespace KYS
                 // 다음 노드로 이동
                 if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
                 {
-                // 타이핑 효과 즉시 완료
-                if (typingEffectManager != null)
-                {
-                    // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
-                    TextMeshProUGUI targetText = GetCurrentDialogueText();
-                    if (targetText != null)
+                    // 현재 대화 데이터 확인
+                    var currentDialogueData = Manager.dialogue.CurrentDialogueData;
+                    
+                    // 선택지가 있는 경우 스킵 중지
+                    if (currentDialogueData != null && currentDialogueData.HasChoices)
                     {
-                        typingEffectManager.CompleteTyping(targetText);
+                        Debug.Log("[StoryPanel] 선택지가 있는 노드에서 스킵 중지");
+                        StopSkipMode();
+                        break;
                     }
-                }
+                    
+                    // 타이핑 효과 즉시 완료
+                    if (typingEffectManager != null)
+                    {
+                        // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
+                        TextMeshProUGUI targetText = GetCurrentDialogueText();
+                        if (targetText != null)
+                        {
+                            typingEffectManager.CompleteTyping(targetText);
+                        }
+                    }
                     
                     // 다음 노드로 이동
                     Manager.dialogue.MoveToNextNode();

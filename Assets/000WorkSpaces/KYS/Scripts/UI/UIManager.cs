@@ -2239,6 +2239,58 @@ namespace KYS
 
         #endregion
 
+        #region TutorialPopUp Methods
+
+        /// <summary>
+        /// 메시지 팝업 표시 (비동기 버전)
+        /// </summary>
+        public void ShowTutorialPopUpAsync(string message, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessage(message);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 사용)
+        /// </summary>
+        public void ShowTutorialPopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 + 포맷팅 지원)
+        /// </summary>
+        public void ShowTutorialPopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null, params object[] args)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        #endregion
+
         #region MessagePopUp Methods
 
         /// <summary>

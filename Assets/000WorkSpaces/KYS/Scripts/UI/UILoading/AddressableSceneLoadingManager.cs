@@ -310,7 +310,7 @@ namespace KYS
         public  void Temp_TutorialPopUpTest2()
         {
             
-             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp.TutorialPositionType.Top);
+             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp_Old.TutorialPositionType.Top);
         }
 
 
@@ -380,7 +380,7 @@ namespace KYS
         public void OnMessagePopUpTest()
         {
             // MessagePopUp 테스트용 메서드
-            UIManager.Instance.ShowMessagePopUpAsync("메시지 내용", () =>
+            UIManager.Instance.ShowTutorialPopUpAsync("메시지 내용", () =>
             {
                 Debug.Log("팝업이 닫혔습니다.");
             });
@@ -392,7 +392,7 @@ namespace KYS
         public void OnMessagePopUpTest2()
         {
             // MessagePopUp 테스트용 메서드
-            Manager.ui.ShowMessagePopUpWithKeyAsync("stage_prepare", () =>
+            Manager.ui.ShowTutorialPopUpWithKeyAsync("stage_prepare", () =>
             {
                 Debug.Log("이게 되네");
             });

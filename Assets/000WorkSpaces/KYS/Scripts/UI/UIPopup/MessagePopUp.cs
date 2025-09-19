@@ -7,6 +7,7 @@ namespace KYS
 {
     public class MessagePopUp : BaseUI
     {
+
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string messageTextName = "MessageText";
         
@@ -244,7 +245,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUp(string message, System.Action closeCallback = null)
         {
-            UIManager.Instance.ShowMessagePopUpAsync(message, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpAsync(message, closeCallback);
         }
 
         /// <summary>
@@ -253,7 +254,7 @@ namespace KYS
         public static void ShowMessagePopUp(string format, System.Action closeCallback, params object[] args)
         {
             string message = string.Format(format, args);
-            UIManager.Instance.ShowMessagePopUpAsync(message, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpAsync(message, closeCallback);
         }
 
         /// <summary>
@@ -261,7 +262,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback = null)
         {
-            UIManager.Instance.ShowMessagePopUpWithKeyAsync(messageKey, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpWithKeyAsync(messageKey, closeCallback);
         }
 
         /// <summary>
@@ -269,7 +270,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback, params object[] args)
         {
-            UIManager.Instance.ShowPopUpAsync<MessagePopUp>((popup) => {
+            UIManager.Instance.ShowPopUpAsync<TutorialPopUp>((popup) => {
                 if (popup != null)
                 {
                     popup.SetMessageKey(messageKey, args);

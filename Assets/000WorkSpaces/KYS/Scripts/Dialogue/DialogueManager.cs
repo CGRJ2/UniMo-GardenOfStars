@@ -613,14 +613,14 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        public void ShowTutorialPopUp(string nodeID, TutorialPopUp_Old.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
         {
             try
             {
                 Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
 
                 // 1. 튜토리얼 팝업 열기
-                Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
+                Manager.ui.ShowPopUpAsync<TutorialPopUp_Old>(popup =>
                 {
                     popup.SetTutorialPosition(positionType);
                     popup.SetTutorialNode(nodeID);
@@ -644,7 +644,7 @@ namespace KYS
             }
         }
 
-        private IEnumerator WaitDelay(float delay, TutorialPopUp popup)
+        private IEnumerator WaitDelay(float delay, TutorialPopUp_Old popup)
         {
             yield return new WaitForSeconds(delay / 1000);
 
