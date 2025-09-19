@@ -30,6 +30,8 @@ public partial class DataManager : Singleton<DataManager>
         PlayerUpgradeCostRoutine();
         PlayerRoutine();
         UpgradeMultiRoutine();
+        BuildingDataInitRoutine();
+        IngrediantDataInitRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)

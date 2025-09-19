@@ -91,6 +91,8 @@ public class ProdTile : InteractableBase
 
         // 플레이어 보유 스택에 올려주기
         buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
+        Manager.Audio.ChainedSFXPlay("Get");
+
         characterRD.IngrediantStack.Push(buildingItem);
 
         // 건축모드 활성화

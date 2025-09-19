@@ -147,6 +147,8 @@ namespace KYS
                 return;
             }
 
+            Manager.Audio.SfxPlay("Money");
+
             _isInPregress = true;
 
             _upgradeButton.interactable = false;

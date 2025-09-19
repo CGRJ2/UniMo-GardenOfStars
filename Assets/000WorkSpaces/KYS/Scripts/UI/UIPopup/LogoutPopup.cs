@@ -1,8 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
-using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 namespace KYS
 {
     public class LogoutPopup : BaseUI
@@ -55,6 +57,9 @@ namespace KYS
             base.Initialize();
             SetupButtons();
             UpdateUI();
+            
+            // 게스트 계정 확인 및 UI 업데이트
+            CheckGuestAccountAndUpdateUI();
         }
 
         public override void Cleanup()
@@ -66,6 +71,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[LogoutPopup] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[LogoutPopup] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // 확인 버튼
             if (confirmButton != null)
             {
@@ -85,6 +99,8 @@ namespace KYS
                     cancelHandler.Click += (data) => OnCancelClicked();
                 }
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void UpdateUI()
@@ -129,21 +145,130 @@ namespace KYS
 
         private void OnConfirmClicked()
         {
-            //TODO: 로그아웃 기능 구현 필요
-            //Debug.Log("[LogoutPopup] 로그아웃 확인");
+            Debug.Log("[LogoutPopup] 로그아웃 확인");
 
-            //// 로그아웃 처리
-            //ProcessLogout();
-            //Manager.firebase.Auth.SignOut();
-            //StartCoroutine(WaitLogin());
+            // 게스트 계정인지 확인
+            if (!IsGuestAccount())
+            {
+                Debug.LogWarning("[LogoutPopup] 게스트 계정이 아닙니다. 로그아웃을 취소합니다.");
+                ShowMessagePopUpWithKey("logout_guest_only");
+                return;
+            }
 
+            // 로그아웃 처리
+            ExecuteLogout();
+        }
 
+        /// <summary>
+        /// 게스트 계정인지 확인
+        /// </summary>
+        private bool IsGuestAccount()
+        {
+            try
+            {
+                if (Manager.firebase?.Auth?.CurrentUser == null)
+                {
+                    Debug.Log("[LogoutPopup] 현재 로그인된 사용자가 없습니다.");
+                    return false;
+                }
 
-            //// 이벤트 호출
-            //OnLogoutConfirmed?.Invoke();
+                // Firebase Auth에서 익명 사용자인지 확인
+                bool isAnonymous = Manager.firebase.Auth.CurrentUser.IsAnonymous;
+                Debug.Log($"[LogoutPopup] 현재 사용자: {Manager.firebase.Auth.CurrentUser.UserId}, 익명: {isAnonymous}");
+                
+                return isAnonymous;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[LogoutPopup] 게스트 계정 확인 중 오류: {e.Message}");
+                return false;
+            }
+        }
 
-            //// 팝업 닫기
-            //Manager.ui.ClosePopup();
+        /// <summary>
+        /// 로그아웃 실행
+        /// </summary>
+        private void ExecuteLogout()
+        {
+            try
+            {
+                Debug.Log("[LogoutPopup] 게스트 계정 로그아웃을 시작합니다.");
+
+                // Firebase 로그아웃
+                Manager.firebase.Auth.SignOut();
+
+                // 이벤트 호출
+                OnLogoutConfirmed?.Invoke();
+
+                // UI 정리
+                Manager.ui.HideAllHUDElements();
+                
+                // 로그인 씬으로 이동
+                SceneManager.LoadScene("TitleScene");
+                
+                Debug.Log("[LogoutPopup] 게스트 계정 로그아웃이 완료되었습니다.");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[LogoutPopup] 로그아웃 실행 중 오류: {e.Message}");
+                ShowMessagePopUpWithKey("logout_error");
+            }
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시
+        /// </summary>
+        private void ShowMessagePopUp(string message)
+        {
+            Manager.ui.ShowMessagePopUpAsync(message);
+        }
+
+        /// <summary>
+        /// 번역 키를 사용한 메시지 팝업 표시
+        /// </summary>
+        private void ShowMessagePopUpWithKey(string localizationKey)
+        {
+            Manager.ui.ShowMessagePopUpWithKeyAsync(localizationKey);
+        }
+
+        /// <summary>
+        /// 게스트 계정 확인 및 UI 업데이트
+        /// </summary>
+        private void CheckGuestAccountAndUpdateUI()
+        {
+            bool isGuest = IsGuestAccount();
+            
+            if (!isGuest)
+            {
+                // 게스트 계정이 아닌 경우 확인 버튼 비활성화
+                if (confirmButton != null)
+                {
+                    confirmButton.interactable = false;
+                    var confirmTextComponent = confirmButton.GetComponentInChildren<TextMeshProUGUI>();
+                    if (confirmTextComponent != null)
+                    {
+                        confirmTextComponent.text = GetLocalizedText("logout_guest_only", "게스트 계정만 로그아웃할 수 있습니다.");
+                    }
+                }
+                
+                // 메시지 업데이트
+                if (logoutText1 != null)
+                {
+                    logoutText1.text = GetLocalizedText("logout_guest_only", "게스트 계정만 로그아웃할 수 있습니다.");
+                }
+                
+                Debug.Log("[LogoutPopup] 게스트 계정이 아니므로 로그아웃 버튼을 비활성화합니다.");
+            }
+            else
+            {
+                // 게스트 계정인 경우 정상적으로 활성화
+                if (confirmButton != null)
+                {
+                    confirmButton.interactable = true;
+                }
+                
+                Debug.Log("[LogoutPopup] 게스트 계정이므로 로그아웃이 가능합니다.");
+            }
         }
 
 
@@ -165,15 +290,6 @@ namespace KYS
             Manager.ui.ClosePopup();
         }
 
-        private void ProcessLogout()
-        {
-            // 실제 로그아웃 로직 구현
-            // 예: Firebase 로그아웃, 세션 정리 등
-            Debug.Log("[LogoutPopup] 로그아웃 처리 중...");
-            
-            // TODO: 실제 로그아웃 로직 추가
-            // Manager.auth.Logout();
-        }
 
         /// <summary>
         /// 로그아웃 팝업 표시

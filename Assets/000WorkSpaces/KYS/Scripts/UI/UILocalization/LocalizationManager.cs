@@ -288,20 +288,20 @@ namespace KYS
         }
 
         /// <summary>
-        /// CSV 라인 파싱 (쉼표와 따옴표, $ 기호 처리)
+        /// CSV 라인 파싱 (쉼표와 따옴표, $$ 기호 처리)
         /// </summary>
         private string[] ParseCSVLine(string line)
         {
-            // $ 기호로 감싸진 문자열 내의 쉼표를 무시하는 정규식 사용
-            string[] fields = Regex.Split(line, @",(?=(?:[^$]*\$[^$]*\$)*[^$]*$)");
+            // $$ 기호로 감싸진 문자열 내의 쉼표를 무시하는 정규식 사용
+            string[] fields = Regex.Split(line, @",(?=(?:[^$]*\$\$[^$]*\$\$)*[^$]*$)");
             
             List<string> result = new List<string>();
             
             foreach (string field in fields)
             {
-                // $ 기호 제거 및 따옴표 처리
-                string processedField = field.Trim().Trim('"').Trim('$');
-                processedField = processedField.Replace("$", "");
+                // $$ 기호 제거 및 따옴표 처리
+                string processedField = field.Trim().Trim('"');
+                processedField = processedField.Replace("$$", "");
                 result.Add(processedField);
             }
             

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +25,9 @@ public class WorkerPanel : KYS.BaseUI
     private TextMeshProUGUI _runWorkerNameText;
     private TextMeshProUGUI _runRankText;
     private TextMeshProUGUI _runWorkerCostText;
+    private TextMeshProUGUI _runUnlockContentText;
     private Image _runWorkerImage;
+    
 
     // 버튼들
     private Button _upgradeBtn;
@@ -34,9 +35,12 @@ public class WorkerPanel : KYS.BaseUI
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
+    public string WorkerKey => _workerKey;
 
     private int _employCost;
     private int _employBMCost;
+
+    private int QuestOrder => Manager.data.WorkerEmployCost.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
 
     private bool _isBMCost;
 
@@ -54,7 +58,7 @@ public class WorkerPanel : KYS.BaseUI
         _runRankText = GetUI<TextMeshProUGUI>("RunRankText");
         _runWorkerCostText = GetUI<TextMeshProUGUI>("RunWorkerCostText");
         _runWorkerImage = GetUI<Image>("RunWorkerImage");
-
+        _runUnlockContentText = GetUI<TextMeshProUGUI>("RunUnlockContentText");
         // 버튼들 초기화
         _upgradeBtn = GetUI<Button>("UpgradeButton");
         _buyBtn = GetUI<Button>("BuyButton");
@@ -144,7 +148,10 @@ public class WorkerPanel : KYS.BaseUI
     public void SetInfo(WorkerPanelStates state)
     {
         _state = state;
-        
+
+        string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
+        CharacterDataCsv chracterData = Manager.data.Character.Values[key];
+
         // 모든 패널 비활성화
         if (_upgradeButton != null) _upgradeButton.SetActive(false);
         if (_beforeHireScreen != null) _beforeHireScreen.SetActive(false);
@@ -154,15 +161,25 @@ public class WorkerPanel : KYS.BaseUI
         switch (state)
         {
             case WorkerPanelStates.Upgrade:
+                _runWorkerNameText.text = chracterData.GetName();
                 if (_upgradeButton != null) _upgradeButton.SetActive(true);
                 break;
                 
             case WorkerPanelStates.Purchase:
+                _runWorkerNameText.text = chracterData.GetName();
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
                 break;
                 
             case WorkerPanelStates.Locked:
-                if (_lockScreen != null) _lockScreen.SetActive(true);
+                _runWorkerNameText.text = "???";
+                if (_lockScreen != null)
+                {
+                    _lockScreen.SetActive(true);
+                    if (_runUnlockContentText != null)
+                    {
+                        _runUnlockContentText.text = GetLocalizedText("ui_unlock_clearquest", QuestOrder);
+                    }
+                }
                 break;
         }
     }
@@ -203,6 +220,8 @@ public class WorkerPanel : KYS.BaseUI
 
             EmployWorker();
         }
+
+        Manager.Audio.SfxPlay("Money");
     }
 
     private void EmployWorker(int value = 0)
@@ -221,15 +240,14 @@ public class WorkerPanel : KYS.BaseUI
         }
     }
 
-    private async Task ShowUpgradePopUp()
+    private void ShowUpgradePopUp()
     {
-        GameObject obj = await Manager.ui.ShowPopUpAsync<WorkerDetailPanel>();
+        Manager.ui.ShowPopUpAsync<WorkerDetailPanel>(panel =>
+        {
+            panel.SetInfo(Worker);
 
-        WorkerDetailPanel panel = obj.GetComponent<WorkerDetailPanel>();
-
-        panel.SetInfo(Worker);
-
-        _presenter.SetInfo();
+            _presenter.SetInfo();
+        });
     }
 
     private void OnWorkerAdded(WorkerData worker)
@@ -245,4 +263,9 @@ public class WorkerPanel : KYS.BaseUI
         // 프레젠터에 워커 데이터 변경 알림
         _presenter.OnWorkerDataChanged();
     }
+
+
+
+
+
 }

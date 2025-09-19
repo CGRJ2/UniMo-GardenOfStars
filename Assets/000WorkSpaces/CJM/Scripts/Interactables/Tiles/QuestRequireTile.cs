@@ -58,7 +58,10 @@ public class QuestRequireTile : InteractableBase
     {
         for (int i = 0; i < lamps.Length; i++)
         {
-            if (i < progressIndex) lamps[i].UpdateView(true);
+            if (i < progressIndex)
+            {
+                lamps[i].UpdateView(true);
+            }
             else lamps[i].UpdateView(false);
         }
     }
@@ -88,11 +91,8 @@ public class QuestRequireTile : InteractableBase
                 }
             }
 
-            Addressables.LoadAssetAsync<IngrediantData>(QC_Data.ContentTargetId).Completed += task =>
-            {
-                ingrediantData = task.Result;
-                image_Ingrediant.sprite = ingrediantData.Sprite;
-            };
+            ingrediantData = Manager.data.Ingrediant[QC_Data.ContentTargetId];
+            image_Ingrediant.sprite = ingrediantData.Sprite;
         }
 
     }
@@ -147,7 +147,7 @@ public class QuestRequireTile : InteractableBase
         base.Enter_PersonalTask(characterRuntimeData);
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            Debug.LogError("Å¸ÀÏ µé¾î¿È");
+            //Debug.LogError("Å¸ÀÏ µé¾î¿È");
             StartCoroutine(AutoInserting());
         }
     }

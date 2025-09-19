@@ -38,8 +38,6 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
-            _worker.MoveSpeedLv.Subscribe(OnSpeedChanged);
-            _worker.MaxCapacityLv.Subscribe(OnCapacityChanged);
         }
 
         protected override void OnDestroy()
@@ -137,6 +135,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[WorkerDetailPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[WorkerDetailPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var eventHandler = GetEventWithSFX(_closeButtonName, "SFX_ButtonClickBack");
             if (eventHandler != null)
@@ -155,6 +162,8 @@ namespace KYS
             {
                 eventHandler.Click += (data) => OnUpgradeCapacityButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void OnCloseButtonClicked()
@@ -167,7 +176,9 @@ namespace KYS
         {
             if (_isInSpeedProgress) return;
 
-            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
+            if ((Manager.player.Data.Money.Value < _upgradeSpeedCost || _worker.IsMoveSpeedMaxLv)) return;
+
+            Manager.Audio.SfxPlay("Money");
 
             _speedUpgradeButton.interactable = false;
             _isInSpeedProgress = true;
@@ -186,7 +197,9 @@ namespace KYS
         {
             if (_isInCapacityProgress) return;
 
-            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv) && Manager.firebase.UserData.CurStage.Value != "Tutorial") return;
+            if ((Manager.player.Data.Money.Value < _upgradeCapacityCost || _worker.IsMaxCapacityMaxLv)) return;
+
+            Manager.Audio.SfxPlay("Money");
 
             _capacityUpgradeButton.interactable = false;
             _isInCapacityProgress = true;

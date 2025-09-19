@@ -20,6 +20,19 @@ public class CharacterDataCsv : IUsableId
     {
         return Id;
     }
+
+    public string GetName()
+    {
+        switch (Manager.localization.CurrentLanguage)
+        {
+            case SystemLanguage.Korean:
+                return Name_Kr;
+            case SystemLanguage.English:
+                return Name_En;
+        }
+
+        return Name_Kr;
+    }
 }
 
 public partial class DataManager

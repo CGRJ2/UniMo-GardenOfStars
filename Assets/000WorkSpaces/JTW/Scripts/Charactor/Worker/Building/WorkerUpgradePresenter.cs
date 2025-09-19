@@ -43,6 +43,8 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         {
             foreach (string key in Manager.data.Worker.Values.Keys.ToList())
             {
+                if (!Manager.data.Character.Values.ContainsKey($"{key}_{Manager.firebase.UserData.CurStage.Value}")) continue;
+
                 WorkerPanel workerPanel = Instantiate(_workerPanelPrefab, _workerUpgradePanel.transform).GetComponent<WorkerPanel>();
                 
                 if (workerPanel != null)
@@ -51,9 +53,6 @@ public class WorkerUpgradePresenter : KYS.BaseUI
                     workerPanel.Init(key, this);
                     _workerPanelList.Add(workerPanel);
                 }
-
-                // 튜토리얼은 일꾼이 하나만 나와야 함
-                if (Manager.firebase.UserData.CurStage.Value == "Tutorial") break;
             }
         }
         
@@ -70,15 +69,23 @@ public class WorkerUpgradePresenter : KYS.BaseUI
     {
         foreach (WorkerPanel panel in _workerPanelList)
         {
-            if (panel.Worker == null)
+            if (panel.Worker != null)
+            {
+                // 이미 고용된 워커는 업그레이드 가능
+                panel.SetInfo(WorkerPanelStates.Upgrade);
+                continue;
+            }
+
+            int questOrder = Manager.data.WorkerEmployCost.Values[$"{panel.WorkerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
+
+            if (questOrder == 0 || Manager.firebase.UserData.CurStageData.Npc.QuestList.List[questOrder - 1].QuestState.Value == 3)
             {
                 // 구매 가능한 워커
                 panel.SetInfo(WorkerPanelStates.Purchase);
             }
             else
             {
-                // 이미 고용된 워커는 업그레이드 가능
-                panel.SetInfo(WorkerPanelStates.Upgrade);
+                panel.SetInfo(WorkerPanelStates.Locked);
             }
         }
     }
