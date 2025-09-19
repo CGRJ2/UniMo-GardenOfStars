@@ -49,7 +49,6 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     {
         isReserved = false;
         curWorker = characterRD;
-        curWorker.IsWork.Value = true;
         curCharacterProdSpeed = characterRD.GetProductionSpeed();
 
         while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
@@ -78,6 +77,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 재료 소진 시
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
+                curWorker.IsWork.Value = false;
                 prepareProgressedTime = 0; // 진행도 초기화
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
@@ -86,6 +86,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 쌓여있는 재료가 있을때만 실행
             if (ownerInstance.ingrediantStack.Count > 0)
             {
+                curWorker.IsWork.Value = true;
                 // 준비 시작 시, 진행도 표기
                 prepareProgressBar.gameObject.SetActive(true);
                 prepareProgressedTime += Time.deltaTime;
