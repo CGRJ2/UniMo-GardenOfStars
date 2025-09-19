@@ -34,6 +34,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public bool IsHarvest;
 
     public ObservableProperty<bool> IsStun = new();
+    public ObservableProperty<bool> IsAwake = new();
 
     public ObservableProperty<bool> IsPlayerTriggered = new();
 

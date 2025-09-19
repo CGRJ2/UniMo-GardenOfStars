@@ -102,6 +102,10 @@ MonoBehaviour:
     _value: 0
   NavMeshPriority: 0
   IsHarvest: 0
+  IsStun:
+    _value: 0
+  IsAwake:
+    _value: 0
   IsPlayerTriggered:
     _value: 0
 --- !u!114 &3748741630047970184
@@ -116,6 +120,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e14204388ff3ee40ba305816a82e709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _characterController: {fileID: 9100000, guid: 306dc01b47342ab498e492829c521bc4, type: 2}
+  _equipController: {fileID: 9100000, guid: 45aebbca9a33f9d4d861d1ad317549fd, type: 2}
 --- !u!114 &875156556206429596
 MonoBehaviour:
   m_ObjectHideFlags: 0

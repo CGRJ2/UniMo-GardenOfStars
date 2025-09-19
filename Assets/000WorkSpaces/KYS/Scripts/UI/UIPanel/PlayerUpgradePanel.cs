@@ -28,6 +28,8 @@ namespace KYS
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+
+            Manager.Audio.SfxPlay("DoorBell");
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -68,12 +70,23 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[PlayerUpgradePanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[PlayerUpgradePanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
                 closeEventHandler.Click += (data) => OnCloseButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void UpdateUI()

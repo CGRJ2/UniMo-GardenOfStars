@@ -5,6 +5,7 @@ using UnityEngine;
 public class WorkerState_Stun : WorkerStateBase
 {
     private float _timer;
+    private WaitForSeconds _delay = new WaitForSeconds(1f);
 
     public WorkerState_Stun(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
@@ -13,6 +14,10 @@ public class WorkerState_Stun : WorkerStateBase
     public override void Enter()
     {
         _timer = 0;
+
+        Manager.Audio.SfxPlay("WorkerStun", WorkerData.transform);
+
+        WorkerData.IsAwake.Value = false;
         WorkerData.IsStun.Value = true;
 
         if (WorkerData.CurWorkstation.Value == null) return;
@@ -48,5 +53,16 @@ public class WorkerState_Stun : WorkerStateBase
     public override void Exit()
     {
         WorkerData.IsStun.Value = false;
+    }
+
+    private IEnumerator AwakeCoroutine()
+    {
+        WorkerData.IsAwake.Value = true;
+        WorkerData.IsStun.Value = false;
+
+        yield return _delay;
+
+        WorkerData.IsAwake.Value = false;
+        StateMachine.ChangeState(WorkerStates.Idle);
     }
 }

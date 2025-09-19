@@ -81,6 +81,7 @@ namespace KYS
             // 구매 불가능한 상황들
             if (!string.IsNullOrEmpty(purchasedBuildingID))
             {
+                
                 Manager.ui.ShowMessagePopUpWithKeyAsync("msg_already_have_building", () =>
                 {
                     Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다.");
@@ -90,6 +91,8 @@ namespace KYS
             }
             if (estate.IsOnHand())
             {
+                
+
                 Manager.ui.ShowMessagePopUpWithKeyAsync("msg_cannot_purchase_building_holding", () =>
                 {
                     Debug.LogWarning("손에 뭔가 쥐고 있을 때는 건물을 구매할 수 없습니다");
@@ -100,22 +103,27 @@ namespace KYS
 
             // 돈 체크 후 구매 진행
             int curMoney = Manager.player.Data.Money.Value;
-            int cost = Manager.data.Building[buildingID].Cost;
-            Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
+            Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
+            {
+                int cost = task.Result.Cost;
 
-            if (cost <= curMoney)
-            {
-                Manager.player.Data.Money.Value -= cost;
-                estate.SpawnBuildingItem(buildingID);
-                Manager.ui.ClosePanel();
-            }
-            else
-            {
-                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_not_enough_money", () =>
+                Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
+                if (cost <= curMoney)
                 {
-                    Debug.LogWarning("돈이 모자랍니다");
-                });
-            }
+                    Debug.Log($"[PropertyContent] 구매 성공 - ClosePanel 호출 - Time: {Time.time}");
+                    Manager.player.Data.Money.Value -= cost;
+                    estate.SpawnBuildingItem(buildingID);
+                    Manager.ui.ClosePanel();
+                }
+                else
+                {
+                   
+                    Manager.ui.ShowMessagePopUpWithKeyAsync("msg_not_enough_money", () =>
+                    {
+                        Debug.LogWarning("돈이 모자랍니다");
+                    });
+                }
+            };
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -203,19 +211,13 @@ namespace KYS
             {
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
-
-                // (0918 최재민 수정)
                 // 재료(생산품) 이름, 스프라이트
-                SwitchAfrterBuyModeHarvestMode();
-                ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(harvestBD.ProductID);
-                image_Prod.sprite = Manager.data.Ingrediant[harvestBD.ProductID].Sprite;
-
-                /*Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
+                Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
                 {
                     SwitchAfrterBuyModeHarvestMode();
                     ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
                     image_Prod.sprite = prodData.Result.Sprite;
-                };*/
+                };
 
 
                 //업그레이드 데이터를 받아올 때 적용
@@ -229,25 +231,17 @@ namespace KYS
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
 
-                // (0918 최재민 수정)
-                SwitchAfrterBuyModeManufactureMode();
-                MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(manufactureBD.RequireProdID);
-                image_Material.sprite = Manager.data.Ingrediant[manufactureBD.RequireProdID].Sprite;
-
-                ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(manufactureBD.ProductID);
-                image_Prod.sprite = Manager.data.Ingrediant[manufactureBD.ProductID].Sprite;
-
-                //Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
-                //{
-                //    SwitchAfrterBuyModeManufactureMode();
-                //    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
-                //    image_Material.sprite = requireData.Result.Sprite;
-                //};
-                //Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
-                //{
-                //    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-                //    image_Prod.sprite = prodData.Result.Sprite;
-                //};
+                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
+                {
+                    SwitchAfrterBuyModeManufactureMode();
+                    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
+                    image_Material.sprite = requireData.Result.Sprite;
+                };
+                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
+                {
+                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+                    image_Prod.sprite = prodData.Result.Sprite;
+                };
 
                 //업그레이드 데이터를 받아올 때 적용
                 if (upgradeData != null)
@@ -394,12 +388,21 @@ namespace KYS
                 // 재료 이름도 다시 로드
                 if (currentBuildingData is HarvestBD harvestBD)
                 {
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(harvestBD.ProductID);
+                    Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
+                    {
+                        ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+                    };
                 }
                 else if (currentBuildingData is ManufactureBD manufactureBD)
                 {
-                    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(manufactureBD.RequireProdID);
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(manufactureBD.ProductID);
+                    Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
+                    {
+                        MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
+                    };
+                    Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
+                    {
+                        ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+                    };
                 }
             }
         }

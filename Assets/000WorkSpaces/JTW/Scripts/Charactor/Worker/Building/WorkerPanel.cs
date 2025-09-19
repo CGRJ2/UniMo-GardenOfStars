@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,6 +37,8 @@ public class WorkerPanel : KYS.BaseUI
 
     private int _employCost;
     private int _employBMCost;
+
+    private int QuestOrder => Manager.data.WorkerEmployCost.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
 
     private bool _isBMCost;
 
@@ -210,6 +211,8 @@ public class WorkerPanel : KYS.BaseUI
 
             EmployWorker();
         }
+
+        Manager.Audio.SfxPlay("Money");
     }
 
     private void EmployWorker(int value = 0)
@@ -228,15 +231,14 @@ public class WorkerPanel : KYS.BaseUI
         }
     }
 
-    private async Task ShowUpgradePopUp()
+    private void ShowUpgradePopUp()
     {
-        GameObject obj = await Manager.ui.ShowPopUpAsync<WorkerDetailPanel>();
+        Manager.ui.ShowPopUpAsync<WorkerDetailPanel>(panel =>
+        {
+            panel.SetInfo(Worker);
 
-        WorkerDetailPanel panel = obj.GetComponent<WorkerDetailPanel>();
-
-        panel.SetInfo(Worker);
-
-        _presenter.SetInfo();
+            _presenter.SetInfo();
+        });
     }
 
     private void OnWorkerAdded(WorkerData worker)

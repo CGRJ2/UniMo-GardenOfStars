@@ -86,15 +86,24 @@ public class SettingPopUp : BaseUI
 
     private void SetupButtons()
     {
+        Debug.Log($"[SettingPopUp] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+        // 이미 설정되었으면 중복 호출 방지
+        if (isButtonsSetup)
+        {
+            Debug.Log($"[SettingPopUp] SetupButtons 이미 완료됨 - 중복 호출 방지");
+            return;
+        }
+
         var confirmEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
         if (confirmEventHandler != null)
         {
             confirmEventHandler.Click += OnCloseButton;
-
+            isButtonsSetup = true; // 설정 완료 플래그
         }
         else
         {
-            Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+            Debug.LogError($"[SettingPopUp] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
         }
 
         var logoutEventHandler = GetEventWithSFX(logoutButtonName, "SFX_ButtonClick");
@@ -156,28 +165,92 @@ public class SettingPopUp : BaseUI
 
     private void OnAccountButton(PointerEventData data)
     {
-        //TODO: Google Play Game 계정 연결 현재 데이터 처리 부분도 추가 필요해 보임.
-        //StartCoroutine(WaitAutoLogin());
+        // Google Play Games 계정 연결 실행
+        ExecuteGooglePlayGamesLink();
+    }
+
+    /// <summary>
+    /// Google Play Games 계정 연결 실행
+    /// </summary>
+    private void ExecuteGooglePlayGamesLink()
+    {
+        try
+        {
+            // LinkPlayGamesController 찾기 또는 생성
+            LinkPlayGamesController linkController = FindObjectOfType<LinkPlayGamesController>();
+            if (linkController == null)
+            {
+                // LinkPlayGamesController가 없다면 새로 생성
+                GameObject linkControllerObj = new GameObject("LinkPlayGamesController");
+                linkController = linkControllerObj.AddComponent<LinkPlayGamesController>();
+            }
+
+            // 이미 연결되어 있는지 확인
+            if (linkController.IsLinked)
+            {
+                Debug.Log("[SettingPopUp] 이미 Google Play Games 계정이 연결되어 있습니다.");
+                ShowMessagePopUpWithKey("account_already_linked");
+                return;
+            }
+
+            // 계정 연결 실행
+            linkController.LinkPlayGames();
+            
+            Debug.Log("[SettingPopUp] Google Play Games 계정 연결을 시작합니다.");
+            ShowMessagePopUpWithKey("account_linking_start");
+            
+            // 연결 상태 모니터링 시작
+            StartCoroutine(MonitorLinkingStatus(linkController));
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SettingPopUp] Google Play Games 계정 연결 중 오류: {e.Message}");
+            ShowMessagePopUpWithKey("account_linking_error");
+        }
+    }
+
+    /// <summary>
+    /// 계정 연결 상태 모니터링
+    /// </summary>
+    private System.Collections.IEnumerator MonitorLinkingStatus(LinkPlayGamesController linkController)
+    {
+        float timeout = 30f; // 30초 타임아웃
+        float elapsed = 0f;
+        
+        while (elapsed < timeout)
+        {
+            if (linkController.IsLinked)
+            {
+                ShowMessagePopUpWithKey("account_linking_success");
+                yield break;
+            }
+            
+            elapsed += 0.5f;
+            yield return new WaitForSeconds(0.5f);
+        }
+        
+        // 타임아웃 시 오류 메시지 표시
+        ShowMessagePopUpWithKey("account_linking_error");
+    }
+
+    /// <summary>
+    /// 메시지 팝업 표시 (간단한 알림용)
+    /// </summary>
+    private void ShowMessagePopUp(string message)
+    {
+        Manager.ui.ShowMessagePopUpAsync(message);
+    }
+
+    /// <summary>
+    /// 번역 키를 사용한 메시지 팝업 표시
+    /// </summary>
+    private void ShowMessagePopUpWithKey(string localizationKey, string fallbackMessage = null)
+    {
+        Manager.ui.ShowMessagePopUpWithKeyAsync(localizationKey, null);
     }
 
 
-    //private IEnumerator WaitAutoLogin()
-    //{
-    //    yield return new WaitUntil(() => _autoLogin.IsPlayGameLoginEnd);
-
-    //    if (_autoLogin.IsLogined)
-    //    {
-    //        Manager.firebase.InitUserData();
-    //        yield return new WaitForSeconds(1f);
-
-    //    }
-    //    else
-    //    {
-    //        StartCoroutine(WaitLogin());
-    //    }
-
-    //    _loadingCanvas.gameObject.SetActive(false);
-    //}
+ 
 
     private void OnSupportButton(PointerEventData data)
     {
@@ -188,7 +261,44 @@ public class SettingPopUp : BaseUI
 
     private void OnEmergencyEscapeButton(PointerEventData data)
     {
-       
+        // 긴급 탈출 - 플레이어를 최초 위치로 이동
+        ResetPlayerToInitialPosition();
+        Manager.ui.ClosePopup();
+    }
+
+    /// <summary>
+    /// 플레이어를 최초 위치로 리셋
+    /// </summary>
+    private void ResetPlayerToInitialPosition()
+    {
+        try
+        {
+            // 플레이어 오브젝트 찾기
+            GameObject playerObj = Manager.player?.PlayerObj;
+            if (playerObj == null)
+            {
+                Debug.LogError("[SettingPopUp] 플레이어 오브젝트를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 최초 위치로 이동 (0, 0, 0 또는 원하는 위치)
+            Vector3 initialPosition = new Vector3(0, 0, 0);
+            playerObj.transform.position = initialPosition;
+
+            // 속도 초기화
+            var rigidbody = playerObj.GetComponent<Rigidbody>();
+            if (rigidbody != null)
+            {
+                rigidbody.velocity = Vector3.zero;
+                rigidbody.angularVelocity = Vector3.zero;
+            }
+
+            Debug.Log($"[SettingPopUp] 플레이어를 {initialPosition}으로 이동 완료");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[SettingPopUp] 긴급 탈출 실행 중 오류: {e.Message}");
+        }
     }
 
 

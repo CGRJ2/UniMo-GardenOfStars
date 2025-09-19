@@ -2,6 +2,7 @@
 using Firebase.Extensions;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using KYS;
 using UnityEngine;
 
 public class LoginController : MonoBehaviour
@@ -18,6 +19,8 @@ public class LoginController : MonoBehaviour
 
     private void OnMaunuallyAuthenticate(SignInStatus status)
     {
+        if (IsLoggingIn.Value || IsLogined.Value) return;
+
         IsLoggingIn.Value = true;
 
         if(status == SignInStatus.Canceled)
@@ -68,27 +71,37 @@ public class LoginController : MonoBehaviour
 
     public void GusetLogin()
     {
+        if (IsLoggingIn.Value || IsLogined.Value) return;
+
         IsLoggingIn.Value = true;
-        Manager.firebase.Auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
+
+        GuestLoginPopup.ShowGuestLoginPopup(() =>
         {
-            if (task.IsCanceled)
+            Manager.firebase.Auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
             {
-                Debug.Log("익명 로그인 중단");
-                IsLoggingIn.Value = false;
-                return;
-            }
+                if (task.IsCanceled)
+                {
+                    Debug.Log("익명 로그인 중단");
+                    IsLoggingIn.Value = false;
+                    return;
+                }
 
-            if (task.IsFaulted)
-            {
-                Debug.Log($"익명 로그인 실패 : {task.Exception}");
-                Manager.firebase.NetworkDisconnected();
-                IsLoggingIn.Value = false;
-                return;
-            }
+                if (task.IsFaulted)
+                {
+                    Debug.Log($"익명 로그인 실패 : {task.Exception}");
+                    Manager.firebase.NetworkDisconnected();
+                    IsLoggingIn.Value = false;
+                    return;
+                }
 
-            Debug.Log("익명 로그인 성공");
+                Debug.Log("익명 로그인 성공");
+                IsLoggingIn.Value = false;
+                IsLogined.Value = true;
+            });
+        }, 
+        () =>
+        {
             IsLoggingIn.Value = false;
-            IsLogined.Value = true;
         });
     }
 }

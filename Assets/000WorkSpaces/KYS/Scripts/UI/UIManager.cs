@@ -305,7 +305,7 @@ namespace KYS
                     return safeAreaPanel.transform;
                 }
             }
-
+            
             Debug.LogWarning($"[UIManager] HUD용 SafeAreaPanel 생성 실패, HUD Canvas를 직접 사용: {hudCanvas.name}");
             return hudCanvas.transform;
         }
@@ -952,13 +952,17 @@ namespace KYS
         /// <summary>
         /// 패널 닫기
         /// </summary>
+        [ContextMenu("Close Panel")]
         public void ClosePanel()
         {
+            Debug.Log($"[UIManager] ClosePanel 호출됨 - Time: {Time.time}, Stack Count: {panelStack.Count}");
+            
             if (panelStack.Count == 0) return;
 
             BaseUI currentPanel = panelStack.Pop();
             if (currentPanel != null)
             {
+                Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name} - Time: {Time.time}");
                 // 스택 구조에서는 항상 파괴
                 UnregisterUI(currentPanel);
                 currentPanel.Hide();
@@ -1053,6 +1057,7 @@ namespace KYS
         /// <summary>
         /// 현재 열린 Popup 닫기
         /// </summary>
+        [ContextMenu("Close Popup")]
         public void ClosePopup()
         {
             if (popupStack.Count == 0)
@@ -1926,7 +1931,7 @@ namespace KYS
         /// <summary>
         /// 제네릭 팝업 UI 표시 (비동기 버전)
         /// </summary>
-        public async Task<GameObject> ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
+        public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
             string popupName = typeof(T).Name;
             
@@ -1935,12 +1940,10 @@ namespace KYS
             {
                 Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다.");
                 onComplete?.Invoke(null);
-                return null;
             }
             
             isCreatingPopup = true;
-            GameObject obj = await ShowPopUpAsyncCoroutine<T>(onComplete);
-            return obj;
+            StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
         }
         
         /// <summary>
@@ -1973,7 +1976,7 @@ namespace KYS
             StartCoroutine(ShowPanelAsyncCoroutine<T>(onComplete));
         }
 
-        private async Task<GameObject> ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
+        private IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
 
@@ -1995,7 +1998,7 @@ namespace KYS
             foreach (string addressableKey in possibleKeys)
             {
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-                await handle.Task;
+                yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -2017,7 +2020,7 @@ namespace KYS
                 Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
                 onComplete?.Invoke(null);
                 isCreatingPopup = false;
-                return null;
+                yield break;
             }
 
             try
@@ -2028,7 +2031,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // UI 타입에 따라 적절한 Canvas 선택
@@ -2037,7 +2040,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
@@ -2049,7 +2052,7 @@ namespace KYS
                     Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                     Destroy(uiInstance);
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // UI 타입에 따라 적절한 메서드 호출
@@ -2063,8 +2066,6 @@ namespace KYS
                 }
 
                 onComplete?.Invoke(uiComponent);
-
-                return uiInstance;
             }
             catch (System.Exception e)
             {
@@ -2081,8 +2082,6 @@ namespace KYS
                     Addressables.Release(handle);
                 }
             }
-
-            return null;
         }
         
         /// <summary>
