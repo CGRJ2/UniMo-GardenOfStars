@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1105444532199352352}
-  - component: {fileID: 4881420364300443640}
+  - component: {fileID: 5492474576138424267}
   - component: {fileID: 5706602865219234685}
   m_Layer: 0
   m_Name: ProdsGenerater
@@ -33,8 +33,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4881420364300443640
-BoxCollider:
+--- !u!135 &5492474576138424267
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 2}
+  m_Radius: 1.1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5706602865219234685
 MonoBehaviour:
@@ -67,8 +67,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   personalTaskOwner: {fileID: 0}
-  interactPopUI: {fileID: 0}
   isWorkable: 0
-  productionTime: 0
+  isReserved: 0
   progressedTime: 0
-  _SpawnedProduct: {fileID: 0}

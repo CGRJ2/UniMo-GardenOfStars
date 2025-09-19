@@ -36,6 +36,7 @@ namespace KYS
 
             Initialize();
 
+            Manager.Audio.SfxPlay("DoorBell");
         }
         public override string[] GetAutoLocalizeKeys()
         {
