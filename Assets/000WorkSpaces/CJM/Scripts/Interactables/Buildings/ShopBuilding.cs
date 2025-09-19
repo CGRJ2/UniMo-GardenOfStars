@@ -30,25 +30,45 @@ public class ShopBuilding : BuildingInstance
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
-            int soldItemCount = 0;
-            long price = instanceProd.Data.Price;
-            while (characterRD.IngrediantStack.Count > 0)
+            // 건물(재료)라면 => 건물 구매 가격에 다시 판매
+            if (instanceProd is Item_Building building)
             {
+                long price = Manager.data.Building[building.buildingId].Cost;
                 IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-
-                if (characterRD.IngrediantStack.Count > 0)
+                popedProd.MoveToTargetAndShrink(attachPoint, () =>
                 {
-                    popedProd.MoveToTargetAndShrink(attachPoint);
-                }
-                else // 마지막 재료일 때
-                {
-                    popedProd.MoveToTargetAndShrink(attachPoint, () => ShowSoldResultUI(price, soldItemCount));
-                }
-                soldItemCount += 1;
+                    // 판매 완료
+                    CaculateSoldResult(price);
 
-                yield return new WaitForSeconds(insertDelayTime);
+                    // 구매한 건물 ID => DB에서 초기화
+                    Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
+                });
+            }
+            // 일반 재료라면 계산식을 통해 판매 ///// 흥정 수치 계산식에 포함해야됨. 어떤 식으로 할건가요?
+            else
+            {
+                int soldItemCount = 0;
+                long price = instanceProd.Data.Price;
+
+                while (characterRD.IngrediantStack.Count > 0)
+                {
+                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+
+                    if (characterRD.IngrediantStack.Count > 0)
+                    {
+                        popedProd.MoveToTargetAndShrink(attachPoint);
+                    }
+                    else // 마지막 재료일 때
+                    {
+                        popedProd.MoveToTargetAndShrink(attachPoint, () => CaculateSoldResult(price, soldItemCount));
+                    }
+                    soldItemCount += 1;
+
+                    yield return new WaitForSeconds(insertDelayTime);
+                }
             }
         }
+
         // 플레이어 손에 재료가 없으면 바로 return
         else
         {
@@ -56,7 +76,7 @@ public class ShopBuilding : BuildingInstance
         }
     }
 
-    void ShowSoldResultUI(long price, int soldItemCount)
+    void CaculateSoldResult(long price, int soldItemCount = 1)
     {
         // 전부 투입 완료 된 후 정산 & UI활성화
         tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";

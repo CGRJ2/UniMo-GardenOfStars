@@ -93,6 +93,8 @@ public class IngrediantInstance : PooledObject
 
     public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
+        transform.SetParent(null);
+
         // 획득&투입 SFX
         if (ownerCharacterRD is PlayerRunTimeData)
             Manager.Audio.ChainedSFXPlay("Get", parent);
