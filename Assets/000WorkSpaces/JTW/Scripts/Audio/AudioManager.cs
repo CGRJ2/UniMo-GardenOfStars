@@ -213,7 +213,7 @@ public class AudioManager : Singleton<AudioManager>
             target = Camera.main.transform;
         }
 
-        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}").Completed += data =>
+        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}.asset").Completed += data =>
         {
             if (data.Result == null)
             {
