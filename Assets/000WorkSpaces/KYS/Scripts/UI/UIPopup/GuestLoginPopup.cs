@@ -28,7 +28,7 @@ namespace KYS
         [SerializeField] private string cancelText = "취소";
         [SerializeField] private string guestMessage1 = "게스트로 로그인하시겠습니까?";
         [SerializeField] private string guestMessage2 = "게스트 계정은 임시 계정으로, 데이터가 손실될 수 있습니다.";
-        [SerializeField] private string guestDescription = "게스트 계정으로 플레이하면 진행사항이 저장되지 않을 수 있습니다. 계정을 생성하시는 것을 권장합니다.";
+       
 
         // 이벤트
         public System.Action OnGuestLoginConfirmed;
@@ -110,7 +110,7 @@ namespace KYS
             // 게스트 로그인 설명 텍스트 설정
             if (guestLoginText != null)
             {
-                guestLoginText.text = GetLocalizedText("ui_guest_login_description", guestDescription);
+                guestLoginText.text = GetLocalizedText("ui_guest_login_title");
             }
         }
 

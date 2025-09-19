@@ -25,7 +25,9 @@ public class WorkerPanel : KYS.BaseUI
     private TextMeshProUGUI _runWorkerNameText;
     private TextMeshProUGUI _runRankText;
     private TextMeshProUGUI _runWorkerCostText;
+    private TextMeshProUGUI _runUnlockContentText;
     private Image _runWorkerImage;
+    
 
     // 버튼들
     private Button _upgradeBtn;
@@ -56,7 +58,7 @@ public class WorkerPanel : KYS.BaseUI
         _runRankText = GetUI<TextMeshProUGUI>("RunRankText");
         _runWorkerCostText = GetUI<TextMeshProUGUI>("RunWorkerCostText");
         _runWorkerImage = GetUI<Image>("RunWorkerImage");
-
+        _runUnlockContentText = GetUI<TextMeshProUGUI>("RunUnlockContentText");
         // 버튼들 초기화
         _upgradeBtn = GetUI<Button>("UpgradeButton");
         _buyBtn = GetUI<Button>("BuyButton");
@@ -170,7 +172,14 @@ public class WorkerPanel : KYS.BaseUI
                 
             case WorkerPanelStates.Locked:
                 _runWorkerNameText.text = "???";
-                if (_lockScreen != null) _lockScreen.SetActive(true);
+                if (_lockScreen != null)
+                {
+                    _lockScreen.SetActive(true);
+                    if (_runUnlockContentText != null)
+                    {
+                        _runUnlockContentText.text = GetLocalizedText("ui_unlock_clearquest", QuestOrder);
+                    }
+                }
                 break;
         }
     }
@@ -254,4 +263,9 @@ public class WorkerPanel : KYS.BaseUI
         // 프레젠터에 워커 데이터 변경 알림
         _presenter.OnWorkerDataChanged();
     }
+
+
+
+
+
 }
