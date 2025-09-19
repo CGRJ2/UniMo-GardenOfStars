@@ -1,6 +1,7 @@
 using GameQuest;
 using System;
 using System.Linq;
+using Unity.VisualScripting;
 
 namespace GameNpc
 {
@@ -8,10 +9,7 @@ namespace GameNpc
     public class NpcData : FirebaseData
     {
         private NpcDataCsv _npcCsv => Manager.data.Npc.Values[Id];
-        public string NpcName => _npcCsv.NpcName;
-        public string StageId => _npcCsv.StageId;
-        public string NpcImageLocation => _npcCsv.NpcImageLocation;
-        public string[] FocusText => _npcCsv.FocusText;
+        public string NpcName => _npcCsv.Name_KR;
         public string Description => _npcCsv.Description;
 
         // 대화 관련

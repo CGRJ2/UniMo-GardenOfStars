@@ -139,10 +139,10 @@ namespace KYS
             //ProcessGuestLogin();
             
             //// 이벤트 호출
-            //OnGuestLoginConfirmed?.Invoke();
+            OnGuestLoginConfirmed?.Invoke();
             
             //// 팝업 닫기
-            //Manager.ui.ClosePopup();
+            Manager.ui.ClosePopup();
         }
 
         private void OnCancelClicked()

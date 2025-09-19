@@ -30,6 +30,8 @@ public class LoginCanvas : KYS.BaseUI
 
         _login.IsLoggingIn.Subscribe(ButtonSetDisable);
         delayUntil = new WaitUntil(() => _login.IsLogined.Value);
+
+        // Manager.Audio.BgmPlay("TitleBgm");
     }
 
     protected override void OnDestroy()

@@ -1,8 +1,9 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class IngrediantInstance : PooledObject
 {
@@ -10,21 +11,51 @@ public class IngrediantInstance : PooledObject
     [SerializeField] float absorbAcceleration = 3f;
     [SerializeField] Vector3 stackOffset;
 
-    [Header("Ãâ·· È¿°ú ¼³Á¤°ª")]
+    [Header("ì¶œë  íš¨ê³¼ ì„¤ì •ê°’")]
     CharaterRuntimeData ownerCharacterRD;
     int myOrder;
     Transform wobbleParent;
     bool isOnHand;
     [SerializeField] AnimationCurve baseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] float moveSpeed = 4f;
-    [SerializeField] float minStretch = 0.5f; // myOrder=0 ¡æ ºü¸£°Ô
-    [SerializeField] float maxStretch = 10.0f; // myOrder=9 ¡æ ´À¸®°Ô
+
+    [SerializeField] Animator animator;
+    public ObservableProperty<ProdState> state = new();
+    private void Awake() => state.Subscribe(AnimationControll);
+
+    public bool IsReadyToHarvest()
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.IsName("Generated_Idle");
+    }
+
+    void AnimationControll(ProdState state)
+    {
+        if (animator == null) return;
+        switch (state)
+        {
+            case ProdState.WaitForComplete:
+                break;
+
+            case ProdState.Completed:
+                animator.SetTrigger("Blossom");
+                
+                // ìƒì„± íš¨ê³¼ìŒ
+                Manager.Audio.SfxPlay("SFX_ProdSpawn", transform);
+
+                break;
+
+            case ProdState.Harvested:
+                animator.SetTrigger("Harvest");
+                break;
+        }
+    }
 
     protected override void OnPooledEnable()
     {
         base.OnPooledEnable();
 
-        // »ı¼º È¿°úÀ½
+        
     }
 
     protected override void OnPooledDisable()
@@ -33,21 +64,20 @@ public class IngrediantInstance : PooledObject
 
         ownerCharacterRD = null;
         isOnHand = false;
-        // ¼Ò¸ê È¿°úÀ½
+        // ì†Œë©¸ íš¨ê³¼ìŒ
     }
 
     public void Despawn()
     {
-        ParentPool.ReturnPooledObj(gameObject); // ÀÌ ¹æ¹ıÀ¸·Î µğ½ºÆù
-    }
-
-    public void SetIngrediantSO(IngrediantData ingrediantSO)
-    {
-        this.Data = ingrediantSO;
+        ParentPool.ReturnPooledObj(gameObject); // ì´ ë°©ë²•ìœ¼ë¡œ ë””ìŠ¤í°
     }
 
     public void AttachToTarget(Transform parent, int stackCount = 0, CharaterRuntimeData characterRD = null)
     {
+        // íšë“&íˆ¬ì… SFX
+        if (ownerCharacterRD is PlayerRunTimeData || characterRD is PlayerRunTimeData)
+            Manager.Audio.ChainedSFXPlay("Get", parent);
+
         if (characterRD == null)
         {
             transform.SetParent(parent);
@@ -63,7 +93,12 @@ public class IngrediantInstance : PooledObject
 
     public void MoveToTargetAndShrink(Transform parent, Action completed = null)
     {
-        //transform.SetParent(parent);
+        transform.SetParent(null);
+
+        // íšë“&íˆ¬ì… SFX
+        if (ownerCharacterRD is PlayerRunTimeData)
+            Manager.Audio.ChainedSFXPlay("Get", parent);
+
         ownerCharacterRD = null;
         isOnHand = false;
         StartCoroutine(MoveToTargetPosAndShrinkRoutine(parent, completed));
@@ -88,28 +123,30 @@ public class IngrediantInstance : PooledObject
             Vector3 targetPos = targetAttachTransform.position + stackOffset * stackOrder;
             Quaternion targetRot = targetAttachTransform.rotation;
 
-            // ÀÌµ¿
+            // ì´ë™
             currentSpeed += absorbAcceleration * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPos, currentSpeed * Time.deltaTime);
 
-            // È¸Àü (°¡±î¿öÁú¼ö·Ï t ¡æ 1, 0.3 °Å¸®¿¡¼­ ÀÌ¹Ì È¸Àü ¿Ï·á)
+            // íšŒì „ (ê°€ê¹Œì›Œì§ˆìˆ˜ë¡ t â†’ 1, 0.3 ê±°ë¦¬ì—ì„œ ì´ë¯¸ íšŒì „ ì™„ë£Œ)
             float dist = Vector3.Distance(transform.position, targetPos);
-            if (dist > startDist) startDist = dist; // Å¸°ÙÀÌ ¸Ö¾îÁö¸é ±âÁØ °»½Å
+            if (dist > startDist) startDist = dist; // íƒ€ê²Ÿì´ ë©€ì–´ì§€ë©´ ê¸°ì¤€ ê°±ì‹ 
             float t = Mathf.InverseLerp(startDist, 0.3f, dist);
             t = Mathf.Clamp01(t);
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
-            // µµÂø ½º³À
+            // ë„ì°© ìŠ¤ëƒ…
             if (dist < 0.01f)
             {
                 transform.position = targetPos;
-                transform.rotation = targetRot; // ¡ç ¸¶Áö¸·¿¡ Á¤È®È÷ ¸ÂÃçÁÖ±â
+                transform.rotation = targetRot; // â† ë§ˆì§€ë§‰ì— ì •í™•íˆ ë§ì¶°ì£¼ê¸°
 
                 isAttached = true;
 
-                // Ãâ·· ¸ğ¼ÇÀ» À§ÇÑ ÇÊµå
+                // ì¶œë  ëª¨ì…˜ì„ ìœ„í•œ í•„ë“œ
                 if (ownerCharacterRD != null)
                     SetupWobbleParent(targetAttachTransform, stackOrder);
+
+                
 
                 break;
             }
@@ -136,32 +173,32 @@ public class IngrediantInstance : PooledObject
             Vector3 targetPos = targetAttachTransform.position;
             Quaternion targetRot = targetAttachTransform.rotation;
 
-            // ÀÌµ¿
+            // ì´ë™
             currentSpeed += absorbAcceleration * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPos, currentSpeed * Time.deltaTime);
 
-            // È¸Àü (°¡±î¿öÁú¼ö·Ï t ¡æ 1, 0.3 °Å¸®¿¡¼­ ÀÌ¹Ì È¸Àü ¿Ï·á)
+            // íšŒì „ (ê°€ê¹Œì›Œì§ˆìˆ˜ë¡ t â†’ 1, 0.3 ê±°ë¦¬ì—ì„œ ì´ë¯¸ íšŒì „ ì™„ë£Œ)
             float dist = Vector3.Distance(transform.position, targetPos);
-            if (dist > startDist) startDist = dist; // Å¸°ÙÀÌ ¸Ö¾îÁö¸é ±âÁØ °»½Å
+            if (dist > startDist) startDist = dist; // íƒ€ê²Ÿì´ ë©€ì–´ì§€ë©´ ê¸°ì¤€ ê°±ì‹ 
             float t = Mathf.InverseLerp(startDist, 0.3f, dist);
             t = Mathf.Clamp01(t);
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
-            // µµÂø ½º³À
+            // ë„ì°© ìŠ¤ëƒ…
             if (dist < 0.01f)
             {
                 transform.position = targetPos;
-                transform.rotation = targetRot; // ¡ç ¸¶Áö¸·¿¡ Á¤È®È÷ ¸ÂÃçÁÖ±â
+                transform.rotation = targetRot; // â† ë§ˆì§€ë§‰ì— ì •í™•íˆ ë§ì¶°ì£¼ê¸°
                 while (transform.localScale.x > 0f)
                 {
-                    transform.localScale -= Time.deltaTime * new Vector3(1, 1, 1) / 0.2f/*(Ãà¼Ò ½Ã°£)*/;
+                    transform.localScale -= Time.deltaTime * new Vector3(1, 1, 1) / 0.2f/*(ì¶•ì†Œ ì‹œê°„)*/;
                     yield return null;
                 }
-                Despawn();
                 transform.localScale = new Vector3(1, 1, 1);
                 isAttached = true;
 
                 completed?.Invoke();
+                Despawn();
                 break;
             }
 
@@ -174,11 +211,11 @@ public class IngrediantInstance : PooledObject
         myOrder = stackOrder;
 
         if (stackOrder == 0)
-            wobbleParent = parent; // ¸Ç ¾Æ·¡´Â AttachPoint
+            wobbleParent = parent; // ë§¨ ì•„ë˜ëŠ” AttachPoint
         else
         {
-            // ¹Ù·Î ¾Æ·¡ Àç·á¸¦ wobbleParent·Î
-            // push¼ø¼­ÀÇ ½ºÅÃÀ» ¸®½ºÆ®·Î
+            // ë°”ë¡œ ì•„ë˜ ì¬ë£Œë¥¼ wobbleParentë¡œ
+            // pushìˆœì„œì˜ ìŠ¤íƒì„ ë¦¬ìŠ¤íŠ¸ë¡œ
             List<IngrediantInstance> list = ownerCharacterRD?.IngrediantStack.ToList();
             list.Reverse();
             wobbleParent = list[myOrder - 1].gameObject.transform;
@@ -186,8 +223,6 @@ public class IngrediantInstance : PooledObject
 
         isOnHand = true;
     }
-
-
 
     public void UpdateTransform()
     {
@@ -197,15 +232,20 @@ public class IngrediantInstance : PooledObject
         Vector3 targetPos = wobbleParent.position + offset;
         Quaternion targetRot = wobbleParent.rotation;
 
-        float order01 = Mathf.Clamp01((float)myOrder / 11f); // ÃÖ´ë ½ºÅÃ °¡´É °³¼ö ³ª´²ÁÖ±â
+        float order01 = Mathf.Clamp01((float)myOrder / 11f); // ìµœëŒ€ ìŠ¤íƒ ê°€ëŠ¥ ê°œìˆ˜ ë‚˜ëˆ ì£¼ê¸°
         float t = Time.fixedDeltaTime * moveSpeed;
-        // Ä¿ºê Àû¿ë
+        // ì»¤ë¸Œ ì ìš©
         float eased = baseCurve.Evaluate(t);
         eased = Mathf.Lerp(1f - order01, 1f, eased);
 
-        // º¸°£
+        // ë³´ê°„
         transform.position = Vector3.Lerp(transform.position, targetPos, eased);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, eased);
     }
+}
+
+public enum ProdState
+{
+    WaitForComplete, Completed, Harvested
 }
 
