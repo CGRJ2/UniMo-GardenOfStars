@@ -117,7 +117,7 @@ namespace KYS
         private void OnCloseButtonClicked()
         {
             Debug.Log("[PlayerUpgradePanel] 패널 닫기");
-            Hide();
+            Manager.ui.ClosePanel();
         }
 
         /// <summary>
