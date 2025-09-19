@@ -116,6 +116,10 @@ public class SettingPopUp : BaseUI
         {
             Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
         }
+        if (!Manager.firebase.Auth.CurrentUser.IsAnonymous)
+        {
+            LogoutButton.gameObject.SetActive(false);
+        }
 
         var accountEventHandler = GetEventWithSFX(accountButtonName, "SFX_ButtonClick");
         if (LogoutButton != null)
@@ -126,6 +130,10 @@ public class SettingPopUp : BaseUI
         else
         {
             Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
+        }
+        if (!Manager.firebase.Auth.CurrentUser.IsAnonymous)
+        {
+            AccountButton.interactable = false;
         }
 
         var supportEventHandler = GetEventWithSFX(supportButtonName, "SFX_ButtonClick");
@@ -165,6 +173,8 @@ public class SettingPopUp : BaseUI
 
     private void OnAccountButton(PointerEventData data)
     {
+        if (!Manager.firebase.Auth.CurrentUser.IsAnonymous) return;
+
         // Google Play Games 계정 연결 실행
         ExecuteGooglePlayGamesLink();
     }

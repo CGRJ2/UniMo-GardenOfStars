@@ -339,7 +339,7 @@ namespace KYS
         /// </summary>
         public void EndDialogue()
         {
-            Debug.LogError($"[DialogueManager] 대화 종료: {currentNpcId}");
+            Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
 
             if (currentDialogueData != null)
             {

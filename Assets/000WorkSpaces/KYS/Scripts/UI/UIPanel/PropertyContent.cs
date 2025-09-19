@@ -21,7 +21,7 @@ namespace KYS
         [SerializeField] private string image_ProdName = "RunProductImage";
         [SerializeField] private string BeforeBuyScreenName = "BeforeBuyScreen";
         [SerializeField] private string LockScreenName = "LockScreen";
-
+        [SerializeField] private string runUnlockContentName = "RunUnlockContentText";
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
 
@@ -33,6 +33,7 @@ namespace KYS
         private TextMeshProUGUI costText => GetUI<TextMeshProUGUI>(costTextName);
         private TextMeshProUGUI MaterialsNameText => GetUI<TextMeshProUGUI>(RunMaterials);
         private TextMeshProUGUI ProdNameText => GetUI<TextMeshProUGUI>(RunProdName);
+        private TextMeshProUGUI runUnlockContentNameText => GetUI<TextMeshProUGUI>(runUnlockContentName);
         private Image image_Material => GetUI<Image>(image_MaterialName);
         private Image image_Prod => GetUI<Image>(image_ProdName);
         //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
@@ -194,7 +195,15 @@ namespace KYS
                 costText.text = $"{buildingCost}";
             else
                 Debug.LogWarning($"비용 텍스트를 찾을 수 없습니다: {costTextName}");
+            if (runUnlockContentNameText != null)
 
+            {
+                runUnlockContentNameText.text = GetLocalizedText("ui_unlock_clearquest", "1");
+            }
+            else
+            {
+                Debug.LogWarning($"설명 텍스트를 찾을 수 없습니다: {runUnlockContentName}");
+            }
         }
 
         public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
