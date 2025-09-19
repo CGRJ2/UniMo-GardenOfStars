@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.EventSystems;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 namespace KYS
 {
@@ -42,7 +40,7 @@ namespace KYS
         private GameObject BeforeBuyScreen => GetUI(BeforeBuyScreenName);
         private GameObject LockScreen => GetUI(LockScreenName);
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
-        private GameObject ItemContent2 => GetUI(ItemContent2Name); 
+        private GameObject ItemContent2 => GetUI(ItemContent2Name);
         private Button UpgradeButton => GetUI<Button>(UpgradeButtonName);
 
 
@@ -82,7 +80,7 @@ namespace KYS
             // 구매 불가능한 상황들
             if (!string.IsNullOrEmpty(purchasedBuildingID))
             {
-                
+
                 Manager.ui.ShowMessagePopUpWithKeyAsync("msg_already_have_building", () =>
                 {
                     Debug.LogWarning("회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다.");
@@ -92,7 +90,7 @@ namespace KYS
             }
             if (estate.IsOnHand())
             {
-                
+
 
                 Manager.ui.ShowMessagePopUpWithKeyAsync("msg_cannot_purchase_building_holding", () =>
                 {
@@ -104,27 +102,26 @@ namespace KYS
 
             // 돈 체크 후 구매 진행
             int curMoney = Manager.player.Data.Money.Value;
-            Addressables.LoadAssetAsync<BuildingData>(buildingID).Completed += task =>
+            int cost = Manager.data.Building[buildingID].Cost;
+            Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
+            if (cost <= curMoney)
             {
-                int cost = task.Result.Cost;
+                Debug.Log($"[PropertyContent] 구매 성공 - ClosePanel 호출 - Time: {Time.time}");
 
-                Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
-                if (cost <= curMoney)
+                Manager.player.Data.Money.Value -= cost;
+                estate.SpawnBuildingItem(buildingID);
+                Manager.ui.ClosePanel();
+
+                Manager.Audio.SfxPlay("Money");
+            }
+            else
+            {
+
+                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_not_enough_money", () =>
                 {
-                    Debug.Log($"[PropertyContent] 구매 성공 - ClosePanel 호출 - Time: {Time.time}");
-                    Manager.player.Data.Money.Value -= cost;
-                    estate.SpawnBuildingItem(buildingID);
-                    Manager.ui.ClosePanel();
-                }
-                else
-                {
-                   
-                    Manager.ui.ShowMessagePopUpWithKeyAsync("msg_not_enough_money", () =>
-                    {
-                        Debug.LogWarning("돈이 모자랍니다");
-                    });
-                }
-            };
+                    Debug.LogWarning("돈이 모자랍니다");
+                });
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -146,7 +143,7 @@ namespace KYS
             //Debug.LogWarning($"[PropertyContent] Initialize 실행 - {gameObject.name}");
             SetupButtons();
             UpdateUI();
-            
+
             // 언어 변경 이벤트 구독
             BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
             IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
@@ -165,7 +162,7 @@ namespace KYS
             //Debug.LogWarning($"[PropertyContent] SetupButtons 실행 - {gameObject.name}");
             //Debug.LogWarning($"[PropertyContent] firstBuyButtonName: {firstBuyButtonName}");
             //Debug.LogWarning($"[PropertyContent] UpgradeButtonName: {UpgradeButtonName}");
-            
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var buildEventHandler = GetEventWithSFX(firstBuyButtonName, "SFX_ButtonClick");
             if (buildEventHandler != null)
@@ -258,7 +255,7 @@ namespace KYS
                     //buildingLevel = level; 
                 }
             }
-            
+
             UpdateUI();
         }
 
@@ -278,7 +275,7 @@ namespace KYS
         private void OnUpgradeClicked()
         {
             Debug.LogWarning($"[PropertyContent] OnUpgradeClicked 실행 - currentBuildingData: {currentBuildingData?.Name}");
-            
+
             // 저장된 BuildingData 타입에 따라 적절한 패널 열기
             if (currentBuildingData != null)
             {
@@ -377,7 +374,7 @@ namespace KYS
             {
                 BeforeBuyScreen.SetActive(false);
             }
-            if(LockScreen != null)
+            if (LockScreen != null)
             {
                 LockScreen.SetActive(true);
             }
@@ -393,7 +390,7 @@ namespace KYS
             {
                 // 건물 이름 다시 로드
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(currentBuildingData.ID);
-                
+
                 // 재료 이름도 다시 로드
                 if (currentBuildingData is HarvestBD harvestBD)
                 {

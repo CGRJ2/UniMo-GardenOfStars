@@ -9,11 +9,8 @@ public class ManufactureBuilding : BuildingInstance
     [Header("재료를 쌓아놓을 위치")]
     public Transform attachPoint;
 
-    [Header("재료 투입 모션 딜레이")]
+    [Header("재료 투입 & 회수 모션 딜레이")]
     public float insertDelayTime = 0.2f;
-
-    [Header("회수 모션 딜레이")]
-    public float prodsAbsorbDelayTime = 0.2f;
 
     [HideInInspector]
     public float progressedTime = 0f;   // 현재 진행도
