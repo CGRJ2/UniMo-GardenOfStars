@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
-    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
+    //public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
+    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound); } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -83,8 +84,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 continue;
             }
             
-            // 쌓여있는 재료가 있을때만 실행
-            if (ownerInstance.ingrediantStack.Count > 0)
+            // 쌓여있는 재료가 필요 개수 이상 만큼 있을때만 실행
+            if (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound)
             {
                 curWorker.IsWork.Value = true;
                 // 준비 시작 시, 진행도 표기
@@ -169,7 +170,10 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         ownerInstance.prodsArea.ProdsCount.Value += 1;
 
         // 재료 소모
-        ownerInstance.ingrediantStack.Pop().Despawn();
+        for (int i = 0; i < ownerInstance.originData.RequireProdCound; i++)
+        {
+            ownerInstance.ingrediantStack.Pop().Despawn();
+        }
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
