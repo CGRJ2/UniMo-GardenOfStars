@@ -13,8 +13,10 @@ public class PlaceTile : InteractableBase
     [SerializeField] float progressedTime;
     [SerializeField] Transform attachPoint;
 
-    [Header("상태 디버그용")]
-    [SerializeField] PlaceTileState state;
+    [Header("설치 가능 건물 타입 제한")]
+    [SerializeField] TileType type;
+
+    PlaceTileState state;
 
 
     string ownedBuildingID;
@@ -152,7 +154,7 @@ public class PlaceTile : InteractableBase
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
 
             // 건축모드 비활성화
-            Manager.buildings.BuildModEvent?.Invoke(false);
+            Manager.buildings.BuildModEvent?.Invoke(false, null);
 
             // 설치 SFX 종료
             Manager.Audio.SfxStopLoop("Contruct", 0.5f);
@@ -165,10 +167,6 @@ public class PlaceTile : InteractableBase
             TutorialManager.Instance.SequenceEnd(); // 시퀀스03 종료(저장)
         }
     }
-
-
-
-
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
@@ -191,10 +189,24 @@ public class PlaceTile : InteractableBase
             Manager.buildings.BuildModEvent -= OnBuildModChanged;
     }
 
-    public void OnBuildModChanged(bool isBuildMod)
+    public void OnBuildModChanged(bool isBuildMod, string buildingID)
     {
         if (isBuildMod)
         {
+            switch (type)
+            {
+                case TileType.Harvest:
+                    // 수확형 건물이 아니라면 return;
+                    if (!(Manager.data.Building[buildingID] is HarvestBD)) return;
+                    break;
+                case TileType.Manufacture:
+                    // 작업형 건물이 아니라면 return;
+                    if (!(Manager.data.Building[buildingID] is ManufactureBD)) return;
+                    break;
+                case TileType.All:
+                    break;
+            }
+
             if (string.IsNullOrEmpty(GetBuildingID()))
                 state = PlaceTileState.Activated;
             else
@@ -242,11 +254,15 @@ public class PlaceTile : InteractableBase
 
 }
 
+public enum TileType
+{
+    All, Harvest, Manufacture
+}
+
 public enum PlaceTileState
 {
     Deactivated, Activated, Constructed
 }
-
 public class PlaceTileData : FirebaseData
 {
     public FirebaseProperty<string> BuildingID;
