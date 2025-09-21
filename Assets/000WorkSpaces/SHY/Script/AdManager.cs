@@ -35,7 +35,20 @@ public class AdManager : Singleton<AdManager>
     void Init()
     {
         base.SingletonInit();
+        StartCoroutine(WaitInit());
     }
+
+    IEnumerator WaitInit()
+    {
+        yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitUntil(() => Manager.firebase.UserData.AdRemoved.IsInit);
+
+        Manager.firebase.UserData.AdRemoved.Subscribe(ApplyBannerState);
+        ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
+    }
+
     
     void Start()
     {
@@ -43,7 +56,6 @@ public class AdManager : Singleton<AdManager>
         {
             LoadInterstitialAd();
             LoadRewardedAd();
-            LoadBannerAd();
             LoadAppOpenAd();
 
         });
@@ -165,7 +177,7 @@ public class AdManager : Singleton<AdManager>
         StartCoroutine(NotifyBannerHeightDelayed(selectedPosition));
     }
 
-IEnumerator NotifyBannerHeightDelayed(AdPosition position)
+    IEnumerator NotifyBannerHeightDelayed(AdPosition position)
     {
         yield return new WaitForSeconds(0.5f); // 광고 로딩 시간 확보
         float height = bannerView?.GetHeightInPixels() ?? 0;
@@ -211,7 +223,29 @@ IEnumerator NotifyBannerHeightDelayed(AdPosition position)
             default: return AdPosition.Bottom;
         }
     }
-    
+
+
+    public void ApplyBannerState(bool adRemoved)
+    {
+        if (adRemoved)
+        {
+            HideBannerAd();
+            Debug.Log("광고 제거 상태 적용됨");
+        }
+        else
+        {
+            if (GameObject.Find($"{bannerSize}(Clone)") == null)
+            {
+                LoadBannerAd();
+                Debug.Log("광고 표시 상태 적용됨");
+            }
+            else
+            {
+                Debug.Log("광고가 이미 표시중입니다.");
+            }
+        }
+    }
+
 }
 public enum BannerSize
 {

@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using UnityEditor;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +32,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     // 현재 작업 중인 일꾼 정보
     public CharaterRuntimeData curWorker;
 
-    GUID _Guid;
+    string _Guid;
 
     public void Init(ManufactureBuilding instance)
     {
@@ -41,7 +41,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         prepareProgressBar.gameObject.SetActive(false);
         taskProgressBar.gameObject.SetActive(false);
 
-        _Guid = GUID.Generate();
+        _Guid = Guid.NewGuid().ToString("N");
     }
 
     // 작업 준비 단계
@@ -135,7 +135,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             if (ownerInstance.progressedTime == 0)
             {
                 // SFX 실행
-                Manager.Audio.SfxPlayLoop(_Guid.ToString(), "SFX_ManufactureBuilding", transform);
+                Manager.Audio.SfxPlayLoop(_Guid, "SFX_ManufactureBuilding", transform);
             }
 
             ownerInstance.progressedTime += Time.deltaTime;
@@ -146,7 +146,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 ownerInstance.progressedTime = 0; // 진행도 초기화
 
                 // SFX 끄기
-                Manager.Audio.SfxStopLoop(_Guid.ToString(), 0.5f);
+                Manager.Audio.SfxStopLoop(_Guid, 0.5f);
 
                 isOperating = false; // 작업 처리 정지
             }
