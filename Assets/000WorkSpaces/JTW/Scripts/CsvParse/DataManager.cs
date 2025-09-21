@@ -32,6 +32,7 @@ public partial class DataManager : Singleton<DataManager>
         UpgradeMultiRoutine();
         BuildingDataInitRoutine();
         IngrediantDataInitRoutine();
+        BuyRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)

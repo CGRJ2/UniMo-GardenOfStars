@@ -11,7 +11,7 @@ public class ShopPanel : KYS.BaseUI
     private TextMeshProUGUI _getTitleText;
     private TextMeshProUGUI _moneyTitleText;
 
-    private bool _isInPurchase;
+    public bool IsInPurchase;
 
     protected override void Awake()
     {
@@ -22,20 +22,20 @@ public class ShopPanel : KYS.BaseUI
 
     public void StartPurchase(string productId)
     {
-        if (_isInPurchase) return;
+        if (IsInPurchase) return;
 
-        _isInPurchase = true;
+        IsInPurchase = true;
 
         CodelessIAPStoreListener.Instance.InitiatePurchase(productId);
     }
 
     public void OnOrderConfirmed(ConfirmedOrder order)
     {
-        _isInPurchase = false;
+        IsInPurchase = false;
     }
 
     public void OnPurchasesFailed(FailedOrder order)
     {
-        _isInPurchase = false;
+        IsInPurchase = false;
     }
 }
