@@ -20,12 +20,12 @@ public partial class DataManager : Singleton<DataManager>
         IngrediantLocalizationRoutine();
         NpcRoutine();
         QuestRoutine();
-        QuestRewardRoutine();
+        // QuestRewardRoutine();
         QuestContentRoutine();
         WorkerUpgradeCostRoutine();
         WorkerEmployCostRoutine();
         StageRoutine();
-        QuestContentStepRoutine();
+        // QuestContentStepRoutine();
         CharacterRoutine();
         PlayerUpgradeCostRoutine();
         PlayerRoutine();

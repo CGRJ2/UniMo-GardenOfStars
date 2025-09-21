@@ -29,19 +29,19 @@ namespace GameNpc
             yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
             //Debug.LogWarning("CurStageData Inited");
 
-            yield return new WaitUntil(() => Manager.npc.CurrentNpc != null);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc != null);
             //Debug.LogWarning("Npc Inited");
 
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(Manager.npc.CurrentNpc.CurrentQuestID.Value));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(Manager.npc.CurStageNpc.CurrentQuestID.Value));
             //Debug.LogWarning("CurQuestID Inited");
 
-            yield return new WaitUntil(() => Manager.npc.CurrentNpc.QuestList.IsInit); // <<<<<<=== Error
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.QuestList.IsInit); // <<<<<<=== Error
             //Debug.LogWarning("QuestList Inited");
 
-            yield return new WaitUntil(() => Manager.npc.CurrentNpc.CurQuestData != null);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.CurQuestData != null);
             //Debug.LogWarning("CurQuestData Inited");
 
-            yield return new WaitUntil(() => Manager.npc.CurrentNpc.CurQuestData.QuestContentList.IsInit);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.CurQuestData.QuestContentList.IsInit);
             //Debug.LogWarning("QuestContentList Inited");
 
 
@@ -64,18 +64,18 @@ namespace GameNpc
                 if (Manager.firebase.UserData.TutorialSequence.Value > 1) UpdateQuestData();
             }
 
-            Manager.npc.CurrentNpc.CurrentQuestID.Subscribe(UpdateQuestData);
+            Manager.npc.CurStageNpc.CurrentQuestID.Subscribe(UpdateQuestData);
 
             Manager.camera.cam_NpcFocus.Follow = transform;
         }
 
         public void UpdateQuestData(string questID = null)
         {
-            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.npc.CurrentNpc.CurrentQuestID.Value})");
+            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.npc.CurStageNpc.CurrentQuestID.Value})");
 
 
             // QC데이터가 있는 만큼만 발판 활성화
-            var QCDataList = Manager.npc.CurrentNpc.CurQuestData.QuestContentList.List;
+            var QCDataList = Manager.npc.CurStageNpc.CurQuestData.QuestContentList.List;
             for (int i = 0; i < QCDataList.Count; i++)
             {
                 requireTiles[i].gameObject.SetActive(true);
