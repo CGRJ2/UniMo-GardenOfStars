@@ -17,7 +17,7 @@ public class PlaceTile : InteractableBase
     [SerializeField] string buildableID;
     PlaceTileState state;
 
-    public PlaceTileGroup _parentGroup;
+    [HideInInspector] public PlaceTileGroup _parentGroup;
 
     private void Awake()
     {
