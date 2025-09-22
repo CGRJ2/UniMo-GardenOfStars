@@ -1,17 +1,17 @@
-﻿스테이지 데이터,,,,,,,,
-스테이지 ID,이름_KR,이름_EN,돌림판 이미지,센터 이미지,스테이지 클리어를 위한 퀘스트 조건,스테이지 클리어 시 해금되는 다음 스테이지의 ID,NPC ID,구매 가능한 건물 ID들
-ID,Name_Korean,Name_English,WheelSprite,CenterSprite,RequiredQuestIndex,NextStageId,NpcID,BuildingIDs
-string,string,string,string,string,int,string,string,string
-Stage01,행성01,Planet01,stageSprite0001,stageSprite0001,3,Stage02,npc001,"$b10011, b10012, b10121$"
-Stage02,행성02,Planet02,stageSprite0002,stageSprite0002,3,Stage03,npc002,"$b10011, b10012, b10121$"
-Stage03,행성03,Planet03,stageSprite0003,stageSprite0003,8,Stage04,npc003,"$b10011, b10012, b10121$"
-Stage04,행성04,Planet04,stageSprite0004,stageSprite0004,8,Stage05,npc004,"$b10011, b10012, b10121$"
-Stage05,행성05,Planet05,stageSprite0005,stageSprite0005,8,Stage06,npc005,"$b10011, b10012, b10121$"
-Stage06,행성06,Planet06,stageSprite0006,stageSprite0006,8,Stage07,npc006,"$b10011, b10012, b10121$"
-Stage07,행성07,Planet07,stageSprite0007,stageSprite0007,8,Stage08,npc007,"$b10011, b10012, b10121$"
-Stage08,행성08,Planet08,stageSprite0008,stageSprite0008,8,Stage09,npc008,"$b10011, b10012, b10121$"
-Stage09,행성09,Planet09,stageSprite0009,stageSprite0009,8,Stage10,npc009,"$b10011, b10012, b10121$"
-Stage10,행성10,Planet10,stageSprite0010,stageSprite0010,8,Stage11,npc010,"$b10011, b10012, b10121$"
-Stage11,행성11,Planet11,stageSprite0011,stageSprite0011,8,Stage11,npc011,"$b10011, b10012, b10121$"
-Stage12,행성12,Planet12,stageSprite0012,stageSprite0012,8,,npc012,"$b10011, b10012, b10121$"
-Tutorial,튜토리얼 행성,Planet12,stageSprite0012,stageSprite0012,8,Stage01,npc000,b10011
+﻿스테이지 데이터,,,,,,,,,
+스테이지 ID,이름_KR,이름_EN,돌림판 이미지,센터 이미지,스테이지 클리어를 위한 퀘스트 조건,스테이지 클리어 시 해금되는 다음 스테이지의 ID,NPC ID,구매 가능한 건물 ID들,스테이지 인플레이션 배수
+ID,Name_Korean,Name_English,WheelSprite,CenterSprite,RequiredQuestIndex,NextStageId,NpcID,BuildingIDs,InflationRate
+string,string,string,string,string,int,string,string,string,int
+Stage01,행성01,Planet01,stageSprite0001,stageSprite0001,3,Stage02,npc001,"$b10011, b10111, b10121$",1
+Stage02,행성02,Planet02,stageSprite0002,stageSprite0002,3,Stage03,npc002,"$b10011, b10111, b10121$",2
+Stage03,행성03,Planet03,stageSprite0003,stageSprite0003,8,Stage04,npc003,"$b10011, b10111, b10121$",3
+Stage04,행성04,Planet04,stageSprite0004,stageSprite0004,8,Stage05,npc004,"$b10011, b10111, b10121$",4
+Stage05,행성05,Planet05,stageSprite0005,stageSprite0005,8,Stage06,npc005,"$b10011, b10111, b10121$",5
+Stage06,행성06,Planet06,stageSprite0006,stageSprite0006,8,Stage07,npc006,"$b10011, b10111, b10121$",6
+Stage07,행성07,Planet07,stageSprite0007,stageSprite0007,8,Stage08,npc007,"$b10011, b10111, b10121$",7
+Stage08,행성08,Planet08,stageSprite0008,stageSprite0008,8,Stage09,npc008,"$b10011, b10111, b10121$",8
+Stage09,행성09,Planet09,stageSprite0009,stageSprite0009,8,Stage10,npc009,"$b10011, b10111, b10121$",9
+Stage10,행성10,Planet10,stageSprite0010,stageSprite0010,8,Stage11,npc010,"$b10011, b10111, b10121$",10
+Stage11,행성11,Planet11,stageSprite0011,stageSprite0011,8,Stage11,npc011,"$b10011, b10111, b10121$",11
+Stage12,행성12,Planet12,stageSprite0012,stageSprite0012,8,,npc012,"$b10011, b10111, b10121$",12
+Tutorial,튜토리얼 행성,Planet12,stageSprite0012,stageSprite0012,8,Stage01,npc000,b10011,0

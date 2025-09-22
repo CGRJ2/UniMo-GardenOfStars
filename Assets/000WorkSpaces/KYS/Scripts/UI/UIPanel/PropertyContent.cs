@@ -102,7 +102,10 @@ namespace KYS
 
             // 돈 체크 후 구매 진행
             int curMoney = Manager.player.Data.Money.Value;
-            int cost = Manager.data.Building[buildingID].Cost;
+            // 스테이지 배수 연산
+            string curStageID = Manager.firebase.UserData.CurStage.Value; 
+            int cost = Manager.data.Building[buildingID].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
             Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
             if (cost <= curMoney)
             {
@@ -208,9 +211,10 @@ namespace KYS
 
         public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
         {
+            string curStageID = Manager.firebase.UserData.CurStage.Value;
             buildingID = buildingData.ID;
             buildingName = buildingData.Name;
-            buildingCost = buildingData.Cost;
+            buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
 
             if (buildingData is HarvestBD harvestBD)

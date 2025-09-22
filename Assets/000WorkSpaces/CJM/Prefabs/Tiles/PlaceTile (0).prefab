@@ -323,7 +323,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.01}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 720, y: 1280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &1594089038843406259
@@ -464,7 +464,8 @@ MonoBehaviour:
   installingTime: 1.2
   progressedTime: 0
   attachPoint: {fileID: 7072822709684886781}
-  state: 0
+  buildableID: 
+  _parentGroup: {fileID: 0}
 --- !u!1 &4608122976510751193
 GameObject:
   m_ObjectHideFlags: 0

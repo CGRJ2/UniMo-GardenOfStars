@@ -13,11 +13,11 @@ public class PlaceTile : InteractableBase
     [SerializeField] float progressedTime;
     [SerializeField] Transform attachPoint;
 
-    [Header("상태 디버그용")]
-    [SerializeField] PlaceTileState state;
+    [Header("설치 가능 건물 제한")]
+    [SerializeField] string buildableID;
+    PlaceTileState state;
 
-
-    string ownedBuildingID;
+    [HideInInspector] public PlaceTileGroup _parentGroup;
 
     private void Awake()
     {
@@ -152,7 +152,7 @@ public class PlaceTile : InteractableBase
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
 
             // 건축모드 비활성화
-            Manager.buildings.BuildModEvent?.Invoke(false);
+            Manager.buildings.BuildModEvent?.Invoke(false, null);
 
             // 설치 SFX 종료
             Manager.Audio.SfxStopLoop("Contruct", 0.5f);
@@ -165,10 +165,6 @@ public class PlaceTile : InteractableBase
             TutorialManager.Instance.SequenceEnd(); // 시퀀스03 종료(저장)
         }
     }
-
-
-
-
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
@@ -191,10 +187,16 @@ public class PlaceTile : InteractableBase
             Manager.buildings.BuildModEvent -= OnBuildModChanged;
     }
 
-    public void OnBuildModChanged(bool isBuildMod)
+    public void OnBuildModChanged(bool isBuildMod, string buildingID)
     {
         if (isBuildMod)
         {
+            // 해당 건물의 그룹이 언락된 상태가 아니라면 return
+            if (!_parentGroup.IsUnlocked()) return;
+
+            // 해당 건물이 타겟이 아니라면 return
+            if (buildableID != buildingID) return;
+
             if (string.IsNullOrEmpty(GetBuildingID()))
                 state = PlaceTileState.Activated;
             else
@@ -242,11 +244,15 @@ public class PlaceTile : InteractableBase
 
 }
 
+public enum TileType
+{
+    All, Harvest, Manufacture
+}
+
 public enum PlaceTileState
 {
     Deactivated, Activated, Constructed
 }
-
 public class PlaceTileData : FirebaseData
 {
     public FirebaseProperty<string> BuildingID;

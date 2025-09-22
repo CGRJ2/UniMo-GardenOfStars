@@ -96,7 +96,7 @@ public class ProdTile : InteractableBase
         characterRD.IngrediantStack.Push(buildingItem);
 
         // 건축모드 활성화
-        Manager.buildings.BuildModEvent?.Invoke(true);
+        Manager.buildings.BuildModEvent?.Invoke(true, buildingItem.buildingId);
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)

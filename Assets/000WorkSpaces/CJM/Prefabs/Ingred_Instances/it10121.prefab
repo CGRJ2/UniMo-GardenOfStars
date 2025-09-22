@@ -73,8 +73,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   moveSpeed: 8
-  minStretch: 0.1
-  maxStretch: 3
+  animator: {fileID: 0}
+  state:
+    _value: 0
 --- !u!1 &5822708266741080634
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +179,7 @@ PrefabInstance:
     - target: {fileID: 4245125855718461755, guid: 510758053667d6940ab82d30b8517cdf, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: a44c6e01fcc16a1439f7962aedd9f794, type: 2}
+      objectReference: {fileID: 2100000, guid: a3a9e7ff8fa11494590a4f10a1b8341f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

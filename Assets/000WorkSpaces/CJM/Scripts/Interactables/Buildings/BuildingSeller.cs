@@ -47,7 +47,7 @@ public class BuildingSeller : InteractableBase
     public void SpawnBuildingItem(string buildingId)
     {
         // 건축모드 활성화
-        Manager.buildings.BuildModEvent?.Invoke(true);
+        Manager.buildings.BuildModEvent?.Invoke(true, buildingId);
 
         // 모델 생성 (메쉬&매터리얼만 교체하는 방법으로 바꿔야함)
         Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
