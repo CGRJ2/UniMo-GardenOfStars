@@ -102,7 +102,8 @@ namespace KYS
         {
             if (moneyText != null)
             {
-                moneyText.text = $"{amount:N0}";
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                moneyText.text = FormatMoney(amount, false);
             }
         }
 
