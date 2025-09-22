@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
     //public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
-    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound); } }
+    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound && 
+        ((isOperating && calculatedProduceTime < 2f) || !isOperating)); } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -22,8 +23,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
     float curCharacterProdSpeed;
 
-    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / curCharacterProdSpeed;
-    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / curCharacterProdSpeed;
+    float calculatedPrepareTime => (ownerInstance.originData.PrefareTimeRate * ownerInstance.ProdTime) / curCharacterProdSpeed;
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.originData.PrefareTimeRate)) / curCharacterProdSpeed;
 
 
     float prepareProgressedTime = 0f;   // 준비 단계 진행도

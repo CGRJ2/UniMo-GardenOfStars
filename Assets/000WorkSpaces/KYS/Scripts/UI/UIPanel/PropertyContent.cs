@@ -210,7 +210,7 @@ namespace KYS
         {
             buildingID = buildingData.ID;
             buildingName = buildingData.Name;
-            buildingCost = buildingData.Cost;
+            buildingCost = buildingData.Cost; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
 
             if (buildingData is HarvestBD harvestBD)
