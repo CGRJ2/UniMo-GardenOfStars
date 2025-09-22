@@ -304,9 +304,13 @@ namespace KYS
             string[] choiceNextIds = currentDialogueData.GetChoiceNextIds();
             Debug.Log($"[DialogueManager] 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
             
-            if (choiceIndex < 0 || choiceIndex >= choiceNextIds.Length)
+            // 선택지 개수를 기준으로 인덱스 확인 (choiceNextIds가 더 적을 수 있음)
+            int availableChoices = currentDialogueData.ChoiceCount;
+            Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
+            
+            if (choiceIndex < 0 || choiceIndex >= availableChoices)
             {
-                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
+                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {availableChoices - 1})");
                 return false;
             }
 
@@ -317,7 +321,11 @@ namespace KYS
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
             // 선택지에 따른 다음 노드로 이동
-            string nextNodeId = choiceNextIds[choiceIndex];
+            string nextNodeId = "";
+            if (choiceIndex < choiceNextIds.Length)
+            {
+                nextNodeId = choiceNextIds[choiceIndex];
+            }
             Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
             
             if (string.IsNullOrEmpty(nextNodeId))
@@ -605,14 +613,14 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        public void ShowTutorialPopUp(string nodeID, TutorialPopUp_Old.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
         {
             try
             {
                 Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
 
                 // 1. 튜토리얼 팝업 열기
-                Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
+                Manager.ui.ShowPopUpAsync<TutorialPopUp_Old>(popup =>
                 {
                     popup.SetTutorialPosition(positionType);
                     popup.SetTutorialNode(nodeID);
@@ -636,7 +644,7 @@ namespace KYS
             }
         }
 
-        private IEnumerator WaitDelay(float delay, TutorialPopUp popup)
+        private IEnumerator WaitDelay(float delay, TutorialPopUp_Old popup)
         {
             yield return new WaitForSeconds(delay / 1000);
 

@@ -7,6 +7,7 @@ namespace KYS
 {
     public class MessagePopUp : BaseUI
     {
+
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string messageTextName = "MessageText";
         
@@ -42,6 +43,27 @@ namespace KYS
             base.Initialize();
             SetupPanelClick();
             SetupMessageLocalization();
+            SetupTextMeshPro();
+        }
+        
+        /// <summary>
+        /// TextMeshPro 설정 (Rich Text, 줄바꿈 등)
+        /// </summary>
+        private void SetupTextMeshPro()
+        {
+            if (messageText != null)
+            {
+                // Rich Text 활성화 (컬러 태그 지원)
+                messageText.richText = true;
+                // 줄바꿈 활성화
+                messageText.enableWordWrapping = true;
+                
+                Debug.Log($"[MessagePopUp] TextMeshPro 설정 - richText: {messageText.richText}, enableWordWrapping: {messageText.enableWordWrapping}");
+            }
+            else
+            {
+                Debug.LogError("[MessagePopUp] messageText가 null입니다!");
+            }
         }
 
         public override void Cleanup()
@@ -109,15 +131,33 @@ namespace KYS
             {
                 string localizedText = GetLocalizedText(messageLocalizationKey);
                 
-                // Format 인수가 있으면 적용
-                if (messageFormatArgs != null && messageFormatArgs.Length > 0)
+                // Format 시도 후 에러 시 원본 텍스트 사용
+                try
                 {
-                    messageText.text = string.Format(localizedText, messageFormatArgs);
+                    if (messageFormatArgs != null && messageFormatArgs.Length > 0)
+                    {
+                        messageText.text = string.Format(localizedText, messageFormatArgs);
+                    }
+                    else
+                    {
+                        Debug.Log($"[MessagePopUp] Format 인수 없음 - 키: {messageLocalizationKey}, 텍스트: {localizedText}");
+                        messageText.text = string.Format(localizedText);
+                    }
                 }
-                else
+                catch (System.FormatException ex)
                 {
-                    messageText.text = localizedText;
+                    Debug.LogError($"[MessagePopUp] 포맷팅 에러 - 키: {messageLocalizationKey}, 텍스트: {localizedText}, 인수: [{string.Join(", ", messageFormatArgs ?? new object[0])}], 에러: {ex.Message}");
+                    messageText.text = localizedText; // 포맷팅 실패 시 원본 텍스트 표시
                 }
+                
+                // \n을 실제 줄바꿈으로 변환 (Format 후에 적용)
+                messageText.text = messageText.text.Replace("\\n", "\n");
+                
+                // 강제로 Rich Text 설정 (런타임에서 덮어써질 수 있음)
+                messageText.richText = true;
+                messageText.enableWordWrapping = true;
+                
+                Debug.Log($"[MessagePopUp] 최종 텍스트 적용 - richText: {messageText.richText}, 텍스트: '{messageText.text}'");
             }
         }
 
@@ -205,7 +245,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUp(string message, System.Action closeCallback = null)
         {
-            UIManager.Instance.ShowMessagePopUpAsync(message, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpAsync(message, closeCallback);
         }
 
         /// <summary>
@@ -214,7 +254,7 @@ namespace KYS
         public static void ShowMessagePopUp(string format, System.Action closeCallback, params object[] args)
         {
             string message = string.Format(format, args);
-            UIManager.Instance.ShowMessagePopUpAsync(message, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpAsync(message, closeCallback);
         }
 
         /// <summary>
@@ -222,7 +262,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback = null)
         {
-            UIManager.Instance.ShowMessagePopUpWithKeyAsync(messageKey, closeCallback);
+            UIManager.Instance.ShowTutorialPopUpWithKeyAsync(messageKey, closeCallback);
         }
 
         /// <summary>
@@ -230,7 +270,7 @@ namespace KYS
         /// </summary>
         public static void ShowMessagePopUpWithKey(string messageKey, System.Action closeCallback, params object[] args)
         {
-            UIManager.Instance.ShowPopUpAsync<MessagePopUp>((popup) => {
+            UIManager.Instance.ShowPopUpAsync<TutorialPopUp>((popup) => {
                 if (popup != null)
                 {
                     popup.SetMessageKey(messageKey, args);
