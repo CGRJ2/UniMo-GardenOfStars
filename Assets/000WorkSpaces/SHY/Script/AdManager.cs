@@ -1,7 +1,9 @@
 using GoogleMobileAds.Api;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AdManager : Singleton<AdManager>
 {
@@ -231,9 +233,16 @@ public class AdManager : Singleton<AdManager>
         {
             HideBannerAd();
             Debug.Log("광고 제거 상태 적용됨");
+            // 광고 제거 ui 비 활성화
+            //noadsbutton.interactable = false;
+            //noadsbutton.GetComponentInChildren<TextMeshProUGUI>().text = "구매완료";
+            GameObject.Find("광고제거버튼(임시)").GetComponent<Button>().interactable =false;
+            GameObject.Find("광고제거버튼(임시)").GetComponentInChildren<TextMeshProUGUI>().text = "구매완료";
+
         }
         else
         {
+           
             if (GameObject.Find($"{bannerSize}(Clone)") == null)
             {
                 LoadBannerAd();
