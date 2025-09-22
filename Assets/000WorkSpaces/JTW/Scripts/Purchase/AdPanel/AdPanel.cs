@@ -47,10 +47,10 @@ public abstract class AdPanel : KYS.BaseUI
             InitInfo(Manager.firebase.UserData.DailyAdList.Get(_adPanelId));
         }
 
-            var update = new Dictionary<string, object>();
+        var update = new Dictionary<string, object>();
         update["LastTime"] = Firebase.Database.ServerValue.Timestamp;
 
-        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.DailyAdList.Path).UpdateChildrenAsync(update);
+        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Path).UpdateChildrenAsync(update);
     }
 
     protected override void OnDestroy()
