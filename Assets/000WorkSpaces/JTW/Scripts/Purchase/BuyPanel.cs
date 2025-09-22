@@ -26,12 +26,4 @@ public class BuyPanel : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(_contentPanel.GetComponent<RectTransform>());
         LayoutRebuilder.ForceRebuildLayoutImmediate(_shopPanel.GetComponent<RectTransform>());
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            
-        }
-    }
 }
