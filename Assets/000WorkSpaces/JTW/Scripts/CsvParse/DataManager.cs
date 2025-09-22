@@ -33,6 +33,7 @@ public partial class DataManager : Singleton<DataManager>
         BuildingDataInitRoutine();
         IngrediantDataInitRoutine();
         BuyRoutine();
+        CharacterSkinCsvRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)
