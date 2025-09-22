@@ -33,7 +33,10 @@ public class ShopBuilding : BuildingInstance
             // 건물(재료)라면 => 건물 구매 가격에 다시 판매
             if (instanceProd is Item_Building building)
             {
-                long price = Manager.data.Building[building.buildingId].Cost;
+                // 스테이지 배수 연산
+                string curStageID = Manager.firebase.UserData.CurStage.Value;
+                long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
                 IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>
                 {
