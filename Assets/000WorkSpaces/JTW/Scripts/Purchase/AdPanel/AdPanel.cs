@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -67,23 +67,35 @@ public abstract class AdPanel : KYS.BaseUI
 
         if(data.Count.Value < 2)
         {
-            _buttonText.text = "±¤°í ½ÃÃ»";
+            _buttonText.text = "ê´‘ê³  ì‹œì²­";
         }
         else
         {
-            _buttonText.text = "È¹µæ ¿Ï·á";
+            _buttonText.text = "íšë“ ì™„ë£Œ";
         }
     }
 
     private void InitInfo()
     {
         _countText.text = $"0/2";
-        _buttonText.text = "±¤°í ½ÃÃ»";
+        _buttonText.text = "ê´‘ê³  ì‹œì²­";
     }
 
     private void OnClick()
     {
         if (Data.Count.IsInUpdate || Data.Count.Value >= 2) return;
+
+        if (Manager.firebase.UserData.AdRemoved.Value)
+        {
+            GetReward();
+            _countText.text = $"{Data.Count.Value + 1}/2";
+            if (Data.Count.Value + 1 >= 2)
+            {
+                _buttonText.text = "íšë“ ì™„ë£Œ";
+            }
+            Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
+            return;
+        }
 
         Manager.ad.ShowRewardedAd(() =>
         {
@@ -91,7 +103,7 @@ public abstract class AdPanel : KYS.BaseUI
             _countText.text = $"{Data.Count.Value + 1}/2";
             if(Data.Count.Value + 1 >= 2)
             {
-                _buttonText.text = "È¹µæ ¿Ï·á";
+                _buttonText.text = "íšë“ ì™„ë£Œ";
             }
             Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
         });
