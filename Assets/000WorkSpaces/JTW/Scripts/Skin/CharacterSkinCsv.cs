@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class CharacterSkinCsv : IUsableId
 {
@@ -8,7 +11,6 @@ public class CharacterSkinCsv : IUsableId
 
     public string Name_Kr;
     public string Name_En;
-
     public string Name
     {
         get
@@ -26,6 +28,9 @@ public class CharacterSkinCsv : IUsableId
     }
 
     public int Cost;
+
+    public Sprite Sprite;
+    public GameObject CharacterSkin;
 
     public string GetId()
     {
@@ -68,7 +73,34 @@ public partial class DataManager
             skin.Name_En = words[dict["Name_UN"]];
 
             int.TryParse(words[dict["Cost"]], out skin.Cost);
-            
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Image/Character/{skin.Id}.png", typeof(Sprite), out var locations)))
+            {
+                Addressables.LoadAssetAsync<Sprite>($"Image/Character/{skin.Id}.png").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("WheelSprite 로드 실패");
+                        return;
+                    }
+
+                    skin.Sprite = task.Result;
+                };
+            }
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Skin/Character/{skin.Id}.prefab", typeof(GameObject), out var locations)))
+            {
+                Addressables.LoadAssetAsync<GameObject>($"Skin/Character/{skin.Id}.prefab").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("WheelSprite 로드 실패");
+                        return;
+                    }
+
+                    skin.CharacterSkin = task.Result;
+                };
+            }
 
             return skin;
         });

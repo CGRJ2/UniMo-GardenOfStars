@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class EquipSkinCsv : IUsableId
 {
@@ -27,6 +30,9 @@ public class EquipSkinCsv : IUsableId
 
     public int Cost;
 
+    public Sprite Sprite;
+    public GameObject EquipSkin;
+
     public string GetId()
     {
         return Id;
@@ -45,7 +51,7 @@ public partial class DataManager
     private const string _equipSSkinAdress = "EquipSSkinCsv";
 
     public DataTableParser<EquipSkinCsv> EquipSSkin;
-    private async void EquipSSkinCsvRoutine()
+    private async void EquipSkinCsvRoutine()
     {
         string dataCsv;
 
@@ -68,7 +74,34 @@ public partial class DataManager
             skin.Name_En = words[dict["Name_UN"]];
 
             int.TryParse(words[dict["Cost"]], out skin.Cost);
-            
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Image/Equip/{skin.Id}.png", typeof(Sprite), out var locations)))
+            {
+                Addressables.LoadAssetAsync<Sprite>($"Image/Equip/{skin.Id}.png").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("WheelSprite 로드 실패");
+                        return;
+                    }
+
+                    skin.Sprite = task.Result;
+                };
+            }
+
+            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Skin/Equip/{skin.Id}.prefab", typeof(GameObject), out var locations)))
+            {
+                Addressables.LoadAssetAsync<GameObject>($"Skin/Equip/{skin.Id}.prefab").Completed += task =>
+                {
+                    if (task.Status != AsyncOperationStatus.Succeeded)
+                    {
+                        Debug.LogWarning("WheelSprite 로드 실패");
+                        return;
+                    }
+
+                    skin.EquipSkin = task.Result;
+                };
+            }
 
             return skin;
         });
