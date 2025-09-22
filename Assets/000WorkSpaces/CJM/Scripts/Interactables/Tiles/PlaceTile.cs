@@ -13,13 +13,11 @@ public class PlaceTile : InteractableBase
     [SerializeField] float progressedTime;
     [SerializeField] Transform attachPoint;
 
-    [Header("설치 가능 건물 타입 제한")]
-    [SerializeField] TileType type;
-
+    [Header("설치 가능 건물 제한")]
+    [SerializeField] string buildableID;
     PlaceTileState state;
 
-
-    string ownedBuildingID;
+    public PlaceTileGroup _parentGroup;
 
     private void Awake()
     {
@@ -193,19 +191,11 @@ public class PlaceTile : InteractableBase
     {
         if (isBuildMod)
         {
-            switch (type)
-            {
-                case TileType.Harvest:
-                    // 수확형 건물이 아니라면 return;
-                    if (!(Manager.data.Building[buildingID] is HarvestBD)) return;
-                    break;
-                case TileType.Manufacture:
-                    // 작업형 건물이 아니라면 return;
-                    if (!(Manager.data.Building[buildingID] is ManufactureBD)) return;
-                    break;
-                case TileType.All:
-                    break;
-            }
+            // 해당 건물의 그룹이 언락된 상태가 아니라면 return
+            if (!_parentGroup.IsUnlocked()) return;
+
+            // 해당 건물이 타겟이 아니라면 return
+            if (buildableID != buildingID) return;
 
             if (string.IsNullOrEmpty(GetBuildingID()))
                 state = PlaceTileState.Activated;
