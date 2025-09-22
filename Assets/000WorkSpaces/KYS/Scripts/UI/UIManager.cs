@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -165,6 +166,10 @@ namespace KYS
                     {
                         hasExistingLoadingCanvas = true;
                         loadingCanvas = canvas;
+                        
+                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
+                        loadingCanvas.sortingOrder = 40;
+                        
                         //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
                         
                         // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
@@ -1356,6 +1361,190 @@ namespace KYS
                 loadingScreenInstance = null;
                 isLoadingScreenInitialized = false;
             }
+        }
+
+
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (배경 이미지만 표시, 시간 조절 가능)
+        /// </summary>
+        [ContextMenu("Show Ultra Simple Loading Screen")]
+        public void ShowUltraSimpleLoadingScreen(float displayTime = 2f)
+        {
+            // LoadingCanvas 먼저 활성화 (더 확실하게)
+            if (loadingCanvas != null)
+            {
+                loadingCanvas.gameObject.SetActive(true);
+                loadingCanvas.enabled = true;
+                
+                // LoadingCanvas의 SortOrder를 가장 높게 설정 (다른 모든 UI 위에 표시)
+                loadingCanvas.sortingOrder = 40;
+                
+                Debug.Log($"LoadingCanvas 활성화됨 (SortOrder: {loadingCanvas.sortingOrder})");
+                
+                // LoadingCanvas의 모든 자식 요소들 비활성화 (배경 이미지만 남김)
+                var allChildren = loadingCanvas.GetComponentsInChildren<Transform>(true);
+                foreach (var child in allChildren)
+                {
+                    if (child != loadingCanvas.transform) // LoadingCanvas 자신은 제외
+                    {
+                        // TextMeshProUGUI, Slider, Image (Fill 타입 제외) 비활성화
+                        if (child.GetComponent<TextMeshProUGUI>() != null ||
+                            child.GetComponent<Slider>() != null ||
+                            (child.GetComponent<Image>() != null && child.GetComponent<Image>().type == UnityEngine.UI.Image.Type.Filled))
+                        {
+                            child.gameObject.SetActive(false);
+                            Debug.Log($"비활성화된 요소: {child.name}");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+                return;
+            }
+            
+            // 로딩 스크린 표시
+            ShowLoadingScreen();
+            
+            // 초간단 모드 설정 (배경 이미지만 표시)
+            if (loadingScreenInstance != null)
+            {
+                // LoadingScreen의 초간단 모드 활성화
+                loadingScreenInstance.SetUltraSimpleMode(true);
+                
+                // 자동으로 지정된 시간 후 숨기기
+                StartCoroutine(AutoHideAfterTime(displayTime));
+            }
+            else
+            {
+                Debug.LogError("loadingScreenInstance가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 지정된 시간 후 자동으로 로딩 스크린 숨기기
+        /// </summary>
+        private IEnumerator AutoHideAfterTime(float displayTime)
+        {
+            yield return new WaitForSeconds(displayTime);
+            HideLoadingScreen();
+        }
+
+        /// <summary>
+        /// 테스트용 초간단 로딩 스크린 (2초간 표시)
+        /// </summary>
+        [ContextMenu("Test Ultra Simple Loading Screen (2초)")]
+        public void TestShowUltraSimpleLoadingScreen()
+        {
+            ShowUltraSimpleLoadingScreen(2f);
+        }
+
+        /// <summary>
+        /// 테스트용 초간단 로딩 스크린 (5초간 표시)
+        /// </summary>
+        [ContextMenu("Test Ultra Simple Loading Screen (5초)")]
+        public void TestShowUltraSimpleLoadingScreen5Sec()
+        {
+            ShowUltraSimpleLoadingScreen(5f);
+        }
+
+        /// <summary>
+        /// LoadingCanvas 강제 활성화 테스트
+        /// </summary>
+        [ContextMenu("Activate LoadingCanvas")]
+        public void ActivateLoadingCanvas()
+        {
+            if (loadingCanvas != null)
+            {
+                loadingCanvas.gameObject.SetActive(true);
+                loadingCanvas.enabled = true;
+                Debug.Log("LoadingCanvas 활성화됨");
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 모든 캔버스 상태 확인
+        /// </summary>
+        [ContextMenu("Check All Canvas Status")]
+        public void CheckAllCanvasStatus()
+        {
+            Debug.Log("=== 캔버스 상태 확인 ===");
+            Debug.Log($"HUDCanvas: {(hudCanvas != null ? hudCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"PanelCanvas: {(panelCanvas != null ? panelCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"PopupCanvas: {(popupCanvas != null ? popupCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"LoadingCanvas: {(loadingCanvas != null ? loadingCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"LoadingScreenInstance: {(loadingScreenInstance != null ? loadingScreenInstance.gameObject.activeInHierarchy.ToString() : "null")}");
+        }
+
+        /// <summary>
+        /// LoadingCanvas의 특정 요소들 비활성화
+        /// </summary>
+        [ContextMenu("Disable LoadingCanvas Elements")]
+        public void DisableLoadingCanvasElements()
+        {
+            if (loadingCanvas != null)
+            {
+                // LoadingText 비활성화
+                var loadingText = loadingCanvas.transform.Find("LoadingText");
+                if (loadingText != null)
+                {
+                    loadingText.gameObject.SetActive(false);
+                    Debug.Log("LoadingText 비활성화됨");
+                }
+                else
+                {
+                    Debug.Log("LoadingText를 찾을 수 없습니다.");
+                }
+
+                // DownloadSlider 비활성화
+                var downloadSlider = loadingCanvas.transform.Find("DownloadSlider");
+                if (downloadSlider != null)
+                {
+                    downloadSlider.gameObject.SetActive(false);
+                    Debug.Log("DownloadSlider 비활성화됨");
+                }
+                else
+                {
+                    Debug.Log("DownloadSlider를 찾을 수 없습니다.");
+                }
+
+                // 모든 TextMeshProUGUI 비활성화
+                var allTexts = loadingCanvas.GetComponentsInChildren<TextMeshProUGUI>(true);
+                foreach (var text in allTexts)
+                {
+                    text.gameObject.SetActive(false);
+                    Debug.Log($"Text 비활성화됨: {text.name}");
+                }
+
+                // 모든 Slider 비활성화
+                var allSliders = loadingCanvas.GetComponentsInChildren<Slider>(true);
+                foreach (var slider in allSliders)
+                {
+                    slider.gameObject.SetActive(false);
+                    Debug.Log($"Slider 비활성화됨: {slider.name}");
+                }
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (비동기 버전, 시간 조절 가능)
+        /// </summary>
+        public async System.Threading.Tasks.Task ShowUltraSimpleLoadingScreenAsync(float displayTime = 2f)
+        {
+            ShowUltraSimpleLoadingScreen(displayTime);
+            
+            // 지정된 시간만큼 대기
+            await System.Threading.Tasks.Task.Delay((int)(displayTime * 1000));
         }
 
         /// <summary>

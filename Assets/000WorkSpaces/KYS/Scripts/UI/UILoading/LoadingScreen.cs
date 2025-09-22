@@ -50,6 +50,9 @@ namespace KYS
         [Header("Debug Settings")]
         [SerializeField] private bool enableProgressSimulation = true; // 테스트용 진행률 시뮬레이션
         
+        [Header("Ultra Simple Mode")]
+        [SerializeField] private bool ultraSimpleMode = false; // 초간단 모드 (배경 이미지만 표시)
+        
         // 내부 상태
         private int currentImageIndex = 0;
         private int currentMessageIndex = 0;
@@ -332,40 +335,44 @@ namespace KYS
             //Debug.Log($"[LoadingScreen] useSlider: {useSlider}, loadingProgressBar: {loadingProgressBar != null}");
             //Debug.Log($"[LoadingScreen] progressText: {progressText != null}");
             
-            // Image Fill 방식으로 진행률 표시
-            if (useImageFill && fillProgressImage != null)
+            // 초간단 모드가 아닐 때만 진행률 UI 요소들 활성화
+            if (!ultraSimpleMode)
             {
-                float previousFillAmount = fillProgressImage.fillAmount;
-                fillProgressImage.fillAmount = progress;
-                fillProgressImage.gameObject.SetActive(true); // Progress 이미지 활성화
-                //Debug.Log($"[LoadingScreen] Image Fill 진행률 업데이트: {previousFillAmount:F3} → {progress:F3} ({progress * 100:F1}%)");
-            }
-            else if (useImageFill && fillProgressImage == null)
-            {
-                //Debug.LogWarning("[LoadingScreen] useImageFill이 true이지만 fillProgressImage가 null입니다.");
-            }
-            
-            // Slider 방식으로 진행률 표시
-            if (useSlider && loadingProgressBar != null)
-            {
-                loadingProgressBar.value = progress;
-                loadingProgressBar.gameObject.SetActive(true); // Progress 바 활성화
-                //Debug.Log($"[LoadingScreen] Slider 진행률 업데이트: {progress}");
-            }
-            else if (useSlider && loadingProgressBar == null)
-            {
-                //Debug.LogWarning("[LoadingScreen] useSlider가 true이지만 loadingProgressBar가 null입니다.");
-            }
-            
-            if (progressText != null)
-            {
-                progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
-                progressText.gameObject.SetActive(true); // Progress 텍스트 활성화
-                //Debug.Log($"[LoadingScreen] Progress Text 업데이트: {Mathf.RoundToInt(progress * 100)}%");
-            }
-            else
-            {
-                //Debug.LogWarning("[LoadingScreen] progressText가 null입니다.");
+                // Image Fill 방식으로 진행률 표시
+                if (useImageFill && fillProgressImage != null)
+                {
+                    float previousFillAmount = fillProgressImage.fillAmount;
+                    fillProgressImage.fillAmount = progress;
+                    fillProgressImage.gameObject.SetActive(true); // Progress 이미지 활성화
+                    //Debug.Log($"[LoadingScreen] Image Fill 진행률 업데이트: {previousFillAmount:F3} → {progress:F3} ({progress * 100:F1}%)");
+                }
+                else if (useImageFill && fillProgressImage == null)
+                {
+                    //Debug.LogWarning("[LoadingScreen] useImageFill이 true이지만 fillProgressImage가 null입니다.");
+                }
+                
+                // Slider 방식으로 진행률 표시
+                if (useSlider && loadingProgressBar != null)
+                {
+                    loadingProgressBar.value = progress;
+                    loadingProgressBar.gameObject.SetActive(true); // Progress 바 활성화
+                    //Debug.Log($"[LoadingScreen] Slider 진행률 업데이트: {progress}");
+                }
+                else if (useSlider && loadingProgressBar == null)
+                {
+                    //Debug.LogWarning("[LoadingScreen] useSlider가 true이지만 loadingProgressBar가 null입니다.");
+                }
+                
+                if (progressText != null)
+                {
+                    progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+                    progressText.gameObject.SetActive(true); // Progress 텍스트 활성화
+                    //Debug.Log($"[LoadingScreen] Progress Text 업데이트: {Mathf.RoundToInt(progress * 100)}%");
+                }
+                else
+                {
+                    //Debug.LogWarning("[LoadingScreen] progressText가 null입니다.");
+                }
             }
             
             OnProgressChanged?.Invoke(progress);
@@ -1002,6 +1009,49 @@ namespace KYS
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.RecreateLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (배경 이미지만 표시, 시간 조절 가능)
+        /// </summary>
+        public static void ShowUltraSimpleLoadingScreen(float displayTime = 2f)
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowUltraSimpleLoadingScreen(displayTime);
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (비동기 버전, 시간 조절 가능)
+        /// </summary>
+        public static async System.Threading.Tasks.Task ShowUltraSimpleLoadingScreenAsync(float displayTime = 2f)
+        {
+            if (UIManager.Instance != null)
+            {
+                await UIManager.Instance.ShowUltraSimpleLoadingScreenAsync(displayTime);
+            }
+        }
+
+        /// <summary>
+        /// 초간단 모드 설정 (배경 이미지만 표시)
+        /// </summary>
+        public void SetUltraSimpleMode(bool enabled)
+        {
+            ultraSimpleMode = enabled;
+            
+            if (enabled)
+            {
+                // 초간단 모드 활성화 시 모든 UI 요소들 비활성화
+                if (centerMessageText != null)
+                    centerMessageText.gameObject.SetActive(false);
+                if (progressText != null)
+                    progressText.gameObject.SetActive(false);
+                if (loadingProgressBar != null)
+                    loadingProgressBar.gameObject.SetActive(false);
+                if (fillProgressImage != null)
+                    fillProgressImage.gameObject.SetActive(false);
             }
         }
         
