@@ -126,6 +126,7 @@ public class AdManager : Singleton<AdManager>
             }
 
             rewardedAd = ad;
+            rewardedAd.OnAdFullScreenContentClosed += LoadRewardedAd;
             Debug.Log("보상형 광고 로딩 완료");
         });
 

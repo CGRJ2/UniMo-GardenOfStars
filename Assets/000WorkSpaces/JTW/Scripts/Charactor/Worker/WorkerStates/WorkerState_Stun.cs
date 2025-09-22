@@ -34,9 +34,11 @@ public class WorkerState_Stun : WorkerStateBase
 
     public override void Update()
     {
+        if (WorkerData.IsAwake.Value) return;
+
         if(WorkerData.IsPlayerTriggered.Value)
         {
-            StateMachine.ChangeState(WorkerStates.Idle);
+            WorkerData.StartCoroutine(AwakeCoroutine());
             return;
         }
 

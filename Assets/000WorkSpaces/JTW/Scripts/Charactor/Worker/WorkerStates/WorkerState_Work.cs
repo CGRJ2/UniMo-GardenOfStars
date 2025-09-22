@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 public class WorkerState_Work : WorkerStateBase
 {
     private NavMeshAgent _navAgent;
+    private Quaternion _target;
 
     public WorkerState_Work(StateMachine<WorkerStates> stateMachine, WorkerRuntimeData data) : base(stateMachine, data)
     {
@@ -13,12 +13,24 @@ public class WorkerState_Work : WorkerStateBase
 
     public override void Enter()
     {
+        if (WorkerData.CurWorkstation.Value is WorkArea_SwitchType)
+        {
+            Vector3 aimDir = (WorkerData.CurWorkstation.Value as WorkArea_SwitchType).ownerInstance.transform.position - WorkerData.transform.position;
+            aimDir = aimDir.normalized;
+
+            _target = Quaternion.LookRotation(aimDir, Vector3.up);
+        }
+        else
+        {
+            _target = default;
+        }
+
         _navAgent.avoidancePriority = 1;
 
         InteractableBase interact = (WorkerData.CurWorkstation.Value as InteractableBase);
 
         interact.Enter(WorkerData);
-        if(interact.personalTaskOwner == null)
+        if (interact.personalTaskOwner == null)
         {
             interact.Enter_PersonalTask(WorkerData);
         }
@@ -26,6 +38,12 @@ public class WorkerState_Work : WorkerStateBase
 
     public override void Update()
     {
+        if (_target != default)
+        {
+            WorkerData.transform.rotation = Quaternion.RotateTowards(WorkerData.transform.rotation, _target, 720f * Time.deltaTime);
+        }
+
+
         if (!CanWork())
         {
             StateMachine.ChangeState(WorkerStates.Idle);
