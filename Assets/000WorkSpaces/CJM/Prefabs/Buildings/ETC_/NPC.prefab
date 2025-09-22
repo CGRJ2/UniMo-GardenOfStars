@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 8886597461215792448}
   - component: {fileID: 1040283348607423830}
   m_Layer: 8
-  m_Name: Button
+  m_Name: NPCTalkButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -243,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2677736473880221770
 RectTransform:
   m_ObjectHideFlags: 0
@@ -453,8 +453,10 @@ GameObject:
   - component: {fileID: 4865485776869987786}
   - component: {fileID: 6038564950737192463}
   - component: {fileID: 6293654418227355964}
+  - component: {fileID: 1928947288503313794}
+  - component: {fileID: 5781740902951697451}
   m_Layer: 8
-  m_Name: Text (TMP)
+  m_Name: NPCTalkButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -576,6 +578,36 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1928947288503313794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4900234764184402307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa6c27da9384ea47bf119bc0ea0b0e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsPlayGameLoginEnd: 0
+  IsLogined: 0
+--- !u!114 &5781740902951697451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4900234764184402307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9f9db897fcf4f438069a4980fdf40b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableAutoLocalization: 1
+  customKey: 
+  useCustomKey: 0
+  showDebugLogs: 0
 --- !u!1 &6568807270393684349
 GameObject:
   m_ObjectHideFlags: 0
