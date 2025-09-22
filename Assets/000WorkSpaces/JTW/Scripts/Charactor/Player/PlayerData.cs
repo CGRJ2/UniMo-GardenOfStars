@@ -26,6 +26,9 @@ public class PlayerData : FirebaseData
     public FirebaseProperty<int> Money;
     public FirebaseProperty<int> Gem;
 
+    public FirebaseProperty<string> CharacterSkinId;
+    public FirebaseProperty<string> EquipSkinId;
+
     public PlayerData(string id, string parentPath) : base(id, parentPath)
     {
         MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
@@ -38,11 +41,16 @@ public class PlayerData : FirebaseData
 
         Gem = new FirebaseProperty<int>("Gem", Path, 0);
 
+        CharacterSkinId = new FirebaseProperty<string>("CharacterSkinId", Path, "101");
+        EquipSkinId = new FirebaseProperty<string>("EquipSkinId", Path, "101");
+
         InitList.Add(MoveSpeedLv);
         InitList.Add(MaxCapacityLv);
         InitList.Add(NegoLv);
         InitList.Add(Money);
         InitList.Add(Gem);
+        InitList.Add(CharacterSkinId);
+        InitList.Add(EquipSkinId);
     }
 
     public void UpgradeMoveSpeed()
