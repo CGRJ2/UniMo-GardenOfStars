@@ -33,10 +33,9 @@ public abstract class AdPanel : KYS.BaseUI
         }
 
         DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(data.LastTime.Value).UtcDateTime;
-        TimeZoneInfo kstZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Seoul");
 
-        DateTime lastClaimKst = TimeZoneInfo.ConvertTimeFromUtc(lastClaimUtc, kstZone);
-        DateTime nowKst = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, kstZone);
+        DateTime lastClaimKst = lastClaimUtc.AddHours(9);
+        DateTime nowKst = DateTime.UtcNow.AddHours(9);
 
         if (lastClaimKst.Day < nowKst.Day)
         {
