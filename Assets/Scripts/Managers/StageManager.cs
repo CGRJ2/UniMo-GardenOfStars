@@ -60,6 +60,10 @@ public class StageManager : MonoBehaviour
         Debug.LogWarning("QuestList Inited");
 
         Init();
+
+        // 기다렸다 배너 광고 띄우기
+        yield return new WaitForSeconds(5f); // UI 조정이 끝난 후 실행되도록 대기
+        Manager.ad.ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
     }
 
     void Init()
