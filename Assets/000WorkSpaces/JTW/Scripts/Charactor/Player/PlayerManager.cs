@@ -42,7 +42,7 @@ public class PlayerManager : Singleton<PlayerManager>
             Destroy(_characterSkin);
         }
 
-        GameObject skin = Manager.data.CharacterSkin.Values[id].CharacterSkin;
+        GameObject skin = Manager.data.CharacterSkin.Values[id].Skin;
 
         _characterSkin = Instantiate(skin, _characterskinParent);
         _playerView.SetCharacterAnimator(_characterSkin.GetComponent<Animator>());
@@ -57,7 +57,7 @@ public class PlayerManager : Singleton<PlayerManager>
             Destroy(_equipSkin);
         }
 
-        GameObject skin = Manager.data.EquipSkin.Values[id].EquipSkin;
+        GameObject skin = Manager.data.EquipSkin.Values[id].Skin;
 
         _equipSkin = Instantiate(skin, transform);
         _playerView.SetEquipAnimator(_equipSkin.GetComponent<Animator>());

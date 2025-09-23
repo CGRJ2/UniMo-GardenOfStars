@@ -5,52 +5,17 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class EquipSkinCsv : IUsableId
-{
-    public string Id;
-
-    public string Name_Kr;
-    public string Name_En;
-
-    public string Name
-    {
-        get
-        {
-            switch (Manager.localization.CurrentLanguage)
-            {
-                case SystemLanguage.Korean:
-                    return Name_Kr;
-                case SystemLanguage.English:
-                    return Name_En;
-            }
-
-            return Name_Kr;
-        }
-    }
-
-    public int Cost;
-
-    public Sprite Sprite;
-    public GameObject EquipSkin;
-
-    public string GetId()
-    {
-        return Id;
-    }
-}
-
 public partial class DataManager
 {
-
     [SerializeField] private bool _isEquipSkinAdressable = true;
 
     // 구글 스프레드 시트 다운로드 주소
     private const string _equipSSkinDataTableURL = "https://docs.google.com/spreadsheets/d/1CwrcyyODjYAwjCgYkofKQl815o-vOWkUH7yy6mdUtY4/export?format=csv&gid=0";
 
     // Addressable 에셋 주소
-    private const string _equipSSkinAdress = "EquipSSkinCsv";
+    private const string _equipSSkinAdress = "EquipSkinCsv";
 
-    public DataTableParser<EquipSkinCsv> EquipSSkin;
+    public DataTableParser<SkinDataCsv> EquipSkin;
     private async void EquipSkinCsvRoutine()
     {
         string dataCsv;
@@ -64,11 +29,13 @@ public partial class DataManager
             dataCsv = await GetDataString(_isEquipSkinAdressable, _equipSSkinDataTableURL);
         }
 
-        EquipSSkin = new DataTableParser<EquipSkinCsv>((words, dict) =>
+        EquipSkin = new DataTableParser<SkinDataCsv>((words, dict) =>
         {
-            EquipSkinCsv skin = new EquipSkinCsv();
+            SkinDataCsv skin = new SkinDataCsv();
 
             skin.Id = words[dict["CharacterSkinID"]];
+
+            skin.Type = SkinTypes.Equip;
 
             skin.Name_Kr = words[dict["Name_KR"]];
             skin.Name_En = words[dict["Name_UN"]];
@@ -99,13 +66,13 @@ public partial class DataManager
                         return;
                     }
 
-                    skin.EquipSkin = task.Result;
+                    skin.Skin = task.Result;
                 };
             }
 
             return skin;
         });
 
-        EquipSSkin.Load(dataCsv);
+        EquipSkin.Load(dataCsv);
     }
 }

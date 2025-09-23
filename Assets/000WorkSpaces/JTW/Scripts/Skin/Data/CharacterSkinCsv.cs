@@ -5,39 +5,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class CharacterSkinCsv : IUsableId
-{
-    public string Id;
-
-    public string Name_Kr;
-    public string Name_En;
-    public string Name
-    {
-        get
-        {
-            switch (Manager.localization.CurrentLanguage)
-            {
-                case SystemLanguage.Korean:
-                    return Name_Kr;
-                case SystemLanguage.English:
-                    return Name_En;
-            }
-
-            return Name_Kr;
-        }
-    }
-
-    public int Cost;
-
-    public Sprite Sprite;
-    public GameObject CharacterSkin;
-
-    public string GetId()
-    {
-        return Id;
-    }
-}
-
 public partial class DataManager
 {
 
@@ -49,7 +16,7 @@ public partial class DataManager
     // Addressable 에셋 주소
     private const string _characterSkinAdress = "CharacterSkinCsv";
 
-    public DataTableParser<CharacterSkinCsv> CharacterSkin;
+    public DataTableParser<SkinDataCsv> CharacterSkin;
     private async void CharacterSkinCsvRoutine()
     {
         string dataCsv;
@@ -63,11 +30,13 @@ public partial class DataManager
             dataCsv = await GetDataString(_isCharacterSkinAdressable, _characterSkinDataTableURL);
         }
 
-        CharacterSkin = new DataTableParser<CharacterSkinCsv>((words, dict) =>
+        CharacterSkin = new DataTableParser<SkinDataCsv>((words, dict) =>
         {
-            CharacterSkinCsv skin = new CharacterSkinCsv();
+            SkinDataCsv skin = new SkinDataCsv();
 
             skin.Id = words[dict["CharacterSkinID"]];
+
+            skin.Type = SkinTypes.Character;
 
             skin.Name_Kr = words[dict["Name_KR"]];
             skin.Name_En = words[dict["Name_UN"]];
@@ -98,7 +67,7 @@ public partial class DataManager
                         return;
                     }
 
-                    skin.CharacterSkin = task.Result;
+                    skin.Skin = task.Result;
                 };
             }
 
