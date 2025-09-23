@@ -31,6 +31,9 @@ public class PlayerManager : Singleton<PlayerManager>
         _playerObj = Instantiate(_playerPrefab, position, Quaternion.identity);
         _characterskinParent = _playerObj.transform.Find("AvatarRoot");
         _playerView = _playerObj.GetComponent<PlayerView>();
+
+        SetCharacterSkin(Manager.player.Data.CharacterSkinId.Value);
+        SetEquipSkin(Manager.player.Data.EquipSkinId.Value);
     }
 
     public void SetCharacterSkin(string id)
