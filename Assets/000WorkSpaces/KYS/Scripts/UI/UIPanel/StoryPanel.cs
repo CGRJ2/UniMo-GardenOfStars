@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using DG.Tweening; // DoTween 추가
 using KYS.DialogueSystem; // DialogueGraph, DialogueNode, NodeType 사용을 위한 using 추가
+using System.Linq; // Any 메서드 사용을 위한 using 추가
 
 namespace KYS
 {
@@ -19,6 +20,7 @@ namespace KYS
         [SerializeField] private string constellationImageName = "ConstellationImage"; // 별자리 이미지 추가
         [SerializeField] private string centerImageName = "CenterImage"; // 가운데 이미지 추가
         [SerializeField] private string skipButtonName = "SkipButton"; // 스킵 버튼
+        [SerializeField] private string upgradeButtonName = "PlayerUpgradeButton"; // 플레이어 업그레이드 버튼
 
         // ChatWindowArea (NextButton 역할)
         private GameObject chatWindowArea => GetUI(chatWindowAreaName);
@@ -52,6 +54,10 @@ namespace KYS
         private GameObject storyTopArea => GetUI(storyTopAreaName);
         private Button logButton => GetUI<Button>("LogButton");
         private Button skipButton => GetUI<Button>("SkipButton");
+        
+        // 플레이어 업그레이드 버튼
+        private GameObject upgradeButton => GetUI(upgradeButtonName);
+        private Button upgradeButtonComponent => GetUI<Button>(upgradeButtonName);
         
         // 배경 이미지
         private Image backgroundImage => GetUI<Image>(backgroundImageName);
@@ -93,6 +99,10 @@ namespace KYS
         private bool isSkipMode = false;
         private Coroutine autoAdvanceCoroutine;
         private float skipAutoAdvanceDelay = 0.1f; // 스킵 모드에서 자동 진행 지연 시간
+        
+        // 업그레이드 버튼 관련 변수
+        private bool isUpgradeButtonVisible = false;
+        private string currentUpgradeButtonNodeId = ""; // 현재 업그레이드 버튼이 활성화된 노드 ID
         
         [Header("스킵 설정")]
         [SerializeField] private float[] skipSpeedOptions = { 0.05f, 0.1f, 0.2f, 0.5f, 1.0f }; // 스킵 속도 옵션들 (초)
@@ -148,6 +158,7 @@ namespace KYS
             {
                 DialogueManager.Instance.OnDialogueStarted += OnDialogueStarted;
                 DialogueManager.Instance.OnDialogueNodeChanged += OnDialogueNodeChanged;
+                DialogueManager.Instance.OnDialogueCompleted += OnDialogueCompleted;
             }
             
             // 초기화 상태 설정
@@ -222,6 +233,7 @@ namespace KYS
             {
                 DialogueManager.Instance.OnDialogueStarted -= OnDialogueStarted;
                 DialogueManager.Instance.OnDialogueNodeChanged -= OnDialogueNodeChanged;
+                DialogueManager.Instance.OnDialogueCompleted -= OnDialogueCompleted;
             }
             
             // 초기화 완료 이벤트 정리
@@ -230,6 +242,9 @@ namespace KYS
             
             // 스킵 모드 정리
             StopSkipMode();
+            
+            // 업그레이드 버튼 초기화
+            SetUpgradeButtonVisible(false);
         }
 
         private void SetupButtons()
@@ -267,6 +282,16 @@ namespace KYS
                 if (skipHandler != null)
                 {
                     skipHandler.Click += (data) => OnSkipButtonClicked();
+                }
+            }
+
+            // 업그레이드 버튼
+            if (upgradeButtonComponent != null)
+            {
+                var upgradeHandler = GetEventWithSFX(upgradeButtonName, "SFX_ButtonClick");
+                if (upgradeHandler != null)
+                {
+                    upgradeHandler.Click += (data) => OnUpgradeButtonClicked();
                 }
             }
 
@@ -833,13 +858,7 @@ namespace KYS
                         break;
 
                     case "choice":
-                        SwitchToChoiceMode();
-                        string choiceLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
-                        Debug.Log($"[StoryPanel] 선택창 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{choiceLocalizedSpeaker}', 언어: {currentLanguage}");
-                        SetChoiceCharacterName(choiceLocalizedSpeaker);
-                        SetChoiceQuestion(dialogueData.GetLocalizedDialogueText(currentLanguage));
-
-                        // 선택지 데이터 디버그 출력
+                        // 선택지 데이터 확인
                         var choiceTexts = dialogueData.GetLocalizedChoiceTexts(currentLanguage);
                         var choiceNextIds = dialogueData.GetChoiceNextIds();
                         Debug.Log($"[StoryPanel] 선택지 노드: {dialogueData.Id}");
@@ -850,7 +869,23 @@ namespace KYS
                         Debug.Log($"[StoryPanel] 로컬라이즈된 선택지 텍스트: [{string.Join(", ", choiceTexts)}]");
                         Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", choiceNextIds)}]");
 
-                        SetupChoices(choiceTexts, OnCSVChoiceSelected);
+                        // 선택지 텍스트가 있으면 선택지 설정 (choiceTexts 기준)
+                        if (choiceTexts.Length > 0)
+                        {
+                            SwitchToChoiceMode();
+                            string choiceLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
+                            Debug.Log($"[StoryPanel] 선택창 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{choiceLocalizedSpeaker}', 언어: {currentLanguage}");
+                            SetChoiceCharacterName(choiceLocalizedSpeaker);
+                            SetChoiceQuestion(dialogueData.GetLocalizedDialogueText(currentLanguage));
+                            
+                            Debug.Log($"[StoryPanel] 선택지 설정 - 텍스트: {choiceTexts.Length}개, 다음노드: {choiceNextIds.Length}개");
+                            SetupChoices(choiceTexts, OnCSVChoiceSelected);
+                        }
+                        else
+                        {
+                            Debug.Log("[StoryPanel] 선택지가 없음 - 대화 종료");
+                            EndDialogue();
+                        }
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
@@ -1009,6 +1044,9 @@ namespace KYS
                 HideConstellationImage();
             }
 
+            // 업그레이드 버튼 관리
+            ManageUpgradeButton(dialogueData);
+
             // UI 업데이트 완료 (모든 경우에 실행)
             isUpdatingUI = false;
         }
@@ -1028,7 +1066,8 @@ namespace KYS
             
             if (DialogueManager.Instance.CurrentDialogueData == null)
             {
-                Debug.LogError("[StoryPanel] CurrentDialogueData가 null입니다!");
+                Debug.LogWarning("[StoryPanel] CurrentDialogueData가 null입니다 - 대화가 이미 종료되었습니다. 선택지를 숨기고 패널을 닫습니다.");
+                ClosePanel();
                 return;
             }
             
@@ -1043,7 +1082,7 @@ namespace KYS
             }
             else
             {
-                Debug.LogError($"[StoryPanel] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
+                Debug.Log($"[StoryPanel] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
             }
             
             bool result = DialogueManager.Instance.SelectChoice(choiceIndex);
@@ -1069,7 +1108,18 @@ namespace KYS
         /// </summary>
         private void OnDialogueStarted(DialogueData dialogueData)
         {
+            // StoryPanel이 파괴되었는지 확인
+            if (this == null || gameObject == null)
+            {
+                Debug.LogWarning("[StoryPanel] OnDialogueStarted - StoryPanel이 이미 파괴됨");
+                return;
+            }
+            
             Debug.Log($"[StoryPanel] OnDialogueStarted 이벤트 수신: {dialogueData?.Id}");
+            
+            // 대화 시작 시 업그레이드 버튼 초기화
+            SetUpgradeButtonVisible(false);
+            
             UpdateUIFromDialogueData();
         }
         
@@ -1078,8 +1128,33 @@ namespace KYS
         /// </summary>
         private void OnDialogueNodeChanged(string nodeId)
         {
+            // StoryPanel이 파괴되었는지 확인
+            if (this == null || gameObject == null)
+            {
+                Debug.LogWarning("[StoryPanel] OnDialogueNodeChanged - StoryPanel이 이미 파괴됨");
+                return;
+            }
+            
             Debug.Log($"[StoryPanel] OnDialogueNodeChanged 이벤트 수신: {nodeId}");
             UpdateUIFromDialogueData();
+        }
+        
+        /// <summary>
+        /// DialogueManager에서 대화 완료 이벤트 처리
+        /// </summary>
+        private void OnDialogueCompleted(DialogueData dialogueData)
+        {
+            // StoryPanel이 파괴되었는지 확인
+            if (this == null || gameObject == null)
+            {
+                Debug.LogWarning("[StoryPanel] OnDialogueCompleted - StoryPanel이 이미 파괴됨");
+                return;
+            }
+            
+            Debug.Log($"[StoryPanel] OnDialogueCompleted 이벤트 수신: {dialogueData?.Id}");
+            
+            // 패널 닫기
+            ClosePanel();
         }
 
         /// <summary>
@@ -1101,6 +1176,9 @@ namespace KYS
         /// </summary>
         private void EndDialogue()
         {
+            // 대화 종료 시 업그레이드 버튼 숨김
+            SetUpgradeButtonVisible(false);
+            
             DialogueManager.Instance.EndDialogue();
             ClosePanel();
         }
@@ -1838,12 +1916,25 @@ namespace KYS
 
         /// <summary>
         /// 캐릭터 이미지 로드 및 설정 (Addressable 지원)
+        /// CharacterImage가 없으면 NpcSprite 사용
         /// </summary>
         private async void LoadAndSetCharacterImage(string imageName)
         {
             if (string.IsNullOrEmpty(imageName))
             {
-                Debug.Log("[StoryPanel] CharacterImage가 비어있습니다.");
+                // CharacterImage가 없으면 NpcSprite 시도
+                if (Manager.dialogue?.CurrentDialogueData != null)
+                {
+                    Sprite npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                    if (npcSprite != null)
+                    {
+                        Debug.Log("[StoryPanel] CharacterImage가 없어서 NpcSprite 사용");
+                        SetCharacterImage(npcSprite);
+                        return;
+                    }
+                }
+                
+                Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있습니다.");
                 return;
             }
 
@@ -2358,13 +2449,19 @@ namespace KYS
                 return;
             }
             
-            // CharacterImage가 설정되어 있는지 확인
+            // 변수 선언
+            string characterImage = "";
+            Sprite npcSprite = null;
+            
+            // CharacterImage 또는 NpcSprite가 설정되어 있는지 확인
             if (Manager.dialogue?.CurrentDialogueData != null)
             {
-                string characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
-                if (string.IsNullOrEmpty(characterImage))
+                characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
+                npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                
+                if (string.IsNullOrEmpty(characterImage) && npcSprite == null)
                 {
-                    Debug.Log("[StoryPanel] CharacterImage가 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
+                    Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
                     HideAllCharacterImages();
                     return;
                 }
@@ -2381,15 +2478,15 @@ namespace KYS
                 characterPosition = Manager.dialogue.CurrentDialogueData.CharacterImagePosition?.ToLower() ?? "";
             }
             
-            // 이미지 로딩 상태를 명시적으로 확인
-            if (!isCharacterImageLoaded)
+            // CharacterImage가 있으면 로딩 상태 확인, NpcSprite는 바로 사용 가능
+            if (!string.IsNullOrEmpty(characterImage) && !isCharacterImageLoaded)
             {
-                Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
+                Debug.Log("[StoryPanel] ShowCharacterImages - CharacterImage가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
                 HideAllCharacterImages();
                 return;
             }
             
-            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되었으므로 캐릭터 이미지를 표시합니다.");
+            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지를 표시합니다.");
             
             // 모든 캐릭터 이미지 먼저 숨기기
             if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
@@ -2397,16 +2494,38 @@ namespace KYS
             if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(false);
             if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(false);
             
+            // NpcSprite가 있으면 직접 사용, 없으면 CharacterImage 로딩된 것 사용
+            Sprite spriteToUse = null;
+            if (npcSprite != null)
+            {
+                spriteToUse = npcSprite;
+                Debug.Log("[StoryPanel] NpcSprite 사용");
+            }
+            else if (!string.IsNullOrEmpty(characterImage))
+            {
+                // CharacterImage가 로딩된 경우 해당 스프라이트 사용
+                spriteToUse = Manager.data?.GetCachedCharacterImage(characterImage);
+                Debug.Log($"[StoryPanel] CharacterImage 사용: {characterImage}");
+            }
+            
             // 현재 모드에 따라 다른 캐릭터 이미지 표시
             if (IsChoiceMode())
             {
                 // 선택지 모드: 왼쪽 캐릭터 이미지 표시
-                if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(true);
+                if (choiceLCharacterImage != null)
+                {
+                    choiceLCharacterImage.gameObject.SetActive(true);
+                    if (spriteToUse != null) choiceLCharacterImage.sprite = spriteToUse;
+                }
             }
             else if (IsStoryMode())
             {
                 // 스토리 모드: 오른쪽 캐릭터 이미지 표시
-                if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+                if (storyRCharacterImage != null)
+                {
+                    storyRCharacterImage.gameObject.SetActive(true);
+                    if (spriteToUse != null) storyRCharacterImage.sprite = spriteToUse;
+                }
             }
             else if (IsDialogueMode())
             {
@@ -2414,17 +2533,33 @@ namespace KYS
                 switch (characterPosition)
                 {
                     case "left":
-                        if (dialogueLCharacterImage != null) dialogueLCharacterImage.gameObject.SetActive(true);
+                        if (dialogueLCharacterImage != null)
+                        {
+                            dialogueLCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueLCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     case "right":
-                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        if (dialogueRCharacterImage != null)
+                        {
+                            dialogueRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     case "center":
-                        if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+                        if (storyRCharacterImage != null)
+                        {
+                            storyRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) storyRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     default:
                         // 기본값: 오른쪽 캐릭터 표시
-                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        if (dialogueRCharacterImage != null)
+                        {
+                            dialogueRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                 }
             }
@@ -2446,6 +2581,77 @@ namespace KYS
                 currentCenterImageKey = ""; // 현재 이미지 키 초기화
                 HideCenterImage();
             }
+        }
+        
+        /// <summary>
+        /// 업그레이드 버튼 관리 (대화 노드에 따라 표시/숨김)
+        /// </summary>
+        private void ManageUpgradeButton(DialogueData dialogueData)
+        {
+            if (dialogueData == null) return;
+            
+            // 업그레이드 버튼 표시 조건들
+            bool hasUpgradeInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                 (dialogueData.Id.ToLower().Contains("upgrade") || 
+                                  dialogueData.Id.ToLower().Contains("업그레이드"));
+            
+            bool hasNormalInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                dialogueData.Id.ToLower().Contains("normal");
+            
+            bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
+            
+
+            // OR 조건으로 버튼 표시
+            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && isStartNode);
+            
+            // 버튼 상태 업데이트 (다음 노드 유무와 관계없이 표시)
+            SetUpgradeButtonVisible(shouldShowButton, dialogueData.Id);
+        }
+        
+        #endregion
+        
+        #region 업그레이드 버튼 기능
+        
+        /// <summary>
+        /// 업그레이드 버튼 클릭 이벤트
+        /// </summary>
+        private void OnUpgradeButtonClicked()
+        {
+            Debug.Log("[StoryPanel] 업그레이드 버튼 클릭됨");
+            
+            // 플레이어 업그레이드 패널 열기
+            if (Manager.ui != null)
+            {
+                // 플레이어 업그레이드 패널 열기 (패널 이름은 실제 구현에 맞게 수정 필요)
+                Manager.ui.ShowPanelAsync<PlayerUpgradePanel>();
+            }
+            else
+            {
+                Debug.LogError("[StoryPanel] UIManager를 찾을 수 없습니다.");
+            }
+        }
+        
+        /// <summary>
+        /// 업그레이드 버튼 표시/숨김
+        /// </summary>
+        public void SetUpgradeButtonVisible(bool visible, string nodeId = "")
+        {
+            if (upgradeButton != null)
+            {
+                upgradeButton.SetActive(visible);
+                isUpgradeButtonVisible = visible;
+                currentUpgradeButtonNodeId = nodeId;
+                
+                Debug.Log($"[StoryPanel] 업그레이드 버튼 {(visible ? "표시" : "숨김")} - 노드 ID: {nodeId}");
+            }
+        }
+        
+        /// <summary>
+        /// 현재 노드에서 업그레이드 버튼이 활성화되어 있는지 확인
+        /// </summary>
+        public bool IsUpgradeButtonActive()
+        {
+            return isUpgradeButtonVisible && upgradeButton != null && upgradeButton.activeInHierarchy;
         }
         
         #endregion
@@ -2585,16 +2791,27 @@ namespace KYS
                 // 다음 노드로 이동
                 if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
                 {
-                // 타이핑 효과 즉시 완료
-                if (typingEffectManager != null)
-                {
-                    // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
-                    TextMeshProUGUI targetText = GetCurrentDialogueText();
-                    if (targetText != null)
+                    // 현재 대화 데이터 확인
+                    var currentDialogueData = Manager.dialogue.CurrentDialogueData;
+                    
+                    // 선택지가 있는 경우 스킵 중지
+                    if (currentDialogueData != null && currentDialogueData.HasChoices)
                     {
-                        typingEffectManager.CompleteTyping(targetText);
+                        Debug.Log("[StoryPanel] 선택지가 있는 노드에서 스킵 중지");
+                        StopSkipMode();
+                        break;
                     }
-                }
+                    
+                    // 타이핑 효과 즉시 완료
+                    if (typingEffectManager != null)
+                    {
+                        // 현재 모드에 따라 적절한 텍스트 컴포넌트 선택
+                        TextMeshProUGUI targetText = GetCurrentDialogueText();
+                        if (targetText != null)
+                        {
+                            typingEffectManager.CompleteTyping(targetText);
+                        }
+                    }
                     
                     // 다음 노드로 이동
                     Manager.dialogue.MoveToNextNode();

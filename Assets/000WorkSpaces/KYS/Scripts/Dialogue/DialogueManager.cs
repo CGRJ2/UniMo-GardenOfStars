@@ -304,9 +304,13 @@ namespace KYS
             string[] choiceNextIds = currentDialogueData.GetChoiceNextIds();
             Debug.Log($"[DialogueManager] 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
             
-            if (choiceIndex < 0 || choiceIndex >= choiceNextIds.Length)
+            // 선택지 개수를 기준으로 인덱스 확인 (choiceNextIds가 더 적을 수 있음)
+            int availableChoices = currentDialogueData.ChoiceCount;
+            Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
+            
+            if (choiceIndex < 0 || choiceIndex >= availableChoices)
             {
-                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
+                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {availableChoices - 1})");
                 return false;
             }
 
@@ -317,7 +321,11 @@ namespace KYS
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
             // 선택지에 따른 다음 노드로 이동
-            string nextNodeId = choiceNextIds[choiceIndex];
+            string nextNodeId = "";
+            if (choiceIndex < choiceNextIds.Length)
+            {
+                nextNodeId = choiceNextIds[choiceIndex];
+            }
             Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
             
             if (string.IsNullOrEmpty(nextNodeId))
@@ -605,44 +613,48 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        /// <summary>
+        /// 컴퍼스 팝업 표시 (새로운 메서드)
+        /// </summary>
+        public void ShowCompassPopUp(string nodeID, CompassMessagePopup.CompassPositionType positionType, bool autoClose = true, int deley = 3000)
         {
             try
             {
-                Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
+                Debug.Log("[DialogueManager] 컴퍼스 팝업 표시 시작");
 
-                // 1. 튜토리얼 팝업 열기
-                Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
+                // 1. 컴퍼스 팝업 열기
+                Manager.ui.ShowPopUpAsync<CompassMessagePopup>(popup =>
                 {
-                    popup.SetTutorialPosition(positionType);
-                    popup.SetTutorialNode(nodeID);
+                    popup.SetCompassPosition(positionType);
+                    popup.SetCompassNode(nodeID);
 
                     if (autoClose)
                     {
-                        Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
+                        Debug.Log($"[DialogueManager] 컴퍼스 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
 
                         // 2. 지정된 시간 대기 후 자동 종료
                         StartCoroutine(WaitDelay(deley, popup));
                     }
                     else
                     {
-                        Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                        Debug.Log("[DialogueManager] 컴퍼스 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
                     }
                 });
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[DialogueManager] 튜토리얼 팝업 표시 실패: {e.Message}");
+                Debug.LogError($"[DialogueManager] 컴퍼스 팝업 표시 실패: {e.Message}");
             }
         }
 
-        private IEnumerator WaitDelay(float delay, TutorialPopUp popup)
+
+        private IEnumerator WaitDelay(float delay, CompassMessagePopup popup)
         {
             yield return new WaitForSeconds(delay / 1000);
 
             // 3. 플레이어 행동 완료 시뮬레이션
-            popup.CompleteTutorialAction();
-            Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+            popup.CompleteCompassAction();
+            Debug.Log("[DialogueManager] 컴퍼스 행동 완료 시뮬레이션");
         }
 
         /// <summary>

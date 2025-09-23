@@ -5,8 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class PoolManager : Singleton<PoolManager>
 {
-    [Header("생성된 풀 관리")]    // 씬 전환 시 초기화
-    public List<PoolBundle> pools = new();
+    // 씬 전환 시 초기화
+    private Dictionary<string,PoolBundle> poolsDic = new();
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        poolsDic = new();
+    }
 
     [Header("풀 생성 시 기본 개수 설정")]
     public int count;
@@ -17,46 +21,34 @@ public class PoolManager : Singleton<PoolManager>
     {
         base.SingletonInit();
         SceneManager.sceneLoaded += OnSceneLoaded;
-        /*foreach (PoolBundle poolBundle in pools)
-        {
-            poolBundle.Init();
-        }*/
     }
-
-    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        pools = new();
-    }
-
 
     public PoolBundle GetPoolBundle(GameObject prefab)
     {
-        foreach (PoolBundle poolBundle in pools)
+        // 해당 풀이 있는지 체크
+        if (poolsDic.ContainsKey(prefab.name)) return poolsDic[prefab.name];
+        else
         {
-            if (poolBundle.IsInThisPool(prefab))
-                return poolBundle;
+            Debug.Log("해당 프리펩을 담아둔 오브젝트 풀이 없음 => 없으면 풀 만들기");
+            PoolBundle bundle = new($"{prefab.name} Pool", prefab, count);
+            bundle.Init();
+            poolsDic.Add(prefab.name, bundle);
+            return bundle;
         }
-
-        Debug.Log("해당 프리펩을 담아둔 오브젝트 풀이 없음 => 없으면 풀 만들기");
-        PoolBundle bundle = new($"{prefab.name} Pool", prefab, count);
-        bundle.Init();
-        pools.Add(bundle);
-        return bundle;
     }
 
     public PoolBundle GetPoolBundle(GameObject prefab, int customCount)
     {
-        foreach (PoolBundle poolBundle in pools)
+        // 해당 풀이 있는지 체크
+        if (poolsDic.ContainsKey(prefab.name)) return poolsDic[prefab.name];
+        else
         {
-            if (poolBundle.IsInThisPool(prefab))
-                return poolBundle;
+            Debug.Log("해당 프리펩을 담아둔 오브젝트 풀이 없음 => 없으면 풀 만들기");
+            PoolBundle bundle = new($"{prefab.name} Pool", prefab, customCount);
+            bundle.Init();
+            poolsDic.Add(prefab.name, bundle);
+            return bundle;
         }
-
-        Debug.Log("해당 프리펩을 담아둔 오브젝트 풀이 없음 => 없으면 풀 만들기");
-        PoolBundle bundle = new($"{prefab.name} Pool", prefab, customCount);
-        bundle.Init();
-        pools.Add(bundle);
-        return bundle;
     }
 
 }

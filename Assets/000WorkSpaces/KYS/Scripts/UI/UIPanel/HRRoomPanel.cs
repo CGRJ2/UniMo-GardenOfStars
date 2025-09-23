@@ -100,7 +100,8 @@ namespace KYS
             //currentMoney = amount;
             if (runMoneyButtonText != null)
             {
-                runMoneyButtonText.text = $"{amount:N0}";
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                runMoneyButtonText.text = FormatMoney(amount, false);
             }
         }
 

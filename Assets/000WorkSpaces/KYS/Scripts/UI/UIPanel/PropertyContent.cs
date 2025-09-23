@@ -102,7 +102,10 @@ namespace KYS
 
             // 돈 체크 후 구매 진행
             int curMoney = Manager.player.Data.Money.Value;
-            int cost = Manager.data.Building[buildingID].Cost;
+            // 스테이지 배수 연산
+            string curStageID = Manager.firebase.UserData.CurStage.Value; 
+            int cost = Manager.data.Building[buildingID].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
             Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
             if (cost <= curMoney)
             {
@@ -190,6 +193,7 @@ namespace KYS
 
         private void UpdateUI()
         {
+            object arg = "1";
 
             if (costText != null)
                 costText.text = $"{buildingCost}";
@@ -198,7 +202,7 @@ namespace KYS
             if (runUnlockContentNameText != null)
 
             {
-                runUnlockContentNameText.text = GetLocalizedText("ui_unlock_clearquest", "1");
+                runUnlockContentNameText.text = GetLocalizedText("ui_unlock_clearquest", arg);
             }
             else
             {
@@ -208,9 +212,10 @@ namespace KYS
 
         public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
         {
+            string curStageID = Manager.firebase.UserData.CurStage.Value;
             buildingID = buildingData.ID;
             buildingName = buildingData.Name;
-            buildingCost = buildingData.Cost;
+            buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
 
             if (buildingData is HarvestBD harvestBD)
@@ -282,7 +287,7 @@ namespace KYS
                 if (currentBuildingData is HarvestBD harvestBD)
                 {
                     // 수확형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((popup) =>
                     {
                         if (popup != null)
                         {
@@ -378,6 +383,7 @@ namespace KYS
             {
                 LockScreen.SetActive(true);
             }
+            
 
         }
 

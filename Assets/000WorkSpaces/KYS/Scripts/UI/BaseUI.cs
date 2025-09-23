@@ -1359,6 +1359,116 @@ namespace KYS
 
         #endregion
 
+        #region Money Formatting Utilities
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (1000 -> 1K, 1000000 -> 1M, 1000000000 -> 1B)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(long amount, bool showDecimals = false)
+        {
+            if (amount < 0)
+            {
+                return "-" + FormatMoney(-amount, showDecimals);
+            }
+
+            if (amount < 1000)
+            {
+                return amount.ToString();
+            }
+            else if (amount < 1000000)
+            {
+                // 1K 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000.0).ToString("F3") + " K";
+                }
+                else
+                {
+                    return (amount / 1000) + " K";
+                }
+            }
+            else if (amount < 1000000000)
+            {
+                // 1M 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000000.0).ToString("F3") + " M";
+                }
+                else
+                {
+                    return (amount / 1000000) + " M";
+                }
+            }
+            else
+            {
+                // 1B 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000000000.0).ToString("F3") + " B";
+                }
+                else
+                {
+                    return (amount / 1000000000) + " B";
+                }
+            }
+        }
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (int 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(int amount, bool showDecimals = false)
+        {
+            return FormatMoney((long)amount, showDecimals);
+        }
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (float 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(float amount, bool showDecimals = false)
+        {
+            return FormatMoney((long)amount, showDecimals);
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (1,000,000 형태)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(long amount)
+        {
+            return amount.ToString("N0");
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (int 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(int amount)
+        {
+            return amount.ToString("N0");
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (float 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(float amount)
+        {
+            return ((long)amount).ToString("N0");
+        }
+
+        #endregion
 
     }
 }

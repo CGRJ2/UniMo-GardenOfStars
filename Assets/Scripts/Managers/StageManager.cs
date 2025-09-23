@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -123,7 +125,11 @@ public class StageManager : MonoBehaviour
             Debug.LogWarning($"현재 스테이지 내의 모든 퀘스트를 완료하여 마지막 퀘스트ID가 설정됨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
         }
 
+        // 플레이어로 카메라 맞춰주기
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
+
+        // 스테이지 ExitTime 체크
+
     }
 
     // 스테이지 별로 최종 생산물 설정
@@ -145,4 +151,48 @@ public class StageManager : MonoBehaviour
         }
         return finalProdID;
     }
+
+
+    // 현재 스테이지에 쌓인 재화 반환 (시간 * 건물 수(임시)로 계산)
+    public void CheckStageExitTime(out double diffTime)
+    {
+        var stageData = Manager.firebase.UserData.CurStageData;
+
+        StageExitTimeData data = Manager.firebase.UserData.StageExitTimeList.Get(stageData.Id);
+
+        if (data == null)
+        {
+            Manager.firebase.UserData.StageExitTimeList.Add(stageData.Id);
+            diffTime = 0;
+            return;
+        }
+
+        DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(data.LastTime.Value).UtcDateTime;
+        
+        DateTime lastClaimKst = lastClaimUtc.AddHours(9);
+        DateTime nowKst = DateTime.UtcNow.AddHours(9);
+
+        TimeSpan diff = nowKst - lastClaimKst;
+        
+        // 초 단위로 변환
+        double seconds = diff.TotalSeconds;
+        diffTime = seconds;
+
+        var update = new Dictionary<string, object>();
+        update[stageData.Id] = Firebase.Database.ServerValue.Timestamp;
+
+        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.StageExitTimeList.Path).UpdateChildrenAsync(update);
+    }
 }
+
+public class StageExitTimeData : FirebaseData
+{
+    public FirebaseProperty<long> LastTime;
+
+    public StageExitTimeData(string id, string parentPath) : base(id, parentPath)
+    {
+        LastTime = new FirebaseProperty<long>("LastExitTime", Path);
+        InitList.Add(LastTime);
+    }
+}
+
