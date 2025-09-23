@@ -97,10 +97,10 @@ public class SkinViewPanel : KYS.BaseUI
         _skinId = data.Id;
         _cost = data.Cost;
 
+        _skinNameText.text = data.Name;
+
         GameObject Prefab = data.Skin;
         TargetObject = Instantiate(Prefab, TargetParent);
-
-
 
         Animator anim = TargetObject.GetComponent<Animator>();
         anim.runtimeAnimatorController = TargetController;
