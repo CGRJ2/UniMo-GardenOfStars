@@ -14,6 +14,9 @@ public abstract class AdPanel : KYS.BaseUI
     private TextMeshProUGUI _countText => GetUI<TextMeshProUGUI>("CountText");
     private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("ButtonText");
 
+    private Image _completeImage => GetUI<Image>("CompletedBG");
+    private Image _bangMarkImage => GetUI<Image>("BangMark");
+
     private DailyAdData Data => Manager.firebase.UserData.DailyAdList.Get(_adPanelId);
 
     protected override void Awake()
@@ -67,18 +70,21 @@ public abstract class AdPanel : KYS.BaseUI
 
         if(data.Count.Value < 2)
         {
-            _buttonText.text = "광고 시청";
+            _buttonText.text = "보상 받기";
         }
         else
         {
-            _buttonText.text = "획득 완료";
+            _bangMarkImage.gameObject.SetActive(false);
+            _completeImage.gameObject.SetActive(true);
         }
     }
 
     private void InitInfo()
     {
+        _bangMarkImage.gameObject.SetActive(true);
+        _completeImage.gameObject.SetActive(false);
         _countText.text = $"0/2";
-        _buttonText.text = "광고 시청";
+        _buttonText.text = "보상 받기";
     }
 
     private void OnClick()
@@ -91,7 +97,8 @@ public abstract class AdPanel : KYS.BaseUI
             _countText.text = $"{Data.Count.Value + 1}/2";
             if (Data.Count.Value + 1 >= 2)
             {
-                _buttonText.text = "획득 완료";
+                _bangMarkImage.gameObject.SetActive(false);
+                _completeImage.gameObject.SetActive(true);
             }
             Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
             return;
@@ -103,7 +110,8 @@ public abstract class AdPanel : KYS.BaseUI
             _countText.text = $"{Data.Count.Value + 1}/2";
             if(Data.Count.Value + 1 >= 2)
             {
-                _buttonText.text = "획득 완료";
+                _bangMarkImage.gameObject.SetActive(false);
+                _completeImage.gameObject.SetActive(true);
             }
             Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
         });

@@ -22,7 +22,7 @@ public class BuyButton : KYS.BaseUI
     [SerializeField] private CodelessIAPButton _iapButton;
 
     private Button _buyButton;
-
+    private Image _buttonImage => GetUI<Image>("ButtonImage");
     private Image _rewardImage => GetUI<Image>("BuyImage");
     private Image _costTypeImage => GetUI<Image>("CostTypeImage");
 
@@ -71,6 +71,12 @@ public class BuyButton : KYS.BaseUI
         }
         else
         {
+            if (ColorUtility.TryParseHtmlString("#3CBD5A", out Color color))
+            {
+                _buttonImage.color = color;
+            }
+
+            _costTypeImage.gameObject.SetActive(false);
             _costTypeImage.gameObject.SetActive(true);
         }
         _costType = data.CostType;
