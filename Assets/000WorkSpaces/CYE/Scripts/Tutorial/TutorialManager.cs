@@ -4,6 +4,8 @@ using KYS;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using static UnityEngine.Rendering.DebugUI;
 
 public class TutorialManager : MonoBehaviour
 {
@@ -39,9 +41,20 @@ public class TutorialManager : MonoBehaviour
     [Header("튜토리얼 #2 설정")]
     public string tutoHarvestBuildingID;
 
+    [Header("튜토리얼 #8 설정")]
+    [Tooltip("석상 활성화(재질 디졸브) 이후 대화가 출력되기 까지 대기 시간")]
+    [SerializeField] float waitTimeAfterDissolve = 1f;
+
     [Header("튜토리얼 #9 설정")]
+    [SerializeField] NpcInteractAreaUI talk_Button;
+
+    [Header("튜토리얼 #11 설정")]
     [SerializeField] GameObject portal;
     [SerializeField] float portalFocusTime = 2f;
+
+    // 강조 FX 효과
+    ObjectPool _Pool_FX_Highlighted;
+    GameObject _FX_Highlighted;
 
     private void Awake() => StartCoroutine(WaitAndInit());
     IEnumerator WaitAndInit()
@@ -65,7 +78,14 @@ public class TutorialManager : MonoBehaviour
 
         SwitchTutorialSequence(Manager.firebase.UserData.TutorialSequence.Value);
         Manager.firebase.UserData.TutorialSequence.Subscribe(SwitchTutorialSequence);
+
+        // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
+        Addressables.LoadAssetAsync<GameObject>("FX/Highlighted.Prefab").Completed += task =>
+        {
+            _Pool_FX_Highlighted = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
+        };
     }
+
 
     private void SwitchTutorialSequence(int value)
     {
@@ -103,6 +123,12 @@ public class TutorialManager : MonoBehaviour
             case 9:
                 TutorialSequence09();
                 break;
+            case 10:
+                TutorialSequence10();
+                break;
+            case 11:
+                TutorialSequence11();
+                break;
         }
     }
 
@@ -115,6 +141,10 @@ public class TutorialManager : MonoBehaviour
 
         // 튜토리얼 진행도 상승 & 저장
         Manager.firebase.UserData.TutorialSequence.Value += 1;
+
+        // 강조 효과 제거
+        if (_FX_Highlighted != null)
+            _Pool_FX_Highlighted.ReturnPooledObj(_FX_Highlighted);
     }
 
     private void TutorialSequence00()
@@ -141,7 +171,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 플레이어 포커싱 카메라 전환 완료 시,
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_move", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_move", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence00_Move());
@@ -161,9 +191,10 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IsMove.Value);
         yield return new WaitForSeconds(_Cut01_InteractTutoPopWaitTime);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_interact", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_interact", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(tutorialNPC.transform.position, tutorialNPC.transform.rotation);
         },
         (msg) =>
         {
@@ -219,10 +250,10 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 생산 건물로 포커싱 카메라 전환 완료 시,
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
-            Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+            Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
             {
                 // 카메라 복귀
                 cameras_TutoCutScene[2].Priority = 10;
@@ -233,7 +264,7 @@ public class TutorialManager : MonoBehaviour
 
                 Debug.LogWarning("팝업 닫음 콜백 함수 실행");
                 Debug.LogWarning("마지막 팝업 닫을 때 생산 건물 방향 화살표 발판 보여주기");
-
+                
                 arrows[1].SetActive(true);
             });
         });
@@ -250,7 +281,7 @@ public class TutorialManager : MonoBehaviour
         Manager.player.IsControl = false;
 
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             // 팝업 닫으면서 재화 UI활성화
@@ -266,6 +297,9 @@ public class TutorialManager : MonoBehaviour
 
             // 퀘스트 발판 활성화
             tutorialNPC.ShowQuestTiles();
+
+            // 부동산 강조 효과 실행
+            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.buildingSeller.transform.position, transform.rotation);
         });
     }
 
@@ -301,7 +335,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         Debug.LogWarning("진행됨");
-            
+
         // 플레이어 조작 비활성화
         Manager.player.IsControl = false;
 
@@ -313,7 +347,7 @@ public class TutorialManager : MonoBehaviour
 
 
         // 포커스 완료 시 팝업 메세지 띄우기
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -351,7 +385,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 포커스 완료 시 팝업 메세지 띄우기
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence04_CutScene02());
@@ -369,7 +403,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -396,6 +430,8 @@ public class TutorialManager : MonoBehaviour
 
         // NPC 방향 화살표 활성화
         arrows[2].SetActive(true);
+        // 수확 -> 생산 건물 방향 화살표 활성화
+        arrows[5].SetActive(true);
 
         StartCoroutine(Sequence05());
 
@@ -421,8 +457,36 @@ public class TutorialManager : MonoBehaviour
             yield break;
         }
         ////////////////////////////////////////////////////
-        
+
         Debug.LogWarning("작업형 건물에서 재단 방향으로 화살표 정도만 띄워주면 될듯");
+
+        // 퀘스트 절반 이상 진행했을 때,
+        yield return new WaitUntil(() => (currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value >= currentQuest.QuestContentList.List[0].CurrentTargetCount / 2));
+
+        // 플레이어 조작 불가능상태로 전환
+        Manager.player.IsControl = false;
+
+        // 부동산 상호작용 발판 활성화
+        Manager.buildings.buildingSeller.ShowWaitingTile();
+
+        // 부동산 건물 포커스 카메라 컷씬 진행
+        Manager.camera.cam_PlayerFocus.Priority = 10;
+        cameras_TutoCutScene[6].Priority = 11;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+
+        // 부동산을 통해 건물의 생산 능력을 강화할 수 있습니다
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence05-1", () =>
+        {
+            Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+            // 카메라 복귀
+            cameras_TutoCutScene[6].Priority = 10;
+            Manager.camera.cam_PlayerFocus.Priority = 11;
+
+            // 플레이어 조작 가능상태로 전환
+            Manager.player.IsControl = true;
+        });
     }
 
     public void TutorialSequence06()
@@ -445,7 +509,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence06_CutScene02());
@@ -463,7 +527,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -481,6 +545,7 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
+            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.workerBuilding.transform.position, transform.rotation);
 
             // 인력사무소 상호작용 발판 활성화
             Manager.buildings.workerBuilding.ShowWaitingTile();
@@ -494,6 +559,9 @@ public class TutorialManager : MonoBehaviour
     public void TutorialSequence07()
     {
         Debug.LogWarning("시퀀스07 시작");
+
+        // 일꾼 건물 발판 비활성화
+        Manager.buildings.workerBuilding.HideWaitingTile();
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
@@ -517,19 +585,11 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
-            //StartCoroutine(Sequence07_CutScene01());
-
-            // 카메라 복귀
-            cameras_TutoCutScene[5].Priority = 10;
-            Manager.camera.cam_PlayerFocus.Priority = 11;
-
-            // 우선 업그레이드 관한 설명 없이 다음 단계로 진행
-            // 원래대로라면 업그레이드 진행 후, 시퀀스 적용? 모르겠다
-            SequenceEnd();
+            StartCoroutine(Sequence07_CutScene01());
 
         }, (msg) =>
         {
@@ -545,7 +605,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -555,14 +615,12 @@ public class TutorialManager : MonoBehaviour
 
             // 플레이어 조작 가능상태로 전환
             Manager.player.IsControl = true;
+
+            SequenceEnd(); // 시퀀스07 종료
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
-
-            // 인력사무소 상호작용 발판 활성화
-            Manager.buildings.workerBuilding.ShowWaitingTile();
-
-            // 이후에 인력사무소 패널에서 업그레이드 진행
+            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.workerBuilding.transform.position, transform.rotation);
         });
     }
 
@@ -579,12 +637,15 @@ public class TutorialManager : MonoBehaviour
         // 플레이어 조작 활성화
         Manager.player.IsControl = true;
 
+        // 인력사무소 상호작용 발판 활성화
+        Manager.buildings.workerBuilding.ShowWaitingTile();
+
         StartCoroutine(Sequence08());
     }
 
+
     IEnumerator Sequence08()
     {
-        yield return new WaitUntil(() => prodsArea.pool != null);
         var userData = Manager.firebase.UserData;
         yield return new WaitUntil(() => userData.IsInit);
         yield return new WaitUntil(() => userData.CurStageData.IsInit);
@@ -593,6 +654,10 @@ public class TutorialManager : MonoBehaviour
         var currentQuest = userData.CurStageData.Npc.CurQuestData;
         yield return new WaitUntil(() => currentQuest.IsInit);
         yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
+
+        // 퀘스트 발판 비활성화 (일꾼 업그레이드를 진행해야 퀘스트 타일이 보이도록)
+        yield return new WaitUntil(() => tutorialNPC != null);
+        tutorialNPC.HideQuestTiles();
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
         bool questCleared;
@@ -603,29 +668,183 @@ public class TutorialManager : MonoBehaviour
         }
         ////////////////////////////////////////////////////
 
+        // 일꾼이 업그레이드 된 상태라면
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.WorkerList.List[0].MaxCapacityLv.Value > 1 &&
+            Manager.firebase.UserData.CurStageData.WorkerList.List[0].MoveSpeedLv.Value > 1);
+
+        // 업그레이드 패널 닫기
+        Manager.ui.ClosePanel();
+
+        // 전당포 포커스 카메라 컷씬 진행
+        cameras_TutoCutScene[8].Priority = 11;
+        Manager.camera.cam_PlayerFocus.Priority = 10;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+
+        // 남는 재료는 전당포에 팔아 재화를 얻을 수 있습니다.
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence08-1", () =>
+        {
+            Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+            StartCoroutine(Sequence08_CutScene02());
+
+        }, (msg) =>
+        {
+            Debug.LogWarning("팝업 열었을 때, 전당포 빛나는 효과");
+        });
+
         // 퀘스트 발판 활성화
         tutorialNPC.ShowQuestTiles();
     }
 
+    IEnumerator Sequence08_CutScene02()
+    {
+        // NPC 포커스 카메라 컷씬 진행
+        cameras_TutoCutScene[8].Priority = 10;
+        Manager.camera.cam_NpcFocus.Priority = 11;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+
+        // 곧 석상이 깨어날 거에요. 별가루를 모아봅시다
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence08-2", () =>
+        {
+            Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+            // 카메라 복귀
+            Manager.camera.cam_NpcFocus.Priority = 10;
+            Manager.camera.cam_PlayerFocus.Priority = 11;
+
+            // 플레이어 조작 가능상태로 전환
+            Manager.player.IsControl = true;
+
+            // 이후 퀘스트 3번 진행
+
+        });
+    }
+    public IEnumerator TutoQuest03ClearCutScene()
+    {
+        // 석상 깨어나는 연출 대기
+
+        // 석상 빛나는 연출?
+        yield return new WaitUntil(() => _Pool_FX_Highlighted != null);
+        _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(tutorialNPC.transform.position, transform.rotation);
+
+        // 석상 매터리얼 디졸브
+        Material dissolveMat = tutorialNPC.view_Dissolve.GetComponent<Renderer>().materials[0];
+        dissolveMat.SetFloat("_Dissolve", 0);
+        float value = 0;
+        while (value < 1)
+        {
+            value = dissolveMat.GetFloat("_Dissolve") + Time.deltaTime;
+            dissolveMat.SetFloat("_Dissolve", value);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(waitTimeAfterDissolve);
+        _Pool_FX_Highlighted.ReturnPooledObj(_FX_Highlighted);
+
+
+        // 연출 끝나고 대화 시작
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+    }
 
     public void TutorialSequence09()
     {
-        Debug.LogWarning("시퀀스09 시작");
+        Debug.LogWarning("시퀀스 09 시작");
 
-        Manager.camera.cam_PlayerFocus.Priority = 11;
+        StartCoroutine(Sequence09_CutScene01());
+    }
+
+    
+
+    IEnumerator Sequence09_CutScene01()
+    {
+        // 플레이어 조작 비활성화
+        Manager.player.IsControl = false;
+
+        // NPC 포커스 카메라 컷씬 진행
+        Manager.camera.cam_PlayerFocus.Priority = 10;
+        Manager.camera.cam_NpcFocus.Priority = 11;
+        yield return new WaitUntil(() => cineBrain.IsBlending);
+        yield return new WaitUntil(() => !cineBrain.IsBlending);
+
+        
+
+        // 별자리를 통해 리비의 능력을 강화할 수 있습니다
+        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence09-1", () =>
+        {
+            Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+
+            // 카메라 복귀
+            Manager.camera.cam_NpcFocus.Priority = 10;
+            Manager.camera.cam_PlayerFocus.Priority = 11;
+
+            // 플레이어 조작 가능상태로 전환
+            Manager.player.IsControl = true;
+
+            // 대화하기 버튼 활성화
+            talk_Button.Init();
+            talk_Button.gameObject.SetActive(true);
+
+            // 이후 NPC 접근 후 대화하기 버튼으로 창을 열고, 업그레이드하기
+        });
+    }
+
+    public void TutorialSequence10()
+    {
+        Debug.LogWarning("시퀀스 10 시작");
+
+
+        StartCoroutine(Sequence10());
+    }
+
+    IEnumerator Sequence10()
+    {
+        var userData = Manager.firebase.UserData;
+        yield return new WaitUntil(() => userData.IsInit);
+        yield return new WaitUntil(() => userData.CurStageData.IsInit);
+        yield return new WaitUntil(() => userData.Player.IsInit);
+
+        // 모든 스탯 1씩 업그레이드 하면 진행됨
+        yield return new WaitUntil(() => userData.Player.MaxCapacityLv.Value > 1 && userData.Player.MoveSpeedLv.Value > 1 && userData.Player.NegoLv.Value > 1);
+
+        talk_Button.gameObject.SetActive(false);
+
+        Manager.camera.cam_PlayerFocus.Priority = 10;
+        Manager.camera.cam_NpcFocus.Priority = 11;
 
         // 플레이어 조작 비활성화
         Manager.player.IsControl = false;
 
-        StartCoroutine(Sequence09());
+        // 그냥 키를 넣기
+        // 해당 대화가 종료되면 콜백함수로 Sequence10 종료
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        Manager.dialogue.OnDialogueCompleted += SequenceEnd; // 대화 완료 시, 시퀀스 10종료
+        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_End");
     }
 
-    IEnumerator Sequence09()
+
+    public void TutorialSequence11()
+    {
+        Debug.LogWarning("시퀀스 11 시작");
+
+        // 플레이어 조작 비활성화
+        Manager.player.IsControl = false;
+
+        StartCoroutine(Sequence11());
+    }
+
+    IEnumerator Sequence11()
     {
         portal.SetActive(true);
 
+        // 포탈 강조 FX
+        _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(portal.transform.position, transform.rotation);
+
         // 포탈 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[7].Priority = 11;
+        Manager.camera.cam_NpcFocus.Priority = 10;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);

@@ -33,7 +33,10 @@ public class ShopBuilding : BuildingInstance
             // 건물(재료)라면 => 건물 구매 가격에 다시 판매
             if (instanceProd is Item_Building building)
             {
-                long price = Manager.data.Building[building.buildingId].Cost;
+                // 스테이지 배수 연산
+                string curStageID = Manager.firebase.UserData.CurStage.Value;
+                long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
                 IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>
                 {
@@ -42,6 +45,9 @@ public class ShopBuilding : BuildingInstance
 
                     // 구매한 건물 ID => DB에서 초기화
                     Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
+
+                    // 건축모드 비활성화
+                    Manager.buildings.BuildModEvent?.Invoke(false, null);
                 });
             }
             // 일반 재료라면 계산식을 통해 판매 ///// 흥정 수치 계산식에 포함해야됨. 어떤 식으로 할건가요?

@@ -23,10 +23,6 @@ public class ManufactureBuilding : BuildingInstance
     [Header("회수 영역 객체")]
     public ProdsArea prodsArea;
 
-    [Header("작업 준비 시간")]
-    public float prepareTime = 0.85f;
-
-
     public Stack<IngrediantInstance> ingrediantStack = new();
     //public Stack<IngrediantInstance> prodsStack = new();  // 회수영역을 스택처럼 표현할 때 사용하는걸로
     

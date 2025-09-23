@@ -95,6 +95,7 @@ public class BuildingInstance : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial") return;
             if (activatePopUI != null)
             {
                 // for test

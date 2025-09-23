@@ -224,7 +224,7 @@ public class WorkerManager : MonoBehaviour
             if (Manager.firebase.UserData.TutorialSequence.Value < 6) return;
 
             // 상호작용 발판 비활성화
-            Manager.buildings.workerBuilding.HideWaitingTile();
+            // Manager.buildings.workerBuilding.HideWaitingTile();
 
             // 일꾼 포커싱 카메라에 맞춰주기
             TutorialManager.Instance.cameras_TutoCutScene[5].Follow = worker.transform;

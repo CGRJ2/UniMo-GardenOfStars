@@ -51,7 +51,7 @@ public class ProdTile : InteractableBase
         Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
         {
             GameObject product = task.Result;
-            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // 해당 건물(재료) 인스턴스 풀 생성
+            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // 해당 건물(재료) 인스턴스 풀 반환(없으면 생성)
 
             // 오브젝트 풀에서 활성화
             GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
@@ -96,7 +96,7 @@ public class ProdTile : InteractableBase
         characterRD.IngrediantStack.Push(buildingItem);
 
         // 건축모드 활성화
-        Manager.buildings.BuildModEvent?.Invoke(true);
+        Manager.buildings.BuildModEvent?.Invoke(true, buildingItem.buildingId);
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)

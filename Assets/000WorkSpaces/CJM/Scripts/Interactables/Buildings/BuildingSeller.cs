@@ -1,4 +1,4 @@
-ï»¿using KYS;
+using KYS;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -22,7 +22,7 @@ public class BuildingSeller : InteractableBase
     
 
 
-    // í…ŒìŠ¤íŠ¸ìš© ì½”ë“œ
+    // Å×½ºÆ®¿ë ÄÚµå
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.B))
@@ -33,29 +33,29 @@ public class BuildingSeller : InteractableBase
 
     public bool IsOnHand()
     {
-        // ì† ìŠ¤íƒ ë¨¼ì € ì²´í¬
+        // ¼Õ ½ºÅÃ ¸ÕÀú Ã¼Å©
         if (characterRD.IngrediantStack.Count > 0)
         {
-            // ì†ì— ë­ê°€ ìˆìœ¼ë©´ êµ¬ë§¤ ë¶ˆê°€ íŒì •
-            Debug.LogWarning("ì†ì— ì´ë¯¸ ë¬¼ê±´ì´ ìˆì–´ì„œ êµ¬ë§¤ ëª»í•¨");
+            // ¼Õ¿¡ ¹¹°¡ ÀÖÀ¸¸é ±¸¸Å ºÒ°¡ ÆÇÁ¤
+            Debug.LogWarning("¼Õ¿¡ ÀÌ¹Ì ¹°°ÇÀÌ ÀÖ¾î¼­ ±¸¸Å ¸øÇÔ");
             return true;
         }
         else return false;
     }
 
-    // êµ¬ë§¤ í™•ì • í›„ ê±´ë¬¼(ì¬ë£Œ) ì¸ìŠ¤í„´ìŠ¤ ìƒì„±í•˜ê¸°
+    // ±¸¸Å È®Á¤ ÈÄ °Ç¹°(Àç·á) ÀÎ½ºÅÏ½º »ı¼ºÇÏ±â
     public void SpawnBuildingItem(string buildingId)
     {
-        // ê±´ì¶•ëª¨ë“œ í™œì„±í™”
-        Manager.buildings.BuildModEvent?.Invoke(true);
+        // °ÇÃà¸ğµå È°¼ºÈ­
+        Manager.buildings.BuildModEvent?.Invoke(true, buildingId);
 
-        // ëª¨ë¸ ìƒì„± (ë©”ì‰¬&ë§¤í„°ë¦¬ì–¼ë§Œ êµì²´í•˜ëŠ” ë°©ë²•ìœ¼ë¡œ ë°”ê¿”ì•¼í•¨)
+        // ¸ğµ¨ »ı¼º (¸Ş½¬&¸ÅÅÍ¸®¾ó¸¸ ±³Ã¼ÇÏ´Â ¹æ¹ıÀ¸·Î ¹Ù²ã¾ßÇÔ)
         Addressables.LoadAssetAsync<GameObject>($"it_{buildingId}").Completed += task =>
         {
             GameObject product = task.Result;
-            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // í•´ë‹¹ ê±´ë¬¼(ì¬ë£Œ) ì¸ìŠ¤í„´ìŠ¤ í’€ ìƒì„±
+            _Pool = Manager.pool.GetPoolBundle(product, 3).instancePool;   // ÇØ´ç °Ç¹°(Àç·á) ÀÎ½ºÅÏ½º Ç® »ı¼º
 
-            // ì˜¤ë¸Œì íŠ¸ í’€ì—ì„œ í™œì„±í™”
+            // ¿ÀºêÁ§Æ® Ç®¿¡¼­ È°¼ºÈ­
             GameObject disposedObject = _Pool.DisposePooledObj(transform.position, transform.rotation);
             Item_Building buildingItem = disposedObject.GetComponent<Item_Building>();
 
@@ -63,16 +63,16 @@ public class BuildingSeller : InteractableBase
             buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);
             characterRD.IngrediantStack.Push(buildingItem);
 
-            // êµ¬ë§¤í•œ ê±´ë¬¼ ID => DBì— ê°±ì‹ 
+            // ±¸¸ÅÇÑ °Ç¹° ID => DB¿¡ °»½Å
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = buildingId;
         };
 
-        // íŠœí† ë¦¬ì–¼ ì”¬ì—ì„œ êµ¬ë§¤í•œ ê²½ìš° (êµ¬ë§¤ë²„íŠ¼ì„ ëˆŒëŸ¬ ê±´ë¬¼(ì¬ë£Œ)ê°€ ë‚˜ì˜¨ ì‹œì )
+        // Æ©Åä¸®¾ó ¾À¿¡¼­ ±¸¸ÅÇÑ °æ¿ì (±¸¸Å¹öÆ°À» ´­·¯ °Ç¹°(Àç·á)°¡ ³ª¿Â ½ÃÁ¡)
         if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
         {
-            TutorialManager.Instance.SequenceEnd(); // ì‹œí€€ìŠ¤02 ì¢…ë£Œ(ì €ì¥)
+            TutorialManager.Instance.SequenceEnd(); // ½ÃÄö½º02 Á¾·á(ÀúÀå)
 
-            // ë¶€ë™ì‚° ìƒí˜¸ì‘ìš© ë°œíŒ ì œê±°
+            // ºÎµ¿»ê »óÈ£ÀÛ¿ë ¹ßÆÇ Á¦°Å
             HideWaitingTile();
         }
     }
@@ -87,79 +87,79 @@ public class BuildingSeller : InteractableBase
         interactTile.gameObject.SetActive(false);
     }
 
-    // ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°
+    // ºÎµ¿»ê ÆĞ³Î ¿­±â
     public void OpenEstatePanel()
     {
-        Debug.Log("ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°");
+        Debug.Log("ºÎµ¿»ê ÆĞ³Î ¿­±â");
 
         if (UIManager.Instance == null)
         {
-            Debug.LogError("[ë¶€ë™ì‚° íŒ¨ë„] UIManager.Instanceê°€ nullì…ë‹ˆë‹¤!");
+            Debug.LogError("[ºÎµ¿»ê ÆĞ³Î] UIManager.Instance°¡ nullÀÔ´Ï´Ù!");
             return;
         }
 
-        // ì´ë¯¸ ë¶€ë™ì‚° íŒ¨ë„ì´ ì—´ë ¤ìˆëŠ”ì§€ í™•ì¸
+        // ÀÌ¹Ì ºÎµ¿»ê ÆĞ³ÎÀÌ ¿­·ÁÀÖ´ÂÁö È®ÀÎ
         var existingPanels = Manager.ui.GetUIsByLayer(UILayerType.Panel);
         foreach (var panel in existingPanels)
         {
             if (panel is PropertyPanel)
             {
-                //Debug.Log("[ë¶€ë™ì‚° íŒ¨ë„] ì´ë¯¸ ë¶€ë™ì‚° íŒ¨ë„ì´ ì—´ë ¤ìˆìŠµë‹ˆë‹¤. ì¤‘ë³µ í˜¸ì¶œ ë¬´ì‹œ");
+                //Debug.Log("[ºÎµ¿»ê ÆĞ³Î] ÀÌ¹Ì ºÎµ¿»ê ÆĞ³ÎÀÌ ¿­·ÁÀÖ½À´Ï´Ù. Áßº¹ È£Ãâ ¹«½Ã");
                 return;
             }
         }
 
-        // ë¶€ë™ì‚° íŒ¨ë„ ì—´ê¸°
+        // ºÎµ¿»ê ÆĞ³Î ¿­±â
         Manager.ui.ShowPanelAsync<PropertyPanel>((panel) =>
         {
             if (panel != null)
             {
-                //Debug.Log("[ë¶€ë™ì‚° íŒ¨ë„] ë¶€ë™ì‚° íŒ¨ë„ ì„±ê³µì ìœ¼ë¡œ ì—´ë¦¼");
+                //Debug.Log("[ºÎµ¿»ê ÆĞ³Î] ºÎµ¿»ê ÆĞ³Î ¼º°øÀûÀ¸·Î ¿­¸²");
 
                 /*if (buildingInstance is HarvestBuilding harvesst)
                     panel.SetUpgradeData(harvesst.originData);*/
             }
             else
             {
-                //Debug.LogError("[ë¶€ë™ì‚° íŒ¨ë„]  ì—´ê¸° ì‹¤íŒ¨");
+                //Debug.LogError("[ºÎµ¿»ê ÆĞ³Î]  ¿­±â ½ÇÆĞ");
             }
         });
     }
 
 
     private bool isTutorialPopDone;
-    // ì ‘ê·¼ ì‹œ íŠœí† ë¦¬ì–¼ íŒì—… ë©”ì„¸ì§€(Squence02)
+    // Á¢±Ù ½Ã Æ©Åä¸®¾ó ÆË¾÷ ¸Ş¼¼Áö(Squence02)
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
-        // ìƒí˜¸ì‘ìš©í•œ ì£¼ì²´ê°€ í”Œë ˆì´ì–´ë¼ë©´ (í”Œë ˆì´ì–´ í•œì •)
+        // »óÈ£ÀÛ¿ëÇÑ ÁÖÃ¼°¡ ÇÃ·¹ÀÌ¾î¶ó¸é (ÇÃ·¹ÀÌ¾î ÇÑÁ¤)
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            // ë¦¬íŒ©í† ë§ í•„ìš” => ì „ë¶€ TutorialManagerì—ì„œ ì²˜ë¦¬í•  ìˆ˜ ìˆë„ë¡
+            // ¸®ÆÑÅä¸µ ÇÊ¿ä => ÀüºÎ TutorialManager¿¡¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï
 
             if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
             {
-                if (Manager.firebase.UserData.TutorialSequence.Value != 2) return; // íŠœí†  ì§„í–‰ë„ëŠ” Firebaseì—ì„œ ê´€ë¦¬. ì¶”í›„ì— ìˆ˜ì •í•´ì•¼ë¨
+                if (Manager.firebase.UserData.TutorialSequence.Value != 2) return; // Æ©Åä ÁøÇàµµ´Â Firebase¿¡¼­ °ü¸®. ÃßÈÄ¿¡ ¼öÁ¤ÇØ¾ßµÊ
 
-                // 1íšŒë§Œ ë‚˜ì˜¤ë„ë¡ ë§‰ì•„ì£¼ëŠ” ìš©ë„
+                // 1È¸¸¸ ³ª¿Àµµ·Ï ¸·¾ÆÁÖ´Â ¿ëµµ
                 if (isTutorialPopDone) return;
                 isTutorialPopDone = true;
 
-                // í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
+                // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
                 Manager.player.IsControl = false;
 
-                Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
                 {
-                    Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
+                    Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
 
-                    // í”Œë ˆì´ì–´ ì¡°ì‘ í™œì„±í™”
+                    // ÇÃ·¹ÀÌ¾î Á¶ÀÛ È°¼ºÈ­
                     Manager.player.IsControl = true;
                 }, (msg) =>
                 {
-                    // ë¶€ë™ì‚° ìƒí˜¸ì‘ìš© ë°œíŒ í™œì„±í™”
+                    // ºÎµ¿»ê »óÈ£ÀÛ¿ë ¹ßÆÇ È°¼ºÈ­
                     Manager.buildings.buildingSeller.ShowWaitingTile();
 
-                    // í™”ì‚´í‘œ ë¹„í™œì„±í™”
+                    // È­»ìÇ¥ ºñÈ°¼ºÈ­
                     TutorialManager.Instance.arrows[3].SetActive(false);
 
                 });
@@ -169,7 +169,7 @@ public class BuildingSeller : InteractableBase
         }
     }
 
-    // ê±´ë¬¼ í™œì„±í™” ë²”ìœ„ ìƒí˜¸ì‘ìš©
+    // °Ç¹° È°¼ºÈ­ ¹üÀ§ »óÈ£ÀÛ¿ë
     public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
         base.Exit(characterRuntimeData);

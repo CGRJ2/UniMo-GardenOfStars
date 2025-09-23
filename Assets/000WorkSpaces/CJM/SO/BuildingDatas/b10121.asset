@@ -11,31 +11,48 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02f3336b3640b5445b3cf06b311228fe, type: 3}
   m_Name: b10121
-  m_EditorClassIdentifier: Assembly-CSharp::ManufactureBD
+  m_EditorClassIdentifier: 
   <ID>k__BackingField: b10121
-  <Name>k__BackingField: "\uBCC4\uAFC0 \uC81C\uC791\uC18C"
-  <Description>k__BackingField: "$\uBCC4\uAF43\uC5D0\uC11C \uAFC0\uC744 \uC9DC\uB0B4\uB294
-    \uAE30\uACC4\uC785\uB2C8\uB2E4. \uBCC4\uAF43\uC758 \uC9C4\uD55C \uD5A5\uAE30\uB97C
-    \uBA38\uAE08\uC740 \uC561\uAE30\uC2A4\uB97C \uB9DB\uBCF4\uC138\uC694.$"
-  <Prefab>k__BackingField: {fileID: 3864011823713307385, guid: f477c9596fc9cb9418187ab7ff9bf8c3, type: 3}
-  <Cost>k__BackingField: 200
+  <Name>k__BackingField: "\uBCC4\uAF43 \uAC74\uC870\uAE30"
+  <Description>k__BackingField: "$\uD589\uBCF5\uC744 \uD53C\uC6B0\uB294 \uBCC4\uAF43\uC758
+    \uC2DC\uAC04\uC744 \uCC9C\uCC9C\uD788 \uBD99\uC7A1\uC544\uB450\uB294 \uC791\uC740
+    \uB2E4\uB77D\uBC29. \uD589\uBCF5\uC744 \uB354 \uD53C\uC6B0\uAE30 \uC88B\uAC8C
+    \uB9CC\uB4ED\uB2C8\uB2E4. \uBCC4\uAF43 1\uAC1C\uB97C \uAC74\uC870\uD55C \uBCC4\uAF43\uC73C\uB85C
+    \uB9CC\uB4ED\uB2C8\uB2E4.$ "
+  <Prefab>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 1000
   <ProductID>k__BackingField: it10121
   <Stat_ProdTime>k__BackingField:
-    <MaxLevel>k__BackingField: 3
+    <MaxLevel>k__BackingField: 9
     <Values>k__BackingField:
+    - 20
+    - 16
+    - 13
+    - 10
+    - 8
+    - 7
+    - 5.5
+    - 4.5
+    - 3.5
     - 3
-    - 2
-    - 1
-    - 0.5
     <cost>k__BackingField:
-    - 100
-    - 200
-    - 300
+    - 5000
+    - 10000
+    - 18000
+    - 25000
+    - 35000
+    - 60000
+    - 100000
+    - 200000
+    - 300000
+  <PrefareTimeRate>k__BackingField: 0.2
   <RequireProdID>k__BackingField: it10011
+  <RequireProdCound>k__BackingField: 1
   <Stat_Capacity>k__BackingField:
-    <MaxLevel>k__BackingField: 3
-    <Values>k__BackingField: 050000000a0000000f00000014000000
+    <MaxLevel>k__BackingField: 4
+    <Values>k__BackingField: 0300000005000000070000000a0000000f000000
     <cost>k__BackingField:
-    - 150
-    - 300
-    - 450
+    - 5000
+    - 10000
+    - 15000
+    - 30000
