@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
-    [SerializeField] private Animator _avatarAnimator;
-    [SerializeField] private Animator _equipAnimator;
+    [SerializeField] private RuntimeAnimatorController _avatarController;
+    [SerializeField] private RuntimeAnimatorController _equipController;
+
+    private Animator _avatarAnimator;
+    private Animator _equipAnimator;
 
     private float _turnSpeed = 720f;
     private PlayerRunTimeData _data;
@@ -38,8 +41,6 @@ public class PlayerView : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_avatarAnimator.enabled == false) return;
-
         _data.IsMove.Subscribe(OnMoveChanged);
         _data.IsWork.Subscribe(OnWorkChanged);
     }
@@ -60,5 +61,17 @@ public class PlayerView : MonoBehaviour
     {
         _avatarAnimator.SetBool("IsWork", value);
         _equipAnimator.SetBool("IsWork", value);
+    }
+
+    public void SetCharacterAnimator(Animator animator)
+    {
+        _avatarAnimator = animator;
+        _avatarAnimator.runtimeAnimatorController = _avatarController;
+    }
+
+    public void SetEquipAnimator(Animator animator)
+    {
+        _equipAnimator = animator;
+        _equipAnimator.runtimeAnimatorController = _equipController;
     }
 }
