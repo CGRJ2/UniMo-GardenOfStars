@@ -46,7 +46,7 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((Popup) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((Popup) =>
         {
             if (Popup != null)
             {
@@ -81,7 +81,7 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((Popup) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture2>((Popup) =>
         {
             if (Popup != null)
             {
