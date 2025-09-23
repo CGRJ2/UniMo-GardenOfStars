@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 namespace GameNpc
@@ -7,6 +8,9 @@ namespace GameNpc
     {
         [SerializeField] Transform requireTilesParent;
         QuestRequireTile[] requireTiles;
+
+        [SerializeField] private Transform _focusPopUpCanvas;
+        private TMP_Text _focusPopUpText;
 
         void Awake()
         {
@@ -51,6 +55,7 @@ namespace GameNpc
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>(true);
+            _focusPopUpText = _focusPopUpCanvas.GetComponentInChildren<TMP_Text>(true);
 
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
@@ -111,8 +116,16 @@ namespace GameNpc
 
         public void Focus()
         {
-            // 대사 출력
-            // Debug.Log($"{_focusTextList[NpcUtil.GetRandomIndex(_focusTextList.Count)]}");
+            int randomTextLineIndex = NpcUtil.GetRandomIndex(Manager.npc.CurStageNpc.TextLines_KR.Count);
+            string randomTextLine = Manager.npc.CurStageNpc.TextLines_KR[randomTextLineIndex];
+            _focusPopUpText.text = randomTextLine;
+
+            _focusPopUpCanvas.gameObject.SetActive(true);
+        }
+        public void FocusOut()
+        { 
+            _focusPopUpText.text = "";
+            _focusPopUpCanvas.gameObject.SetActive(false);
         }
     }
 }

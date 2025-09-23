@@ -18,14 +18,13 @@ public partial class DataManager : Singleton<DataManager>
         DialogueRoutine();
         BuildingLocalizationRoutine();
         IngrediantLocalizationRoutine();
+        NpcTextLinesRoutine(); // 반드시 NpcRoutine 이전에 실행되어야함.
         NpcRoutine();
         QuestRoutine();
-        // QuestRewardRoutine();
         QuestContentRoutine();
         WorkerUpgradeCostRoutine();
         WorkerEmployCostRoutine();
         StageRoutine();
-        // QuestContentStepRoutine();
         CharacterRoutine();
         PlayerUpgradeCostRoutine();
         PlayerRoutine();
