@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.SceneManagement;
 
 namespace KYS
 {
@@ -404,7 +402,7 @@ namespace KYS
         public void OnDialogueUpgradeButtonTest()
         {
             // DialoguePanel의 UpgradeButton 테스트용 메서드
-            Manager.dialogue.StartDialogueWithPanel("","","Test_upgrade");
+            Manager.dialogue.StartDialogueWithPanel("", "", "Test_upgrade");
         }
         [ContextMenu("ShowDialogue Test_upgrade_choice_1")]
         public void OnDialogueUpgradeChoice1Test()
@@ -413,11 +411,25 @@ namespace KYS
             Manager.dialogue.StartDialogueWithPanel("", "", "Test_upgrade_choice_1");
         }
 
-        [ContextMenu("ShowCompassMessagePopup")]
-        private void ShowCompassMessagePopup()
+        [ContextMenu("PropertyPanelCheck")]
+        private void PropertyPanelCheck()
         {
+            Manager.ui.ShowPanelAsync<PropertyPanel>();
+        }
+
+        [ContextMenu("HRRoomPanelCheck")]
+        private void HRRoomPanelCheck()
+        {
+            Manager.ui.ShowPanelAsync<HRRoomPanel>();
 
         }
 
-    }
+        [ContextMenu("PlayerUpgradeContentCheck")]
+        private void PlayerUpgradeContentCheck()
+        {
+            Manager.ui.ShowPanelAsync<PlayerUpgradePanel>();
+        }
+        
+        
+}
 }

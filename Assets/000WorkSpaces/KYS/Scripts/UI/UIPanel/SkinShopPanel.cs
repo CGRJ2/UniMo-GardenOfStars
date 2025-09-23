@@ -1,15 +1,10 @@
 ﻿using KYS;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Purchasing;
 using UnityEngine.UI;
 
-public class ShopPanel : KYS.BaseUI
+public class SkinShopPanel : KYS.BaseUI
 {
-
     [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
     [SerializeField] private string moneyTextName = "RunMoneyButtonText";
     [SerializeField] private string moneyButtonName = "MoneyButton";
@@ -28,22 +23,10 @@ public class ShopPanel : KYS.BaseUI
     private int GetCurrentGemValue() => currentGem;
 
     private bool isInitialized = false;
-
-
-    // 번역이 필요한 Text
-    private TextMeshProUGUI _getTitleText;
-    private TextMeshProUGUI _moneyTitleText;
-
-    public bool IsInPurchase;
-
     protected override void Awake()
     {
-        base.Awake();
-        _getTitleText = GetUI<TextMeshProUGUI>("GemTitleText");
-        _moneyTitleText = GetUI<TextMeshProUGUI>("MoneyTitleText");
 
-        _getTitleText.text = GetLocalizedText("GemTitleText");
-        _moneyTitleText.text = GetLocalizedText("MoneyTitleText");
+        base.Awake();
 
         // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
         if (layerType == UILayerType.Panel) // BaseUI의 기본값
@@ -53,29 +36,8 @@ public class ShopPanel : KYS.BaseUI
 
         Initialize();
 
+
     }
-
-    public void StartPurchase(string productId)
-    {
-        if (IsInPurchase) return;
-
-        IsInPurchase = true;
-
-        CodelessIAPStoreListener.Instance.InitiatePurchase(productId);
-    }
-
-    public void OnOrderConfirmed(ConfirmedOrder order)
-    {
-        IsInPurchase = false;
-    }
-
-    public void OnPurchasesFailed(FailedOrder order)
-    {
-        IsInPurchase = false;
-    }
-
-
-
 
     public override void Initialize()
     {
