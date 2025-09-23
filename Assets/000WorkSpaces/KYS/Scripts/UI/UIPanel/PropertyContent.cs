@@ -283,7 +283,7 @@ namespace KYS
                 if (currentBuildingData is HarvestBD harvestBD)
                 {
                     // 수확형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((popup) =>
                     {
                         if (popup != null)
                         {

@@ -702,7 +702,6 @@ namespace KYS
             yield return StartCoroutine(ShowCompassMessagePopupCoroutine());
 
             // 4단계: 버튼을 놓을 때까지 대기 (무한 대기)
-            Debug.LogError("[HUDAllPanel] Compass 버튼이 눌린 상태로 유지되는 동안 대기");
             yield return new WaitUntil(() => !isCompassCameraActive);
             Debug.Log("[HUDAllPanel] Compass 버튼이 해제되어 시퀀스 종료");
 

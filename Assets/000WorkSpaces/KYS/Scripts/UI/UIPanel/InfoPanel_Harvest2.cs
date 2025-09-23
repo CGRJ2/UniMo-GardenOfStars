@@ -16,13 +16,8 @@ public class InfoPanel_Harvest2 : BaseUI
     [SerializeField] TMP_Text tmp_ProdName;
     [SerializeField] Image image_Prod;
 
-    [Header("레벨 표시 Block 컨테이너")]
-    [SerializeField] Transform blockContainer;
-
-    [Header("LevelBlock 프리팹")]
-    [SerializeField] GameObject levelBlockPrefab;
-
     [Header("생산 속도 스탯")]
+    //[SerializeField] TMP_Text tmp_ProdTimeLevel;
     [SerializeField] TMP_Text tmp_CurProdTime;
     [SerializeField] TMP_Text tmp_AfterUpProdTime;
 
@@ -35,29 +30,37 @@ public class InfoPanel_Harvest2 : BaseUI
     [Header("패널 닫기 버튼")]
     [SerializeField] Button btn_Close;
 
+    [Header("레벨 표시 Block 컨테이너")]
+    [SerializeField] Transform blockContainer;
+
+    [Header("LevelBlock 프리팹")]
+    [SerializeField] GameObject levelBlockPrefab;
+
     // Block 관리용 리스트
     private List<GameObject> blockList = new List<GameObject>();
 
     protected override void Awake()
     {
         base.Awake();
-        if (layerType == UILayerType.Panel)
+        // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
+        if (layerType == UILayerType.Panel) // BaseUI의 기본값
         {
-            layerType = UILayerType.Popup;
+            layerType = UILayerType.Panel;
         }
 
         Init();
     }
 
-    public void Init()
+    public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
         Manager.buildings.upgradeEvent += OnUpgradeEvent;
 
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_Close.onClick.AddListener(Close);
-        
+
         // 언어 변경 이벤트 구독
         BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
     }
 
     void UpgradeProdTime()
@@ -65,7 +68,7 @@ public class InfoPanel_Harvest2 : BaseUI
         // 돈 차감
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
-         
+
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
@@ -85,29 +88,27 @@ public class InfoPanel_Harvest2 : BaseUI
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
 
-        Debug.Log($"[InfoPanel_Harvest2] SetUpgradeData - BuildingID: {data.ID}, CurrentLevel: {curLevel_ProdTime}, MaxLevel: {data.Stat_ProdTime.MaxLevel}");
-
         // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
 
-        Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
-        {
-            string prodNameKey = $"RunIngrediantName{prodData.Result.Name}";
+        // 새 방법 (0918 최재민)
+        tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
+        image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
 
-            tmp_ProdName.text = Manager.localization.GetText(prodNameKey);
-            image_Prod.sprite = prodData.Result.Sprite;
-        };
-
-        // Block 레벨 표시 업데이트
-        UpdateBlockLevels(curLevel_ProdTime, data.Stat_ProdTime.MaxLevel);
+        // 어드레서블로 불러올 필요가 없어짐 (0918 최재민)
+        //Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
+        //{
+        //    tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+        //    image_Prod.sprite = prodData.Result.Sprite;
+        //};
 
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
         {
             tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.cost[curLevel_ProdTime]}";
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
             tmp_AfterUpProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime + 1]}";
-            
+
             if (curMoney > data.Stat_ProdTime.cost[curLevel_ProdTime])
             {
                 btn_ProdTimeUpgrade.interactable = true;
@@ -127,6 +128,42 @@ public class InfoPanel_Harvest2 : BaseUI
 
             btn_ProdTimeUpgrade.interactable = false;
         }
+
+        // LevelBlock들 업데이트 (레벨에 따른 시각적 상태 표시)
+        UpdateBlockLevels(curLevel_ProdTime, data.Stat_ProdTime.MaxLevel);
+    }
+    void OnUpgradeEvent(int value)
+    {
+        // 패널 정보 업데이트
+        SetUpgradeData(targetBD);
+    }
+    private void Close()
+    {
+        Manager.ui.ClosePopup();
+    }
+
+    protected override void OnDestroy()
+    {
+        // 언어 변경 이벤트 구독 해제
+        BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+        IngrediantLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
+        
+        // LevelBlock들 정리
+        ClearBlocks();
+    }
+
+    /// <summary>
+    /// 언어가 변경될 때 호출되는 메서드
+    /// </summary>
+    private void OnLanguageChanged(SystemLanguage newLanguage)
+    {
+        if (targetBD != null)
+        {
+            // 건물 정보 다시 로드
+            tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
+            tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
+            tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.ProductID);
+        }
     }
 
     /// <summary>
@@ -134,6 +171,8 @@ public class InfoPanel_Harvest2 : BaseUI
     /// </summary>
     private void UpdateBlockLevels(int currentLevel, int maxLevel)
     {
+        Debug.Log($"[InfoPanel_Harvest2] LevelBlock 업데이트 시작 - 현재 레벨: {currentLevel}, 최대 레벨: {maxLevel}");
+        
         // 기존 Block들 제거
         ClearBlocks();
 
@@ -146,6 +185,8 @@ public class InfoPanel_Harvest2 : BaseUI
                 blockList.Add(block);
             }
         }
+        
+        Debug.Log($"[InfoPanel_Harvest2] LevelBlock 업데이트 완료 - 총 {blockList.Count}개 블록 생성");
     }
 
     /// <summary>
@@ -207,7 +248,10 @@ public class InfoPanel_Harvest2 : BaseUI
         Transform completedImage = block.transform.Find("CompletedImage");
 
         if (emptyImage == null || currentImage == null || completedImage == null)
+        {
+            Debug.LogWarning($"[InfoPanel_Harvest2] LevelBlock {blockIndex}에서 이미지 컴포넌트를 찾을 수 없습니다.");
             return;
+        }
 
         // 모든 이미지 비활성화
         emptyImage.gameObject.SetActive(false);
@@ -217,18 +261,21 @@ public class InfoPanel_Harvest2 : BaseUI
         // 레벨에 따라 이미지 활성화
         if (blockIndex < currentLevel)
         {
-            // 완료된 레벨
+            // 업그레이드된 레벨 (완료된 레벨)
             completedImage.gameObject.SetActive(true);
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: CompletedImage 활성화 (업그레이드 완료)");
         }
         else if (blockIndex == currentLevel)
         {
-            // 현재 레벨
+            // 현재 레벨 (다음 업그레이드 대상)
             currentImage.gameObject.SetActive(true);
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: CurrentImage 활성화 (현재 레벨)");
         }
         else
         {
-            // 빈 레벨
+            // 업그레이드가 안된 레벨 (빈 레벨)
             emptyImage.gameObject.SetActive(true);
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: EmptyImage 활성화 (미완성 레벨)");
         }
     }
 
@@ -247,36 +294,4 @@ public class InfoPanel_Harvest2 : BaseUI
         blockList.Clear();
     }
 
-    void OnUpgradeEvent(int value)
-    {
-        // 패널 정보 업데이트
-        SetUpgradeData(targetBD);
-    }
-
-    private void Close()
-    {
-        Manager.ui.ClosePopup();
-    }
-    
-    protected override void OnDestroy()
-    {
-        // 언어 변경 이벤트 구독 해제
-        BuildingLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
-        
-        // LevelBlock들 정리
-        ClearBlocks();
-    }
-    
-    /// <summary>
-    /// 언어가 변경될 때 호출되는 메서드
-    /// </summary>
-    private void OnLanguageChanged(SystemLanguage newLanguage)
-    {
-        if (targetBD != null)
-        {
-            // 건물 정보 다시 로드
-            tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
-            tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
-        }
-    }
 }
