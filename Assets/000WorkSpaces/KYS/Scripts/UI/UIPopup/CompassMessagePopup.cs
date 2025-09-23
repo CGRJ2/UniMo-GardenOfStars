@@ -107,6 +107,12 @@ namespace KYS
             SetupButtons();
             //StartTutorialDialogue(); 는 SetTutorialNode()에서 호출하도록 변경
             SetupPanelClick();
+            
+            // 언어 변경 이벤트 구독
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+            }
         }
 
         private void SetupButtons()
@@ -209,11 +215,19 @@ namespace KYS
         {
             if (compassText != null && currentDialogueData != null)
             {
+                // 현재 언어 설정 가져오기
+                SystemLanguage currentLanguage = SystemLanguage.Korean; // 기본값
+                if (LocalizationManager.Instance != null)
+                {
+                    currentLanguage = LocalizationManager.Instance.CurrentLanguage;
+                }
+
                 // 다국어 지원된 대화 텍스트 표시
-                compassText.text = currentDialogueData.GetLocalizedDialogueText();
+                string localizedText = currentDialogueData.GetLocalizedDialogueText(currentLanguage);
+                compassText.text = localizedText;
+                
+                Debug.Log($"[CompassMessagePopup] 텍스트 업데이트 - 언어: {currentLanguage}, 텍스트: '{localizedText}'");
             }
-
-
         }
 
         private void OnNextButtonClicked()
@@ -229,8 +243,23 @@ namespace KYS
             Manager.ui.ClosePopup();
         }
 
+        /// <summary>
+        /// 언어 변경 이벤트 핸들러
+        /// </summary>
+        private void OnLanguageChanged(SystemLanguage newLanguage)
+        {
+            Debug.Log($"[CompassMessagePopup] 언어 변경됨: {newLanguage}");
+            UpdateCompassText();
+        }
+
         public override void Cleanup()
         {
+            // 언어 변경 이벤트 해제
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+            }
+
             // 패널 클릭 이벤트 해제
             Button panelButton = GetComponent<Button>();
             if (panelButton != null)
