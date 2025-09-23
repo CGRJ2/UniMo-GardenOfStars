@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class NpcInteractAreaUI : MonoBehaviour
@@ -15,14 +15,14 @@ public class NpcInteractAreaUI : MonoBehaviour
     {
         var stageID = Manager.firebase.UserData.CurStage.Value;
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        
+
         if (stageID == "Tutorial")
         {
-            Debug.LogWarning("Æ©Åä¸®¾ó ¿Ï·á ´ëÈ­ ½ÇÇà(¾÷±×·¹ÀÌµå ÆĞ³Î ÁøÀÔ ¿ëµµ)");
+            Debug.LogWarning("íŠœí† ë¦¬ì–¼ ì™„ë£Œ ëŒ€í™” ì‹¤í–‰(ì—…ê·¸ë ˆì´ë“œ íŒ¨ë„ ì§„ì… ìš©ë„)");
             return;
         }
 
-        // Äù½ºÆ®°¡ Å¬¸®¾î »óÅÂ¶ó¸é
+        // í€˜ìŠ¤íŠ¸ê°€ í´ë¦¬ì–´ ìƒíƒœë¼ë©´
         if (npc.CurQuestData.QuestState.Value == 3)
         {
             Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}_Clear");

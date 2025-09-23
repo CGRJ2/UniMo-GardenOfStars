@@ -1,11 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameNpc
 {
     public class NpcController : MonoBehaviour
     {
         [SerializeField] Transform requireTilesParent;
+        [SerializeField] Transform view;
+        public Transform view_Dissolve;
         QuestRequireTile[] requireTiles;
 
         void Awake()
@@ -58,13 +61,30 @@ namespace GameNpc
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
                 UpdateQuestData();
+
+                // 스테이지ID에 맞는 NPC ID의 메쉬와 재질로 설정해주기
+                //view.GetComponent<MeshFilter>
+
             }
             else
             {
-                TutorialManager.Instance.tutorialNPC = this;
+                // 튜토리얼 퀘스트가 진행중인 시퀀스 01, 05, 08에는 퀘스트 발판 바로 띄우기
+                if (Manager.firebase.UserData.TutorialSequence.Value == 1 ||
+                    Manager.firebase.UserData.TutorialSequence.Value == 5 ||
+                    Manager.firebase.UserData.TutorialSequence.Value == 8) UpdateQuestData();
 
-                // 튜토리얼 진행도가 1 이상으로 저장되어있는 경우엔 퀘스트 발판 바로 띄우기
-                if (Manager.firebase.UserData.TutorialSequence.Value > 1) UpdateQuestData();
+                // 석상 깨어난 상태 => 우주 재질
+                if (Manager.firebase.UserData.TutorialSequence.Value >= 9)
+                {
+                    view_Dissolve.gameObject.SetActive(false);
+                }
+                // 깨어나지 않은 상태 => 돌 재질
+                else
+                {
+                    view_Dissolve.gameObject.SetActive(true);
+                }
+
+                TutorialManager.Instance.tutorialNPC = this;
             }
 
             Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);

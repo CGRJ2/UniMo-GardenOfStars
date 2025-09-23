@@ -22,6 +22,10 @@ public class PlaceTile : InteractableBase
 
     PlaceTileState state;
 
+    // 건물 설치 FX 효과
+    ObjectPool _Pool_FX_Construct;
+    GameObject _FX_Construct;
+
 
     [HideInInspector] public PlaceTileGroup _parentGroup;
 
@@ -83,6 +87,11 @@ public class PlaceTile : InteractableBase
             }
         }
 
+        // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
+        Addressables.LoadAssetAsync<GameObject>("FX/Constructing.Prefab").Completed += task =>
+        {
+            _Pool_FX_Construct = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
+        };
     }
 
     IEnumerator DefaultBuildingFirstInit()
@@ -126,6 +135,7 @@ public class PlaceTile : InteractableBase
             if (progressedTime == 0)
             {
                 Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
+                _FX_Construct = _Pool_FX_Construct.DisposePooledObj(transform.position, transform.rotation);
             }
 
             IngrediantInstance ownedBuilding;
@@ -181,6 +191,10 @@ public class PlaceTile : InteractableBase
 
             // 설치 SFX 종료
             Manager.Audio.SfxStopLoop("Contruct", 0.5f);
+
+            // 설치 FX 효과 비활성화
+            _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+
         });
 
 
