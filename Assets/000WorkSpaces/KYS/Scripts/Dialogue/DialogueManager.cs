@@ -613,44 +613,48 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp_Old.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        /// <summary>
+        /// 컴퍼스 팝업 표시 (새로운 메서드)
+        /// </summary>
+        public void ShowCompassPopUp(string nodeID, CompassMessagePopup.CompassPositionType positionType, bool autoClose = true, int deley = 3000)
         {
             try
             {
-                Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
+                Debug.Log("[DialogueManager] 컴퍼스 팝업 표시 시작");
 
-                // 1. 튜토리얼 팝업 열기
-                Manager.ui.ShowPopUpAsync<TutorialPopUp_Old>(popup =>
+                // 1. 컴퍼스 팝업 열기
+                Manager.ui.ShowPopUpAsync<CompassMessagePopup>(popup =>
                 {
-                    popup.SetTutorialPosition(positionType);
-                    popup.SetTutorialNode(nodeID);
+                    popup.SetCompassPosition(positionType);
+                    popup.SetCompassNode(nodeID);
 
                     if (autoClose)
                     {
-                        Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
+                        Debug.Log($"[DialogueManager] 컴퍼스 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
 
                         // 2. 지정된 시간 대기 후 자동 종료
                         StartCoroutine(WaitDelay(deley, popup));
                     }
                     else
                     {
-                        Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                        Debug.Log("[DialogueManager] 컴퍼스 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
                     }
                 });
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[DialogueManager] 튜토리얼 팝업 표시 실패: {e.Message}");
+                Debug.LogError($"[DialogueManager] 컴퍼스 팝업 표시 실패: {e.Message}");
             }
         }
 
-        private IEnumerator WaitDelay(float delay, TutorialPopUp_Old popup)
+
+        private IEnumerator WaitDelay(float delay, CompassMessagePopup popup)
         {
             yield return new WaitForSeconds(delay / 1000);
 
             // 3. 플레이어 행동 완료 시뮬레이션
-            popup.CompleteTutorialAction();
-            Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+            popup.CompleteCompassAction();
+            Debug.Log("[DialogueManager] 컴퍼스 행동 완료 시뮬레이션");
         }
 
         /// <summary>

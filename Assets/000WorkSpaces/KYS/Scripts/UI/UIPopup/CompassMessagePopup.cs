@@ -7,40 +7,38 @@ namespace KYS
     /// <summary>
     /// TutorialPopup - DialogueManager와 연동하여 튜토리얼 텍스트를 표시하는 팝업
     /// </summary>
-    public class TutorialPopUp_Old : BaseUI
+    public class CompassMessagePopup : BaseUI
     {
         [Header("UI Element Names")]
-        [SerializeField] private string tutorialTextName = "TutorialText";
-        [SerializeField] private string closeButtonName = "CloseButton";
-        [SerializeField] private string nextButtonName = "NextButton";
+        [SerializeField] private string compassTextName = "MessageText";
+
 
         #region UI Element References
-        private TextMeshProUGUI tutorialText => GetUI<TextMeshProUGUI>(tutorialTextName);
-        private Button closeButton => GetUI<Button>(closeButtonName);
-        private Button nextButton => GetUI<Button>(nextButtonName);
+        private TextMeshProUGUI compassText => GetUI<TextMeshProUGUI>(compassTextName);
+
         #endregion
 
-        [Header("Tutorial Settings")]
-        [SerializeField] private string tutorialNpcId = "tutorial";
-        [SerializeField] private string tutorialStageId = "tutorial_stage";
-        [SerializeField] private string tutorialNodeId = ""; // 직접 노드 ID 설정
+        [Header("Compass Settings")]
+        [SerializeField] private string compassNpcId = "tutorial";
+        [SerializeField] private string compassStageId = "tutorial_stage";
+        [SerializeField] private string compassNodeId = ""; // 직접 노드 ID 설정
 
         [Header("Position Settings")]
         [SerializeField] private bool useCustomPosition = false;
         [SerializeField] private Vector2 customPosition = Vector2.zero;
-        [SerializeField] private TutorialPositionType positionType = TutorialPositionType.Center;
+        [SerializeField] private CompassPositionType positionType = CompassPositionType.Center;
 
         [Header("Size Settings")]
         [SerializeField] private bool useCustomSize = false;
         [SerializeField] private Vector2 customSize = new Vector2(400, 300);
-        [SerializeField] private TutorialSizeType sizeType = TutorialSizeType.Medium;
+        [SerializeField] private CompassSizeType sizeType = CompassSizeType.Medium;
 
         [Header("Close Settings")]
         [SerializeField] private bool canCloseWithPanelClick = true; // 패널 클릭으로 닫기 가능 여부
 
         private DialogueData currentDialogueData;
 
-        public enum TutorialPositionType
+        public enum CompassPositionType
         {
             Center,      // 화면 중앙
             Top,         // 화면 상단
@@ -54,7 +52,7 @@ namespace KYS
             Custom       // 사용자 지정 위치
         }
 
-        public enum TutorialSizeType
+        public enum CompassSizeType
         {
             Small,       // 작은 크기
             Medium,      // 중간 크기
@@ -107,21 +105,13 @@ namespace KYS
         {
             base.Initialize();
             SetupButtons();
+            //StartTutorialDialogue(); 는 SetTutorialNode()에서 호출하도록 변경
             SetupPanelClick();
-            StartTutorialDialogue();
         }
 
         private void SetupButtons()
         {
-            if (closeButton != null)
-            {
-                closeButton.onClick.AddListener(OnCloseButtonClicked);
-            }
 
-            if (nextButton != null)
-            {
-                nextButton.onClick.AddListener(OnNextButtonClicked);
-            }
         }
 
         private void SetupPanelClick()
@@ -144,61 +134,86 @@ namespace KYS
         /// </summary>
         private void OnPanelClicked()
         {
-            Debug.Log("[TutorialPopUp] 패널 클릭으로 튜토리얼 종료");
-            ForceEndTutorial();
+            Debug.Log("[CompassMessagePopup] 패널 클릭으로 컴퍼스 종료");
+            ForceEndCompass();
         }
 
-        private void StartTutorialDialogue()
+        private void StartCompassDialogue()
         {
-            // DialogueManager 이벤트 구독
-            Manager.dialogue.OnDialogueStarted += OnDialogueStarted;
-            Manager.dialogue.OnDialogueCompleted += OnDialogueCompleted;
-            Manager.dialogue.OnDialogueNodeChanged += OnDialogueNodeChanged;
-
-            // 튜토리얼 대화 시작
-            if (!string.IsNullOrEmpty(tutorialNodeId))
+            // 컴퍼스는 독립적인 대화 시스템을 사용 (DialogueManager와 분리)
+            // 직접 노드 데이터를 가져와서 표시
+            if (!string.IsNullOrEmpty(compassNodeId))
             {
-                // 직접 노드 ID가 설정된 경우 해당 노드로 이동
-                Manager.dialogue.MoveToNode(tutorialNodeId);
+                LoadCompassNodeData(compassNodeId);
             }
             else
             {
-                // NPC와 Stage로 대화 시작
-                Manager.dialogue.StartDialogue(tutorialNpcId, tutorialStageId);
+                Debug.LogError("[CompassMessagePopup] 컴퍼스 노드 ID가 설정되지 않았습니다.");
             }
         }
 
-        private void OnDialogueStarted(DialogueData dialogueData)
+        /// <summary>
+        /// 컴퍼스 노드 데이터를 직접 로드하여 표시
+        /// </summary>
+        private void LoadCompassNodeData(string nodeId)
         {
-            currentDialogueData = dialogueData;
-            UpdateTutorialText();
+            try
+            {
+                // DataManager에서 직접 노드 데이터 가져오기
+                if (Manager.data?.Dialogue?.Values == null)
+                {
+                    Debug.LogError("[CompassMessagePopup] Dialogue 데이터가 로드되지 않았습니다.");
+                    return;
+                }
+
+                if (!Manager.data.Dialogue.Values.TryGetValue(nodeId, out DialogueDataCsv csvData))
+                {
+                    Debug.LogError($"[CompassMessagePopup] 노드 '{nodeId}'를 찾을 수 없습니다.");
+                    return;
+                }
+
+                // DialogueData 생성
+                currentDialogueData = GetOrCreateDialogueData(nodeId);
+                if (currentDialogueData == null)
+                {
+                    Debug.LogError($"[CompassMessagePopup] 노드 {nodeId}의 데이터를 생성할 수 없습니다.");
+                    return;
+                }
+
+                Debug.Log($"[CompassMessagePopup] 컴퍼스 노드 로드 완료: {nodeId}");
+                
+                // 텍스트 업데이트
+                UpdateCompassText();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[CompassMessagePopup] 컴퍼스 노드 로드 실패: {e.Message}");
+            }
         }
 
-        private void OnDialogueCompleted(DialogueData dialogueData)
+        /// <summary>
+        /// DialogueData 생성 또는 가져오기
+        /// </summary>
+        private DialogueData GetOrCreateDialogueData(string nodeId)
         {
-            // 튜토리얼 완료 시 팝업 닫기
-            Manager.ui.ClosePopup();
+            // DialogueData는 FirebaseData를 상속하므로 올바른 생성자 사용
+            // parentPath는 Firebase 경로 (일반적으로 "Dialogue" 또는 null)
+            DialogueData dialogueData = new DialogueData(nodeId, "Dialogue");
+            
+            return dialogueData;
         }
 
-        private void OnDialogueNodeChanged(string nodeId)
-        {
-            UpdateTutorialText();
-        }
+        // DialogueManager 이벤트는 더 이상 사용하지 않음 (독립적인 시스템)
 
-        private void UpdateTutorialText()
+        private void UpdateCompassText()
         {
-            if (tutorialText != null && currentDialogueData != null)
+            if (compassText != null && currentDialogueData != null)
             {
                 // 다국어 지원된 대화 텍스트 표시
-                tutorialText.text = currentDialogueData.GetLocalizedDialogueText();
+                compassText.text = currentDialogueData.GetLocalizedDialogueText();
             }
 
-            // Next 버튼 표시/숨김 처리 (다음 노드가 있으면 표시)
-            if (nextButton != null)
-            {
-                bool hasNextNode = !string.IsNullOrEmpty(currentDialogueData?.NextNodeId);
-                nextButton.gameObject.SetActive(hasNextNode);
-            }
+
         }
 
         private void OnNextButtonClicked()
@@ -216,24 +231,6 @@ namespace KYS
 
         public override void Cleanup()
         {
-            // DialogueManager 이벤트 구독 해제
-            if (Manager.dialogue != null)
-            {
-                Manager.dialogue.OnDialogueStarted -= OnDialogueStarted;
-                Manager.dialogue.OnDialogueCompleted -= OnDialogueCompleted;
-                Manager.dialogue.OnDialogueNodeChanged -= OnDialogueNodeChanged;
-            }
-
-            if (closeButton != null)
-            {
-                closeButton.onClick.RemoveAllListeners();
-            }
-
-            if (nextButton != null)
-            {
-                nextButton.onClick.RemoveAllListeners();
-            }
-
             // 패널 클릭 이벤트 해제
             Button panelButton = GetComponent<Button>();
             if (panelButton != null)
@@ -245,44 +242,47 @@ namespace KYS
         }
 
         /// <summary>
-        /// 외부에서 튜토리얼 NPC ID와 Stage ID 설정
+        /// 외부에서 컴퍼스 NPC ID와 Stage ID 설정
         /// </summary>
-        public void SetTutorialDialogue(string npcId, string stageId)
+        public void SetCompassDialogue(string npcId, string stageId)
         {
-            tutorialNpcId = npcId;
-            tutorialStageId = stageId;
-            tutorialNodeId = ""; // 노드 ID 초기화
+            compassNpcId = npcId;
+            compassStageId = stageId;
+            compassNodeId = ""; // 노드 ID 초기화
         }
 
         /// <summary>
         /// 외부에서 직접 노드 ID 설정
         /// </summary>
-        public void SetTutorialNode(string nodeId)
+        public void SetCompassNode(string nodeId)
         {
-            tutorialNodeId = nodeId;
-            tutorialNpcId = ""; // NPC ID 초기화
-            tutorialStageId = ""; // Stage ID 초기화
+            compassNodeId = nodeId;
+            compassNpcId = ""; // NPC ID 초기화
+            compassStageId = ""; // Stage ID 초기화
+            
+            // 노드 ID 설정 후 대화 시작
+            StartCompassDialogue();
         }
 
         /// <summary>
-        /// 외부에서 튜토리얼 설정 (NPC/Stage 또는 직접 노드)
+        /// 외부에서 컴퍼스 설정 (NPC/Stage 또는 직접 노드)
         /// </summary>
-        public void SetTutorial(string npcId = "", string stageId = "", string nodeId = "")
+        public void SetCompass(string npcId = "", string stageId = "", string nodeId = "")
         {
             if (!string.IsNullOrEmpty(nodeId))
             {
-                SetTutorialNode(nodeId);
+                SetCompassNode(nodeId);
             }
             else if (!string.IsNullOrEmpty(npcId) && !string.IsNullOrEmpty(stageId))
             {
-                SetTutorialDialogue(npcId, stageId);
+                SetCompassDialogue(npcId, stageId);
             }
         }
 
         /// <summary>
-        /// 플레이어가 튜토리얼 행동을 완료했을 때 호출
+        /// 플레이어가 컴퍼스 행동을 완료했을 때 호출
         /// </summary>
-        public void CompleteTutorialAction()
+        public void CompleteCompassAction()
         {
             // 다음 노드로 이동 (자동으로 다음 대사 표시)
             if (currentDialogueData != null && !string.IsNullOrEmpty(currentDialogueData.NextNodeId))
@@ -291,30 +291,29 @@ namespace KYS
             }
             else
             {
-                // 다음 노드가 없으면 튜토리얼 완료
-                CompleteTutorial();
+                // 다음 노드가 없으면 컴퍼스 완료
+                CompleteCompass();
             }
         }
 
         /// <summary>
-        /// 튜토리얼 완료 처리
+        /// 컴퍼스 완료 처리
         /// </summary>
-        public void CompleteTutorial()
+        public void CompleteCompass()
         {
-            // 대화 종료
-            Manager.dialogue.EndDialogue();
+            // 컴퍼스는 독립적인 시스템이므로 DialogueManager와 무관하게 처리
+            Debug.Log("[CompassMessagePopup] 컴퍼스 완료");
             
             // 팝업 닫기
             Manager.ui.ClosePopup();
         }
 
         /// <summary>
-        /// 튜토리얼을 강제로 종료 (플레이어가 중단하고 싶을 때)
+        /// 컴퍼스를 강제로 종료 (플레이어가 중단하고 싶을 때)
         /// </summary>
-        public void ForceEndTutorial()
+        public void ForceEndCompass()
         {
-            // 대화 강제 종료
-            Manager.dialogue.EndDialogue();
+            Debug.Log("[CompassMessagePopup] 컴퍼스 강제 종료");
             
             // 팝업 닫기
             Manager.ui.ClosePopup();
@@ -365,25 +364,25 @@ namespace KYS
 
             switch (positionType)
             {
-                case TutorialPositionType.Center:
+                case CompassPositionType.Center:
                     return Vector2.zero;
-                case TutorialPositionType.Top:
+                case CompassPositionType.Top:
                     return new Vector2(0, canvasSize.y * 0.25f);
-                case TutorialPositionType.Bottom:
+                case CompassPositionType.Bottom:
                     return new Vector2(0, -canvasSize.y * 0.25f);
-                case TutorialPositionType.Left:
+                case CompassPositionType.Left:
                     return new Vector2(-canvasSize.x * 0.25f, 0);
-                case TutorialPositionType.Right:
+                case CompassPositionType.Right:
                     return new Vector2(canvasSize.x * 0.25f, 0);
-                case TutorialPositionType.TopLeft:
+                case CompassPositionType.TopLeft:
                     return new Vector2(-canvasSize.x * 0.25f, canvasSize.y * 0.25f);
-                case TutorialPositionType.TopRight:
+                case CompassPositionType.TopRight:
                     return new Vector2(canvasSize.x * 0.25f, canvasSize.y * 0.25f);
-                case TutorialPositionType.BottomLeft:
+                case CompassPositionType.BottomLeft:
                     return new Vector2(-canvasSize.x * 0.25f, -canvasSize.y * 0.25f);
-                case TutorialPositionType.BottomRight:
+                case CompassPositionType.BottomRight:
                     return new Vector2(canvasSize.x * 0.25f, -canvasSize.y * 0.25f);
-                case TutorialPositionType.Custom:
+                case CompassPositionType.Custom:
                     return customPosition;
                 default:
                     return Vector2.zero;
@@ -403,15 +402,15 @@ namespace KYS
 
             switch (sizeType)
             {
-                case TutorialSizeType.Small:
+                case CompassSizeType.Small:
                     return new Vector2(canvasSize.x * 0.3f, canvasSize.y * 0.3f);
-                case TutorialSizeType.Medium:
+                case CompassSizeType.Medium:
                     return new Vector2(canvasSize.x * 0.5f, canvasSize.y * 0.5f);
-                case TutorialSizeType.Large:
+                case CompassSizeType.Large:
                     return new Vector2(canvasSize.x * 0.7f, canvasSize.y * 0.7f);
-                case TutorialSizeType.FullScreen:
+                case CompassSizeType.FullScreen:
                     return new Vector2(canvasSize.x * 0.9f, canvasSize.y * 0.9f);
-                case TutorialSizeType.Custom:
+                case CompassSizeType.Custom:
                     return customSize;
                 default:
                     return new Vector2(400, 300);
@@ -419,9 +418,9 @@ namespace KYS
         }
 
         /// <summary>
-        /// 튜토리얼 위치 설정
+        /// 컴퍼스 위치 설정
         /// </summary>
-        public void SetTutorialPosition(TutorialPositionType position)
+        public void SetCompassPosition(CompassPositionType position)
         {
             positionType = position;
             useCustomPosition = true;
@@ -434,15 +433,15 @@ namespace KYS
         public void SetCustomPosition(Vector2 position)
         {
             customPosition = position;
-            positionType = TutorialPositionType.Custom;
+            positionType = CompassPositionType.Custom;
             useCustomPosition = true;
             ApplyPosition();
         }
 
         /// <summary>
-        /// 튜토리얼 크기 설정
+        /// 컴퍼스 크기 설정
         /// </summary>
-        public void SetTutorialSize(TutorialSizeType size)
+        public void SetCompassSize(CompassSizeType size)
         {
             sizeType = size;
             useCustomSize = true;
@@ -455,7 +454,7 @@ namespace KYS
         public void SetCustomSize(Vector2 size)
         {
             customSize = size;
-            sizeType = TutorialSizeType.Custom;
+            sizeType = CompassSizeType.Custom;
             useCustomSize = true;
             ApplySize();
         }
@@ -466,7 +465,7 @@ namespace KYS
         public void ResetPosition()
         {
             useCustomPosition = false;
-            positionType = TutorialPositionType.Center;
+            positionType = CompassPositionType.Center;
         }
 
         /// <summary>
@@ -475,7 +474,7 @@ namespace KYS
         public void ResetSize()
         {
             useCustomSize = false;
-            sizeType = TutorialSizeType.Medium;
+            sizeType = CompassSizeType.Medium;
         }
 
         /// <summary>

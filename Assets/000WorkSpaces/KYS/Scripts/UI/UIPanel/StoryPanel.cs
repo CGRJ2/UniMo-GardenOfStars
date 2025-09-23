@@ -1916,12 +1916,25 @@ namespace KYS
 
         /// <summary>
         /// 캐릭터 이미지 로드 및 설정 (Addressable 지원)
+        /// CharacterImage가 없으면 NpcSprite 사용
         /// </summary>
         private async void LoadAndSetCharacterImage(string imageName)
         {
             if (string.IsNullOrEmpty(imageName))
             {
-                Debug.Log("[StoryPanel] CharacterImage가 비어있습니다.");
+                // CharacterImage가 없으면 NpcSprite 시도
+                if (Manager.dialogue?.CurrentDialogueData != null)
+                {
+                    Sprite npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                    if (npcSprite != null)
+                    {
+                        Debug.Log("[StoryPanel] CharacterImage가 없어서 NpcSprite 사용");
+                        SetCharacterImage(npcSprite);
+                        return;
+                    }
+                }
+                
+                Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있습니다.");
                 return;
             }
 
@@ -2436,13 +2449,19 @@ namespace KYS
                 return;
             }
             
-            // CharacterImage가 설정되어 있는지 확인
+            // 변수 선언
+            string characterImage = "";
+            Sprite npcSprite = null;
+            
+            // CharacterImage 또는 NpcSprite가 설정되어 있는지 확인
             if (Manager.dialogue?.CurrentDialogueData != null)
             {
-                string characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
-                if (string.IsNullOrEmpty(characterImage))
+                characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
+                npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                
+                if (string.IsNullOrEmpty(characterImage) && npcSprite == null)
                 {
-                    Debug.Log("[StoryPanel] CharacterImage가 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
+                    Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
                     HideAllCharacterImages();
                     return;
                 }
@@ -2459,15 +2478,15 @@ namespace KYS
                 characterPosition = Manager.dialogue.CurrentDialogueData.CharacterImagePosition?.ToLower() ?? "";
             }
             
-            // 이미지 로딩 상태를 명시적으로 확인
-            if (!isCharacterImageLoaded)
+            // CharacterImage가 있으면 로딩 상태 확인, NpcSprite는 바로 사용 가능
+            if (!string.IsNullOrEmpty(characterImage) && !isCharacterImageLoaded)
             {
-                Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
+                Debug.Log("[StoryPanel] ShowCharacterImages - CharacterImage가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
                 HideAllCharacterImages();
                 return;
             }
             
-            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지가 로딩되었으므로 캐릭터 이미지를 표시합니다.");
+            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지를 표시합니다.");
             
             // 모든 캐릭터 이미지 먼저 숨기기
             if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
@@ -2475,16 +2494,38 @@ namespace KYS
             if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(false);
             if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(false);
             
+            // NpcSprite가 있으면 직접 사용, 없으면 CharacterImage 로딩된 것 사용
+            Sprite spriteToUse = null;
+            if (npcSprite != null)
+            {
+                spriteToUse = npcSprite;
+                Debug.Log("[StoryPanel] NpcSprite 사용");
+            }
+            else if (!string.IsNullOrEmpty(characterImage))
+            {
+                // CharacterImage가 로딩된 경우 해당 스프라이트 사용
+                spriteToUse = Manager.data?.GetCachedCharacterImage(characterImage);
+                Debug.Log($"[StoryPanel] CharacterImage 사용: {characterImage}");
+            }
+            
             // 현재 모드에 따라 다른 캐릭터 이미지 표시
             if (IsChoiceMode())
             {
                 // 선택지 모드: 왼쪽 캐릭터 이미지 표시
-                if (choiceLCharacterImage != null) choiceLCharacterImage.gameObject.SetActive(true);
+                if (choiceLCharacterImage != null)
+                {
+                    choiceLCharacterImage.gameObject.SetActive(true);
+                    if (spriteToUse != null) choiceLCharacterImage.sprite = spriteToUse;
+                }
             }
             else if (IsStoryMode())
             {
                 // 스토리 모드: 오른쪽 캐릭터 이미지 표시
-                if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+                if (storyRCharacterImage != null)
+                {
+                    storyRCharacterImage.gameObject.SetActive(true);
+                    if (spriteToUse != null) storyRCharacterImage.sprite = spriteToUse;
+                }
             }
             else if (IsDialogueMode())
             {
@@ -2492,17 +2533,33 @@ namespace KYS
                 switch (characterPosition)
                 {
                     case "left":
-                        if (dialogueLCharacterImage != null) dialogueLCharacterImage.gameObject.SetActive(true);
+                        if (dialogueLCharacterImage != null)
+                        {
+                            dialogueLCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueLCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     case "right":
-                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        if (dialogueRCharacterImage != null)
+                        {
+                            dialogueRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     case "center":
-                        if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(true);
+                        if (storyRCharacterImage != null)
+                        {
+                            storyRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) storyRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                     default:
                         // 기본값: 오른쪽 캐릭터 표시
-                        if (dialogueRCharacterImage != null) dialogueRCharacterImage.gameObject.SetActive(true);
+                        if (dialogueRCharacterImage != null)
+                        {
+                            dialogueRCharacterImage.gameObject.SetActive(true);
+                            if (spriteToUse != null) dialogueRCharacterImage.sprite = spriteToUse;
+                        }
                         break;
                 }
             }

@@ -306,12 +306,6 @@ namespace KYS
             Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
-        [ContextMenu("TutorialPopUpAfterActionClose2")]
-        public  void Temp_TutorialPopUpTest2()
-        {
-            
-             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp_Old.TutorialPositionType.Top);
-        }
 
 
         [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
@@ -417,6 +411,12 @@ namespace KYS
         {
             // DialoguePanel의 UpgradeButton 테스트용 메서드
             Manager.dialogue.StartDialogueWithPanel("", "", "Test_upgrade_choice_1");
+        }
+
+        [ContextMenu("ShowCompassMessagePopup")]
+        private void ShowCompassMessagePopup()
+        {
+
         }
 
     }
