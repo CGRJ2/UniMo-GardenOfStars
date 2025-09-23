@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkinPanel : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class SkinPanel : MonoBehaviour
 
             _buttonList.Add(button);
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
     }
 
     public void SetButtonsInfo()
