@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +25,9 @@ public class SkinPanel : MonoBehaviour
             dict = Manager.data.EquipSkin.Values;
         }
 
-        foreach (var skin in dict)
+        var sortDict = dict.OrderBy(pair => pair.Value.Cost);
+
+        foreach (var skin in sortDict)
         {
             SkinButton button = Instantiate(_skinButtonPrefab, transform).GetComponent<SkinButton>();
 
