@@ -13,11 +13,13 @@ public class SkinData : FirebaseData
         {
             return new CharacterSkinData(id, parentPath);
         });
+        CharacterSkinList.List.Add(new CharacterSkinData("101", Path));
 
         EquipSkinList = new FirebaseDataList<EquipSkinData>("EquipSkinList", Path, (id, parentPath) =>
         {
             return new EquipSkinData(id, parentPath);
         });
+        EquipSkinList.List.Add(new EquipSkinData("101", Path));
 
         InitList.Add(CharacterSkinList);
         InitList.Add(EquipSkinList);
