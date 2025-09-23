@@ -16,6 +16,12 @@ public class NpcInteractAreaUI : MonoBehaviour
         var stageID = Manager.firebase.UserData.CurStage.Value;
         var npc = Manager.firebase.UserData.CurStageData.Npc;
         
+        if (stageID == "Tutorial")
+        {
+            Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
+            return;
+        }
+
         // 퀘스트가 클리어 상태라면
         if (npc.CurQuestData.QuestState.Value == 3)
         {
