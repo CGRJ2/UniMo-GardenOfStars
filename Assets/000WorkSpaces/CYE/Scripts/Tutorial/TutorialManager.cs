@@ -171,7 +171,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 플레이어 포커싱 카메라 전환 완료 시,
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_move", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_move", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence00_Move());
@@ -191,7 +191,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IsMove.Value);
         yield return new WaitForSeconds(_Cut01_InteractTutoPopWaitTime);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_interact", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_interact", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(tutorialNPC.transform.position, tutorialNPC.transform.rotation);
@@ -250,10 +250,10 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 생산 건물로 포커싱 카메라 전환 완료 시,
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
-            Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+            Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
             {
                 // 카메라 복귀
                 cameras_TutoCutScene[2].Priority = 10;
@@ -281,7 +281,7 @@ public class TutorialManager : MonoBehaviour
         Manager.player.IsControl = false;
 
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             // 팝업 닫으면서 재화 UI활성화
@@ -347,7 +347,7 @@ public class TutorialManager : MonoBehaviour
 
 
         // 포커스 완료 시 팝업 메세지 띄우기
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -385,7 +385,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 포커스 완료 시 팝업 메세지 띄우기
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence04_CutScene02());
@@ -403,7 +403,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -476,7 +476,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 부동산을 통해 건물의 생산 능력을 강화할 수 있습니다
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence05-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence05-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -509,7 +509,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence06_CutScene02());
@@ -527,7 +527,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -585,7 +585,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -605,7 +605,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -682,7 +682,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 남는 재료는 전당포에 팔아 재화를 얻을 수 있습니다.
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence08-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence08-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -706,7 +706,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
         // 곧 석상이 깨어날 거에요. 별가루를 모아봅시다
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence08-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence08-2", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
@@ -772,7 +772,7 @@ public class TutorialManager : MonoBehaviour
         
 
         // 별자리를 통해 리비의 능력을 강화할 수 있습니다
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence09-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence09-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
