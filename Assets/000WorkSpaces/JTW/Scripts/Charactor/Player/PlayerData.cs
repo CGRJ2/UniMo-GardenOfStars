@@ -42,7 +42,7 @@ public class PlayerData : FirebaseData
         Gem = new FirebaseProperty<int>("Gem", Path, 0);
 
         CharacterSkinId = new FirebaseProperty<string>("CharacterSkinId", Path, "101");
-        EquipSkinId = new FirebaseProperty<string>("EquipSkinId", Path, "101");
+        EquipSkinId = new FirebaseProperty<string>("EquipSkinId", Path, "201");
 
         InitList.Add(MoveSpeedLv);
         InitList.Add(MaxCapacityLv);

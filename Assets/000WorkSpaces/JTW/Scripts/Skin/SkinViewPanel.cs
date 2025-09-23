@@ -163,7 +163,7 @@ public class SkinViewPanel : KYS.BaseUI
         string equipSkinId = Manager.player.Data.EquipSkinId.Value;
 
         GameObject characterPrefab = Manager.data.CharacterSkin.Values[characterSkinId].Skin;
-        GameObject equipPrefab = Manager.data.EquipSkin.Values[characterSkinId].Skin;
+        GameObject equipPrefab = Manager.data.EquipSkin.Values[equipSkinId].Skin;
 
         _characterObj = Instantiate(characterPrefab, _characterParent);
         _equipObj = Instantiate(equipPrefab, _equipParent);

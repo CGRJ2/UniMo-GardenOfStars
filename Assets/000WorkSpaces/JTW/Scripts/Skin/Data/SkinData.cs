@@ -19,7 +19,7 @@ public class SkinData : FirebaseData
         {
             return new EquipSkinData(id, parentPath);
         });
-        EquipSkinList.List.Add(new EquipSkinData("101", Path));
+        EquipSkinList.List.Add(new EquipSkinData("201", Path));
 
         InitList.Add(CharacterSkinList);
         InitList.Add(EquipSkinList);
