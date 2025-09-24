@@ -18,13 +18,11 @@ public class WorkerPresenter : MonoBehaviour
     {
         _data = GetComponent<WorkerRuntimeData>();
 
-        GameObject avatarPrefab = Manager.data.Character.Values[$"{_data.Id}_{Manager.firebase.UserData.CurStage.Value}"].Avatar;
+        GameObject avatarPrefab = Manager.data.Character.Values[_data.Id].Avatar;
 
         _avatar = Instantiate(avatarPrefab, _data.transform);
 
         if (_avatar.transform.Find("Equip") == null) return;
-
-        Debug.LogWarning(_avatar.transform.Find("CharacterRoot/Character"));
 
         _characterAnimator = _avatar.transform.Find("CharacterRoot/Character").GetComponent<Animator>();
         _characterAnimator.runtimeAnimatorController = _characterController;

@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class WorkerData : FirebaseData
 {
-    private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[Id];
-    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[$"{Id}_{Manager.firebase.UserData.CurStage.Value}"];
-
-    public string Name => CharacterCsv.Name_Kr;
+    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[Id];
+    private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[CharacterCsv.StatusId];
+    public string Name => CharacterCsv.Name;
     public int Rank => WorkerCsv.Rank;
 
     public Sprite Sprite => CharacterCsv.Sprite;

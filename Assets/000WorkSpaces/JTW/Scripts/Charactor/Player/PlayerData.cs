@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerData : FirebaseData
 {
     private Dictionary<string, CharacterLvDataCsv> LvCsv => Manager.data.CharacterLv.Values;
-    private PlayerDataCsv PlayerCsv => Manager.data.Player.Values["10501_F"];
+    private PlayerDataCsv PlayerCsv => Manager.data.Player.Values["201"];
 
     public float MoveSpeed => LvCsv[(MoveSpeedLv.Value + 2).ToString()].Speed;
     public FirebaseProperty<int> MoveSpeedLv;

@@ -1,13 +1,33 @@
-﻿캐릭터 리소스,,,,,,,
-"$캐릭터 ID
-고정 스테이터스ID 101
-_??은 StageID$",캐릭터 이름,캐릭터 영어 이름,캐릭터 설명 스트링키,애니메이션 파일명,캐릭터 모델링 리소스 파일명,캐릭터 이미지 리소스 파일명,캐릭터 사운드 리소스 파일명
-CharacterID,Name_Kr,Name_En,Desc,AnimID,ModelResource,ImgResource,SoundResource
-string,string,string,string,string,string,string,string
-101_Tutorial,고등어,고등어(En),캐릭터 설명 스트링키,,Highfish,Highfish,
-101_Stage01,고등어1,고등어1(En),,,Highfish,Highfish,
-102_Stage01,고등어2,고등어2(En),,,Highfish,Highfish,
-103_Stage01,고등어3,고등어3(En),,,Highfish,Highfish,
-104_Stage01,고등어4,고등어4(En),,,Highfish,Highfish,
-105_Stage01,고등어5,고등어5(En),,,Highfish,Highfish,
-106_Stage01,고등어6,고등어6(En),,,Highfish,Highfish,
+﻿캐릭터 리소스,,,,
+캐릭터 ID,캐릭터 고정 스테이터스ID,"$스테이지
+11 = 모든스테이지
+12 = 튜토리얼스테이지$",캐릭터 이름(한글),캐릭터 이름(영문)
+CharacterID,CharacterFixedID,Stage,Name_KR,Name_EN
+int,int,string,string,string
+301,201,All,리비,Ribee
+302,101,Tutorial,,
+401,101,Stage01,1,1
+402,101,Stage01,2,2
+403,102,Stage01,3,3
+404,102,Stage01,4,4
+501,101,Stage02,,
+502,101,Stage02,,
+503,101,Stage02,,
+504,102,Stage02,,
+505,102,Stage02,,
+506,102,Stage02,,
+507,103,Stage02,,
+508,103,Stage02,,
+509,104,Stage02,,
+510,104,Stage02,,
+601,101,Stage03,,
+602,101,Stage03,,
+603,102,Stage03,,
+604,102,Stage03,,
+605,103,Stage03,,
+606,103,Stage03,,
+607,103,Stage03,,
+608,103,Stage03,,
+609,104,Stage03,,
+610,104,Stage03,,
+611,104,Stage03,,

@@ -11,7 +11,24 @@ public class CharacterDataCsv : IUsableId
 
     public string Name_Kr;
     public string Name_En;
-    public string Description;
+    public string Name
+    {
+        get
+        {
+            switch (Manager.localization.CurrentLanguage)
+            {
+                case SystemLanguage.Korean:
+                    return Name_Kr;
+                case SystemLanguage.English:
+                    return Name_En;
+            }
+
+            return Name_Kr;
+        }
+    }
+
+    public string StatusId;
+    public string StageId;
 
     public Sprite Sprite;
     public GameObject Avatar;
@@ -19,19 +36,6 @@ public class CharacterDataCsv : IUsableId
     public string GetId()
     {
         return Id;
-    }
-
-    public string GetName()
-    {
-        switch (Manager.localization.CurrentLanguage)
-        {
-            case SystemLanguage.Korean:
-                return Name_Kr;
-            case SystemLanguage.English:
-                return Name_En;
-        }
-
-        return Name_Kr;
     }
 }
 
@@ -65,8 +69,11 @@ public partial class DataManager
 
             character.Id = words[dict["CharacterID"]];
 
-            character.Name_Kr = words[dict["Name_Kr"]];
-            character.Description = words[dict["Desc"]];
+            character.Name_Kr = words[dict["Name_KR"]];
+            character.Name_En = words[dict["Name_EN"]];
+
+            character.StatusId = words[dict["CharacterFixedID"]];
+            character.StageId = words[dict["Stage"]];
 
             if (Addressables.ResourceLocators.Any(locator => locator.Locate($"CharacterImage/{words[dict["CharacterID"]]}.png", typeof(Sprite), out var locations)))
             {

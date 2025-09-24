@@ -31,7 +31,7 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
 
-        foreach (string key in Manager.data.Worker.Values.Keys.ToList())
+        foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
             WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
 
