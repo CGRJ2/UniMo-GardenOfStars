@@ -16,14 +16,14 @@ namespace KYS
         [SerializeField] private string moneyButtonName = "MoneyButton";
         [SerializeField] private string gemButtonName = "GemButton";
         [SerializeField] private string gemTextName = "RunGemButtonText";
-        [SerializeField] private string levelTextName = "LevelText";
         [SerializeField] private string settingButtonName = "SettingButton";
         [SerializeField] private string ShopButtonName = "ShopButton";
-        [SerializeField] private string questProgressTextName = "QuestProgressText";
         [SerializeField] private string SkinShopButtonName = "SkinShopButton";
         [SerializeField] private string compossButtonName = "CompossButton";
         [SerializeField] private string StageTransitionPanelButtonName = "StageTransitionPanelButton";
         [SerializeField] private string StoryPanelButtonName = "StoryPanelButton";
+        //[SerializeField] private string levelTextName = "LevelText";
+        //[SerializeField] private string questProgressTextName = "QuestProgressText";
 
         [Header("Compass Camera Settings")]
         [SerializeField] private float compassCameraMoveWaitTime = 1.0f; // 카메라 이동 대기 시간
@@ -33,11 +33,8 @@ namespace KYS
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         private TextMeshProUGUI gemText => GetUI<TextMeshProUGUI>(gemTextName);
-        private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
-        private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
 
         private GameObject ShopButton => GetUI(ShopButtonName);
-        
         private GameObject SkinShopButton => GetUI(SkinShopButtonName);
         private GameObject StageTransitionPanelButton => GetUI(StageTransitionPanelButtonName);
         private GameObject StoryPanelButton => GetUI(StoryPanelButtonName);
@@ -45,6 +42,8 @@ namespace KYS
         private GameObject moneyButton => GetUI(moneyButtonName);
         private GameObject gemButton => GetUI(gemButtonName);
         private GameObject compossButton => GetUI(compossButtonName);
+        //private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
+        //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         #endregion
 
         // 카메라 관련 변수들
@@ -287,35 +286,35 @@ namespace KYS
             }
         }
 
-        public void UpdateLevel(int level)
-        {
-            currentLevel = level; // 현재 값 저장
-            if (levelText != null)
-            {
-                // 번역된 텍스트에 동적 값 삽입
-                string localizedText = GetLocalizedText("hud_level");
-                if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_level")
-                {
-                    localizedText = "레벨"; // 번역이 없으면 기본값 사용
-                }
-                levelText.text = $"{localizedText}: {level}";
-            }
-        }
+        //public void UpdateLevel(int level)
+        //{
+        //    currentLevel = level; // 현재 값 저장
+        //    if (levelText != null)
+        //    {
+        //        // 번역된 텍스트에 동적 값 삽입
+        //        string localizedText = GetLocalizedText("hud_level");
+        //        if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_level")
+        //        {
+        //            localizedText = "레벨"; // 번역이 없으면 기본값 사용
+        //        }
+        //        levelText.text = $"{localizedText}: {level}";
+        //    }
+        //}
 
-        public void UpdateQuestProgress(string progress)
-        {
-            currentQuestProgress = progress; // 현재 값 저장
-            if (questProgressText != null)
-            {
-                // 번역된 텍스트에 동적 값 삽입
-                string localizedText = GetLocalizedText("hud_quest_progress");
-                if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_quest_progress")
-                {
-                    localizedText = "퀘스트 진행"; // 번역이 없으면 기본값 사용
-                }
-                questProgressText.text = $"{localizedText}: {progress}";
-            }
-        }
+        //public void UpdateQuestProgress(string progress)
+        //{
+        //    currentQuestProgress = progress; // 현재 값 저장
+        //    if (questProgressText != null)
+        //    {
+        //        // 번역된 텍스트에 동적 값 삽입
+        //        string localizedText = GetLocalizedText("hud_quest_progress");
+        //        if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_quest_progress")
+        //        {
+        //            localizedText = "퀘스트 진행"; // 번역이 없으면 기본값 사용
+        //        }
+        //        questProgressText.text = $"{localizedText}: {progress}";
+        //    }
+        //}
 
         #endregion
 
@@ -332,14 +331,14 @@ namespace KYS
             {
                 UpdateGem(GetCurrentGemValue());
             }
-            if (levelText != null)
-            {
-                UpdateLevel(GetCurrentLevelValue());
-            }
-            if (questProgressText != null)
-            {
-                UpdateQuestProgress(GetCurrentQuestProgress());
-            }
+            //if (levelText != null)
+            //{
+            //    UpdateLevel(GetCurrentLevelValue());
+            //}
+            //if (questProgressText != null)
+            //{
+            //    UpdateQuestProgress(GetCurrentQuestProgress());
+            //}
         }
 
         /// <summary>
@@ -361,13 +360,13 @@ namespace KYS
         // 현재 값들을 저장할 변수들
         private int currentMoney = 1000;
         private int currentGem = 0;
-        private int currentLevel = 1;
-        private string currentQuestProgress = "진행 중";
+        //private int currentLevel = 1;
+        //private string currentQuestProgress = "진행 중";
 
         private int GetCurrentMoneyValue() => currentMoney;
         private int GetCurrentGemValue() => currentGem;
-        private int GetCurrentLevelValue() => currentLevel;
-        private string GetCurrentQuestProgress() => currentQuestProgress;
+        //private int GetCurrentLevelValue() => currentLevel;
+        //private string GetCurrentQuestProgress() => currentQuestProgress;
 
         #endregion
 
@@ -992,12 +991,12 @@ namespace KYS
         {
             Debug.Log($"[HUDAllPanel] UI 요소 정보:");
             Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
             Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - PropertyButton: {ShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(ShopButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - HRRoomButton: {SkinShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(SkinShopButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
 
         #endregion

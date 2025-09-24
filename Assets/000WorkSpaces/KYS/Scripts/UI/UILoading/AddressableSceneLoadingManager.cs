@@ -429,7 +429,11 @@ namespace KYS
         {
             Manager.ui.ShowPanelAsync<PlayerUpgradePanel>();
         }
-        
-        
-}
+
+        [ContextMenu("MoneyAdd")]
+        private void MoneyAdd()
+        {
+            Manager.player.Data.Money.Value += 1000;
+        }
+    }
 }
