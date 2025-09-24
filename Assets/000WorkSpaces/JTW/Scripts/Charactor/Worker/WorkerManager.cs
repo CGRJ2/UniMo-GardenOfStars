@@ -28,8 +28,9 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.data.Worker != null);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
-        yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
 
         foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
@@ -194,7 +195,7 @@ public class WorkerManager : MonoBehaviour
 
     public void InstantiateWorker(WorkerData data)
     {
-        WorkerRuntimeData worker = Instantiate(_workerPrefab).GetComponent<WorkerRuntimeData>();
+        WorkerRuntimeData worker = Instantiate(_workerPrefab, Manager.buildings.workerBuilding.GetSpawnPos(), Quaternion.identity).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
