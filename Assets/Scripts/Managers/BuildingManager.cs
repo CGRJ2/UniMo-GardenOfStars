@@ -93,7 +93,6 @@ public class BuildingManager : Singleton<BuildingManager>
         upgradeDataDic[buildingId].Upgrade(statProdTimeAdd, statCapacityAdd);
     }
 
-    UpgradeData temp_UpgradeData;
 
     public UpgradeData GetUpgradeData(string buildingId)
     {
@@ -101,26 +100,14 @@ public class BuildingManager : Singleton<BuildingManager>
         UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingId);
         if (upgradeData == null)
         {
-            Manager.firebase.UserData.BuildingUpgradeList.OnAdded.AddListener(UpgradeDataAddEvent);
             Manager.firebase.UserData.BuildingUpgradeList.Add(buildingId);
-
-            upgradeDataDic.TryAdd(buildingId, temp_UpgradeData);
-            return temp_UpgradeData;
+            return null;
         }
         else
         {
             upgradeDataDic.TryAdd(buildingId, upgradeData);
             return upgradeData;
         }
-    }
-
-
-    private void UpgradeDataAddEvent(UpgradeData upgradeData)
-    {
-        Debug.Log("리스트의 값이 변화해도 이벤트가 실행되나?");
-        
-        temp_UpgradeData = upgradeData;
-        Manager.firebase.UserData.BuildingUpgradeList.OnAdded.RemoveListener(UpgradeDataAddEvent);
     }
 }
 

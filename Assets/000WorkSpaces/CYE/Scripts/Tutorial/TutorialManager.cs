@@ -36,12 +36,13 @@ public class TutorialManager : MonoBehaviour
     [Header("튜토리얼 #1 설정")]
     [SerializeField] ProdsArea prodsArea;
 
-    [Header("튜토리얼 #2 설정")]
-    public string tutoHarvestBuildingID;
+    [Header("튜토리얼 #3 설정")]
+    [SerializeField] PlaceTile placeTile;
 
     [Header("튜토리얼 #8 설정")]
     [Tooltip("석상 활성화(재질 디졸브) 이후 대화가 출력되기 까지 대기 시간")]
     [SerializeField] float waitTimeAfterDissolve = 1f;
+    [SerializeField] ShopBuilding shopBuilding;
 
     [Header("튜토리얼 #9 설정")]
     [SerializeField] NpcInteractAreaUI talk_Button;
@@ -151,7 +152,7 @@ public class TutorialManager : MonoBehaviour
         if (target == null) return;
 
         // 효과 추가 활성화
-        _FX_Highlighteds.Add(_Pool_FX_Highlighted.DisposePooledObj(target.position, target.rotation));
+        _FX_Highlighteds.Add(_Pool_FX_Highlighted.DisposePooledObj(target.position + Vector3.up * 1.2f, target.rotation));
     }
 
     // Sequence 마지막에 대화 종료를 기점으로 진행도 저장
@@ -190,7 +191,7 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
-        
+
         // 플레이어 포커싱 카메라 전환 완료 시,
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_move", () =>
         {
@@ -218,7 +219,7 @@ public class TutorialManager : MonoBehaviour
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_interact", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
-            
+
             // NPC 강조효과 실행
             PlayHighLightFX(tutorialNPC.transform);
 
@@ -295,7 +296,7 @@ public class TutorialManager : MonoBehaviour
 
                 Debug.LogWarning("팝업 닫음 콜백 함수 실행");
                 Debug.LogWarning("마지막 팝업 닫을 때 생산 건물 방향 화살표 발판 보여주기");
-                
+
                 // NPC -> 생산 건물 방향 화살표
                 arrows[1].SetActive(true);
             });
@@ -396,6 +397,9 @@ public class TutorialManager : MonoBehaviour
         (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때");
+
+            // 공터 강조 효과
+            PlayHighLightFX(placeTile.transform);
         });
 
         // 이어서 건설 모드 상에서 플레이어가 공터로 건물(재료) 설치 진행
@@ -427,6 +431,7 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 수확형 건물이 빛나는 효과 실행");
+            PlayHighLightFX(placeTile.transform);
         });
     }
 
@@ -454,6 +459,7 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 작업형 건물이 빛나는 효과 실행");
+            PlayHighLightFX(prodsArea.ownerInstance.transform);
         });
     }
     public void TutorialSequence05()
@@ -498,6 +504,11 @@ public class TutorialManager : MonoBehaviour
         // 퀘스트 절반 이상 진행했을 때,
         yield return new WaitUntil(() => (currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value >= currentQuest.QuestContentList.List[0].CurrentTargetCount / 2));
 
+        // NPC 방향 화살표 비활성화
+        arrows[2].SetActive(false);
+        // 수확 -> 생산 건물 방향 화살표 비활성화
+        arrows[5].SetActive(false);
+
         // 퀘스트 타일 숨기기
         tutorialNPC.HideQuestTiles();
 
@@ -513,6 +524,9 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
+        // 부동산 강조효과 실행
+        PlayHighLightFX(Manager.buildings.buildingSeller.transform);
+
         // 부동산을 통해 건물의 생산 능력을 강화할 수 있습니다
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence05-1", () =>
         {
@@ -525,9 +539,12 @@ public class TutorialManager : MonoBehaviour
             // 플레이어 조작 가능상태로 전환
             Manager.player.IsControl = true;
 
+            // 부동산쪽으로 다시 유도하는 표기, 
+            arrows[3].SetActive(true);
+
             StartCoroutine(Sequence05_UpgradeCheck());
 
-            // 부동산쪽으로 다시 유도하는 표기, 강조효과 실행
+            // TODO 업그레이드 창 열었을 때, 업그레이드 버튼을 유도하는 표기
         });
     }
 
@@ -536,14 +553,27 @@ public class TutorialManager : MonoBehaviour
         // 수확 건물을 강화해? 생산 건물을 강화해?
 
         // 여기서 퀘스트 발판을 막고, 업그레이드를 해야 퀘스트 발판이 다시 생기게 만들어서 업그레이드를 강제해야할 듯
-        
+
         string[] buildingIDs = Manager.data.Stage.Values["Tutorial"].GetBuildingIdList();
         string buildingID = buildingIDs[0];
-        UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingID);
-        
+
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(buildingID);
+
         yield return new WaitUntil(() => upgradeData.level_ProdTime > 0); // 생산시간 업그레이드 한 번 했을 때 진행
 
+        // 업그레이드 패널 닫기
+        Manager.ui.CloseAllPanels();
+        Manager.ui.CloseAllPopups();
+
+        PlayHighLightFX(null);
         tutorialNPC.ShowQuestTiles();
+
+        // NPC 방향 화살표 활성화
+        arrows[2].SetActive(true);
+        // 수확 -> 생산 건물 방향 화살표 활성화
+        arrows[5].SetActive(true);
+        // 부동산 방향 화살표 비활성화
+        arrows[3].SetActive(false);
     }
 
     public void TutorialSequence06()
@@ -566,13 +596,13 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
+        // npc 강조효과 실행
+        PlayHighLightFX(tutorialNPC.transform);
+
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
             StartCoroutine(Sequence06_CutScene02());
-        }, (msg) =>
-        {
-            Debug.LogWarning("팝업 열었을 때, 석상에서 빛나는 효과");
         });
     }
 
@@ -676,9 +706,7 @@ public class TutorialManager : MonoBehaviour
             SequenceEnd(); // 시퀀스07 종료
         }, (msg) =>
         {
-            Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
             PlayHighLightFX(Manager.buildings.workerBuilding.transform);
-
         });
     }
 
@@ -689,8 +717,7 @@ public class TutorialManager : MonoBehaviour
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // NPC 방향 화살표 활성화
-        arrows[2].SetActive(true);
+        
 
         // 플레이어 조작 활성화
         Manager.player.IsControl = true;
@@ -716,6 +743,8 @@ public class TutorialManager : MonoBehaviour
         // 퀘스트 발판 비활성화 (일꾼 업그레이드를 진행해야 퀘스트 타일이 보이도록)
         yield return new WaitUntil(() => tutorialNPC != null);
         tutorialNPC.HideQuestTiles();
+        yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
+        PlayHighLightFX(Manager.buildings.workerBuilding.transform);
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
         bool questCleared;
@@ -732,6 +761,7 @@ public class TutorialManager : MonoBehaviour
 
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
+        Manager.ui.CloseAllPopups();
 
         // 전당포 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[8].Priority = 11;
@@ -745,14 +775,19 @@ public class TutorialManager : MonoBehaviour
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 
             StartCoroutine(Sequence08_CutScene02());
+            PlayHighLightFX(null);
 
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 전당포 빛나는 효과");
+            PlayHighLightFX(shopBuilding.transform);
         });
 
         // 퀘스트 발판 활성화
         tutorialNPC.ShowQuestTiles();
+
+        // NPC 방향 화살표 활성화
+        arrows[2].SetActive(true);
     }
 
     IEnumerator Sequence08_CutScene02()
@@ -813,7 +848,7 @@ public class TutorialManager : MonoBehaviour
         StartCoroutine(Sequence09_CutScene01());
     }
 
-    
+
 
     IEnumerator Sequence09_CutScene01()
     {
@@ -867,7 +902,9 @@ public class TutorialManager : MonoBehaviour
 
         talk_Button.gameObject.SetActive(false);
 
+        // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
+        Manager.ui.CloseAllPopups();
 
         Manager.camera.cam_PlayerFocus.Priority = 10;
         Manager.camera.cam_NpcFocus.Priority = 11;
