@@ -15,14 +15,15 @@ namespace KYS
         [SerializeField] private string moneyTextName = "RunMoneyBottonText";
         [SerializeField] private string moneyButtonName = "MoneyButton";
         [SerializeField] private string gemButtonName = "GemButton";
-        [SerializeField] private string levelTextName = "LevelText";
+        [SerializeField] private string gemTextName = "RunGemButtonText";
         [SerializeField] private string settingButtonName = "SettingButton";
-        [SerializeField] private string propertyButtonName = "PropertyButton";
-        [SerializeField] private string questProgressTextName = "QuestProgressText";
-        [SerializeField] private string HRRooomButtonName = "HRRoomButton";
+        [SerializeField] private string ShopButtonName = "ShopButton";
+        [SerializeField] private string SkinShopButtonName = "SkinShopButton";
         [SerializeField] private string compossButtonName = "CompossButton";
         [SerializeField] private string StageTransitionPanelButtonName = "StageTransitionPanelButton";
         [SerializeField] private string StoryPanelButtonName = "StoryPanelButton";
+        //[SerializeField] private string levelTextName = "LevelText";
+        //[SerializeField] private string questProgressTextName = "QuestProgressText";
 
         [Header("Compass Camera Settings")]
         [SerializeField] private float compassCameraMoveWaitTime = 1.0f; // 카메라 이동 대기 시간
@@ -31,18 +32,18 @@ namespace KYS
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
-        private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
-        private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
+        private TextMeshProUGUI gemText => GetUI<TextMeshProUGUI>(gemTextName);
 
-        private GameObject propertyButton => GetUI(propertyButtonName);
-        
-        private GameObject HRRoomButton => GetUI(HRRooomButtonName);
+        private GameObject ShopButton => GetUI(ShopButtonName);
+        private GameObject SkinShopButton => GetUI(SkinShopButtonName);
         private GameObject StageTransitionPanelButton => GetUI(StageTransitionPanelButtonName);
         private GameObject StoryPanelButton => GetUI(StoryPanelButtonName);
         private GameObject SettingButton => GetUI(settingButtonName);
         private GameObject moneyButton => GetUI(moneyButtonName);
         private GameObject gemButton => GetUI(gemButtonName);
         private GameObject compossButton => GetUI(compossButtonName);
+        //private TextMeshProUGUI questProgressText => GetUI<TextMeshProUGUI>(questProgressTextName);
+        //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
         #endregion
 
         // 카메라 관련 변수들
@@ -120,9 +121,11 @@ namespace KYS
 
             // 초기 값 설정
             UpdateMoney(Manager.player.Data.Money.Value);
+            UpdateGem(Manager.player.Data.Gem.Value);
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+            Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             isInitialized = true;
             Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
@@ -154,6 +157,7 @@ namespace KYS
         {
             // ObservableProperty 구독 해제
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+            Manager.player?.Data?.Gem.Unsubscribe(OnGemChanged);
 
             // 언어 변경 이벤트 구독 해제
             if (LocalizationManager.Instance != null)
@@ -207,16 +211,16 @@ namespace KYS
                 settingEventHandler.Click += (data) => OnSettingButtonClicked();
             }
 
-            var PropertyEventHandler = GetEventWithSFX(propertyButtonName, "SFX_ButtonClick");
+            var PropertyEventHandler = GetEventWithSFX(ShopButtonName, "SFX_ButtonClick");
             if (PropertyEventHandler != null)
             {
-                PropertyEventHandler.Click += (data) => OnPropertyButtonClicked();
+                PropertyEventHandler.Click += (data) => OnShopButtonClicked();
             }
 
-            var HRRooomEventHandler = GetEventWithSFX(HRRooomButtonName, "SFX_ButtonClick");
+            var HRRooomEventHandler = GetEventWithSFX(SkinShopButtonName, "SFX_ButtonClick");
             if (HRRooomEventHandler != null)
             {
-                HRRooomEventHandler.Click += (data) => OnHRRoomButtonClicked();
+                HRRooomEventHandler.Click += (data) => OnSkinShopButtonClicked();
             }
 
             var StageTransitionEventHandler = GetEventWithSFX(StageTransitionPanelButtonName, "SFX_ButtonClick");
@@ -272,35 +276,45 @@ namespace KYS
             }
         }
 
-        public void UpdateLevel(int level)
+        public void UpdateGem(int amount)
         {
-            currentLevel = level; // 현재 값 저장
-            if (levelText != null)
+            currentGem = amount; // 현재 값 저장
+            if (gemText != null)
             {
-                // 번역된 텍스트에 동적 값 삽입
-                string localizedText = GetLocalizedText("hud_level");
-                if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_level")
-                {
-                    localizedText = "레벨"; // 번역이 없으면 기본값 사용
-                }
-                levelText.text = $"{localizedText}: {level}";
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                gemText.text = FormatMoney(amount, false);
             }
         }
 
-        public void UpdateQuestProgress(string progress)
-        {
-            currentQuestProgress = progress; // 현재 값 저장
-            if (questProgressText != null)
-            {
-                // 번역된 텍스트에 동적 값 삽입
-                string localizedText = GetLocalizedText("hud_quest_progress");
-                if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_quest_progress")
-                {
-                    localizedText = "퀘스트 진행"; // 번역이 없으면 기본값 사용
-                }
-                questProgressText.text = $"{localizedText}: {progress}";
-            }
-        }
+        //public void UpdateLevel(int level)
+        //{
+        //    currentLevel = level; // 현재 값 저장
+        //    if (levelText != null)
+        //    {
+        //        // 번역된 텍스트에 동적 값 삽입
+        //        string localizedText = GetLocalizedText("hud_level");
+        //        if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_level")
+        //        {
+        //            localizedText = "레벨"; // 번역이 없으면 기본값 사용
+        //        }
+        //        levelText.text = $"{localizedText}: {level}";
+        //    }
+        //}
+
+        //public void UpdateQuestProgress(string progress)
+        //{
+        //    currentQuestProgress = progress; // 현재 값 저장
+        //    if (questProgressText != null)
+        //    {
+        //        // 번역된 텍스트에 동적 값 삽입
+        //        string localizedText = GetLocalizedText("hud_quest_progress");
+        //        if (string.IsNullOrEmpty(localizedText) || localizedText == "hud_quest_progress")
+        //        {
+        //            localizedText = "퀘스트 진행"; // 번역이 없으면 기본값 사용
+        //        }
+        //        questProgressText.text = $"{localizedText}: {progress}";
+        //    }
+        //}
 
         #endregion
 
@@ -313,14 +327,18 @@ namespace KYS
             {
                 UpdateMoney(GetCurrentMoneyValue());
             }
-            if (levelText != null)
+            if (gemText != null)
             {
-                UpdateLevel(GetCurrentLevelValue());
+                UpdateGem(GetCurrentGemValue());
             }
-            if (questProgressText != null)
-            {
-                UpdateQuestProgress(GetCurrentQuestProgress());
-            }
+            //if (levelText != null)
+            //{
+            //    UpdateLevel(GetCurrentLevelValue());
+            //}
+            //if (questProgressText != null)
+            //{
+            //    UpdateQuestProgress(GetCurrentQuestProgress());
+            //}
         }
 
         /// <summary>
@@ -331,14 +349,24 @@ namespace KYS
             UpdateMoney(newMoneyValue);
         }
 
+        /// <summary>
+        /// ObservableProperty Gem 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnGemChanged(int newGemValue)
+        {
+            UpdateGem(newGemValue);
+        }
+
         // 현재 값들을 저장할 변수들
         private int currentMoney = 1000;
-        private int currentLevel = 1;
-        private string currentQuestProgress = "진행 중";
+        private int currentGem = 0;
+        //private int currentLevel = 1;
+        //private string currentQuestProgress = "진행 중";
 
         private int GetCurrentMoneyValue() => currentMoney;
-        private int GetCurrentLevelValue() => currentLevel;
-        private string GetCurrentQuestProgress() => currentQuestProgress;
+        private int GetCurrentGemValue() => currentGem;
+        //private int GetCurrentLevelValue() => currentLevel;
+        //private string GetCurrentQuestProgress() => currentQuestProgress;
 
         #endregion
 
@@ -369,7 +397,7 @@ namespace KYS
             }
         }
 
-        private void OnPropertyButtonClicked()
+        private void OnShopButtonClicked()
         {
             //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
 
@@ -383,7 +411,7 @@ namespace KYS
             var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
             foreach (var panel in existingPanels)
             {
-                if (panel is PropertyPanel)
+                if (panel is ShopPanel)
                 {
                     //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
@@ -391,7 +419,7 @@ namespace KYS
             }
 
 
-            UIManager.Instance.ShowPanelAsync<PropertyPanel>((panel) =>
+            UIManager.Instance.ShowPanelAsync<ShopPanel>((panel) =>
             {
                 if (panel != null)
                 {
@@ -406,7 +434,7 @@ namespace KYS
         }
 
 
-        private void OnHRRoomButtonClicked()
+        private void OnSkinShopButtonClicked()
         {
             //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
 
@@ -420,7 +448,7 @@ namespace KYS
             var existingPanels = UIManager.Instance.GetUIsByLayer(UILayerType.Panel);
             foreach (var panel in existingPanels)
             {
-                if (panel is HRRoomPanel)
+                if (panel is SkinShopPanel)
                 {
                     //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
@@ -429,7 +457,7 @@ namespace KYS
 
             // 인벤토리 관련 로직 추가
 
-            UIManager.Instance.ShowPanelAsync<HRRoomPanel>((panel) =>
+            UIManager.Instance.ShowPanelAsync<SkinShopPanel>((panel) =>
             {
                 if (panel != null)
                 {
@@ -851,13 +879,13 @@ namespace KYS
         [ContextMenu("일반 모드로 전환 (모든 버튼 표시)")]
         public void SwitchToNormalMode()
         {
-            if (propertyButton != null)
+            if (ShopButton != null)
             {
-                propertyButton.SetActive(true);
+                ShopButton.SetActive(true);
             }
-            if (HRRoomButton != null)
+            if (SkinShopButton != null)
             {
-                HRRoomButton.SetActive(true);
+                SkinShopButton.SetActive(true);
             }
             if (SettingButton != null)
             {
@@ -881,13 +909,13 @@ namespace KYS
         [ContextMenu("튜토리얼 모드로 전환 (일부 버튼 숨김)")]
         public void SwitchToTutorialMode()
         {
-            if (propertyButton != null)
+            if (ShopButton != null)
             {
-                propertyButton.SetActive(false);
+                ShopButton.SetActive(false);
             }
-            if (HRRoomButton != null)
+            if (SkinShopButton != null)
             {
-                HRRoomButton.SetActive(false);
+                SkinShopButton.SetActive(false);
             }
   
             if (SettingButton != null)
@@ -913,13 +941,13 @@ namespace KYS
         {
 
 
-            if (propertyButton != null)
+            if (ShopButton != null)
             {
-                propertyButton.SetActive(false);
+                ShopButton.SetActive(false);
             }
-            if (HRRoomButton != null)
+            if (SkinShopButton != null)
             {
-                HRRoomButton.SetActive(false);
+                SkinShopButton.SetActive(false);
             }
  
             if (SettingButton != null)
@@ -963,12 +991,12 @@ namespace KYS
         {
             Debug.Log($"[HUDAllPanel] UI 요소 정보:");
             Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
             Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - PropertyButton: {propertyButtonName} -> {(GetUI<UnityEngine.UI.Button>(propertyButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - HRRoomButton: {HRRooomButtonName} -> {(GetUI<UnityEngine.UI.Button>(HRRooomButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - PropertyButton: {ShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(ShopButtonName) != null ? "찾음" : "없음")}");
+            Debug.Log($"  - HRRoomButton: {SkinShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(SkinShopButtonName) != null ? "찾음" : "없음")}");
             Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
 
         #endregion

@@ -11,16 +11,19 @@ namespace KYS
     {
         [SerializeField] private string propertyTextName = "PropertyText";
         [SerializeField] private string closeButtonName = "CloseButton";
-        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] private string moneyTextName = "RunMoneyButtonText";
+        [SerializeField] private string gemTextName = "RunGemButtonText";
         [SerializeField] Transform contentParent;
         [SerializeField] GameObject contentPrefab;
 
         private TextMeshProUGUI propertyText => GetUI<TextMeshProUGUI>(propertyTextName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
+        private TextMeshProUGUI gemText => GetUI<TextMeshProUGUI>(gemTextName);
 
 
         // 추가 변수 선언
         private int currentMoney = 0;
+        private int currentGem = 0;
 
         //Dictionary<string, BuildingData> buildingDatas = new();
         Dictionary<string, PropertyContent> contentInstances = new();
@@ -54,9 +57,11 @@ namespace KYS
 
             // 초기 값 설정
             UpdateMoney(Manager.player.Data.Money.Value);
+            UpdateGem(Manager.player.Data.Gem.Value);
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+            Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             // 현재 스테이지에 판매 중인 건물들만 불러와서 생성
             string curStageID = Manager.firebase.UserData.CurStage.Value;
@@ -93,6 +98,7 @@ namespace KYS
 
             // ObservableProperty 구독 해제
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+            Manager.player?.Data?.Gem.Unsubscribe(OnGemChanged);
 
             base.Cleanup();
         }
@@ -135,12 +141,30 @@ namespace KYS
             }
         }
 
+        public void UpdateGem(int amount)
+        {
+            currentGem = amount; // 현재 값 저장
+            if (gemText != null)
+            {
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                gemText.text = FormatMoney(amount, false);
+            }
+        }
+
         /// <summary>
         /// ObservableProperty Money 값 변경 시 호출되는 콜백
         /// </summary>
         private void OnMoneyChanged(int newMoneyValue)
         {
             UpdateMoney(newMoneyValue);
+        }
+
+        /// <summary>
+        /// ObservableProperty Gem 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnGemChanged(int newGemValue)
+        {
+            UpdateGem(newGemValue);
         }
 
 

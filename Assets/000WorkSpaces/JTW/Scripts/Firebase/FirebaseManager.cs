@@ -124,6 +124,24 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         _isUserDataInit = true;
     }
+
+    public bool SetTimeDataEvent<T>(string id, string path, EventHandler<ValueChangedEventArgs> func)
+    {
+        var update = new Dictionary<string, object>();
+        update[id] = ServerValue.Timestamp;
+
+        Manager.firebase.Database.RootReference.Child(path).UpdateChildrenAsync(update).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                NetworkDisconnected();
+                return;
+            }
+
+            _database.RootReference.Child(path).ValueChanged += func;
+        });
+        return true;
+    }
     
     public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
     {

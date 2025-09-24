@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace KYS
@@ -30,7 +31,7 @@ namespace KYS
         public string ConstellationImage => Manager.data.Dialogue.Values[Id].ConstellationImage;
         public string CenterImage => Manager.data.Dialogue.Values[Id].CenterImage;
         public float CenterImageDuration => float.TryParse(Manager.data.Dialogue.Values[Id].CenterImageDuration, out float duration) ? duration : 3f;
-        public bool CenterImageInfinite => string.IsNullOrEmpty(Manager.data.Dialogue.Values[Id].CenterImageDuration) || 
+        public bool CenterImageInfinite => string.IsNullOrEmpty(Manager.data.Dialogue.Values[Id].CenterImageDuration) ||
                                           Manager.data.Dialogue.Values[Id].CenterImageDuration.ToLower() == "infinite" ||
                                           Manager.data.Dialogue.Values[Id].CenterImageDuration.ToLower() == "inf";
         public float CenterImageFadeInTime => float.TryParse(Manager.data.Dialogue.Values[Id].CenterImageFadeInTime, out float fadeIn) ? fadeIn : 0.5f;
@@ -41,11 +42,14 @@ namespace KYS
         public string ConditionValue => Manager.data.Dialogue.Values[Id].ConditionValue;
         public string EffectType => Manager.data.Dialogue.Values[Id].EffectType;
         public string EffectValue => Manager.data.Dialogue.Values[Id].EffectValue;
-        
+
         // Addressable 이미지 관련 프로퍼티
         public Sprite CharacterSprite => Manager.data.Dialogue.Values[Id].CharacterSprite;
         public bool IsCharacterImageLoaded => Manager.data.Dialogue.Values[Id].IsImageLoaded;
         public bool IsCharacterImageLoading => Manager.data.Dialogue.Values[Id].IsImageLoading;
+
+        // NPC 이미지 관련 프로퍼티 (NPC ID로 직접 접근)
+        public Sprite NpcSprite => GetNpcSpriteDirect();
 
         // Firebase에서 관리하는 동적 데이터
         public FirebaseProperty<bool> IsCompleted; // 대화 완료 여부
@@ -67,7 +71,7 @@ namespace KYS
         /// <summary>
         /// 선택지가 있는 노드인지 확인
         /// </summary>
-        public bool HasChoices => !string.IsNullOrEmpty(ChoiceText1) || !string.IsNullOrEmpty(ChoiceText2) || 
+        public bool HasChoices => !string.IsNullOrEmpty(ChoiceText1) || !string.IsNullOrEmpty(ChoiceText2) ||
                                   !string.IsNullOrEmpty(ChoiceText3) || !string.IsNullOrEmpty(ChoiceText4);
 
         /// <summary>
@@ -123,16 +127,16 @@ namespace KYS
         public string GetLocalizedSpeaker(SystemLanguage language = SystemLanguage.Korean)
         {
             var csvData = Manager.data.Dialogue.Values[Id];
-            
+
             // 1. 직접 번역이 있으면 사용 (동적 방식)
             string localizedSpeaker = GetLocalizedTextByLanguage(csvData, "Speaker", language);
             Debug.Log($"[DialogueData] GetLocalizedSpeaker - ID: {Id}, 언어: {language}, 로컬라이즈 결과: '{localizedSpeaker}', 기본 Speaker: '{csvData.Speaker}'");
-            
+
             if (!string.IsNullOrEmpty(localizedSpeaker))
             {
                 return localizedSpeaker;
             }
-            
+
             // 2. 기본 Speaker 반환
             return csvData.Speaker;
         }
@@ -143,14 +147,14 @@ namespace KYS
         public string GetLocalizedDialogueText(SystemLanguage language = SystemLanguage.Korean)
         {
             var csvData = Manager.data.Dialogue.Values[Id];
-            
+
             // 1. 직접 번역이 있으면 사용 (동적 방식)
             string localizedText = GetLocalizedTextByLanguage(csvData, "DialogueText", language);
             if (!string.IsNullOrEmpty(localizedText))
             {
                 return localizedText;
             }
-            
+
             // 2. 기본 텍스트 반환
             return csvData.DialogueText;
         }
@@ -161,7 +165,7 @@ namespace KYS
         private string GetLocalizedTextByLanguage(DialogueDataCsv csvData, string baseFieldName, SystemLanguage language)
         {
             string languageSuffix = GetLanguageSuffix(language);
-            if (string.IsNullOrEmpty(languageSuffix)) 
+            if (string.IsNullOrEmpty(languageSuffix))
             {
                 Debug.Log($"[DialogueData] GetLocalizedTextByLanguage - 언어 접미사 없음: {language}");
                 return null;
@@ -170,9 +174,9 @@ namespace KYS
             // 리플렉션을 사용하여 동적으로 필드 접근
             var fieldName = $"{baseFieldName}_{languageSuffix}";
             var field = csvData.GetType().GetField(fieldName);
-            
+
             Debug.Log($"[DialogueData] GetLocalizedTextByLanguage - 필드명: '{fieldName}', 필드 존재: {field != null}");
-            
+
             if (field != null)
             {
                 string value = field.GetValue(csvData) as string;
@@ -182,7 +186,7 @@ namespace KYS
                     return value;
                 }
             }
-            
+
             return null;
         }
 
@@ -238,14 +242,14 @@ namespace KYS
             {
                 return localizedText;
             }
-            
+
             // 2. 기본 텍스트 가져오기 (ChoiceTextX 필드)
             string baseFieldName = $"ChoiceText{choiceIndex}";
             var baseField = csvData.GetType().GetField(baseFieldName);
             if (baseField != null)
             {
                 string baseText = baseField.GetValue(csvData) as string;
-                
+
                 // 3. 기본 텍스트가 있으면 LocalizationManager로 번역 시도
                 if (!string.IsNullOrEmpty(baseText) && LocalizationManager.Instance != null)
                 {
@@ -253,15 +257,42 @@ namespace KYS
                     // 번역이 성공했으면 번역된 텍스트 반환, 실패했으면 기본 텍스트 반환
                     return (translatedText != baseText) ? translatedText : baseText;
                 }
-                
+
                 // 4. 기본 텍스트가 있으면 반환
                 if (!string.IsNullOrEmpty(baseText))
                 {
                     return baseText;
                 }
             }
-            
+
             // 5. 모든 방법이 실패하면 null 반환
+            return null;
+        }
+
+        /// <summary>
+        /// NPC 스프라이트 가져오기 (간단한 직접 접근)
+        /// 1. CharacterImage 키로 Dialogue 캐시에서 시도
+        /// 2. NpcId로 NPC 데이터에서 직접 가져오기
+        /// </summary>
+        private Sprite GetNpcSpriteDirect()
+        {
+            // 1. CharacterImage 키로 Dialogue 캐시에서 시도
+            if (!string.IsNullOrEmpty(CharacterImage))
+            {
+                Sprite dialogueSprite = Manager.data.GetCachedCharacterImage(CharacterImage);
+                if (dialogueSprite != null)
+                {
+                    return dialogueSprite;
+                }
+            }
+
+            // 2. NpcId로 NPC 데이터에서 직접 가져오기
+            if (!string.IsNullOrEmpty(NpcId))
+            {
+                var npcData = Manager.data.Npc?.Values?.Values?.FirstOrDefault(n => n.NpcID == NpcId);
+                return npcData?.Sprite_Default; // 직접 접근
+            }
+
             return null;
         }
 
@@ -330,7 +361,7 @@ namespace KYS
         public string ConditionValue;
         public string EffectType;
         public string EffectValue;
-        
+
         // Addressable 이미지 관련
         [System.NonSerialized] public Sprite CharacterSprite; // 로드된 스프라이트
         [System.NonSerialized] public bool IsImageLoaded = false; // 이미지 로드 상태

@@ -20,8 +20,9 @@ public class LoadingCanvas_Title : KYS.BaseUI
     {
         WaitForSeconds delay = new WaitForSeconds(1f);
 
-        _loadingText.text = "다운로드 받을 파일이 있는지 확인중...";
         yield return new WaitUntil(() => Manager.game.initialized || Manager.game.inDownloading);
+        yield return new WaitUntil(() => Manager.localization != null);
+        _loadingText.text = GetLocalizedText("ui_titlescene_download_check");
 
         if (Manager.game.initialized)
         {
@@ -31,7 +32,7 @@ public class LoadingCanvas_Title : KYS.BaseUI
             yield break;
         }
 
-        _loadingText.text = "다운로드 중..";
+        _loadingText.text = GetLocalizedText("ui_titlescene_downloading");
         while (!Manager.game.initialized)
         {
             _slider.value = Manager.game.downloadProgress.Value;

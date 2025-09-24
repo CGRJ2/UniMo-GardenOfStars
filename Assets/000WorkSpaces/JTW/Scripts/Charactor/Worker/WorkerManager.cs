@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WorkerManager : MonoBehaviour
 {
@@ -28,8 +29,12 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.data.Worker != null);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
-        yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
+
+        int x = 0;
+        int z = 0;
 
         foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
@@ -37,15 +42,27 @@ public class WorkerManager : MonoBehaviour
 
             if (worker == null) continue;
 
-            InstantiateWorker(worker);
+            InstantiateWorker(worker, new Vector3(-x, 0, -z));
+
+            z++;
+            if(z > 2)
+            {
+                z = 0;
+                x++;
+            }
         }
 
-        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InstantiateWorker);
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
     }
 
     private void OnDestroy()
     {
-        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InstantiateWorker);
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InitWorker);
+    }
+
+    private void InitWorker(WorkerData worker)
+    {
+        InstantiateWorker(worker);
     }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
@@ -192,9 +209,9 @@ public class WorkerManager : MonoBehaviour
         return false;
     }
 
-    public void InstantiateWorker(WorkerData data)
+    public void InstantiateWorker(WorkerData data, Vector3 offset = default)
     {
-        WorkerRuntimeData worker = Instantiate(_workerPrefab).GetComponent<WorkerRuntimeData>();
+        WorkerRuntimeData worker = Instantiate(_workerPrefab, Manager.buildings.workerBuilding.GetSpawnPos() + offset, Quaternion.identity).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);

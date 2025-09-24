@@ -618,6 +618,7 @@ namespace KYS
                     {
                         Debug.Log("이미 해당 스테이지에 위치함");
                         // 현재 위치라도 패널은 닫기
+                        Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
                         Manager.ui.ClosePanel();
                         return;
                     }

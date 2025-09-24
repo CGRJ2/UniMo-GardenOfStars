@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEngine.Rendering.DebugUI;
 
 [System.Serializable]
 public class FirebaseProperty<T> : FirebaseData
@@ -114,6 +115,19 @@ public class FirebaseProperty<T> : FirebaseData
         Notify();
 
         IsInUpdate = false;
+    }
+
+    public void SaveCurTime()
+    {
+        if (!_isFirebaseConnected)
+        {
+            _isFirebaseConnected = Manager.firebase.SetTimeDataEvent<T>(Id, Path, OnFirebaseChanged);
+        }
+
+        var update = new Dictionary<string, object>();
+        update[Id] = ServerValue.Timestamp;
+
+        Manager.firebase.Database.RootReference.Child(Path).UpdateChildrenAsync(update);
     }
 
     public void Subscribe(UnityAction<T> action)
