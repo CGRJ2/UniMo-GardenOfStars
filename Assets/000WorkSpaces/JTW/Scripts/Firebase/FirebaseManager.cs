@@ -125,12 +125,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _isUserDataInit = true;
     }
 
-    public bool SetTimeDataEvent<T>(string id, string path, EventHandler<ValueChangedEventArgs> func)
+    public bool SetTimeDataEvent<T>(string id, string path, string parentPath, EventHandler<ValueChangedEventArgs> func)
     {
         var update = new Dictionary<string, object>();
         update[id] = ServerValue.Timestamp;
 
-        Manager.firebase.Database.RootReference.Child(path).UpdateChildrenAsync(update).ContinueWithOnMainThread(task =>
+        Manager.firebase.Database.RootReference.Child(parentPath).UpdateChildrenAsync(update).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
