@@ -121,7 +121,7 @@ namespace KYS
                 _upgradeSpeedText.text = Manager.data.CharacterLv
                     .Values[(_worker.MoveSpeedLv.Value + 1).ToString()].Speed.ToString();
 
-                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                float Multi = Manager.data.UpgradeMulti.Values[_worker.Id].Multi;
                 int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
 
                 _upgradeSpeedCost = (int)(Multi * cost);
@@ -149,7 +149,7 @@ namespace KYS
                 _upgradeCapacityText.text = Manager.data.CharacterLv
                     .Values[(_worker.MaxCapacityLv.Value + 1).ToString()].Capacity.ToString();
 
-                float Multi = Manager.data.UpgradeMulti.Values[$"{_worker.Id}_{Manager.firebase.UserData.CurStage.Value}"].Multi;
+                float Multi = Manager.data.UpgradeMulti.Values[_worker.Id].Multi;
                 int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
 
                 _upgradeCapacityCost = (int)(Multi * cost);

@@ -40,7 +40,7 @@ public class WorkerPanel : KYS.BaseUI
     private int _employCost;
     private int _employBMCost;
 
-    private int QuestOrder => Manager.data.WorkerEmployCost.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
+    private int QuestOrder => Manager.data.WorkerEmployCost.Values[_workerKey].QuestOrder;
 
     private bool _isBMCost;
 
