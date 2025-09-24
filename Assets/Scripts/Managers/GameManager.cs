@@ -149,6 +149,7 @@ public class StageDataCsv : IUsableId
     public string BuildingIDs;
 
     public int StageInflationRate;
+    public int StageAutoReward;
 
 
     public string GetId()
@@ -228,6 +229,7 @@ public partial class DataManager
 
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
             int.TryParse(words[dict["InflationRate"]], out stage.StageInflationRate);
+            int.TryParse(words[dict["StageAutoReward"]], out stage.StageAutoReward);
 
             stage.NextStageId = words[dict["NextStageId"]];
 

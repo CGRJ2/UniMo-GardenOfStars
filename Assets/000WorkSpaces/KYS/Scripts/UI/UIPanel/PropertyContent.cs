@@ -45,7 +45,6 @@ namespace KYS
 
 
         [Header("Build Settings")]
-        [SerializeField] private string buildingName = "";
         private string buildingID;
         private int buildingCost = 0;
         private BuildingData currentBuildingData; // 현재 건물 데이터 저장
@@ -69,6 +68,18 @@ namespace KYS
             {
                 Debug.LogError($"[PropertyContent] buyButton을 찾을 수 없습니다: {buildBuyButtonName}");
             }
+        }
+
+        private void OnEnable()
+        {
+            int count = 0;
+            foreach (PlaceTileData tileData in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
+            {
+                // 해당 건물이 설치되어 있다면 개수 ++
+                if (buildingID == tileData.BuildingID.Value) count++;
+            }
+
+            //설치된 건물 개수.text = count;
         }
 
         // 그냥 구매버튼 & First구매버튼 둘 다 이 함수를 사용하도록 바꿨습니다.
@@ -214,7 +225,6 @@ namespace KYS
         {
             string curStageID = Manager.firebase.UserData.CurStage.Value;
             buildingID = buildingData.ID;
-            buildingName = buildingData.Name;
             buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
 
