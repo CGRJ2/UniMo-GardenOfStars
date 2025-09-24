@@ -107,6 +107,16 @@ public class FirebaseProperty<T> : FirebaseData
             double value = (double)args.Snapshot.Value;
             _value = (T)(object)(float)value;
         }
+        else if (typeof(T) == typeof(long))
+        {
+            long value = (long)args.Snapshot.Value;
+            _value = (T)(object)(long)value;
+        }
+        else if (typeof(T) == typeof(double))
+        {
+            double value = (double)args.Snapshot.Value;
+            _value = (T)(object)(double)value;
+        }
         else
         {
             _value = (T)args.Snapshot.Value;
