@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
-using static UnityEngine.Rendering.DebugUI;
 
 public class StageManager : MonoBehaviour
 {
@@ -104,7 +103,7 @@ public class StageManager : MonoBehaviour
         //foreach (var value in npc.QuestList.List)
 
         bool allQuestCleared = true;
-        for (int i = 0; i < npc.QuestList.List.Count; i ++)
+        for (int i = 0; i < npc.QuestList.List.Count; i++)
         {
             //if (Manager.data.Quest.Values[value.QuestId].)
             var value = npc.QuestList.List[i];
@@ -119,7 +118,7 @@ public class StageManager : MonoBehaviour
         }
 
         // 전부 다 클리어 된 상태일 때 => 마지막 퀘스트만 넣어주기
-        if (allQuestCleared) 
+        if (allQuestCleared)
         {
             npc.CurrentQuestID.Value = npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId;
             Debug.LogWarning($"현재 스테이지 내의 모든 퀘스트를 완료하여 마지막 퀘스트ID가 설정됨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
@@ -152,36 +151,58 @@ public class StageManager : MonoBehaviour
         return finalProdID;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            CheckStageExitTime(Manager.firebase.UserData.CurStage.Value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            GetStageAutoEarnTime(Manager.firebase.UserData.CurStage.Value);
+        }
+    }
+
+    // 스테이지 클리어 기준
+    // 최대 누적 2시간 => 최대보상
 
     // 현재 스테이지에 쌓인 재화 반환 (시간 * 건물 수(임시)로 계산)
-    public void CheckStageExitTime(out double diffTime)
+    public void CheckStageExitTime(string stageID)
     {
         var stageData = Manager.firebase.UserData.CurStageData;
 
-        StageExitTimeData data = Manager.firebase.UserData.StageExitTimeList.Get(stageData.Id);
+        // 현재 시간 저장
+        Manager.firebase.UserData.StageList.Get(stageID).StageLastExitTime.SaveCurTime();
+    }
 
-        if (data == null)
-        {
-            Manager.firebase.UserData.StageExitTimeList.Add(stageData.Id);
-            diffTime = 0;
-            return;
-        }
+    public double GetStageAutoEarnTime(string stageID)
+    {
+        var stageData = Manager.firebase.UserData.CurStageData;
+        long t = Manager.firebase.UserData.StageList.Get(stageID).StageLastExitTime.Value;
 
-        DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(data.LastTime.Value).UtcDateTime;
-        
+        DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(t).UtcDateTime;
+
         DateTime lastClaimKst = lastClaimUtc.AddHours(9);
         DateTime nowKst = DateTime.UtcNow.AddHours(9);
 
         TimeSpan diff = nowKst - lastClaimKst;
-        
+
         // 초 단위로 변환
         double seconds = diff.TotalSeconds;
-        diffTime = seconds;
+        //Debug.LogError($"DB:{t}, diff:{seconds}");
+        return seconds;
+    }
 
-        var update = new Dictionary<string, object>();
-        update[stageData.Id] = Firebase.Database.ServerValue.Timestamp;
+    public void UpdateAutoReward(string stageID)
+    {
+        int fullReward = Manager.data.Stage.Values[stageID].StageAutoReward;
 
-        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.StageExitTimeList.Path).UpdateChildrenAsync(update);
+        float rewardPercent = Mathf.Clamp01((int)GetStageAutoEarnTime(stageID) / 7200f);    // 최대보상 => 2시간
+
+        int finalReward = (int)(fullReward * rewardPercent);
+
+        Debug.LogError($"방치 시간:{GetStageAutoEarnTime(stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
     }
 }
 
