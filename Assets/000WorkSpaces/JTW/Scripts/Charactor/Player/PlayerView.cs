@@ -67,11 +67,13 @@ public class PlayerView : MonoBehaviour
     {
         _avatarAnimator = animator;
         _avatarAnimator.runtimeAnimatorController = _avatarController;
+        _avatarAnimator.enabled = true;
     }
 
     public void SetEquipAnimator(Animator animator)
     {
         _equipAnimator = animator;
         _equipAnimator.runtimeAnimatorController = _equipController;
+        _equipAnimator.enabled = true;
     }
 }
