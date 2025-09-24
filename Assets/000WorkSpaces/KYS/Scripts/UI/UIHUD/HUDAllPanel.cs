@@ -16,6 +16,12 @@ namespace KYS
         [SerializeField] private string moneyButtonName = "MoneyButton";
         [SerializeField] private string gemButtonName = "GemButton";
         [SerializeField] private string gemTextName = "RunGemButtonText";
+        [SerializeField] private string runDetailMoneyTextName = "RunDetailMoneyText";
+        [SerializeField] private string runDetailGemTextName = "RunDetailGemText";
+        [SerializeField] private string assetToggleName = "AssetToggle";
+        [SerializeField] private string assetDetailName = "AssetDetail";
+        [SerializeField] private string assetToggleBackgroundName = "AssetToggleBackground"; // AssetToggle의 배경 오브젝트
+        [SerializeField] private string assetToggleCheckmarkName = "AssetToggleCheckmark"; // AssetToggle의 체크마크 오브젝트
         [SerializeField] private string settingButtonName = "SettingButton";
         [SerializeField] private string ShopButtonName = "ShopButton";
         [SerializeField] private string SkinShopButtonName = "SkinShopButton";
@@ -33,6 +39,12 @@ namespace KYS
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
         private TextMeshProUGUI gemText => GetUI<TextMeshProUGUI>(gemTextName);
+        private TextMeshProUGUI runDetailMoneyText => GetUI<TextMeshProUGUI>(runDetailMoneyTextName);
+        private TextMeshProUGUI runDetailGemText => GetUI<TextMeshProUGUI>(runDetailGemTextName);
+        private GameObject assetToggle => GetUI(assetToggleName);
+        private GameObject assetDetail => GetUI(assetDetailName);
+        private GameObject assetToggleBackground => GetUI(assetToggleBackgroundName);
+        private GameObject assetToggleCheckmark => GetUI(assetToggleCheckmarkName);
 
         private GameObject ShopButton => GetUI(ShopButtonName);
         private GameObject SkinShopButton => GetUI(SkinShopButtonName);
@@ -122,6 +134,17 @@ namespace KYS
             // 초기 값 설정
             UpdateMoney(Manager.player.Data.Money.Value);
             UpdateGem(Manager.player.Data.Gem.Value);
+            UpdateRunDetailMoney(Manager.player.Data.Money.Value);
+            UpdateRunDetailGem(Manager.player.Data.Gem.Value);
+
+            // AssetDetail 초기 상태 설정
+            if (assetDetail != null)
+            {
+                assetDetail.SetActive(isAssetDetailVisible);
+            }
+            
+            // 토글 버튼의 초기 시각적 상태 설정
+            UpdateToggleVisualState();
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
@@ -235,6 +258,13 @@ namespace KYS
                 StoryPanelEventHandler.Click += OnStoryPanelButtonClicked;
             }
 
+            // AssetToggle 설정 - AssetDetail 온오프 기능
+            var assetToggleEventHandler = GetEventWithSFX(assetToggleName, "SFX_ButtonClick");
+            if (assetToggleEventHandler != null)
+            {
+                assetToggleEventHandler.Click += (data) => OnAssetToggleClicked();
+            }
+
 
             // CompossButton 설정 - 누르고 있을 때 기능 (커스텀 효과음)
             var compossEventHandler = GetEvent(compossButtonName);
@@ -286,6 +316,24 @@ namespace KYS
             }
         }
 
+        public void UpdateRunDetailMoney(int amount)
+        {
+            if (runDetailMoneyText != null)
+            {
+                // BaseUI의 콤마 포맷팅 사용 (100,000 형식)
+                runDetailMoneyText.text = FormatMoneyWithCommas(amount);
+            }
+        }
+
+        public void UpdateRunDetailGem(int amount)
+        {
+            if (runDetailGemText != null)
+            {
+                // BaseUI의 콤마 포맷팅 사용 (100,000 형식)
+                runDetailGemText.text = FormatMoneyWithCommas(amount);
+            }
+        }
+
         //public void UpdateLevel(int level)
         //{
         //    currentLevel = level; // 현재 값 저장
@@ -331,6 +379,14 @@ namespace KYS
             {
                 UpdateGem(GetCurrentGemValue());
             }
+            if (runDetailMoneyText != null)
+            {
+                UpdateRunDetailMoney(GetCurrentMoneyValue());
+            }
+            if (runDetailGemText != null)
+            {
+                UpdateRunDetailGem(GetCurrentGemValue());
+            }
             //if (levelText != null)
             //{
             //    UpdateLevel(GetCurrentLevelValue());
@@ -347,6 +403,7 @@ namespace KYS
         private void OnMoneyChanged(int newMoneyValue)
         {
             UpdateMoney(newMoneyValue);
+            UpdateRunDetailMoney(newMoneyValue);
         }
 
         /// <summary>
@@ -355,6 +412,7 @@ namespace KYS
         private void OnGemChanged(int newGemValue)
         {
             UpdateGem(newGemValue);
+            UpdateRunDetailGem(newGemValue);
         }
 
         // 현재 값들을 저장할 변수들
@@ -362,6 +420,9 @@ namespace KYS
         private int currentGem = 0;
         //private int currentLevel = 1;
         //private string currentQuestProgress = "진행 중";
+
+        // AssetDetail 토글 상태 관리
+        private bool isAssetDetailVisible = false;
 
         private int GetCurrentMoneyValue() => currentMoney;
         private int GetCurrentGemValue() => currentGem;
@@ -540,7 +601,67 @@ namespace KYS
             });
         }
 
+        private void OnAssetToggleClicked()
+        {
+            Debug.Log("[HUDAllPanel] AssetToggle 클릭됨");
+            
+            // AssetDetail 토글
+            ToggleAssetDetail();
+        }
 
+        /// <summary>
+        /// AssetDetail 표시/숨김 토글
+        /// </summary>
+        private void ToggleAssetDetail()
+        {
+            isAssetDetailVisible = !isAssetDetailVisible;
+            
+            // AssetDetail 토글
+            if (assetDetail != null)
+            {
+                assetDetail.SetActive(isAssetDetailVisible);
+            }
+            
+            // 토글 버튼의 시각적 상태 변경
+            UpdateToggleVisualState();
+            
+            Debug.Log($"[HUDAllPanel] AssetDetail {(isAssetDetailVisible ? "표시" : "숨김")}");
+        }
+
+        /// <summary>
+        /// 토글 버튼의 시각적 상태 업데이트
+        /// </summary>
+        private void UpdateToggleVisualState()
+        {
+            // AssetDetail이 표시될 때: 체크마크 표시, 배경 숨김
+            // AssetDetail이 숨겨질 때: 체크마크 숨김, 배경 표시
+            if (assetToggleCheckmark != null)
+            {
+                assetToggleCheckmark.SetActive(isAssetDetailVisible);
+                
+                // 체크마크가 활성화되면 최상위로 이동
+                if (isAssetDetailVisible)
+                {
+                    assetToggleCheckmark.transform.SetAsLastSibling();
+                }
+                
+                Debug.Log($"[HUDAllPanel] 체크마크 {(isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleCheckmark.name}, 활성상태: {assetToggleCheckmark.activeInHierarchy}");
+            }
+            else
+            {
+                Debug.LogWarning("[HUDAllPanel] assetToggleCheckmark를 찾을 수 없습니다.");
+            }
+            
+            if (assetToggleBackground != null)
+            {
+                assetToggleBackground.SetActive(!isAssetDetailVisible);
+                Debug.Log($"[HUDAllPanel] 배경 {(!isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleBackground.name}, 활성상태: {assetToggleBackground.activeInHierarchy}");
+            }
+            else
+            {
+                Debug.LogWarning("[HUDAllPanel] assetToggleBackground를 찾을 수 없습니다.");
+            }
+        }
 
         #endregion
 
