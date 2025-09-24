@@ -121,7 +121,7 @@ public class FirebaseProperty<T> : FirebaseData
     {
         if (!_isFirebaseConnected)
         {
-            _isFirebaseConnected = Manager.firebase.SetTimeDataEvent<T>(Id, Path, OnFirebaseChanged);
+            _isFirebaseConnected = Manager.firebase.SetTimeDataEvent<T>(Id, ParentPath, OnFirebaseChanged);
         }
 
         var update = new Dictionary<string, object>();
