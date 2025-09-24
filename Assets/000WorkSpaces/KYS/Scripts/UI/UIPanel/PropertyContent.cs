@@ -24,6 +24,7 @@ namespace KYS
         [SerializeField] private string runUnlockContentName = "RunUnlockContentText";
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
+        [SerializeField] private string RunBuilidingCountTextName = "RunBuildingCountText";
 
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
@@ -42,7 +43,7 @@ namespace KYS
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
         private GameObject ItemContent2 => GetUI(ItemContent2Name);
         private Button UpgradeButton => GetUI<Button>(UpgradeButtonName);
-
+        private TextMeshProUGUI RunBuildingCountText => GetUI<TextMeshProUGUI>(RunBuilidingCountTextName);
 
         [Header("Build Settings")]
         private string buildingID;
