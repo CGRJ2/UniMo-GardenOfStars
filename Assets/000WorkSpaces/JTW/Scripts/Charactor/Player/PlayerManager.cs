@@ -62,7 +62,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
         GameObject skin = Manager.data.EquipSkin.Values[id].Skin;
 
-        _equipSkin = Instantiate(skin, transform);
+        _equipSkin = Instantiate(skin, PlayerObj.transform);
         _playerView.SetEquipAnimator(_equipSkin.GetComponent<Animator>());
     }
 }
