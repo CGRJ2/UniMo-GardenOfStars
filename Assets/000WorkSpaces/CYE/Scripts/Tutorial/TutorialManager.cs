@@ -142,8 +142,8 @@ public class TutorialManager : MonoBehaviour
                 foreach (GameObject fx in _FX_Highlighteds)
                 {
                     _Pool_FX_Highlighted.ReturnPooledObj(fx);
-                    _FX_Highlighteds.Remove(fx);
                 }
+                _FX_Highlighteds = new();
             }
         }
 
@@ -165,7 +165,7 @@ public class TutorialManager : MonoBehaviour
         Manager.firebase.UserData.TutorialSequence.Value += 1;
 
         // 강조 효과 제거
-        //PlayHighLightFX(null);
+        PlayHighLightFX(null);
     }
 
     private void TutorialSequence00()
