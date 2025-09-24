@@ -127,7 +127,7 @@ public class FirebaseProperty<T> : FirebaseData
         var update = new Dictionary<string, object>();
         update[Id] = ServerValue.Timestamp;
 
-        Manager.firebase.Database.RootReference.Child(Path).UpdateChildrenAsync(update);
+        Manager.firebase.Database.RootReference.Child(ParentPath).UpdateChildrenAsync(update);
     }
 
     public void Subscribe(UnityAction<T> action)
