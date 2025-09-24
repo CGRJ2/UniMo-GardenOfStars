@@ -10,6 +10,7 @@ using UnityEngine.Events;
 public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 {
     private List<T> _list = new();
+    private List<string> _keyList = new();
 
     private Func<string, string, T> _factory;
 
@@ -52,8 +53,11 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
 
     public void Add(string Id)
     {
+        if (_keyList.Contains(Id)) return;
+
         Manager.firebase.SaveData($"{Path}/{Id}", true);
         ListInitCount++;
+        _keyList.Add(Id);
     }
 
     public T Get(string id)
