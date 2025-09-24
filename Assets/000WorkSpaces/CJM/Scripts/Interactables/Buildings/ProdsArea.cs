@@ -115,6 +115,9 @@ public class ProdsArea : InteractableBase, IWorkStation
                 // 화살표 활성화
                 TutorialManager.Instance.arrows[1].SetActive(false);
                 TutorialManager.Instance.arrows[2].SetActive(true);
+
+                // 강조효과 추가
+                TutorialManager.Instance.PlayHighLightFX(TutorialManager.Instance.tutorialNPC.transform, true);
             }
         }
     }

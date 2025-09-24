@@ -134,5 +134,21 @@ namespace KYS
         {
             Debug.Log($"[PlayerUpgradePanel] CloseButton: {closeButton != null}");
         }
+
+        private void OnEnable()
+        {
+            if (TutorialManager.Instance != null)
+            {
+                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(true);
+                TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(false);
+            }
+        }
+        private void OnDisable()
+        {
+            if (TutorialManager.Instance != null)
+            {
+                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(false);
+            }
+        }
     }
 }
