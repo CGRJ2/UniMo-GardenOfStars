@@ -19,6 +19,8 @@ public class NpcInteractAreaUI : MonoBehaviour
         if (stageID == "Tutorial")
         {
             Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
+            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
+            TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(true);
             return;
         }
 

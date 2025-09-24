@@ -5,8 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static UnityEngine.Rendering.DebugUI;
-
 public class TutorialManager : MonoBehaviour
 {
     private static TutorialManager _instance;
@@ -47,6 +45,8 @@ public class TutorialManager : MonoBehaviour
 
     [Header("튜토리얼 #9 설정")]
     [SerializeField] NpcInteractAreaUI talk_Button;
+    public GameObject handPointer_PlayerUpradeBtn;
+    public GameObject handPointer_InPlayerUpradePanel;
 
     [Header("튜토리얼 #11 설정")]
     [SerializeField] GameObject portal;
@@ -54,7 +54,7 @@ public class TutorialManager : MonoBehaviour
 
     // 강조 FX 효과
     ObjectPool _Pool_FX_Highlighted;
-    GameObject _FX_Highlighted;
+    List<GameObject> _FX_Highlighteds = new();
 
     private void Awake() => StartCoroutine(WaitAndInit());
     IEnumerator WaitAndInit()
@@ -132,6 +132,28 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    public void PlayHighLightFX(Transform target, bool isMultipleAdd = false)
+    {
+        if (!isMultipleAdd)
+        {
+            // 기존 실행 중이던 강조 효과 제거
+            if (_FX_Highlighteds.Count > 0)
+            {
+                foreach (GameObject fx in _FX_Highlighteds)
+                {
+                    _Pool_FX_Highlighted.ReturnPooledObj(fx);
+                    _FX_Highlighteds.Remove(fx);
+                }
+            }
+        }
+
+        // 타겟이 없으면 그냥 효과 제거만 함
+        if (target == null) return;
+
+        // 효과 추가 활성화
+        _FX_Highlighteds.Add(_Pool_FX_Highlighted.DisposePooledObj(target.position, target.rotation));
+    }
+
     // Sequence 마지막에 대화 종료를 기점으로 진행도 저장
     public void SequenceEnd(DialogueData dialogueData = null)
     {
@@ -143,8 +165,7 @@ public class TutorialManager : MonoBehaviour
         Manager.firebase.UserData.TutorialSequence.Value += 1;
 
         // 강조 효과 제거
-        if (_FX_Highlighted != null)
-            _Pool_FX_Highlighted.ReturnPooledObj(_FX_Highlighted);
+        //PlayHighLightFX(null);
     }
 
     private void TutorialSequence00()
@@ -169,23 +190,26 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
-
+        
         // 플레이어 포커싱 카메라 전환 완료 시,
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_move", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
+            // 플레이어 조작 가능상태로 전환
+            Manager.player.IsControl = true;
+
             StartCoroutine(Sequence00_Move());
         },
         (msg) =>
         {
+            // 플레이어 조작 불가능상태로 전환
+            Manager.player.IsControl = false;
+
             Debug.LogWarning("팝업 열었을 때 동시에 손가락모양으로 조이스틱 움직이는 시늉 해주기");
         });
     }
     IEnumerator Sequence00_Move()
     {
-        // 플레이어 조작 가능상태로 전환
-        Manager.player.IsControl = true;
-
         //Debug.LogWarning(Manager.player.pc.Data.IsMove.Value);
         // 플레이어의 조작을 감지하면, 몇 초 후 NPC로 이동하라는 팝업 활성화
         yield return new WaitUntil(() => Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IsMove.Value);
@@ -194,12 +218,19 @@ public class TutorialManager : MonoBehaviour
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_interact", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
-            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(tutorialNPC.transform.position, tutorialNPC.transform.rotation);
+            
+            // NPC 강조효과 실행
+            PlayHighLightFX(tutorialNPC.transform);
+
+            // 플레이어 조작 가능상태로 전환
+            Manager.player.IsControl = true;
         },
         (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때 NPC 방향 화살표 발판 보여주기");
             arrows[0].SetActive(true);
+            // 플레이어 조작 불가능상태로 전환
+            Manager.player.IsControl = false;
         });
 
         // 이후에 NPC 영역에 접근하면 대화 진행 후, 대화 종료 시 Sequence00 완료, Sequence01로 전환
@@ -265,8 +296,13 @@ public class TutorialManager : MonoBehaviour
                 Debug.LogWarning("팝업 닫음 콜백 함수 실행");
                 Debug.LogWarning("마지막 팝업 닫을 때 생산 건물 방향 화살표 발판 보여주기");
                 
+                // NPC -> 생산 건물 방향 화살표
                 arrows[1].SetActive(true);
             });
+        }, (popUpOn) =>
+        {
+            //생산 건물 강조효과
+            PlayHighLightFX(prodsArea.transform);
         });
     }
 
@@ -275,7 +311,6 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.LogWarning("시퀀스02 시작");
         Manager.camera.cam_PlayerFocus.Priority = 11;
-
 
         // 플레이어 조작 막기
         Manager.player.IsControl = false;
@@ -299,7 +334,7 @@ public class TutorialManager : MonoBehaviour
             tutorialNPC.ShowQuestTiles();
 
             // 부동산 강조 효과 실행
-            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.buildingSeller.transform.position, transform.rotation);
+            PlayHighLightFX(Manager.buildings.buildingSeller.transform);
         });
     }
 
@@ -463,6 +498,9 @@ public class TutorialManager : MonoBehaviour
         // 퀘스트 절반 이상 진행했을 때,
         yield return new WaitUntil(() => (currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value >= currentQuest.QuestContentList.List[0].CurrentTargetCount / 2));
 
+        // 퀘스트 타일 숨기기
+        tutorialNPC.HideQuestTiles();
+
         // 플레이어 조작 불가능상태로 전환
         Manager.player.IsControl = false;
 
@@ -486,7 +524,26 @@ public class TutorialManager : MonoBehaviour
 
             // 플레이어 조작 가능상태로 전환
             Manager.player.IsControl = true;
+
+            StartCoroutine(Sequence05_UpgradeCheck());
+
+            // 부동산쪽으로 다시 유도하는 표기, 강조효과 실행
         });
+    }
+
+    IEnumerator Sequence05_UpgradeCheck()
+    {
+        // 수확 건물을 강화해? 생산 건물을 강화해?
+
+        // 여기서 퀘스트 발판을 막고, 업그레이드를 해야 퀘스트 발판이 다시 생기게 만들어서 업그레이드를 강제해야할 듯
+        
+        string[] buildingIDs = Manager.data.Stage.Values["Tutorial"].GetBuildingIdList();
+        string buildingID = buildingIDs[0];
+        UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingID);
+        
+        yield return new WaitUntil(() => upgradeData.level_ProdTime > 0); // 생산시간 업그레이드 한 번 했을 때 진행
+
+        tutorialNPC.ShowQuestTiles();
     }
 
     public void TutorialSequence06()
@@ -545,7 +602,7 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
-            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.workerBuilding.transform.position, transform.rotation);
+            PlayHighLightFX(Manager.buildings.workerBuilding.transform);
 
             // 인력사무소 상호작용 발판 활성화
             Manager.buildings.workerBuilding.ShowWaitingTile();
@@ -620,7 +677,8 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 인력사무소 빛나는 효과");
-            _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(Manager.buildings.workerBuilding.transform.position, transform.rotation);
+            PlayHighLightFX(Manager.buildings.workerBuilding.transform);
+
         });
     }
 
@@ -673,7 +731,7 @@ public class TutorialManager : MonoBehaviour
             Manager.firebase.UserData.CurStageData.WorkerList.List[0].MoveSpeedLv.Value > 1);
 
         // 업그레이드 패널 닫기
-        Manager.ui.ClosePanel();
+        Manager.ui.CloseAllPanels();
 
         // 전당포 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[8].Priority = 11;
@@ -727,7 +785,7 @@ public class TutorialManager : MonoBehaviour
 
         // 석상 빛나는 연출?
         yield return new WaitUntil(() => _Pool_FX_Highlighted != null);
-        _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(tutorialNPC.transform.position, transform.rotation);
+        PlayHighLightFX(tutorialNPC.transform);
 
         // 석상 매터리얼 디졸브
         Material dissolveMat = tutorialNPC.view_Dissolve.GetComponent<Renderer>().materials[0];
@@ -741,8 +799,7 @@ public class TutorialManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(waitTimeAfterDissolve);
-        _Pool_FX_Highlighted.ReturnPooledObj(_FX_Highlighted);
-
+        PlayHighLightFX(null);
 
         // 연출 끝나고 대화 시작
         var npc = Manager.firebase.UserData.CurStageData.Npc;
@@ -769,8 +826,6 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        
-
         // 별자리를 통해 리비의 능력을 강화할 수 있습니다
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence09-1", () =>
         {
@@ -788,28 +843,31 @@ public class TutorialManager : MonoBehaviour
             talk_Button.gameObject.SetActive(true);
 
             // 이후 NPC 접근 후 대화하기 버튼으로 창을 열고, 업그레이드하기
+            StartCoroutine(Sequence09_CheckUpgradeState());
         });
     }
 
-    public void TutorialSequence10()
-    {
-        Debug.LogWarning("시퀀스 10 시작");
-
-
-        StartCoroutine(Sequence10());
-    }
-
-    IEnumerator Sequence10()
+    IEnumerator Sequence09_CheckUpgradeState()
     {
         var userData = Manager.firebase.UserData;
         yield return new WaitUntil(() => userData.IsInit);
         yield return new WaitUntil(() => userData.CurStageData.IsInit);
         yield return new WaitUntil(() => userData.Player.IsInit);
 
-        // 모든 스탯 1씩 업그레이드 하면 진행됨
-        yield return new WaitUntil(() => userData.Player.MaxCapacityLv.Value > 1 && userData.Player.MoveSpeedLv.Value > 1 && userData.Player.NegoLv.Value > 1);
+        // 이동속도만 1 업그레이드 하면 진행됨
+        yield return new WaitUntil(() => userData.Player.MoveSpeedLv.Value > 1);
+
+        // 업그레이드 확인 시 시퀀스 종료
+        SequenceEnd();
+    }
+
+    public void TutorialSequence10()
+    {
+        Debug.LogWarning("시퀀스 10 시작");
 
         talk_Button.gameObject.SetActive(false);
+
+        Manager.ui.CloseAllPanels();
 
         Manager.camera.cam_PlayerFocus.Priority = 10;
         Manager.camera.cam_NpcFocus.Priority = 11;
@@ -823,7 +881,6 @@ public class TutorialManager : MonoBehaviour
         Manager.dialogue.OnDialogueCompleted += SequenceEnd; // 대화 완료 시, 시퀀스 10종료
         Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_End");
     }
-
 
     public void TutorialSequence11()
     {
@@ -840,7 +897,7 @@ public class TutorialManager : MonoBehaviour
         portal.SetActive(true);
 
         // 포탈 강조 FX
-        _FX_Highlighted = _Pool_FX_Highlighted.DisposePooledObj(portal.transform.position, transform.rotation);
+        PlayHighLightFX(portal.transform);
 
         // 포탈 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[7].Priority = 11;
@@ -863,4 +920,24 @@ public class TutorialManager : MonoBehaviour
     {
         StopAllCoroutines();
     }
+
+
+    // 튜토리얼 스킵 키(임시)
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Manager.firebase.UserData.TutorialSequence.Value = 11;
+
+            foreach (var kvp in Manager.data.Stage.Values)
+            {
+                if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
+                {
+                    Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
+                    break;
+                }
+            }
+        }
+    }
+
 }
