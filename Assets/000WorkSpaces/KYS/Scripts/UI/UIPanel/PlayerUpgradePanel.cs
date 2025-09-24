@@ -9,11 +9,13 @@ namespace KYS
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string closeButtonName = "CloseButton";
-        [SerializeField] private string moneyTextName = "RunMoneyBottonText";
+        [SerializeField] private string moneyTextName = "RunMoneyButtonText";
+        [SerializeField] private string gemTextName = "RunGemButtonText";
         [SerializeField] private string titleTextName = "PlayerUpgradeTitleText";
 
         private Button closeButton => GetUI<Button>(closeButtonName);
         private TextMeshProUGUI moneyText => GetUI<TextMeshProUGUI>(moneyTextName);
+        private TextMeshProUGUI gemText => GetUI<TextMeshProUGUI>(gemTextName);
         private TextMeshProUGUI titleText => GetUI<TextMeshProUGUI>(titleTextName);
 
         protected override void Awake()
@@ -25,9 +27,11 @@ namespace KYS
 
             // 초기 값 설정
             UpdateMoney(Manager.player.Data.Money.Value);
+            UpdateGem(Manager.player.Data.Gem.Value);
 
             // ObservableProperty 구독 - 실시간 돈 업데이트
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+            Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             Manager.Audio.SfxPlay("DoorBell");
         }
@@ -48,6 +52,7 @@ namespace KYS
         {
             base.OnDestroy();
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+            Manager.player?.Data?.Gem.Unsubscribe(OnGemChanged);
         }
 
         public override void Initialize()
@@ -107,12 +112,29 @@ namespace KYS
             }
         }
 
+        public void UpdateGem(int amount)
+        {
+            if (gemText != null)
+            {
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                gemText.text = FormatMoney(amount, false);
+            }
+        }
+
         /// <summary>
         /// ObservableProperty Money 값 변경 시 호출되는 콜백
         /// </summary>
         private void OnMoneyChanged(int newMoneyValue)
         {
             UpdateMoney(newMoneyValue);
+        }
+
+        /// <summary>
+        /// ObservableProperty Gem 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnGemChanged(int newGemValue)
+        {
+            UpdateGem(newGemValue);
         }
 
         private void OnCloseButtonClicked()

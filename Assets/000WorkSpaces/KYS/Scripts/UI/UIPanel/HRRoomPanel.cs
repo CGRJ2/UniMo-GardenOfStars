@@ -26,6 +26,7 @@ namespace KYS
         {
             base.Awake();
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
+            Manager.player.Data.Gem.Subscribe(OnGemChanged);
             Initialize();
 
             Manager.Audio.SfxPlay("DoorBell");
@@ -35,6 +36,7 @@ namespace KYS
         {
             base.OnDestroy();
             Manager.player?.Data?.Money.Unsubscribe(OnMoneyChanged);
+            Manager.player?.Data?.Gem.Unsubscribe(OnGemChanged);
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -60,6 +62,7 @@ namespace KYS
 
             // 초기 값 설정
             UpdateMoney(Manager.player.Data.Money.Value);
+            UpdateGem(Manager.player.Data.Gem.Value);
         }
 
         public override void Cleanup()
@@ -105,12 +108,29 @@ namespace KYS
             }
         }
 
+        public void UpdateGem(int amount)
+        {
+            if (runGemButtonText != null)
+            {
+                // BaseUI의 돈 포맷팅 사용 (소수점 없음)
+                runGemButtonText.text = FormatMoney(amount, false);
+            }
+        }
+
         /// <summary>
         /// ObservableProperty Money 값 변경 시 호출되는 콜백
         /// </summary>
         private void OnMoneyChanged(int newMoneyValue)
         {
             UpdateMoney(newMoneyValue);
+        }
+
+        /// <summary>
+        /// ObservableProperty Gem 값 변경 시 호출되는 콜백
+        /// </summary>
+        private void OnGemChanged(int newGemValue)
+        {
+            UpdateGem(newGemValue);
         }
 
         private void OnCloseButtonClicked()

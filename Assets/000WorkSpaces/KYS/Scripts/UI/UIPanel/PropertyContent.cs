@@ -298,7 +298,7 @@ namespace KYS
                 else if (currentBuildingData is ManufactureBD manufactureBD)
                 {
                     // 제조형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture2>((popup) =>
                     {
                         if (popup != null)
                         {

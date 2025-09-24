@@ -39,7 +39,7 @@ public partial class DataManager
                 npc.Name_EN = words[dict["Name_EN"]];
                 npc.Description = words[dict["Description"]];
 
-                string spritePath_Default = words[dict["SpritePath_Default"]];
+                string spritePath_Default = words[dict["Sprite_Default"]];
                 if (Addressables.ResourceLocators.Any(locator => locator.Locate($"{spritePath_Default}", typeof(Sprite), out var locations)))
                 {
                     Addressables.LoadAssetAsync<Sprite>($"{spritePath_Default}").Completed += task =>
