@@ -107,16 +107,6 @@ public class FirebaseProperty<T> : FirebaseData
             double value = (double)args.Snapshot.Value;
             _value = (T)(object)(float)value;
         }
-        else if (typeof(T) == typeof(long))
-        {
-            long value = (long)args.Snapshot.Value;
-            _value = (T)(object)(long)value;
-        }
-        else if (typeof(T) == typeof(double))
-        {
-            double value = (double)args.Snapshot.Value;
-            _value = (T)(object)(double)value;
-        }
         else
         {
             _value = (T)args.Snapshot.Value;
@@ -131,7 +121,7 @@ public class FirebaseProperty<T> : FirebaseData
     {
         if (!_isFirebaseConnected)
         {
-            _isFirebaseConnected = Manager.firebase.SetTimeDataEvent<T>(Id, ParentPath, OnFirebaseChanged);
+            _isFirebaseConnected = Manager.firebase.SetTimeDataEvent<T>(Id, Path, ParentPath, OnFirebaseChanged);
         }
 
         var update = new Dictionary<string, object>();
