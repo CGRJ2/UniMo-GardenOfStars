@@ -1,4 +1,4 @@
-using TMPro;
+Ôªøusing TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -69,7 +69,7 @@ public class SkinButton : KYS.BaseUI
         if (isEquiped)
         {
             _equipImage.gameObject.SetActive(true);
-            _costText.text = "¿Â¬¯¡ﬂ";
+            _costText.text = GetLocalizedText("Equipped");
             if (ColorUtility.TryParseHtmlString("#40B800", out color))
             {
                 _skinButton.image.color = color;
@@ -79,7 +79,7 @@ public class SkinButton : KYS.BaseUI
 
         if (isOwned)
         {
-            _costText.text = "∫∏¿Ø¡ﬂ";
+            _costText.text = GetLocalizedText("Owned");
             if (ColorUtility.TryParseHtmlString("#E0883B", out color))
             {
                 _skinButton.image.color = color;

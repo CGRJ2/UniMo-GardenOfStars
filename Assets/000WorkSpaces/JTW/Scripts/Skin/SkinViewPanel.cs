@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -117,7 +117,7 @@ public class SkinViewPanel : KYS.BaseUI
 
     public void UpdateInfo()
     {
-        // √ ±‚»≠
+        // Ï¥àÍ∏∞Ìôî
         _equipbutton.gameObject.SetActive(false);
         _buybutton.gameObject.SetActive(false);
         _equipImage.gameObject.SetActive(false);
@@ -146,7 +146,7 @@ public class SkinViewPanel : KYS.BaseUI
             _state = SkinViewStates.Equiped;
             _equipbutton.gameObject.SetActive(true);
             _equipImage.gameObject.SetActive(true);
-            _equipbuttonText.text = "¿Â¬¯¡ﬂ";
+            _equipbuttonText.text = GetLocalizedText("equipped");
             _equipbuttonText.color = Color.black;
 
             if (ColorUtility.TryParseHtmlString("#4FD209", out color))
@@ -164,7 +164,7 @@ public class SkinViewPanel : KYS.BaseUI
         {
             _state = SkinViewStates.Owned;
             _equipbutton.gameObject.SetActive(true);
-            _equipbuttonText.text = "¿Â¬¯";
+            _equipbuttonText.text = GetLocalizedText("equip");
             _equipbuttonText.color = Color.white;
 
             if (ColorUtility.TryParseHtmlString("#45C500", out color))
@@ -182,7 +182,7 @@ public class SkinViewPanel : KYS.BaseUI
         {
             _state = SkinViewStates.Moneyless;
             _buybutton.gameObject.SetActive(true);
-            _buybuttonText.text = "∫∏ºÆ ∫Œ¡∑";
+            _buybuttonText.text = GetLocalizedText("notenoughgems");
             _costText.text = _cost.ToString();
 
             if (ColorUtility.TryParseHtmlString("#FF0000", out color))
@@ -198,7 +198,7 @@ public class SkinViewPanel : KYS.BaseUI
 
         _state = SkinViewStates.Buy;
         _buybutton.gameObject.SetActive(true);
-        _buybuttonText.text = "±∏∏≈";
+        _buybuttonText.text = GetLocalizedText("buybutton");
         _costText.text = _cost.ToString();
 
         if (ColorUtility.TryParseHtmlString("#0077FF", out color))

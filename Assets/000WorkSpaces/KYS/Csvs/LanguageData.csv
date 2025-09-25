@@ -232,12 +232,12 @@ msg_tutorial_interact,가까이 접근하여\n<color=#FFA21F>대화</color>할 �
 msg_tutorial_questSquence01-1,별가루를 모아\n<color=#FFA21F>석상</color>에게 가져다 주세요,Collect stardust and bring it to the <color=#FFA21F>statue</color>
 msg_tutorial_questSquence01-2,건물에 가까이 다가가 물건을 \n필요한 곳으로 <color=#FFA21F>운반</color>할 수 있습니다,Approach a building to <color=#FFA21F>carry</color> items where they are needed
 msg_tutorial_questSquence02-1,더 많은 <color=#FFA21F>별가루</color>를 만들어 보세요,Try producing more <color=#FFA21F>stardust</color>
-msg_tutorial_questSquence02-2,건물의 <color=#FFA21F>발판</color>을 통해\n원하는 작업을 수행할 수 있습니다,"Through the building’s <color=#FFA21F>platform</color>, you can perform the desired tasks"
+msg_tutorial_questSquence02-2,$건물의 <color=#FFA21F>발판</color>을 통해\n원하는 작업을 수행할 수 있습니다$,"$Through the building’s <color=#FFA21F>platform</color>, you can perform the desired tasks$"
 msg_tutorial_questSquence03-1,부동산에서 구매한 건물은\n<color=#FFA21F>공터</color>에 건설할 수 있습니다,Buildings purchased from real estate can be constructed on an <color=#FFA21F>empty lot</color>
 msg_tutorial_questSquence04-1,수확 건물은 자동으로\n<color=#FFA21F>재료</color>를 생산합니다,Harvest buildings automatically produce <color=#FFA21F>materials</color>
 msg_tutorial_questSquence04-2,수확한 재료는 <color=#FFA21F>작업 건물</color>에서 \n변환할 수 있습니다,The harvested materials can be converted at a <color=#FFA21F>work building</color>
 msg_tutorial_questSquence06-1,석상의 빛에서 알 수 없는 힘이 \n나오고 있습니다,An unknown power is emanating from the light of the statue
-msg_tutorial_questSquence06-2,누군가의 도움을 받으면 별가루를 더 쉽게 만들 수 있을 것 같아요,"With someone’s help, it seems you could make stardust more easily"
+msg_tutorial_questSquence06-2,누군가의 도움을 받으면 별가루를 더 쉽게 만들 수 있을 것 같아요,"$With someone’s help, it seems you could make stardust more easily$"
 msg_tutorial_questSquence07-1,<color=#FFA21F>일꾼</color>은 스스로 재료를 수확합니다,<color=#FFA21F>Workers</color> harvest materials on their own
 msg_already_have_building,회수 영역에 이미 구매해둔 건물이 있을 때는 건물을 구매할 수 없습니다,You cannot purchase a building when there is already one in the recovery area.
 msg_cannot_purchase_building_holding,손에 뭔가 쥐고 있을 때는 건물을 구매할 수 없습니다,You cannot purchase a building while holding an item.
@@ -303,3 +303,10 @@ playgameslogin,Google로 로그인,Log in with Google
 tapscreen,화면을 터치해주세요!,Tap the screen!
 ui_titlescene_download_check,$다운로드 받을 파일이 있는지 확인중…$,$Checking for files to download…$
 ui_titlescene_downloading,다운로드 중..,Downloading
+portalbutton,지역 이동,Zone change
+equipped,장착중,Equipped
+owned,보유중,Owned
+equip,장착,Equip
+notenoughgems,보석 부족,Not enough gems
+offlinerewarddesc,${0}시간 동안 {1}시간만큼의 재화를 획득했습니다. 광고를 시청하고 {3}배 더 많은 보상을 획득하세요$,You have earned {1} currency over {0} hours. Watch an ad to receive {3}x more rewards!
+premiumbuybutton,프리니엄 고용,Premium Hire
