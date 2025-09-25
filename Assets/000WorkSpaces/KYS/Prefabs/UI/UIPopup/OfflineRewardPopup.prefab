@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8729460078596786212}
   - component: {fileID: 1299177501866237476}
   - component: {fileID: 7410588302318898060}
+  - component: {fileID: 8980744251459804102}
   m_Layer: 5
   m_Name: OfflineRewardPopup
   m_TagString: Untagged
@@ -96,6 +97,41 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8980744251459804102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842901290421608528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7280cfcf66d47394d8d427c09de6b1e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerType: 2
+  panelGroup: 4
+  useAnimation: 1
+  useShowAnimation: 1
+  useHideAnimation: 1
+  animationDuration: 0.3
+  showEase: 27
+  hideEase: 26
+  canCloseWithESC: 0
+  canCloseWithBackdrop: 0
+  hidePreviousUI: 0
+  disablePreviousUI: 0
+  createBackdropForPopup: 0
+  enableSFX: 1
+  defaultClickSound: SFX_ButtonClick
+  defaultBackSound: SFX_ButtonClickBack
+  defaultHoverSound: SFX_ButtonHover
+  defaultErrorSound: SFX_Error
+  defaultSuccessSound: SFX_Success
+  defaultOpenSound: SFX_UI_Open
+  defaultCloseSound: SFX_UI_Close
+  enableAutoLocalization: 1
+  autoLocalizeKeys: []
 --- !u!1 &2277294199790277745
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,8 +425,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 2K
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: cd14c62837cdfbe459657a86e0e17c26, type: 2}
-  m_sharedMaterial: {fileID: -5121002442431535272, guid: cd14c62837cdfbe459657a86e0e17c26, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -641,7 +677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 56cb3e3e2a6804b4fb609e46f31a9b2e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ba5be814e160f34fb2d36500995175d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1217,8 +1253,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 10K
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: cd14c62837cdfbe459657a86e0e17c26, type: 2}
-  m_sharedMaterial: {fileID: -5121002442431535272, guid: cd14c62837cdfbe459657a86e0e17c26, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1297,7 +1333,7 @@ GameObject:
   - component: {fileID: 8291270690700386871}
   - component: {fileID: 3699681147270940504}
   m_Layer: 5
-  m_Name: GuestLoginText1
+  m_Name: RewardDescriptionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

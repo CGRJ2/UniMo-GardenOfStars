@@ -132,18 +132,37 @@ public class StageManager : MonoBehaviour
         // 스테이지 ExitTime 체크
         _StageID = Manager.firebase.UserData.CurStage.Value;
 
-        // 보상 팝업 닫힌 후
-        double diffTime = GetStageAutoEarnTime(_StageID);
-        if (diffTime > _AutoRewardMinTime)
+        // 오프라인 보상 팝업 여부
+        var questList = npc.QuestList.List;
+        // 마지막 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
+        if (questList[questList.Count - 1].State == GameQuest.QuestState.Completed)
         {
-            // 보상 팝업 열기
+            double diffTime = GetStageAutoEarnTime(_StageID);
+            if (diffTime > _AutoRewardMinTime)
+            {
+                Debug.LogError("보상 팝업 열기");
+                // 보상 팝업 열기
+                Manager.ui.ShowPopUpAsync<OfflineRewardPopup>((popup) =>
+                {
+                    // 보상 팝업 닫힐 때 기본 보상 지급 & 시간 체크 루틴 실행
+                    StartCoroutine(OfflineRewardInitAfterPopupClose(popup.gameObject));
+                });
+            }
+            else
+            {
+                Debug.LogError("보상 팝업 안열고 그냥 진행");
+
+                // 보상 팝업 없이 바로 시간 체크 루틴 실행
+                OfflineRewardInited();
+            }
         }
-        else
-        {
-            // 보상 팝업 없이 바로 시간 체크 루틴 실행
-            _AutoRewardInited = true;
-            StartCoroutine(ExitTimeCheckRoutine());
-        }
+    }
+
+    IEnumerator OfflineRewardInitAfterPopupClose(GameObject obj)
+    {
+        yield return new WaitUntil(() => obj == null);
+        Manager.firebase.UserData.Player.Money.Value += GetTotalAutoReward();
+        OfflineRewardInited();
     }
 
     // 스테이지 별로 최종 생산물 설정
@@ -179,21 +198,40 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    #region 오프라인 보상
+
     // 클리어된 스테이지 한정
     // 최대 누적 2시간 => 최대보상
     // 현재 스테이지에 쌓인 재화 반환
-    public void CheckStageExitTime(string stageID)
+    string _StageID;
+    float _AutoRewardMinTime = 10f;
+    float _AutoRewardMaxTime = 7200f;
+    bool _AutoRewardInited = false;
+
+    public void CheckStageExitTime(string targetStageID = null)
     {
+        string _stageID;
+        if (targetStageID == null)
+            _stageID = _StageID;
+        else
+            _stageID = targetStageID;
+
         var stageData = Manager.firebase.UserData.CurStageData;
 
         // 현재 시간 저장
-        Manager.firebase.UserData.StageList.Get(stageID).StageLastExitTime.SaveCurTime();
+        Manager.firebase.UserData.StageList.Get(_stageID).StageLastExitTime.SaveCurTime();
     }
 
-    public double GetStageAutoEarnTime(string stageID)
+    public double GetStageAutoEarnTime(string targetStageID = null)
     {
+        string _stageID;
+        if (targetStageID == null)
+            _stageID = _StageID;
+        else
+            _stageID = targetStageID;
+
         var stageData = Manager.firebase.UserData.CurStageData;
-        long t = Manager.firebase.UserData.StageList.Get(stageID).StageLastExitTime.Value;
+        long t = Manager.firebase.UserData.StageList.Get(_stageID).StageLastExitTime.Value;
 
         DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(t).UtcDateTime;
 
@@ -207,32 +245,47 @@ public class StageManager : MonoBehaviour
         return seconds;
     }
 
-    public int GetTotalAutoReward(string stageID)
+    public int GetTotalAutoReward(string targetStageID = null)
     {
-        int fullReward = Manager.data.Stage.Values[stageID].StageAutoReward;
+        string _stageID;
+        if (targetStageID == null)
+             _stageID = _StageID;
+        else
+            _stageID = targetStageID;
 
-        float rewardPercent = Mathf.Clamp01((int)GetStageAutoEarnTime(stageID) / 7200f);    // 최대보상 => 2시간
+        int fullReward = Manager.data.Stage.Values[_stageID].StageAutoReward;
 
-        int finalReward = (int)(fullReward * rewardPercent);
+        float rewardPercent = Mathf.Clamp01((int)GetStageAutoEarnTime(_stageID) / _AutoRewardMaxTime);    // 최대보상 => 2시간
 
-        Debug.LogError($"방치 시간:{GetStageAutoEarnTime(stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
+        int finalReward = (int)(fullReward * rewardPercent) * 100;
+
+        Debug.LogError($"방치 시간:{GetStageAutoEarnTime(_stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
 
         return finalReward;
     }
-    string _StageID;
-    float _AutoRewardMinTime = 60f;
-    bool _AutoRewardInited = false;
-
-    private void OnDestroy()
-    {
-        if(_AutoRewardInited)
-            CheckStageExitTime(_StageID);
-    }
+    
 
     private IEnumerator ExitTimeCheckRoutine()
     {
-        yield return new WaitForSeconds(_AutoRewardMinTime / 2f);
-        CheckStageExitTime(_StageID);
+        while (true)
+        {
+            Debug.LogWarning("현재 시간 저장");
+            CheckStageExitTime(_StageID);
+            yield return new WaitForSeconds(_AutoRewardMinTime / 2f);
+        }
+    }
+
+    public void OfflineRewardInited()
+    {
+        _AutoRewardInited = true;
+        StartCoroutine(ExitTimeCheckRoutine());
+    }
+
+    #endregion
+    private void OnDestroy()
+    {
+        if (_AutoRewardInited)
+            CheckStageExitTime(_StageID);
     }
 }
 
