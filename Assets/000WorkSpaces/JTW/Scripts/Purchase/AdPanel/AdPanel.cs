@@ -12,7 +12,6 @@ public abstract class AdPanel : KYS.BaseUI
     private Button _adButton => GetUI<Button>("AdButton");
 
     private TextMeshProUGUI _countText => GetUI<TextMeshProUGUI>("CountText");
-    private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("ButtonText");
 
     private Image _completeImage => GetUI<Image>("CompletedBG");
     private Image _bangMarkImage => GetUI<Image>("BangMark");
@@ -70,7 +69,6 @@ public abstract class AdPanel : KYS.BaseUI
 
         if(data.Count.Value < 2)
         {
-            _buttonText.text = "보상 받기";
         }
         else
         {
@@ -84,7 +82,6 @@ public abstract class AdPanel : KYS.BaseUI
         _bangMarkImage.gameObject.SetActive(true);
         _completeImage.gameObject.SetActive(false);
         _countText.text = $"0/2";
-        _buttonText.text = "보상 받기";
     }
 
     private void OnClick()
