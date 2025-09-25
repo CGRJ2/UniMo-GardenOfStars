@@ -1,4 +1,4 @@
-using KYS;
+﻿using KYS;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -198,6 +198,7 @@ public class InfoPanel_Manufacture2 : BaseUI
 
     private void Close()
     {
+        Manager.Audio.SfxPlay("SFX_ButtonClickBack");
         Manager.ui.ClosePopup();
     }
 

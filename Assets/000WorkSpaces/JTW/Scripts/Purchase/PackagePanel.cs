@@ -16,7 +16,7 @@ public class PackagePanel : KYS.BaseUI
     private TextMeshProUGUI _descriptionText => GetUI<TextMeshProUGUI>("PackageDesc");
     private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("PackageButtonText");
 
-    private Button _buyButton => GetUI<Button>("PackageButton");
+    private Button _buyButton;
 
     private Image _completeImage => GetUI<Image>("CompleteBG");
     private Image _soldImage => GetUI<Image>("SoldImage");
@@ -27,6 +27,7 @@ public class PackagePanel : KYS.BaseUI
 
         _iapButton = GetComponent<CodelessIAPButton>();
 
+        _buyButton = GetComponent<Button>();
         _buyButton.onClick.AddListener(OnClick);
 
         if (Manager.firebase.UserData.AdRemoved.Value)
@@ -68,6 +69,8 @@ public class PackagePanel : KYS.BaseUI
     {
         Manager.firebase.UserData.AdRemoved.Value = true;
         _buttonText.text = "구매 완료";
+        _completeImage.gameObject.SetActive(true);
+        _soldImage.gameObject.SetActive(true);
         _buyButton.interactable = false;
     }
 }

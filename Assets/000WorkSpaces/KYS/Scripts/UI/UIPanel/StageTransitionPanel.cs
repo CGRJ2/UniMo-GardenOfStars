@@ -704,6 +704,7 @@ namespace KYS
         {
             // 로딩 화면 표시 (필요한 경우)
             // ShowLoadingScreen();
+            Manager.ui.ShowUltraSimpleLoadingScreen(1);
 
             Manager.Audio.SfxPlay("Portal");
             var handle = Addressables.LoadSceneAsync("StageScene");

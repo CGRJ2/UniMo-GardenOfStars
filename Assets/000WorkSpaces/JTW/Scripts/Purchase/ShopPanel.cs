@@ -42,17 +42,11 @@ public class ShopPanel : KYS.BaseUI
         _getTitleText = GetUI<TextMeshProUGUI>("GemTitleText");
         _moneyTitleText = GetUI<TextMeshProUGUI>("MoneyTitleText");
 
-        _getTitleText.text = GetLocalizedText("GemTitleText");
-        _moneyTitleText.text = GetLocalizedText("MoneyTitleText");
-
         // 인스펙터에서 설정한 값이 있으면 그대로 사용, 없으면 기본값 설정
         if (layerType == UILayerType.Panel) // BaseUI의 기본값
         {
             layerType = UILayerType.HUD;
         }
-
-        Initialize();
-
     }
 
     public void StartPurchase(string productId)
@@ -81,6 +75,16 @@ public class ShopPanel : KYS.BaseUI
     {
         base.Initialize();
 
+        // 로컬라이제이션 텍스트 설정
+        if (_getTitleText != null)
+        {
+            _getTitleText.text = GetLocalizedText("GemTitleText");
+        }
+        if (_moneyTitleText != null)
+        {
+            _moneyTitleText.text = GetLocalizedText("MoneyTitleText");
+        }
+
         SetupButtons();
         SetupAutoLocalization();
 
@@ -99,7 +103,7 @@ public class ShopPanel : KYS.BaseUI
         Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
         isInitialized = true;
-        Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
+        Debug.Log("[ShopPanel] ShopPanel 완전 초기화 완료");
     }
     public override void Cleanup()
     {
@@ -121,6 +125,15 @@ public class ShopPanel : KYS.BaseUI
 
     private void SetupButtons()
     {
+        Debug.Log($"[ShopPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+        // 이미 설정되었으면 중복 호출 방지
+        if (isButtonsSetup)
+        {
+            Debug.Log($"[ShopPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+            return;
+        }
+
         var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
         if (closeEventHandler != null)
         {
@@ -133,7 +146,7 @@ public class ShopPanel : KYS.BaseUI
 
     private void OnCloseButtonClicked()
     {
-        Debug.Log("[PlayerUpgradePanel] 패널 닫기");
+        Debug.Log("[ShopPanel] 패널 닫기");
         Manager.ui.ClosePanel();
     }
 
