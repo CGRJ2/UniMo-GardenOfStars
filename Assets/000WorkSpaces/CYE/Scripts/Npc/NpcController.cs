@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -10,6 +11,9 @@ namespace GameNpc
         [SerializeField] Transform view;
         public Transform view_Dissolve;
         QuestRequireTile[] requireTiles;
+
+        [SerializeField] private Transform _focusPopUpCanvas;
+        private TMP_Text _focusPopUpText;
 
         void Awake()
         {
@@ -32,22 +36,19 @@ namespace GameNpc
             yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.IsInit);
             //Debug.LogWarning("CurStageData Inited");
 
-            yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc != null);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc != null);
             //Debug.LogWarning("Npc Inited");
 
-            var npc = Manager.firebase.UserData.CurStageData.Npc;
-            //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.IsInit);
-
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(npc.CurrentQuestID.Value));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(Manager.npc.CurStageNpc.CurrentQuestID.Value));
             //Debug.LogWarning("CurQuestID Inited");
 
-            yield return new WaitUntil(() => npc.QuestList.IsInit); // <<<<<<=== Error
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.QuestList.IsInit); // <<<<<<=== Error
             //Debug.LogWarning("QuestList Inited");
 
-            yield return new WaitUntil(() => npc.CurQuestData != null);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.CurQuestData != null);
             //Debug.LogWarning("CurQuestData Inited");
 
-            yield return new WaitUntil(() => npc.CurQuestData.QuestContentList.IsInit);
+            yield return new WaitUntil(() => Manager.npc.CurStageNpc.CurQuestData.QuestContentList.IsInit);
             //Debug.LogWarning("QuestContentList Inited");
 
 
@@ -57,6 +58,7 @@ namespace GameNpc
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>(true);
+            _focusPopUpText = _focusPopUpCanvas.GetComponentInChildren<TMP_Text>(true);
 
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
@@ -87,18 +89,18 @@ namespace GameNpc
                 TutorialManager.Instance.tutorialNPC = this;
             }
 
-            Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Subscribe(UpdateQuestData);
+            Manager.npc.CurStageNpc.CurrentQuestID.Subscribe(UpdateQuestData);
 
             Manager.camera.cam_NpcFocus.Follow = transform;
         }
 
         public void UpdateQuestData(string questID = null)
         {
-            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.firebase.UserData.CurStageData.Npc.CurrentQuestID.Value})");
+            Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.npc.CurStageNpc.CurrentQuestID.Value})");
 
 
             // QC데이터가 있는 만큼만 발판 활성화
-            var QCDataList = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.List;
+            var QCDataList = Manager.npc.CurStageNpc.CurQuestData.QuestContentList.List;
             for (int i = 0; i < QCDataList.Count; i++)
             {
                 requireTiles[i].gameObject.SetActive(true);
@@ -134,8 +136,16 @@ namespace GameNpc
 
         public void Focus()
         {
-            // 대사 출력
-            // Debug.Log($"{_focusTextList[NpcUtil.GetRandomIndex(_focusTextList.Count)]}");
+            int randomTextLineIndex = NpcUtil.GetRandomIndex(Manager.npc.CurStageNpc.TextLines_KR.Count);
+            string randomTextLine = Manager.npc.CurStageNpc.TextLines_KR[randomTextLineIndex];
+            _focusPopUpText.text = randomTextLine;
+
+            _focusPopUpCanvas.gameObject.SetActive(true);
+        }
+        public void FocusOut()
+        { 
+            _focusPopUpText.text = "";
+            _focusPopUpCanvas.gameObject.SetActive(false);
         }
     }
 }

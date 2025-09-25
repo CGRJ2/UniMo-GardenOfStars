@@ -14,6 +14,8 @@ namespace GameQuest
         public int QuestOrder => _questCsv.QuestOrder;
         public string QuestName => _questCsv.QuestName;
         public QuestType QuestType => _questCsv.QuestType;
+        public string RewardId => _questCsv.RewardId;
+        public int RewardAmount => _questCsv.RewardAmount;
         public string Description => _questCsv.Description;
 
         public FirebaseProperty<int> QuestState;

@@ -2,6 +2,7 @@ using KYS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GameQuest
@@ -15,6 +16,7 @@ namespace GameQuest
         private QuestContentDataCsv _questContentCsv => Manager.data.QuestContent.Values[Id];
         public string QuestId => _questContentCsv.QuestId;
         public string ContentTargetId => _questContentCsv.ContentTargetId;
+        public ContentStep[] ContentSteps => _questContentCsv.ContentSteps;
         public int CurrentTargetCount => GetCurrentStepRequireCount(); // Step 클리어를 위한 재료 개수
         public int StepIndexForClearContent => GetStepIndexForContentClear(); // Content 클리어를 위한 최대 단계의 Index
 
@@ -62,6 +64,20 @@ namespace GameQuest
             {
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)
                 Debug.LogWarning("스텝 클리어, 보상 수령");
+                // TO DO: 보상 수령
+                switch (ContentSteps[ProgressdIndex.Value].RewardId)
+                {
+                    case "Coin":
+                        Manager.firebase.UserData.Player.Money.Value += ContentSteps[ProgressdIndex.Value].RewardAmount;
+                        break;
+                    case "Gem":
+                        Manager.firebase.UserData.Player.Gem.Value += ContentSteps[ProgressdIndex.Value].RewardAmount;
+                        break;
+                    default:
+                        Debug.LogWarning($"[QuestManager] 보상 지급 실패. 올바르지 않은 보상 형식입니다.({ContentSteps[ProgressdIndex.Value].RewardId})");
+                        break;
+                }
+                Debug.Log($"[QuestManager] {Manager.firebase.UserData.Player.Money.Value}");
 
                 // 클리어 SFX 실행
                 Manager.Audio.SfxPlay("SFX_QuestClear", Manager.player.PlayerObj.transform);
@@ -81,11 +97,14 @@ namespace GameQuest
 
         public int GetCurrentStepRequireCount()
         {
-            foreach (var kvp in Manager.data.QuestContentStep.Values)
+            // foreach (var kvp in Manager.data.QuestContentStep.Values)
+            for (int cnt = 0; cnt < ContentSteps.Length; cnt++)
             {
-                if (kvp.Value.QuestContentId == Id && ProgressdIndex.Value == kvp.Value.ContentOrder)
+                // if (kvp.Value.QuestContentId == Id && ProgressdIndex.Value == kvp.Value.ContentOrder)
+                if (ProgressdIndex.Value == cnt)
                 {
-                    return kvp.Value.TargetAmount;
+                    Debug.Log($"[QuestContentData] {ContentSteps[cnt].TargetAmount}");
+                    return ContentSteps[cnt].TargetAmount;
                 }
             }
             return -99;
@@ -94,13 +113,15 @@ namespace GameQuest
         public int GetStepIndexForContentClear()
         {
             int maxIndex = 0;
-            foreach (var kvp in Manager.data.QuestContentStep.Values)
+            // foreach (var kvp in Manager.data.QuestContentStep.Values)
+            for (int cnt = 0; cnt < ContentSteps.Length; cnt++)
             {
-                if (kvp.Value.QuestContentId == Id)
+                // if (kvp.Value.QuestContentId == Id)
+                if (!ContentSteps[cnt].IsEmpty() && maxIndex < cnt)
                 {
-                    if (maxIndex < kvp.Value.ContentOrder)
-                    maxIndex = kvp.Value.ContentOrder;
+                    maxIndex = cnt;
                 }
+                Debug.Log($"[QuestContentData] maxIndex => {maxIndex}");
             }
             return maxIndex;
         }
