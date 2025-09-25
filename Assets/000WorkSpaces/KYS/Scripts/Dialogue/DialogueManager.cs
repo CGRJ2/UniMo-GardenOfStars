@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading.Tasks;
 using GameQuest;
 
 namespace KYS
@@ -38,7 +39,9 @@ namespace KYS
         private void Awake()
         {
             if (enableDebugLogs)
-                Debug.Log("[DialogueManager] 초기화 완료");
+            { 
+                //Debug.Log("[DialogueManager] 초기화 완료"); 
+            }
         }
 
 
@@ -301,9 +304,13 @@ namespace KYS
             string[] choiceNextIds = currentDialogueData.GetChoiceNextIds();
             Debug.Log($"[DialogueManager] 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
             
-            if (choiceIndex < 0 || choiceIndex >= choiceNextIds.Length)
+            // 선택지 개수를 기준으로 인덱스 확인 (choiceNextIds가 더 적을 수 있음)
+            int availableChoices = currentDialogueData.ChoiceCount;
+            Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
+            
+            if (choiceIndex < 0 || choiceIndex >= availableChoices)
             {
-                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
+                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {availableChoices - 1})");
                 return false;
             }
 
@@ -314,7 +321,11 @@ namespace KYS
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
             // 선택지에 따른 다음 노드로 이동
-            string nextNodeId = choiceNextIds[choiceIndex];
+            string nextNodeId = "";
+            if (choiceIndex < choiceNextIds.Length)
+            {
+                nextNodeId = choiceNextIds[choiceIndex];
+            }
             Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
             
             if (string.IsNullOrEmpty(nextNodeId))
@@ -336,7 +347,7 @@ namespace KYS
         /// </summary>
         public void EndDialogue()
         {
-            Debug.LogError($"[DialogueManager] 대화 종료: {currentNpcId}");
+            Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
 
             if (currentDialogueData != null)
             {
@@ -602,33 +613,44 @@ namespace KYS
         }
 
 
-        public async void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000 )
+        public void ShowTutorialPopUp(string nodeID, TutorialPopUp_Old.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
         {
-
             try
             {
-                Debug.Log("[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 시작");
+                Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
 
                 // 1. 튜토리얼 팝업 열기
-                var popupObj = await Manager.ui.ShowPopUpAsync<TutorialPopUp>();
-                var popup = popupObj.GetComponent<TutorialPopUp>();
-                popup.SetTutorialPosition(positionType);
-                popup.SetTutorialNode(nodeID);
+                Manager.ui.ShowPopUpAsync<TutorialPopUp_Old>(popup =>
+                {
+                    popup.SetTutorialPosition(positionType);
+                    popup.SetTutorialNode(nodeID);
 
-                Debug.Log("[AddressableSceneLoadingManager] 튜토리얼 팝업이 열렸습니다. 3초 후 자동 종료됩니다...");
+                    if (autoClose)
+                    {
+                        Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
 
-                // 2. 3초 대기 후 자동 종료
-                await System.Threading.Tasks.Task.Delay(deley);
-
-                // 3. 플레이어 행동 완료 시뮬레이션
-                popup.CompleteTutorialAction();
-                Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
-
+                        // 2. 지정된 시간 대기 후 자동 종료
+                        StartCoroutine(WaitDelay(deley, popup));
+                    }
+                    else
+                    {
+                        Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                    }
+                });
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[AddressableSceneLoadingManager] TutorialPopUp 종료 테스트 실패: {e.Message}");
+                Debug.LogError($"[DialogueManager] 튜토리얼 팝업 표시 실패: {e.Message}");
             }
+        }
+
+        private IEnumerator WaitDelay(float delay, TutorialPopUp_Old popup)
+        {
+            yield return new WaitForSeconds(delay / 1000);
+
+            // 3. 플레이어 행동 완료 시뮬레이션
+            popup.CompleteTutorialAction();
+            Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
         }
 
         /// <summary>

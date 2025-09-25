@@ -87,6 +87,34 @@ public class AudioManager : Singleton<AudioManager>
     private Dictionary<string, SfxController> _loopingSfxDict = new Dictionary<string, SfxController>();
     private Dictionary<string, AudioData> _loopingSfxDataDict = new Dictionary<string, AudioData>();
 
+    // 0918 최재민 추가
+    public Dictionary<string, int> chainedSoundDic = new();
+
+    public void ChainedSFXPlay(string key, Transform targetTransform = null)
+    {
+        StartCoroutine(ChainedSoundRoutine(key, targetTransform));
+    }
+
+    IEnumerator ChainedSoundRoutine(string key, Transform targetTransform)
+    {
+        int playedOreder = 0;
+
+        // 이전에 진행 중인 ChainedSound가 존재 시 => 다음 순서의 Chain소리 실행
+        if (chainedSoundDic.ContainsKey(key)) playedOreder = chainedSoundDic[key];
+        else chainedSoundDic.Add(key, 0);
+
+        SfxPlay($"SFX_{key}{playedOreder.ToString("D2")}", targetTransform);
+        chainedSoundDic[key] = playedOreder + 1;
+
+        // 1초 동안 새로운 체인 사운드가 실행되지 않는다면, 해당 키의 체인 정보 삭제
+        int tempIndex = chainedSoundDic[key];
+        yield return new WaitForSeconds(1f);
+
+        if (chainedSoundDic[key] == tempIndex)
+            chainedSoundDic.Remove(key);
+    }
+
+
     private void Awake()
     {
         _bgmSource = gameObject.GetOrAddComponent<AudioSource>();
@@ -155,9 +183,16 @@ public class AudioManager : Singleton<AudioManager>
         {
             if (data.Result == null)
             {
-                Debug.Log($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
+                Debug.LogWarning($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
                 return;
             }
+
+            if(data.Result.Clip == null)
+            {
+                Debug.LogWarning($"[AudioManager] {clipName} 오디오 클립이 null입니다.");
+                return;
+            }
+
 
             SfxController sfx = SfxPool.Get();
             sfx.Target = target;
@@ -201,13 +236,25 @@ public class AudioManager : Singleton<AudioManager>
         if (_loopingSfxDict.ContainsKey(key))
             return;
 
-        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}").Completed += data =>
+        if (target == null)
+        {
+            target = Camera.main.transform;
+        }
+
+        Addressables.LoadAssetAsync<AudioData>($"Audio/{clipName}.asset").Completed += data =>
         {
             if (data.Result == null)
             {
-                Debug.Log($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
+                Debug.LogWarning($"[AudioManager] {clipName} AudioData를 찾을 수 없습니다.");
                 return;
             }
+
+            if (data.Result.Clip == null)
+            {
+                Debug.LogWarning($"[AudioManager] {clipName} 오디오 클립이 null입니다.");
+                return;
+            }
+
 
             SfxController sfx = SfxPool.Get();
             sfx.Target = target;
@@ -239,7 +286,7 @@ public class AudioManager : Singleton<AudioManager>
         source.maxDistance = maxDistance;
     }
 
-    public void SfxStopLoop(string key)
+    public void SfxStopLoop(string key, float fadeDuration = 0)
     {
         if (!_loopingSfxDict.TryGetValue(key, out SfxController sfx))
             return; // 이미 Release된 상태
@@ -248,10 +295,13 @@ public class AudioManager : Singleton<AudioManager>
         {
             AudioSource source = sfx.GetComponent<AudioSource>();
 
-            source.Stop();
-            source.loop = false;
-            source.volume = Mathf.Clamp01(MasterVolume * SfxVolume);
-            SfxPool.Release(sfx);
+            source.DOFade(0f, fadeDuration).OnComplete(() =>
+            {
+                source.Stop();
+                source.loop = false;
+                source.volume = Mathf.Clamp01(MasterVolume * SfxVolume);
+                SfxPool.Release(sfx);
+            });
         }
 
         _loopingSfxDict.Remove(key);

@@ -1,25 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerState_Move : PlayerStateBase
 {
     private Rigidbody _rb;
+    private NavMeshAgent _navAgent;
 
     public PlayerState_Move(StateMachine<PlayerStates> stateMachine, PlayerRunTimeData data) : base(stateMachine, data)
     {
-        HasPhysics = true;
         _rb = PlayerData.gameObject.GetComponent<Rigidbody>();
+        _navAgent = PlayerData.GetComponent<NavMeshAgent>();
     }
 
     public override void Enter()
     {
+        Application.targetFrameRate = 50;
+        QualitySettings.vSyncCount = 0;
         PlayerData.IsMove.Value = true;
     }
 
     public override void Update()
     {
-        if(PlayerData.Direction == Vector3.zero || !Manager.player.IsControl)
+        Vector3 move = PlayerData.Direction * Manager.player.Data.MoveSpeed * Time.deltaTime;
+        _navAgent.Move(move);
+
+        if (PlayerData.Direction == Vector3.zero || !Manager.player.IsControl)
         {
             if (PlayerData.IsWork.Value)
             {
@@ -30,11 +37,6 @@ public class PlayerState_Move : PlayerStateBase
                 StateMachine.ChangeState(PlayerStates.Idle);
             }
         }
-    }
-
-    public override void FixedUpdate()
-    {
-        _rb.velocity = PlayerData.Direction * Manager.player.Data.MoveSpeed;
     }
 
     public override void Exit()

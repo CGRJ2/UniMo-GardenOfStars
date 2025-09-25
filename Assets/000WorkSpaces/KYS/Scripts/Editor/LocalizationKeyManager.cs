@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace KYS.Editor
     public class LocalizationKeyManager : EditorWindow
     {
         private Vector2 scrollPosition;
-        private string csvPath = "Assets/000WorkSpaces/KYS/Scripts/UI/Localization/LanguageData.csv";
+        private string csvPath = "Assets/000WorkSpaces/KYS/Csvs/LanguageData.csv";
         private List<string> allKeys = new List<string>();
         private List<string> missingKeys = new List<string>();
         private List<string> duplicateKeys = new List<string>();

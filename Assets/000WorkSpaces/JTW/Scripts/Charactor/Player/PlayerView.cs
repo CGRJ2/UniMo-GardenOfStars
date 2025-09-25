@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class PlayerView : MonoBehaviour
 {
-    [SerializeField] private GameObject _avatar;
+    [SerializeField] private Animator _avatarAnimator;
+    [SerializeField] private Animator _equipAnimator;
 
-    [Header("방향 전환 시 아바타 회전 속도(도/초)")]
-    [SerializeField] private float _turnSpeed = 720f;
-
+    private float _turnSpeed = 720f;
     private PlayerRunTimeData _data;
-
-    // 애니메이터 추가
 
     private Vector3 _lastForward = Vector3.forward;
 
@@ -37,5 +34,31 @@ public class PlayerView : MonoBehaviour
         Quaternion target = Quaternion.LookRotation(aimDir, Vector3.up);
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, target, _turnSpeed * deltaTime);
+    }
+
+    private void OnEnable()
+    {
+        if (_avatarAnimator.enabled == false) return;
+
+        _data.IsMove.Subscribe(OnMoveChanged);
+        _data.IsWork.Subscribe(OnWorkChanged);
+    }
+
+    private void OnDisable()
+    {
+        _data.IsMove.Unsubscribe(OnMoveChanged);
+        _data.IsWork.Unsubscribe(OnWorkChanged);
+    }
+
+    private void OnMoveChanged(bool value)
+    {
+        _avatarAnimator.SetBool("IsMove", value);
+        _equipAnimator.SetBool("IsMove", value);
+    }
+
+    private void OnWorkChanged(bool value)
+    {
+        _avatarAnimator.SetBool("IsWork", value);
+        _equipAnimator.SetBool("IsWork", value);
     }
 }

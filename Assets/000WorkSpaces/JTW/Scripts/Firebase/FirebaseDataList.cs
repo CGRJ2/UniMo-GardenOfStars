@@ -33,14 +33,14 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         IsInitSelf = Manager.firebase.CheckInit(Path, out ListInitCount);
     }
 
-    private void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
+    private async void OnFirebaseChanged(object sender, ChildChangedEventArgs args)
     {
         T child = _factory(args.Snapshot.Key, Path);
 
         _list.Add(child);
         InitList.Add(child);
 
-        WaitUntilAsync(child);
+        await WaitUntilAsync(child);
     }
 
     public void Add(IUsableId value)

@@ -1,4 +1,4 @@
-using Cinemachine;
+ï»¿using Cinemachine;
 using GameNpc;
 using KYS;
 using System.Collections;
@@ -26,20 +26,20 @@ public class TutorialManager : MonoBehaviour
 
     public List<GameObject> arrows;
 
-    [Header("Æ©Åä¸®¾ó #0 ¼³Á¤")]
-    [Tooltip("Æ©Åä¸®¾ó ¾ÀÀÌ ½ÃÀÛµÇ°í Ã¹ Ä«¸Ş¶ó°¡ ÀÌµ¿À» ½ÃÀÛÇÒ ¶§ ±îÁö ´ë±âÇÏ´Â ½Ã°£")]
+    [Header("íŠœí† ë¦¬ì–¼ #0 ì„¤ì •")]
+    [Tooltip("íŠœí† ë¦¬ì–¼ ì”¬ì´ ì‹œì‘ë˜ê³  ì²« ì¹´ë©”ë¼ê°€ ì´ë™ì„ ì‹œì‘í•  ë•Œ ê¹Œì§€ ëŒ€ê¸°í•˜ëŠ” ì‹œê°„")]
     [SerializeField] float _Cut01_CamMoveWaitTime;
 
-    [Tooltip("ÀÌµ¿½ÃÀÛ ÈÄ »óÈ£ÀÛ¿ë ¼³¸í ÆË¾÷ÀÌ ¶ã ¶§±îÁö ´ë±â ½Ã°£")]
+    [Tooltip("ì´ë™ì‹œì‘ í›„ ìƒí˜¸ì‘ìš© ì„¤ëª… íŒì—…ì´ ëœ° ë•Œê¹Œì§€ ëŒ€ê¸° ì‹œê°„")]
     [SerializeField] float _Cut01_InteractTutoPopWaitTime;
 
-    [Header("Æ©Åä¸®¾ó #1 ¼³Á¤")]
+    [Header("íŠœí† ë¦¬ì–¼ #1 ì„¤ì •")]
     [SerializeField] ProdsArea prodsArea;
 
-    [Header("Æ©Åä¸®¾ó #2 ¼³Á¤")]
+    [Header("íŠœí† ë¦¬ì–¼ #2 ì„¤ì •")]
     public string tutoHarvestBuildingID;
 
-    [Header("Æ©Åä¸®¾ó #9 ¼³Á¤")]
+    [Header("íŠœí† ë¦¬ì–¼ #9 ì„¤ì •")]
     [SerializeField] GameObject portal;
     [SerializeField] float portalFocusTime = 2f;
 
@@ -55,12 +55,12 @@ public class TutorialManager : MonoBehaviour
 
     private void Init()
     {
-        Debug.LogError("Æ©Åä¸Å´ÏÀú ÃÊ±âÈ­");
+        Debug.LogWarning("íŠœí† ë§¤ë‹ˆì € ì´ˆê¸°í™”");
 
 
         cineBrain = Camera.main.GetComponent<CinemachineBrain>();
 
-        // Ä«¸Ş¶ó ¼ø¼­´ë·Î Á¤·Ä(°ÔÀÓ¿ÀºêÁ§Æ® ÀÌ¸§ ±âÁØ)
+        // ì¹´ë©”ë¼ ìˆœì„œëŒ€ë¡œ ì •ë ¬(ê²Œì„ì˜¤ë¸Œì íŠ¸ ì´ë¦„ ê¸°ì¤€)
         cameras_TutoCutScene.Sort((p1, p2) => p1.gameObject.name.CompareTo(p2.gameObject.name));
 
         SwitchTutorialSequence(Manager.firebase.UserData.TutorialSequence.Value);
@@ -69,7 +69,7 @@ public class TutorialManager : MonoBehaviour
 
     private void SwitchTutorialSequence(int value)
     {
-        // ÇØ´ç Æ©Åä¸®¾ó ÁøÇàµµ´Â Firebase/UserData ¾È¿¡ ³Ö°Å³ª, UserData/StageList/Tutorial¸¸ µû·Î »©¼­ ³ÖÀ» ¼ö ÀÖÀ»Áö ¹°¾îº¸ÀÚ
+        // í•´ë‹¹ íŠœí† ë¦¬ì–¼ ì§„í–‰ë„ëŠ” Firebase/UserData ì•ˆì— ë„£ê±°ë‚˜, UserData/StageList/Tutorialë§Œ ë”°ë¡œ ë¹¼ì„œ ë„£ì„ ìˆ˜ ìˆì„ì§€ ë¬¼ì–´ë³´ì
         int sequence = value;
         switch (sequence)
         {
@@ -106,23 +106,23 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    // Sequence ¸¶Áö¸·¿¡ ´ëÈ­ Á¾·á¸¦ ±âÁ¡À¸·Î ÁøÇàµµ ÀúÀå
+    // Sequence ë§ˆì§€ë§‰ì— ëŒ€í™” ì¢…ë£Œë¥¼ ê¸°ì ìœ¼ë¡œ ì§„í–‰ë„ ì €ì¥
     public void SequenceEnd(DialogueData dialogueData = null)
     {
         //tutorialNPC.UpdateQuestData();
         Manager.dialogue.OnDialogueCompleted -= SequenceEnd;
-        Debug.LogError($"½ÃÄö½º 0{Manager.firebase.UserData.TutorialSequence.Value} Á¾·á");
+        Debug.LogWarning($"ì‹œí€€ìŠ¤ 0{Manager.firebase.UserData.TutorialSequence.Value} ì¢…ë£Œ");
 
-        // Æ©Åä¸®¾ó ÁøÇàµµ »ó½Â & ÀúÀå
+        // íŠœí† ë¦¬ì–¼ ì§„í–‰ë„ ìƒìŠ¹ & ì €ì¥
         Manager.firebase.UserData.TutorialSequence.Value += 1;
     }
 
     private void TutorialSequence00()
     {
-        // 1. ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
+        // 1. í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
         Manager.player.IsControl = false;
 
-        // 2. ½ÃÄö½º00 ÄÆ¾À ½ÃÀÛ
+        // 2. ì‹œí€€ìŠ¤00 ì»·ì”¬ ì‹œì‘
         StartCoroutine(Sequence00_CutScene());
     }
     IEnumerator Sequence00_CutScene()
@@ -140,38 +140,38 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        // ÇÃ·¹ÀÌ¾î Æ÷Ä¿½Ì Ä«¸Ş¶ó ÀüÈ¯ ¿Ï·á ½Ã,
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_move", () =>
+        // í”Œë ˆì´ì–´ í¬ì»¤ì‹± ì¹´ë©”ë¼ ì „í™˜ ì™„ë£Œ ì‹œ,
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_move", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
             StartCoroutine(Sequence00_Move());
         },
         (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§ µ¿½Ã¿¡ ¼Õ°¡¶ô¸ğ¾çÀ¸·Î Á¶ÀÌ½ºÆ½ ¿òÁ÷ÀÌ´Â ½Ã´¿ ÇØÁÖ±â");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ ë™ì‹œì— ì†ê°€ë½ëª¨ì–‘ìœ¼ë¡œ ì¡°ì´ìŠ¤í‹± ì›€ì§ì´ëŠ” ì‹œëŠ‰ í•´ì£¼ê¸°");
         });
     }
     IEnumerator Sequence00_Move()
     {
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ °¡´É»óÅÂ·Î ÀüÈ¯
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ê°€ëŠ¥ìƒíƒœë¡œ ì „í™˜
         Manager.player.IsControl = true;
 
-        //Debug.LogError(Manager.player.pc.Data.IsMove.Value);
-        // ÇÃ·¹ÀÌ¾îÀÇ Á¶ÀÛÀ» °¨ÁöÇÏ¸é, ¸î ÃÊ ÈÄ NPC·Î ÀÌµ¿ÇÏ¶ó´Â ÆË¾÷ È°¼ºÈ­
+        //Debug.LogWarning(Manager.player.pc.Data.IsMove.Value);
+        // í”Œë ˆì´ì–´ì˜ ì¡°ì‘ì„ ê°ì§€í•˜ë©´, ëª‡ ì´ˆ í›„ NPCë¡œ ì´ë™í•˜ë¼ëŠ” íŒì—… í™œì„±í™”
         yield return new WaitUntil(() => Manager.player.PlayerObj.GetComponent<PlayerRunTimeData>().IsMove.Value);
         yield return new WaitForSeconds(_Cut01_InteractTutoPopWaitTime);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_interact", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_interact", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
         },
         (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§ NPC ¹æÇâ È­»ìÇ¥ ¹ßÆÇ º¸¿©ÁÖ±â");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ NPC ë°©í–¥ í™”ì‚´í‘œ ë°œíŒ ë³´ì—¬ì£¼ê¸°");
             arrows[0].SetActive(true);
         });
 
-        // ÀÌÈÄ¿¡ NPC ¿µ¿ª¿¡ Á¢±ÙÇÏ¸é ´ëÈ­ ÁøÇà ÈÄ, ´ëÈ­ Á¾·á ½Ã Sequence00 ¿Ï·á, Sequence01·Î ÀüÈ¯
+        // ì´í›„ì— NPC ì˜ì—­ì— ì ‘ê·¼í•˜ë©´ ëŒ€í™” ì§„í–‰ í›„, ëŒ€í™” ì¢…ë£Œ ì‹œ Sequence00 ì™„ë£Œ, Sequence01ë¡œ ì „í™˜
     }
 
 
@@ -180,10 +180,12 @@ public class TutorialManager : MonoBehaviour
     {
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // 1. ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
+        Debug.LogWarning("ì‹œí€€ìŠ¤01 ì‹œì‘");
+
+        // 1. í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
         Manager.player.IsControl = false;
 
-        // 2. ½ÃÄö½º01 ÄÆ¾À ½ÃÀÛ
+        // 2. ì‹œí€€ìŠ¤01 ì»·ì”¬ ì‹œì‘
         StartCoroutine(Sequence01_CutScene());
     }
 
@@ -199,7 +201,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => currentQuest.IsInit);
         yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
 
-        /////// Äù½ºÆ®°¡ ¿Ï·áµÈ »óÈ²ÀÎµ¥, ´ë»ç¸¦ ¿Ï·áÇÏÁö ¾Ê°í Á¾·áÇØ¼­ ÇöÀç ´Ü°è¸¦ ½ºÅµÇÏ¸é¼­ Äù½ºÆ® ´ë»ç¸¸ ³ª¿Àµµ·Ï ÇÑ ºÎºĞ
+        /////// í€˜ìŠ¤íŠ¸ê°€ ì™„ë£Œëœ ìƒí™©ì¸ë°, ëŒ€ì‚¬ë¥¼ ì™„ë£Œí•˜ì§€ ì•Šê³  ì¢…ë£Œí•´ì„œ í˜„ì¬ ë‹¨ê³„ë¥¼ ìŠ¤í‚µí•˜ë©´ì„œ í€˜ìŠ¤íŠ¸ ëŒ€ì‚¬ë§Œ ë‚˜ì˜¤ë„ë¡ í•œ ë¶€ë¶„
         bool questCleared;
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
@@ -208,7 +210,7 @@ public class TutorialManager : MonoBehaviour
         }
         ////////////////////////////////////////////////////
 
-        // ¸ñÇ¥ ¼ö·®¸¸Å­ »ı»ê¹° ¹Ì¸® ¼³Á¤(Äù½ºÆ® ÁøÇàÁßÀÌ¾ú´Ù¸é ÁøÇàÁßÀÎ ¾ç »©°í ³Ö¾îµÎ±â)
+        // ëª©í‘œ ìˆ˜ëŸ‰ë§Œí¼ ìƒì‚°ë¬¼ ë¯¸ë¦¬ ì„¤ì •(í€˜ìŠ¤íŠ¸ ì§„í–‰ì¤‘ì´ì—ˆë‹¤ë©´ ì§„í–‰ì¤‘ì¸ ì–‘ ë¹¼ê³  ë„£ì–´ë‘ê¸°)
         prodsArea.ProdsCount.Value = currentQuest.QuestContentList.List[0].CurrentTargetCount - currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value;
 
         cameras_TutoCutScene[2].Priority = 11;
@@ -216,21 +218,21 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        // »ı»ê °Ç¹°·Î Æ÷Ä¿½Ì Ä«¸Ş¶ó ÀüÈ¯ ¿Ï·á ½Ã,
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
+        // ìƒì‚° ê±´ë¬¼ë¡œ í¬ì»¤ì‹± ì¹´ë©”ë¼ ì „í™˜ ì™„ë£Œ ì‹œ,
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
-            Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
+            Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
             {
-                // Ä«¸Ş¶ó º¹±Í
+                // ì¹´ë©”ë¼ ë³µê·€
                 cameras_TutoCutScene[2].Priority = 10;
                 Manager.camera.cam_PlayerFocus.Priority = 11;
 
-                // ÇÃ·¹ÀÌ¾î Á¶ÀÛ °¡´É»óÅÂ·Î ÀüÈ¯
+                // í”Œë ˆì´ì–´ ì¡°ì‘ ê°€ëŠ¥ìƒíƒœë¡œ ì „í™˜
                 Manager.player.IsControl = true;
 
-                Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
-                Debug.LogWarning("¸¶Áö¸· ÆË¾÷ ´İÀ» ¶§ »ı»ê °Ç¹° ¹æÇâ È­»ìÇ¥ ¹ßÆÇ º¸¿©ÁÖ±â");
+                Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
+                Debug.LogWarning("ë§ˆì§€ë§‰ íŒì—… ë‹«ì„ ë•Œ ìƒì‚° ê±´ë¬¼ ë°©í–¥ í™”ì‚´í‘œ ë°œíŒ ë³´ì—¬ì£¼ê¸°");
 
                 arrows[1].SetActive(true);
             });
@@ -240,29 +242,29 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence02()
     {
-        Debug.LogError("½ÃÄö½º02 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤02 ì‹œì‘");
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
         Manager.player.IsControl = false;
 
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
-            // ÆË¾÷ ´İÀ¸¸é¼­ ÀçÈ­ UIÈ°¼ºÈ­
-            Manager.ui.SwitchToTutorialProgressHUD(); // Æ©Åä¸®¾ó¿ë HUD ÀÏºÎ(ÀçÈ­) ¶ç¿ì±â
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
+            // íŒì—… ë‹«ìœ¼ë©´ì„œ ì¬í™” UIí™œì„±í™”
+            Manager.ui.SwitchToTutorialProgressHUD(); // íŠœí† ë¦¬ì–¼ìš© HUD ì¼ë¶€(ì¬í™”) ë„ìš°ê¸°
 
-            // ÇÃ·¹ÀÌ¾î Á¶ÀÛ È°¼ºÈ­
+            // í”Œë ˆì´ì–´ ì¡°ì‘ í™œì„±í™”
             Manager.player.IsControl = true;
         },
         (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§ ºÎµ¿»ê ¹æÇâ È­»ìÇ¥ ¹ßÆÇ º¸¿©ÁÖ±â");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ ë¶€ë™ì‚° ë°©í–¥ í™”ì‚´í‘œ ë°œíŒ ë³´ì—¬ì£¼ê¸°");
             arrows[3].SetActive(true);
 
-            // Äù½ºÆ® ¹ßÆÇ È°¼ºÈ­
+            // í€˜ìŠ¤íŠ¸ ë°œíŒ í™œì„±í™”
             tutorialNPC.ShowQuestTiles();
         });
     }
@@ -271,14 +273,14 @@ public class TutorialManager : MonoBehaviour
     {
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        Debug.LogError("½ÃÄö½º03 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤03 ì‹œì‘");
 
         StartCoroutine(Sequence03_CutScene());
     }
 
     IEnumerator Sequence03_CutScene()
     {
-        // ÇÃ·¹ÀÌ¾î°¡ °Ç¹°(Àç·á)¸¦ ¼Õ¿¡ ³ÖÀ» ¶§ ±îÁö ´ë±â
+        // í”Œë ˆì´ì–´ê°€ ê±´ë¬¼(ì¬ë£Œ)ë¥¼ ì†ì— ë„£ì„ ë•Œ ê¹Œì§€ ëŒ€ê¸°
         while (true)
         {
             IngrediantInstance building;
@@ -298,43 +300,43 @@ public class TutorialManager : MonoBehaviour
             }
         }
 
-        Debug.LogError("ÁøÇàµÊ");
-
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ºñÈ°¼ºÈ­
+        Debug.LogWarning("ì§„í–‰ë¨");
+            
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë¹„í™œì„±í™”
         Manager.player.IsControl = false;
 
-        // °øÅÍ Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // ê³µí„° í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[3].Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
 
-        // Æ÷Ä¿½º ¿Ï·á ½Ã ÆË¾÷ ¸Ş¼¼Áö ¶ç¿ì±â
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
+        // í¬ì»¤ìŠ¤ ì™„ë£Œ ì‹œ íŒì—… ë©”ì„¸ì§€ ë„ìš°ê¸°
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence03-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
 
-            // Ä«¸Ş¶ó º¹±Í
+            // ì¹´ë©”ë¼ ë³µê·€
             cameras_TutoCutScene[3].Priority = 10;
             Manager.camera.cam_PlayerFocus.Priority = 11;
 
-            // ÇÃ·¹ÀÌ¾î Á¶ÀÛ È°¼ºÈ­
+            // í”Œë ˆì´ì–´ ì¡°ì‘ í™œì„±í™”
             Manager.player.IsControl = true;
         },
         (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ");
         });
 
-        // ÀÌ¾î¼­ °Ç¼³ ¸ğµå »ó¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ °øÅÍ·Î °Ç¹°(Àç·á) ¼³Ä¡ ÁøÇà
+        // ì´ì–´ì„œ ê±´ì„¤ ëª¨ë“œ ìƒì—ì„œ í”Œë ˆì´ì–´ê°€ ê³µí„°ë¡œ ê±´ë¬¼(ì¬ë£Œ) ì„¤ì¹˜ ì§„í–‰
     }
 
     public void TutorialSequence04()
     {
-        Debug.LogError("½ÃÄö½º04 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤04 ì‹œì‘");
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ºñÈ°¼ºÈ­
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë¹„í™œì„±í™”
         Manager.player.IsControl = false;
 
         StartCoroutine(Sequence04_CutScene01());
@@ -342,57 +344,57 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator Sequence04_CutScene01()
     {
-        // °øÅÍ Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà(¼öÈ®Çü °Ç¹°ÀÌ ¼³Ä¡µÈ °øÅÍ Æ÷Ä¿½Ì)
+        // ê³µí„° í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰(ìˆ˜í™•í˜• ê±´ë¬¼ì´ ì„¤ì¹˜ëœ ê³µí„° í¬ì»¤ì‹±)
         cameras_TutoCutScene[3].Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        // Æ÷Ä¿½º ¿Ï·á ½Ã ÆË¾÷ ¸Ş¼¼Áö ¶ç¿ì±â
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
+        // í¬ì»¤ìŠ¤ ì™„ë£Œ ì‹œ íŒì—… ë©”ì„¸ì§€ ë„ìš°ê¸°
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
             StartCoroutine(Sequence04_CutScene02());
         }, (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ¼öÈ®Çü °Ç¹°ÀÌ ºû³ª´Â È¿°ú ½ÇÇà");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ìˆ˜í™•í˜• ê±´ë¬¼ì´ ë¹›ë‚˜ëŠ” íš¨ê³¼ ì‹¤í–‰");
         });
     }
 
     IEnumerator Sequence04_CutScene02()
     {
-        // ÀÛ¾÷Çü °Ç¹° Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // ì‘ì—…í˜• ê±´ë¬¼ í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[3].Priority = 10;
         cameras_TutoCutScene[2].Priority = 11;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence04-2", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
 
-            // Ä«¸Ş¶ó º¹±Í
+            // ì¹´ë©”ë¼ ë³µê·€
             cameras_TutoCutScene[2].Priority = 10;
             Manager.camera.cam_PlayerFocus.Priority = 11;
 
-            // ÇÃ·¹ÀÌ¾î Á¶ÀÛ °¡´É»óÅÂ·Î ÀüÈ¯
+            // í”Œë ˆì´ì–´ ì¡°ì‘ ê°€ëŠ¥ìƒíƒœë¡œ ì „í™˜
             Manager.player.IsControl = true;
 
-            // ½ÃÄö½º04 Á¾·á
+            // ì‹œí€€ìŠ¤04 ì¢…ë£Œ
             SequenceEnd();
         }, (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ÀÛ¾÷Çü °Ç¹°ÀÌ ºû³ª´Â È¿°ú ½ÇÇà");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ì‘ì—…í˜• ê±´ë¬¼ì´ ë¹›ë‚˜ëŠ” íš¨ê³¼ ì‹¤í–‰");
         });
     }
     public void TutorialSequence05()
     {
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // ÀÌ°Ç Äù½ºÆ® ¸Å´ÏÀú¿¡¼­ Ã³¸®ÇØ¼­ µû·Î Ãß°¡ÇÒ °Ô ¾øÀ½
-        Debug.LogError("½ÃÄö½º05 ½ÃÀÛ");
+        // ì´ê±´ í€˜ìŠ¤íŠ¸ ë§¤ë‹ˆì €ì—ì„œ ì²˜ë¦¬í•´ì„œ ë”°ë¡œ ì¶”ê°€í•  ê²Œ ì—†ìŒ
+        Debug.LogWarning("ì‹œí€€ìŠ¤05 ì‹œì‘");
 
-        // NPC ¹æÇâ È­»ìÇ¥ È°¼ºÈ­
+        // NPC ë°©í–¥ í™”ì‚´í‘œ í™œì„±í™”
         arrows[2].SetActive(true);
 
         StartCoroutine(Sequence05());
@@ -411,7 +413,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => currentQuest.IsInit);
         yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
 
-        /////// Äù½ºÆ®°¡ ¿Ï·áµÈ »óÈ²ÀÎµ¥, ´ë»ç¸¦ ¿Ï·áÇÏÁö ¾Ê°í Á¾·áÇØ¼­ ÇöÀç ´Ü°è¸¦ ½ºÅµÇÏ¸é¼­ Äù½ºÆ® ´ë»ç¸¸ ³ª¿Àµµ·Ï ÇÑ ºÎºĞ
+        /////// í€˜ìŠ¤íŠ¸ê°€ ì™„ë£Œëœ ìƒí™©ì¸ë°, ëŒ€ì‚¬ë¥¼ ì™„ë£Œí•˜ì§€ ì•Šê³  ì¢…ë£Œí•´ì„œ í˜„ì¬ ë‹¨ê³„ë¥¼ ìŠ¤í‚µí•˜ë©´ì„œ í€˜ìŠ¤íŠ¸ ëŒ€ì‚¬ë§Œ ë‚˜ì˜¤ë„ë¡ í•œ ë¶€ë¶„
         bool questCleared;
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
@@ -420,14 +422,14 @@ public class TutorialManager : MonoBehaviour
         }
         ////////////////////////////////////////////////////
         
-        Debug.LogWarning("ÀÛ¾÷Çü °Ç¹°¿¡¼­ Àç´Ü ¹æÇâÀ¸·Î È­»ìÇ¥ Á¤µµ¸¸ ¶ç¿öÁÖ¸é µÉµí");
+        Debug.LogWarning("ì‘ì—…í˜• ê±´ë¬¼ì—ì„œ ì¬ë‹¨ ë°©í–¥ìœ¼ë¡œ í™”ì‚´í‘œ ì •ë„ë§Œ ë„ì›Œì£¼ë©´ ë ë“¯");
     }
 
     public void TutorialSequence06()
     {
-        Debug.LogError("½ÃÄö½º06 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤06 ì‹œì‘");
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
         Manager.player.IsControl = false;
 
         StartCoroutine(Sequence06_CutScene01());
@@ -437,68 +439,68 @@ public class TutorialManager : MonoBehaviour
     {
         yield return new WaitUntil(() => Manager.camera.cam_NpcFocus.Follow != null);
 
-        // NPC Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // NPC í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         Manager.camera.cam_NpcFocus.Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
             StartCoroutine(Sequence06_CutScene02());
         }, (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ¼®»ó¿¡¼­ ºû³ª´Â È¿°ú");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ì„ìƒì—ì„œ ë¹›ë‚˜ëŠ” íš¨ê³¼");
         });
     }
 
     IEnumerator Sequence06_CutScene02()
     {
-        // ÀÏ²Û °Ç¹° Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // ì¼ê¾¼ ê±´ë¬¼ í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[4].Priority = 11;
         Manager.camera.cam_NpcFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence06-2", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
 
-            // Ä«¸Ş¶ó º¹±Í
+            // ì¹´ë©”ë¼ ë³µê·€
             cameras_TutoCutScene[4].Priority = 10;
             Manager.camera.cam_PlayerFocus.Priority = 11;
 
-            // ÇÃ·¹ÀÌ¾î Á¶ÀÛ °¡´É»óÅÂ·Î ÀüÈ¯
+            // í”Œë ˆì´ì–´ ì¡°ì‘ ê°€ëŠ¥ìƒíƒœë¡œ ì „í™˜
             Manager.player.IsControl = true;
 
-            // ÀÎ·Â»ç¹«¼Ò ¹æÇâ È­»ìÇ¥ È°¼ºÈ­
+            // ì¸ë ¥ì‚¬ë¬´ì†Œ ë°©í–¥ í™”ì‚´í‘œ í™œì„±í™”
             arrows[4].SetActive(true);
 
 
         }, (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ÀÎ·Â»ç¹«¼Ò ºû³ª´Â È¿°ú");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ì¸ë ¥ì‚¬ë¬´ì†Œ ë¹›ë‚˜ëŠ” íš¨ê³¼");
 
-            // ÀÎ·Â»ç¹«¼Ò »óÈ£ÀÛ¿ë ¹ßÆÇ È°¼ºÈ­
+            // ì¸ë ¥ì‚¬ë¬´ì†Œ ìƒí˜¸ì‘ìš© ë°œíŒ í™œì„±í™”
             Manager.buildings.workerBuilding.ShowWaitingTile();
         });
     }
 
 
-    // ÀÏ²ÛÀÌ ¼ÒÈ¯ or ÀÏ²Û ±¸¸Å ¹öÆ°À» ´©¸£´Â ½ÃÁ¡¿¡¼­
-    // Æ©Åä¸®¾ó ¾ÀÀÌ¶ó¸é SequenceEnd(); 06 -> 07
+    // ì¼ê¾¼ì´ ì†Œí™˜ or ì¼ê¾¼ êµ¬ë§¤ ë²„íŠ¼ì„ ëˆ„ë¥´ëŠ” ì‹œì ì—ì„œ
+    // íŠœí† ë¦¬ì–¼ ì”¬ì´ë¼ë©´ SequenceEnd(); 06 -> 07
 
     public void TutorialSequence07()
     {
-        Debug.LogError("½ÃÄö½º07 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤07 ì‹œì‘");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // ÀÎ·Â»ç¹«¼Ò ¹æÇâ È­»ìÇ¥ ºñÈ°¼ºÈ­
+        // ì¸ë ¥ì‚¬ë¬´ì†Œ ë°©í–¥ í™”ì‚´í‘œ ë¹„í™œì„±í™”
         arrows[4].SetActive(false);
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ¸·±â
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë§‰ê¸°
         Manager.player.IsControl = false;
 
         StartCoroutine(Sequence07());
@@ -506,75 +508,75 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator Sequence07()
     {
-        // ÀÏ²Û Ä«¸Ş¶ó Follow µî·Ï±îÁö ´ë±â
+        // ì¼ê¾¼ ì¹´ë©”ë¼ Follow ë“±ë¡ê¹Œì§€ ëŒ€ê¸°
         yield return new WaitUntil(() => cameras_TutoCutScene[5].Follow != null);
 
-        // ÀÏ²Û Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // ì¼ê¾¼ í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[5].Priority = 11;
         Manager.camera.cam_NpcFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-1", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
 
             //StartCoroutine(Sequence07_CutScene01());
 
-            // Ä«¸Ş¶ó º¹±Í
+            // ì¹´ë©”ë¼ ë³µê·€
             cameras_TutoCutScene[5].Priority = 10;
             Manager.camera.cam_PlayerFocus.Priority = 11;
 
-            // ¿ì¼± ¾÷±×·¹ÀÌµå °üÇÑ ¼³¸í ¾øÀÌ ´ÙÀ½ ´Ü°è·Î ÁøÇà
-            // ¿ø·¡´ë·Î¶ó¸é ¾÷±×·¹ÀÌµå ÁøÇà ÈÄ, ½ÃÄö½º Àû¿ë? ¸ğ¸£°Ú´Ù
+            // ìš°ì„  ì—…ê·¸ë ˆì´ë“œ ê´€í•œ ì„¤ëª… ì—†ì´ ë‹¤ìŒ ë‹¨ê³„ë¡œ ì§„í–‰
+            // ì›ë˜ëŒ€ë¡œë¼ë©´ ì—…ê·¸ë ˆì´ë“œ ì§„í–‰ í›„, ì‹œí€€ìŠ¤ ì ìš©? ëª¨ë¥´ê² ë‹¤
             SequenceEnd();
 
         }, (msg) =>
         {
-            //Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ");
+            //Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ");
         });
     }
 
     IEnumerator Sequence07_CutScene01()
     {
-        // ÀÏ²Û °Ç¹° Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // ì¼ê¾¼ ê±´ë¬¼ í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[4].Priority = 11;
         cameras_TutoCutScene[5].Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
-        Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
+        Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence07-2", () =>
         {
-            Debug.LogWarning("ÆË¾÷ ´İÀ½ Äİ¹é ÇÔ¼ö ½ÇÇà");
+            Debug.LogWarning("íŒì—… ë‹«ìŒ ì½œë°± í•¨ìˆ˜ ì‹¤í–‰");
 
-            // Ä«¸Ş¶ó º¹±Í
+            // ì¹´ë©”ë¼ ë³µê·€
             cameras_TutoCutScene[4].Priority = 10;
             Manager.camera.cam_PlayerFocus.Priority = 11;
 
-            // ÇÃ·¹ÀÌ¾î Á¶ÀÛ °¡´É»óÅÂ·Î ÀüÈ¯
+            // í”Œë ˆì´ì–´ ì¡°ì‘ ê°€ëŠ¥ìƒíƒœë¡œ ì „í™˜
             Manager.player.IsControl = true;
         }, (msg) =>
         {
-            Debug.LogWarning("ÆË¾÷ ¿­¾úÀ» ¶§, ÀÎ·Â»ç¹«¼Ò ºû³ª´Â È¿°ú");
+            Debug.LogWarning("íŒì—… ì—´ì—ˆì„ ë•Œ, ì¸ë ¥ì‚¬ë¬´ì†Œ ë¹›ë‚˜ëŠ” íš¨ê³¼");
 
-            // ÀÎ·Â»ç¹«¼Ò »óÈ£ÀÛ¿ë ¹ßÆÇ È°¼ºÈ­
+            // ì¸ë ¥ì‚¬ë¬´ì†Œ ìƒí˜¸ì‘ìš© ë°œíŒ í™œì„±í™”
             Manager.buildings.workerBuilding.ShowWaitingTile();
 
-            // ÀÌÈÄ¿¡ ÀÎ·Â»ç¹«¼Ò ÆĞ³Î¿¡¼­ ¾÷±×·¹ÀÌµå ÁøÇà
+            // ì´í›„ì— ì¸ë ¥ì‚¬ë¬´ì†Œ íŒ¨ë„ì—ì„œ ì—…ê·¸ë ˆì´ë“œ ì§„í–‰
         });
     }
 
-    // Äù½ºÆ® 3¹ø ÁøÇà
+    // í€˜ìŠ¤íŠ¸ 3ë²ˆ ì§„í–‰
     public void TutorialSequence08()
     {
-        Debug.LogError("½ÃÄö½º08 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤08 ì‹œì‘");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // NPC ¹æÇâ È­»ìÇ¥ È°¼ºÈ­
+        // NPC ë°©í–¥ í™”ì‚´í‘œ í™œì„±í™”
         arrows[2].SetActive(true);
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ È°¼ºÈ­
+        // í”Œë ˆì´ì–´ ì¡°ì‘ í™œì„±í™”
         Manager.player.IsControl = true;
 
         StartCoroutine(Sequence08());
@@ -592,7 +594,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => currentQuest.IsInit);
         yield return new WaitUntil(() => currentQuest.QuestContentList.IsInit);
 
-        /////// Äù½ºÆ®°¡ ¿Ï·áµÈ »óÈ²ÀÎµ¥, ´ë»ç¸¦ ¿Ï·áÇÏÁö ¾Ê°í Á¾·áÇØ¼­ ÇöÀç ´Ü°è¸¦ ½ºÅµÇÏ¸é¼­ Äù½ºÆ® ´ë»ç¸¸ ³ª¿Àµµ·Ï ÇÑ ºÎºĞ
+        /////// í€˜ìŠ¤íŠ¸ê°€ ì™„ë£Œëœ ìƒí™©ì¸ë°, ëŒ€ì‚¬ë¥¼ ì™„ë£Œí•˜ì§€ ì•Šê³  ì¢…ë£Œí•´ì„œ í˜„ì¬ ë‹¨ê³„ë¥¼ ìŠ¤í‚µí•˜ë©´ì„œ í€˜ìŠ¤íŠ¸ ëŒ€ì‚¬ë§Œ ë‚˜ì˜¤ë„ë¡ í•œ ë¶€ë¶„
         bool questCleared;
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
@@ -601,18 +603,18 @@ public class TutorialManager : MonoBehaviour
         }
         ////////////////////////////////////////////////////
 
-        // Äù½ºÆ® ¹ßÆÇ È°¼ºÈ­
+        // í€˜ìŠ¤íŠ¸ ë°œíŒ í™œì„±í™”
         tutorialNPC.ShowQuestTiles();
     }
 
 
     public void TutorialSequence09()
     {
-        Debug.LogError("½ÃÄö½º09 ½ÃÀÛ");
+        Debug.LogWarning("ì‹œí€€ìŠ¤09 ì‹œì‘");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ ºñÈ°¼ºÈ­
+        // í”Œë ˆì´ì–´ ì¡°ì‘ ë¹„í™œì„±í™”
         Manager.player.IsControl = false;
 
         StartCoroutine(Sequence09());
@@ -622,18 +624,18 @@ public class TutorialManager : MonoBehaviour
     {
         portal.SetActive(true);
 
-        // Æ÷Å» Æ÷Ä¿½º Ä«¸Ş¶ó ÄÆ¾À ÁøÇà
+        // í¬íƒˆ í¬ì»¤ìŠ¤ ì¹´ë©”ë¼ ì»·ì”¬ ì§„í–‰
         cameras_TutoCutScene[7].Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
         yield return new WaitForSeconds(portalFocusTime);
 
-        // Ä«¸Ş¶ó º¹±Í
+        // ì¹´ë©”ë¼ ë³µê·€
         cameras_TutoCutScene[7].Priority = 10;
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        // ÇÃ·¹ÀÌ¾î Á¶ÀÛ È°¼ºÈ­
+        // í”Œë ˆì´ì–´ ì¡°ì‘ í™œì„±í™”
         Manager.player.IsControl = true;
     }
 

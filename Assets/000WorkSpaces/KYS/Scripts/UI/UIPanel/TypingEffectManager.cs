@@ -13,7 +13,9 @@ namespace KYS
         [Header("타이핑 효과 설정")]
         [SerializeField] private float typingSpeed = 0.05f; // 글자당 딜레이
         [SerializeField] private bool enableTypingEffect = true; // 타이핑 효과 활성화
-        [SerializeField] private AudioClip typingSound; // 타이핑 사운드 (선택사항)
+        [SerializeField] private string typingSoundName = ""; // 타이핑 사운드 이름 (AudioData 기반)
+        [SerializeField] private bool enableTypingSound = true; // 타이핑 사운드 활성화
+        [SerializeField] private int soundPlayInterval = 3; // 사운드 재생 간격 (글자 수)
 
         // 타이핑 효과 관련 변수
         private Tween typingTween;
@@ -56,6 +58,33 @@ namespace KYS
             set => typingSpeed = value;
         }
 
+        /// <summary>
+        /// 타이핑 사운드 이름
+        /// </summary>
+        public string TypingSoundName
+        {
+            get => typingSoundName;
+            set => typingSoundName = value;
+        }
+
+        /// <summary>
+        /// 타이핑 사운드 활성화 여부
+        /// </summary>
+        public bool EnableTypingSound
+        {
+            get => enableTypingSound;
+            set => enableTypingSound = value;
+        }
+
+        /// <summary>
+        /// 사운드 재생 간격 (글자 수)
+        /// </summary>
+        public int SoundPlayInterval
+        {
+            get => soundPlayInterval;
+            set => soundPlayInterval = Mathf.Max(1, value);
+        }
+
         #endregion
 
         #region Public Methods
@@ -94,10 +123,10 @@ namespace KYS
                 {
                     targetText.text = fullText.Substring(0, value + 1);
                     
-                    // 타이핑 사운드 재생 (선택사항)
-                    if (typingSound != null)
+                    // 타이핑 사운드 재생 (AudioManager 사용, 간격 조절)
+                    if (enableTypingSound && !string.IsNullOrEmpty(typingSoundName) && value % soundPlayInterval == 0)
                     {
-                        AudioSource.PlayClipAtPoint(typingSound, Camera.main.transform.position, 0.3f);
+                        Manager.Audio.SfxPlay(typingSoundName, Camera.main.transform);
                     }
                 }
             }, fullText.Length - 1, fullText.Length * typingSpeed)
@@ -169,10 +198,19 @@ namespace KYS
         /// <summary>
         /// 타이핑 사운드 설정
         /// </summary>
-        /// <param name="sound">타이핑 사운드</param>
-        public void SetTypingSound(AudioClip sound)
+        /// <param name="soundName">타이핑 사운드 이름 (AudioData 기반)</param>
+        public void SetTypingSound(string soundName)
         {
-            typingSound = sound;
+            typingSoundName = soundName;
+        }
+
+        /// <summary>
+        /// 타이핑 사운드 활성화/비활성화
+        /// </summary>
+        /// <param name="enable">사운드 활성화 여부</param>
+        public void SetTypingSoundEnabled(bool enable)
+        {
+            enableTypingSound = enable;
         }
 
         #endregion

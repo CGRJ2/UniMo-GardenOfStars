@@ -3105,7 +3105,7 @@ MonoBehaviour:
   m_Lens:
     FieldOfView: 60
     OrthographicSize: 12
-    NearClipPlane: -100
+    NearClipPlane: 0.01
     FarClipPlane: 300
     Dutch: 0
     ModeOverride: 0
@@ -3531,6 +3531,10 @@ PrefabInstance:
     - target: {fileID: 5371565984060817637, guid: 0d16e86109e49d84aa3e889aefda61dc, type: 3}
       propertyPath: Sequence._value
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5371565984060817637, guid: 0d16e86109e49d84aa3e889aefda61dc, type: 3}
+      propertyPath: portalFocusTime
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5371565984060817637, guid: 0d16e86109e49d84aa3e889aefda61dc, type: 3}
       propertyPath: arrows.Array.size

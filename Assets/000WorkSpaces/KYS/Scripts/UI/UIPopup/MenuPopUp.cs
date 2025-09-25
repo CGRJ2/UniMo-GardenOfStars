@@ -60,6 +60,15 @@ namespace KYS
 
         private void SetupButtons()
         {
+            Debug.Log($"[MenuPopUp] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[MenuPopUp] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var startEventHandler = GetEventWithSFX(startButtonName, "SFX_ButtonClick");
             if (startEventHandler != null)
@@ -84,6 +93,8 @@ namespace KYS
             {
                 closeEventHandler.Click += (data) => OnCloseButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         #region Event Handlers
