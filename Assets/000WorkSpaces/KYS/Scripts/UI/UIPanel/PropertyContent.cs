@@ -24,6 +24,7 @@ namespace KYS
         [SerializeField] private string runUnlockContentName = "RunUnlockContentText";
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
+        [SerializeField] private string RunBuilidingCountTextName = "RunBuildingCountText";
 
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
@@ -42,10 +43,9 @@ namespace KYS
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
         private GameObject ItemContent2 => GetUI(ItemContent2Name);
         private Button UpgradeButton => GetUI<Button>(UpgradeButtonName);
-
+        private TextMeshProUGUI RunBuildingCountText => GetUI<TextMeshProUGUI>(RunBuilidingCountTextName);
 
         [Header("Build Settings")]
-        [SerializeField] private string buildingName = "";
         private string buildingID;
         private int buildingCost = 0;
         private BuildingData currentBuildingData; // 현재 건물 데이터 저장
@@ -69,6 +69,11 @@ namespace KYS
             {
                 Debug.LogError($"[PropertyContent] buyButton을 찾을 수 없습니다: {buildBuyButtonName}");
             }
+        }
+
+        private void OnEnable()
+        {
+            BuildingCountUpdate();
         }
 
         // 그냥 구매버튼 & First구매버튼 둘 다 이 함수를 사용하도록 바꿨습니다.
@@ -214,10 +219,9 @@ namespace KYS
         {
             string curStageID = Manager.firebase.UserData.CurStage.Value;
             buildingID = buildingData.ID;
-            buildingName = buildingData.Name;
             buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
-
+            BuildingCountUpdate();
             if (buildingData is HarvestBD harvestBD)
             {
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
@@ -264,6 +268,17 @@ namespace KYS
             UpdateUI();
         }
 
+        private void BuildingCountUpdate()
+        {
+            int count = 0;
+            foreach (PlaceTileData tileData in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
+            {
+                // 해당 건물이 설치되어 있다면 개수 ++
+                if (buildingID == tileData.BuildingID.Value) count++;
+            }
+            Debug.LogError($"[PropertyContent] BuildingConuntUpdate - 현재 설치된 {buildingID} 건물 개수: {count}");
+            RunBuildingCountText.text = $"X{count.ToString("D2")}";
+        }
 
         private void OnFirstBuyClicked()
         {

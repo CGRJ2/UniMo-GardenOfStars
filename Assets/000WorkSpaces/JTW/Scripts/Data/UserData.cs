@@ -20,7 +20,6 @@ public partial class UserData : FirebaseData
 
     public FirebaseDataList<DailyAdData> DailyAdList;
 
-    public FirebaseDataList<StageExitTimeData> StageExitTimeList;
 
     public StageData CurStageData => StageList.Get(CurStage.Value);
 
