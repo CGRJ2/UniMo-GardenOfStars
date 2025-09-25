@@ -118,7 +118,7 @@ public class QuestManager : Singleton<QuestManager>
                 if (Manager.firebase.UserData.TutorialSequence.Value == 8) 
                     StartCoroutine(TutorialManager.Instance.TutoQuest03ClearCutScene());
                 else
-                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+                    Manager.dialogue.StartDialogueWithPanel(npcId.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npcId.Value}_{curQuestId.Value}");
 
                 return;
             }
@@ -126,7 +126,7 @@ public class QuestManager : Singleton<QuestManager>
             // 현재 퀘스트 Id에 대한 대화 이벤트 시작
             // 대화 이벤트 종료 후, 다음 퀘스트로 업데이트
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
-            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}");
+            Manager.dialogue.StartDialogueWithPanel(npcId.Value, Manager.firebase.UserData.CurStage.Value, $"Quest_{npcId.Value}_{curQuestId.Value}");
         }
         else isCleared = false;
     }

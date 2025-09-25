@@ -13,8 +13,6 @@ namespace GameNpc
         QuestRequireTile[] requireTiles;
 
         [SerializeField] private Transform _focusPopUpCanvas;
-        private TMP_Text _focusPopUpText;
-
         void Awake()
         {
             // 타이틀씬에서 시작 시
@@ -58,7 +56,6 @@ namespace GameNpc
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>(true);
-            _focusPopUpText = _focusPopUpCanvas.GetComponentInChildren<TMP_Text>(true);
 
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
@@ -125,27 +122,6 @@ namespace GameNpc
         public void ShowQuestTiles()
         {
             requireTilesParent.gameObject.SetActive(true);
-        }
-
-        /*public void Talk()
-        {
-            //Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
-            // Dialogue 실행
-            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
-        }*/
-
-        public void Focus()
-        {
-            int randomTextLineIndex = NpcUtil.GetRandomIndex(Manager.npc.CurStageNpc.TextLines_KR.Count);
-            string randomTextLine = Manager.npc.CurStageNpc.TextLines_KR[randomTextLineIndex];
-            _focusPopUpText.text = randomTextLine;
-
-            _focusPopUpCanvas.gameObject.SetActive(true);
-        }
-        public void FocusOut()
-        { 
-            _focusPopUpText.text = "";
-            _focusPopUpCanvas.gameObject.SetActive(false);
         }
     }
 }
