@@ -27,11 +27,16 @@ public class WorkerPanel : KYS.BaseUI
     private TextMeshProUGUI _runWorkerCostText;
     private TextMeshProUGUI _runUnlockContentText;
     private Image _runWorkerImage;
-    
+    private Image _premiumBG;
+    private Image _runWorkerCostIcon;
+    private Image _runWorkerPremiumCostIcon;
+    private Image _runPremiumIcon;
+
 
     // 버튼들
     private Button _upgradeBtn;
     private Button _buyBtn;
+    private Button _premiumBuyButton;
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
@@ -62,6 +67,12 @@ public class WorkerPanel : KYS.BaseUI
         // 버튼들 초기화
         _upgradeBtn = GetUI<Button>("UpgradeButton");
         _buyBtn = GetUI<Button>("BuyButton");
+        _premiumBuyButton = GetUI<Button>("PremiumBuyButton");
+
+        _premiumBG = GetUI<Image>("PremiumWorkerImageBG");
+        _runWorkerCostIcon = GetUI<Image>("RunWorkerCostIcon");
+        _runWorkerPremiumCostIcon = GetUI<Image>("RunPremiumWorkerCostIcon");
+        _runPremiumIcon = GetUI<Image>("PremiumIcon");
 
         // 디버그: 버튼 초기화 확인
         Debug.Log($"[WorkerPanel] _upgradeBtn: {_upgradeBtn != null}");
@@ -70,6 +81,7 @@ public class WorkerPanel : KYS.BaseUI
         // 버튼 이벤트 등록
         if (_upgradeBtn != null) _upgradeBtn.onClick.AddListener(OnUpgradeClick);
         if (_buyBtn != null) _buyBtn.onClick.AddListener(OnBuyClick);
+        _premiumBuyButton.onClick.AddListener(OnBuyClick);
     }
 
     public void Init(string key, WorkerUpgradePresenter presenter)
@@ -125,6 +137,11 @@ public class WorkerPanel : KYS.BaseUI
                 if (_employCost == -1)
                 {
                     _isBMCost = true;
+                    _premiumBG.gameObject.SetActive(true);
+                    _runWorkerCostIcon.gameObject.SetActive(false);
+                    _runWorkerPremiumCostIcon.gameObject.SetActive(true);
+                    _premiumBuyButton.gameObject.SetActive(true);
+                    _runPremiumIcon.gameObject.SetActive(true);
                     _runWorkerCostText.text = _employBMCost.ToString();
                 }
                 else
