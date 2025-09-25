@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 1133896026130089082}
   - component: {fileID: 947109501504704729}
   - component: {fileID: 3748741630047970184}
-  - component: {fileID: 875156556206429596}
   - component: {fileID: 3912910585794690682}
   - component: {fileID: 5811337911342908531}
   m_Layer: 6
@@ -121,23 +120,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterController: {fileID: 9100000, guid: 306dc01b47342ab498e492829c521bc4, type: 2}
   _equipController: {fileID: 9100000, guid: 45aebbca9a33f9d4d861d1ad317549fd, type: 2}
---- !u!114 &875156556206429596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6093669597428345217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0104f7fad383a18449ae7ef68d548d81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 2771505978341900933}
-  uiRect: {fileID: 0}
-  canvas: {fileID: 0}
-  screenSpaceOffset: {x: 0, y: 20}
-  worldSpaceOffset: {x: 0, y: 0, z: 0}
 --- !u!195 &3912910585794690682
 NavMeshAgent:
   m_ObjectHideFlags: 0
