@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class StageManager : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class StageManager : MonoBehaviour
     }
 
     public string finalProdID => GetFinalProdID();
+
 
     private void Awake()
     {
@@ -128,7 +130,20 @@ public class StageManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
 
         // 스테이지 ExitTime 체크
+        _StageID = Manager.firebase.UserData.CurStage.Value;
 
+        // 보상 팝업 닫힌 후
+        double diffTime = GetStageAutoEarnTime(_StageID);
+        if (diffTime > _AutoRewardMinTime)
+        {
+            // 보상 팝업 열기
+        }
+        else
+        {
+            // 보상 팝업 없이 바로 시간 체크 루틴 실행
+            _AutoRewardInited = true;
+            StartCoroutine(ExitTimeCheckRoutine());
+        }
     }
 
     // 스테이지 별로 최종 생산물 설정
@@ -160,14 +175,13 @@ public class StageManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            GetStageAutoEarnTime(Manager.firebase.UserData.CurStage.Value);
+            GetTotalAutoReward(Manager.firebase.UserData.CurStage.Value);
         }
     }
 
-    // 스테이지 클리어 기준
+    // 클리어된 스테이지 한정
     // 최대 누적 2시간 => 최대보상
-
-    // 현재 스테이지에 쌓인 재화 반환 (시간 * 건물 수(임시)로 계산)
+    // 현재 스테이지에 쌓인 재화 반환
     public void CheckStageExitTime(string stageID)
     {
         var stageData = Manager.firebase.UserData.CurStageData;
@@ -190,11 +204,10 @@ public class StageManager : MonoBehaviour
 
         // 초 단위로 변환
         double seconds = diff.TotalSeconds;
-        //Debug.LogError($"DB:{t}, diff:{seconds}");
         return seconds;
     }
 
-    public void UpdateAutoReward(string stageID)
+    public int GetTotalAutoReward(string stageID)
     {
         int fullReward = Manager.data.Stage.Values[stageID].StageAutoReward;
 
@@ -203,6 +216,23 @@ public class StageManager : MonoBehaviour
         int finalReward = (int)(fullReward * rewardPercent);
 
         Debug.LogError($"방치 시간:{GetStageAutoEarnTime(stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
+
+        return finalReward;
+    }
+    string _StageID;
+    float _AutoRewardMinTime = 60f;
+    bool _AutoRewardInited = false;
+
+    private void OnDestroy()
+    {
+        if(_AutoRewardInited)
+            CheckStageExitTime(_StageID);
+    }
+
+    private IEnumerator ExitTimeCheckRoutine()
+    {
+        yield return new WaitForSeconds(_AutoRewardMinTime / 2f);
+        CheckStageExitTime(_StageID);
     }
 }
 
