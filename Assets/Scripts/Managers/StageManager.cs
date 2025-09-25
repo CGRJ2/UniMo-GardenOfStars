@@ -140,7 +140,7 @@ public class StageManager : MonoBehaviour
             double diffTime = GetStageAutoEarnTime(_StageID);
             if (diffTime > _AutoRewardMinTime)
             {
-                Debug.LogError("보상 팝업 열기");
+                //Debug.LogError("보상 팝업 열기");
                 // 보상 팝업 열기
                 Manager.ui.ShowPopUpAsync<OfflineRewardPopup>((popup) =>
                 {
@@ -150,8 +150,7 @@ public class StageManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("보상 팝업 안열고 그냥 진행");
-
+                //Debug.LogError("보상 팝업 안열고 그냥 진행");
                 // 보상 팝업 없이 바로 시간 체크 루틴 실행
                 OfflineRewardInited();
             }
@@ -204,8 +203,8 @@ public class StageManager : MonoBehaviour
     // 최대 누적 2시간 => 최대보상
     // 현재 스테이지에 쌓인 재화 반환
     string _StageID;
-    float _AutoRewardMinTime = 10f;
-    float _AutoRewardMaxTime = 7200f;
+    float _AutoRewardMinTime = 10f;     // 최소 보상 시간
+    float _AutoRewardMaxTime = 7200f;   // 최대 보상 시간
     bool _AutoRewardInited = false;
 
     public void CheckStageExitTime(string targetStageID = null)
@@ -259,7 +258,7 @@ public class StageManager : MonoBehaviour
 
         int finalReward = (int)(fullReward * rewardPercent) * 100;
 
-        Debug.LogError($"방치 시간:{GetStageAutoEarnTime(_stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
+        //Debug.LogWarning($"방치 시간:{GetStageAutoEarnTime(_stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
 
         return finalReward;
     }
