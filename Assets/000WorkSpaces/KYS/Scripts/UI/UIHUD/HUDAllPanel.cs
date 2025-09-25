@@ -1,5 +1,6 @@
 ﻿using Cinemachine;
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -59,7 +60,7 @@ namespace KYS
         #endregion
 
         // 카메라 관련 변수들
-        private CinemachineBrain cineBrain;
+        [SerializeField] private CinemachineBrain cineBrain;
         private Coroutine compassCameraCoroutine;
         private bool isCompassCameraActive = false;
         private CompassMessagePopup currentCompassPopup = null; // 현재 열린 Compass 팝업 추적
@@ -101,15 +102,19 @@ namespace KYS
             }
         }
 
+
         private void CompleteInitialization()
         {
             // BaseUI의 Initialize 대신 여기서 모든 초기화 수행
             SetupButtons();
             SetupAutoLocalization();
 
-            // CinemachineBrain 초기화
-            if (Camera.main != null)
+            // CinemachineBrain 초기화 - 튜토리얼 매니저와 동일한 방식
+            Debug.Log($"[HUDAllPanel] CinemachineBrain 초기화 시작 - 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            
+            if (cineBrain == null)
             {
+                Debug.Log("[HUDAllPanel] cineBrain이 null이므로 Camera.main에서 찾기 시도");
                 cineBrain = Camera.main.GetComponent<CinemachineBrain>();
                 if (cineBrain != null)
                 {
@@ -117,12 +122,21 @@ namespace KYS
                 }
                 else
                 {
-                    Debug.LogWarning($"[HUDAllPanel] 메인 카메라({Camera.main.name})에 CinemachineBrain이 없습니다.");
+                    Debug.LogWarning($"[HUDAllPanel] Camera.main({Camera.main?.name ?? "null"})에 CinemachineBrain이 없습니다.");
+                    
+                    // 씬의 모든 CinemachineBrain 확인
+                    CinemachineBrain[] allBrains = FindObjectsOfType<CinemachineBrain>();
+                    Debug.LogWarning($"[HUDAllPanel] 씬에서 발견된 CinemachineBrain 개수: {allBrains.Length}");
+                    foreach (var brain in allBrains)
+                    {
+                        Debug.LogWarning($"[HUDAllPanel] CinemachineBrain 발견: {brain.name} (카메라: {brain.GetComponent<Camera>()?.name ?? "없음"})");
+                    }
                 }
             }
             else
             {
-                Debug.LogError("[HUDAllPanel] Camera.main이 null입니다.");
+                Debug.Log($"[HUDAllPanel] CinemachineBrain이 이미 설정됨 - 카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"}");
+                Debug.Log($"[HUDAllPanel] cineBrain 활성 가상 카메라: {cineBrain.ActiveVirtualCamera?.Name ?? "없음"}");
             }
 
             // 언어 변경 이벤트 구독
@@ -817,6 +831,31 @@ namespace KYS
             Debug.Log("[HUDAllPanel] NPC 포커스 카메라로 전환");
 
             // 2단계: 카메라 전환 완료 대기
+            Debug.Log($"[HUDAllPanel] CompassCameraSequence - cineBrain 상태: {(cineBrain != null ? $"존재 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            
+            // cineBrain이 null이면 다시 찾기 시도
+            if (cineBrain == null)
+            {
+                Debug.LogWarning("[HUDAllPanel] cineBrain이 null - 다시 찾기 시도");
+                cineBrain = Camera.main.GetComponent<CinemachineBrain>();
+                if (cineBrain != null)
+                {
+                    Debug.Log($"[HUDAllPanel] cineBrain 재발견 - 카메라: {Camera.main.name}");
+                }
+                else
+                {
+                    Debug.LogError($"[HUDAllPanel] Camera.main({Camera.main?.name ?? "null"})에 CinemachineBrain이 없습니다!");
+                    
+                    // 씬의 모든 CinemachineBrain 재확인
+                    CinemachineBrain[] allBrains = FindObjectsOfType<CinemachineBrain>();
+                    Debug.LogError($"[HUDAllPanel] 현재 씬의 CinemachineBrain 개수: {allBrains.Length}");
+                    foreach (var brain in allBrains)
+                    {
+                        Debug.LogError($"[HUDAllPanel] CinemachineBrain: {brain.name} (카메라: {brain.GetComponent<Camera>()?.name ?? "없음"})");
+                    }
+                }
+            }
+            
             if (cineBrain != null)
             {
                 Debug.Log("[HUDAllPanel] CinemachineBrain이 있음 - 카메라 전환 대기 시작");
@@ -832,7 +871,18 @@ namespace KYS
             }
             else
             {
-                Debug.LogWarning("[HUDAllPanel] CinemachineBrain이 null - 대기 시간으로 대체");
+                Debug.LogWarning("[HUDAllPanel] CinemachineBrain을 찾을 수 없음 - 대기 시간으로 대체");
+                
+                // 씬의 모든 CinemachineBrain 확인
+                CinemachineBrain[] allBrains = FindObjectsOfType<CinemachineBrain>();
+                Debug.LogWarning($"[HUDAllPanel] 현재 씬의 CinemachineBrain 개수: {allBrains.Length}");
+                foreach (var brain in allBrains)
+                {
+                    Debug.LogWarning($"[HUDAllPanel] CinemachineBrain: {brain.name} (카메라: {brain.GetComponent<Camera>()?.name ?? "없음"})");
+                    Debug.LogWarning($"[HUDAllPanel]   활성 가상 카메라: {brain.ActiveVirtualCamera?.Name ?? "없음"}");
+                    Debug.LogWarning($"[HUDAllPanel]   IsBlending: {brain.IsBlending}");
+                }
+                
                 // CinemachineBrain이 없으면 대기 시간으로 대체
                 yield return new WaitForSeconds(compassCameraMoveWaitTime);
                 Debug.Log("[HUDAllPanel] CinemachineBrain이 없어 대기 시간으로 대체");
@@ -1118,6 +1168,44 @@ namespace KYS
             Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
             //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
             //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+        }
+
+        [ContextMenu("카메라 찾기 테스트")]
+        public void TestFindCamera()
+        {
+            Debug.Log("[HUDAllPanel] 카메라 찾기 테스트 시작");
+            
+            // 현재 cineBrain 상태 확인
+            Debug.Log($"[HUDAllPanel] 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            
+            // Camera.main 확인
+            Debug.Log($"[HUDAllPanel] Camera.main: {(Camera.main != null ? Camera.main.name : "null")}");
+            
+            // 모든 카메라 출력
+            Camera[] allCameras = FindObjectsOfType<Camera>();
+            Debug.Log($"[HUDAllPanel] 씬에서 발견된 카메라 개수: {allCameras.Length}");
+            
+            for (int i = 0; i < allCameras.Length; i++)
+            {
+                var cam = allCameras[i];
+                Debug.Log($"[HUDAllPanel] 카메라 {i}: {cam.name}, 활성화: {cam.enabled}, 게임오브젝트 활성화: {cam.gameObject.activeInHierarchy}");
+                Debug.Log($"[HUDAllPanel]   위치: {cam.transform.position}, 태그: {cam.tag}");
+                
+                // 시네머신 브레인 확인
+                CinemachineBrain brain = cam.GetComponent<CinemachineBrain>();
+                if (brain != null)
+                {
+                    Debug.Log($"[HUDAllPanel]   시네머신 브레인 있음, 활성 가상 카메라: {brain.ActiveVirtualCamera?.Name ?? "없음"}");
+                }
+            }
+            
+            // 시네머신 가상 카메라들도 찾기
+            var virtualCameras = FindObjectsOfType<CinemachineVirtualCamera>();
+            Debug.Log($"[HUDAllPanel] 시네머신 가상 카메라 개수: {virtualCameras.Length}");
+            foreach (var vcam in virtualCameras)
+            {
+                Debug.Log($"[HUDAllPanel] 가상 카메라: {vcam.name}, 우선순위: {vcam.Priority}, 활성화: {vcam.enabled}");
+            }
         }
 
         #endregion

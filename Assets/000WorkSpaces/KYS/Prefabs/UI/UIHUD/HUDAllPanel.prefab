@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4965592713363336062
 RectTransform:
   m_ObjectHideFlags: 0
@@ -112,7 +112,8 @@ MonoBehaviour:
   compossButtonName: CompossButton
   StageTransitionPanelButtonName: StageTransitionPanelButton
   StoryPanelButtonName: StoryPanelButton
-  compassCameraMoveWaitTime: 0.1
+  compassCameraMoveWaitTime: 1
+  cineBrain: {fileID: 0}
 --- !u!1 &203442523701121874
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8877200276901516954
 RectTransform:
   m_ObjectHideFlags: 0
@@ -138,7 +139,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203442523701121874}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -151,7 +152,7 @@ RectTransform:
   m_Father: {fileID: 4965592713363336062}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3136667, y: 0.89962953}
-  m_AnchorMax: {x: 0.60159266, y: 0.97714823}
+  m_AnchorMax: {x: 0.6314445, y: 0.97714823}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -176,7 +177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.85882354}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1929,7 +1930,7 @@ MonoBehaviour:
   m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
-  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
+  m_sharedMaterial: {fileID: -4003619541380878546, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1953,12 +1954,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 45
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 45
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1992,7 +1993,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &6445892131779289317
@@ -2719,8 +2720,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8877200276901516954}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.24300002, y: 0.043124773}
-  m_AnchorMax: {x: 0.9676476, y: 0.39915645}
+  m_AnchorMin: {x: 0.28478417, y: 0.043124773}
+  m_AnchorMax: {x: 0.9676476, y: 0.38571882}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2757,7 +2758,7 @@ MonoBehaviour:
 '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
-  m_sharedMaterial: {fileID: -5238301306822437429, guid: ddc1316310eb39e41b5677d3e80621a0, type: 2}
+  m_sharedMaterial: {fileID: -4003619541380878546, guid: 8fb8614c7663c554fa8de4f18640326d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2781,12 +2782,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
+  m_fontSize: 45
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 45
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2820,7 +2821,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &8631454098928843555
