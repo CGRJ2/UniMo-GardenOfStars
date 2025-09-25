@@ -14,13 +14,6 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public BuildingSeller buildingSeller;
     public WorkerManageBuilding workerBuilding;
-
-    // 건물id(string)에 해당하는 업그레이드 정보를 저장
-    public Dictionary<string, UpgradeData> upgradeDataDic = new();
-
-    // 스테이지id(string) 별, 건물들의 배치 정보를 저장
-    //Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
-
     public UnityAction<int> upgradeEvent;
 
     // 건물 구매 시, 건축모드 On / 설치 시, 건축모드 Off
@@ -90,7 +83,8 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public void UpdateUpgradedData(string buildingId, int statProdTimeAdd, int statCapacityAdd = 0)
     {
-        upgradeDataDic[buildingId].Upgrade(statProdTimeAdd, statCapacityAdd);
+        UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingId);
+        upgradeData.Upgrade(statProdTimeAdd, statCapacityAdd);
     }
 
 
@@ -105,7 +99,6 @@ public class BuildingManager : Singleton<BuildingManager>
         }
         else
         {
-            upgradeDataDic.TryAdd(buildingId, upgradeData);
             return upgradeData;
         }
     }

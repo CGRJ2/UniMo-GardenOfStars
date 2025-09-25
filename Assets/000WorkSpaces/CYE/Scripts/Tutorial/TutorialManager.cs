@@ -744,6 +744,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitUntil(() => tutorialNPC != null);
         tutorialNPC.HideQuestTiles();
         yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
+        yield return new WaitUntil(() => _Pool_FX_Highlighted != null);
         PlayHighLightFX(Manager.buildings.workerBuilding.transform);
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
@@ -894,6 +895,18 @@ public class TutorialManager : MonoBehaviour
 
         // 업그레이드 확인 시 시퀀스 종료
         SequenceEnd();
+    }
+
+    public IEnumerator Sequence09_NormalTalkButtonClick()
+    {
+        Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
+
+        var stageID = Manager.firebase.UserData.CurStage.Value;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
+
+        yield return new WaitForSeconds(0.5f);
+        handPointer_PlayerUpradeBtn.SetActive(true);
     }
 
     public void TutorialSequence10()

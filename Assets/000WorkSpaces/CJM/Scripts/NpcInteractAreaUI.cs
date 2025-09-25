@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class NpcInteractAreaUI : MonoBehaviour
@@ -13,16 +14,15 @@ public class NpcInteractAreaUI : MonoBehaviour
 
     public void StartConversation()
     {
-        var stageID = Manager.firebase.UserData.CurStage.Value;
-        var npc = Manager.firebase.UserData.CurStageData.Npc;
-
-        if (stageID == "Tutorial")
+        // 튜토리얼 씬이라면
+        if (TutorialManager.Instance != null)
         {
-            Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
-            Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
-            TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(true);
+            StartCoroutine(TutorialManager.Instance.Sequence09_NormalTalkButtonClick());
             return;
         }
+
+        var stageID = Manager.firebase.UserData.CurStage.Value;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
 
         // 퀘스트가 클리어 상태라면
         if (npc.CurQuestData.QuestState.Value == 3)

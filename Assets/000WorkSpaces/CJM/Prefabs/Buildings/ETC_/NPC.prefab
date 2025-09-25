@@ -74,6 +74,11 @@ MonoBehaviour:
   requireTilesParent: {fileID: 5826745044255315397}
   view: {fileID: 6472960564302538761}
   view_Dissolve: {fileID: 2929442984593545982}
+  npcMeshList:
+  - {fileID: 504015584307294295, guid: 15c133e76e2074141b1f443dd6c4aa84, type: 3}
+  - {fileID: 504015584307294295, guid: f0fc906181e39254496cb65b3fde09ee, type: 3}
+  - {fileID: 504015584307294295, guid: 945303e176a547f4ebd9ec003741b4be, type: 3}
+  _focusPopUpCanvas: {fileID: 0}
 --- !u!114 &8664925334770371883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,7 +384,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.01}
+  m_AnchoredPosition: {x: 0, y: 0.1}
   m_SizeDelta: {x: 720, y: 1280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6593975986032180563
@@ -538,7 +543,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 68.7
+  m_fontSize: 76.35
   m_fontSizeBase: 0
   m_fontWeight: 400
   m_enableAutoSizing: 1

@@ -60,6 +60,7 @@ namespace GameQuest
 
         void CheckStepClear(int curProdsCount)
         {
+            if (curProdsCount == 0) return;
             if (CurrentTargetCount <= curProdsCount)
             {
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)

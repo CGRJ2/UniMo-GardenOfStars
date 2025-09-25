@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -11,6 +12,7 @@ namespace GameNpc
         [SerializeField] Transform view;
         public Transform view_Dissolve;
         QuestRequireTile[] requireTiles;
+        [SerializeField] Mesh[] npcMeshList;
 
         [SerializeField] private Transform _focusPopUpCanvas;
         void Awake()
@@ -62,8 +64,12 @@ namespace GameNpc
                 UpdateQuestData();
 
                 // 스테이지ID에 맞는 NPC ID의 메쉬와 재질로 설정해주기
-                //view.GetComponent<MeshFilter>
 
+                string stageID = Manager.firebase.UserData.CurStage.Value;
+                string numberPart = Regex.Match(stageID, @"\d+").Value; // "01"
+                int stageNumber = int.Parse(numberPart);
+                view.GetComponent<MeshFilter>().mesh = npcMeshList[stageNumber - 1];
+                view_Dissolve.gameObject.SetActive(false);
             }
             else
             {

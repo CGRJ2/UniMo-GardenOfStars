@@ -133,6 +133,7 @@ public class StageManager : MonoBehaviour
         _StageID = Manager.firebase.UserData.CurStage.Value;
 
         // 오프라인 보상 팝업 여부
+        if (_StageID == "Tutorial") return;
         var questList = npc.QuestList.List;
         // 마지막 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
         if (questList[questList.Count - 1].State == GameQuest.QuestState.Completed)

@@ -33,15 +33,18 @@ public class OfflineRewardPopup : BaseUI
     private void OnEnable()
     {
         int reward = StageManager.Instance.GetTotalAutoReward();
-        
-        if (reward >= 1_000)
+
+        if (reward >= 1_000_000)
+            tmp_RunMoneyText1.text = $"{(reward / 1_000_000f).ToString("0.#")}M";
+        else if (reward >= 1_000)
             tmp_RunMoneyText1.text = $"{(reward / 1_000f).ToString("0.#")}K";
         else
             tmp_RunMoneyText1.text = reward.ToString();
 
         int rewardAd = reward * 5;
-
-        if (rewardAd >= 1_000)
+        if (rewardAd >= 1_000_000)
+            tmp_RunMoneyText2.text = $"{(rewardAd / 1_000_000f).ToString("0.#")}M";
+        else if (rewardAd >= 1_000)
             tmp_RunMoneyText2.text = $"{(rewardAd / 1_000f).ToString("0.#")}K";
         else
             tmp_RunMoneyText2.text = rewardAd.ToString();
