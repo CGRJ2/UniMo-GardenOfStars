@@ -68,7 +68,7 @@ namespace KYS
         private float lastCompassButtonTime = 0f; // 마지막 버튼 누름 시간
         private const float COMPASS_BUTTON_COOLDOWN = 0.5f; // 버튼 쿨다운 시간
 
-        private bool isInitialized = false;
+        //private bool isInitialized = false;
 
         protected override void Awake()
         {
@@ -94,12 +94,11 @@ namespace KYS
         {
             // 한 프레임 대기하여 UI 요소들이 완전히 활성화된 후 초기화
             yield return new WaitForEndOfFrame();
-            
-            if (!isInitialized)
-            {
-                // 여기서 완전한 초기화 수행
-                CompleteInitialization();
-            }
+
+
+
+            CompleteInitialization();
+           
         }
 
 
@@ -164,7 +163,7 @@ namespace KYS
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
             Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
-            isInitialized = true;
+            //Initialized = true;
             Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
         }
 
