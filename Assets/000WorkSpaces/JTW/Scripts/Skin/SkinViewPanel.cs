@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,11 +29,17 @@ public class SkinViewPanel : KYS.BaseUI
 
     private TextMeshProUGUI _skinNameText => GetUI<TextMeshProUGUI>("SkinNameText");
     private TextMeshProUGUI _costText => GetUI<TextMeshProUGUI>("CostText");
-    private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("ButtonText");
+    private TextMeshProUGUI _buybuttonText => GetUI<TextMeshProUGUI>("BuyButtonText");
+    private TextMeshProUGUI _equipbuttonText => GetUI<TextMeshProUGUI>("EquipButtonText");
 
-    private Button _button => GetUI<Button>("Button");
+    private Button _buybutton => GetUI<Button>("BuyButton");
+    private Image _buyBGImage => GetUI<Image>("BuyButtonBG");
 
-    private GameObject _characterObj;
+    private Button _equipbutton => GetUI<Button>("EquipButton");
+    private Image _equipBGImage => GetUI<Image>("EquipButtonBG");
+    private Image _equipImage => GetUI<Image>("EquipIcon");
+
+    private GameObject _characterObj; 
     private GameObject _equipObj;
     private GameObject TargetObject
     {
@@ -70,7 +75,8 @@ public class SkinViewPanel : KYS.BaseUI
 
         ClearAvatar();
 
-        _button.onClick.AddListener(OnClick);
+        _buybutton.onClick.AddListener(OnBuyClick);
+        _equipbutton.onClick.AddListener(OnEquipClick);
     }
 
     public void SetInfo(string id, SkinTypes type)
@@ -111,11 +117,18 @@ public class SkinViewPanel : KYS.BaseUI
 
     public void UpdateInfo()
     {
+        // 초기화
+        _equipbutton.gameObject.SetActive(false);
+        _buybutton.gameObject.SetActive(false);
+        _equipImage.gameObject.SetActive(false);
+
         _skinNameText.gameObject.SetActive(true);
-        _button.gameObject.SetActive(true);
+        _buybutton.gameObject.SetActive(true);
 
         bool isOwned;
         bool isEquiped;
+
+        Color color;
 
         if (_type == SkinTypes.Character)
         {
@@ -131,27 +144,71 @@ public class SkinViewPanel : KYS.BaseUI
         if (isEquiped)
         {
             _state = SkinViewStates.Equiped;
-            // TODO : 장착 중 상태
+            _equipbutton.gameObject.SetActive(true);
+            _equipImage.gameObject.SetActive(true);
+            _equipbuttonText.text = "장착중";
+            _equipbuttonText.color = Color.black;
+
+            if (ColorUtility.TryParseHtmlString("#4FD209", out color))
+            {
+                _equipbutton.image.color = color;
+            }
+            if (ColorUtility.TryParseHtmlString("#C2FFA1", out color))
+            {
+                _equipBGImage.color = color;
+            }
             return;
         }
 
         if (isOwned)
         {
             _state = SkinViewStates.Owned;
-            // TODO : 보유 중 상태
+            _equipbutton.gameObject.SetActive(true);
+            _equipbuttonText.text = "장착";
+            _equipbuttonText.color = Color.white;
+
+            if (ColorUtility.TryParseHtmlString("#45C500", out color))
+            {
+                _equipbutton.image.color = color;
+            }
+            if (ColorUtility.TryParseHtmlString("#6FEC2B", out color))
+            {
+                _equipBGImage.color = color;
+            }
             return;
         }
 
         if(Manager.player.Data.Gem.Value < _cost)
         {
-
             _state = SkinViewStates.Moneyless;
-            // TODO : 구매 불가 상태
+            _buybutton.gameObject.SetActive(true);
+            _buybuttonText.text = "보석 부족";
+            _costText.text = _cost.ToString();
+
+            if (ColorUtility.TryParseHtmlString("#FF0000", out color))
+            {
+                _buybutton.image.color = color;
+            }
+            if (ColorUtility.TryParseHtmlString("#FF6868", out color))
+            {
+                _buyBGImage.color = color;
+            }
             return;
         }
 
         _state = SkinViewStates.Buy;
-        // TODO : 구매 가능 상태
+        _buybutton.gameObject.SetActive(true);
+        _buybuttonText.text = "구매";
+        _costText.text = _cost.ToString();
+
+        if (ColorUtility.TryParseHtmlString("#0077FF", out color))
+        {
+            _buybutton.image.color = color;
+        }
+        if (ColorUtility.TryParseHtmlString("#68AFFF", out color))
+        {
+            _buyBGImage.color = color;
+        }
     }
 
     public void ClearAvatar()
@@ -178,10 +235,10 @@ public class SkinViewPanel : KYS.BaseUI
         equipAnim.enabled = true;
 
         _skinNameText.gameObject.SetActive(false);
-        _button.gameObject.SetActive(false);
+        _buybutton.gameObject.SetActive(false);
     }
 
-    private void OnClick()
+    private void OnBuyClick()
     {
         if (_isClicked) return;
         _isClicked = true;
@@ -214,31 +271,38 @@ public class SkinViewPanel : KYS.BaseUI
                 }));
 
                 break;
-            case SkinViewStates.Owned:
-                switch (_type)
-                {
-                    case SkinTypes.Character:
-                        Manager.player.SetCharacterSkin(_skinId);
-                        break;
-                    case SkinTypes.Equip:
-                        Manager.player.SetEquipSkin(_skinId);
-                        break;
-                }
-
-                StartCoroutine(WaitServerUpdate(() =>
-                {
-                    UpdateInfo();
-                    _characterSkinPanel.SetButtonsInfo();
-                    _equipSkinPanel.SetButtonsInfo();
-
-                    _isClicked = false;
-                }));
-                break;
             case SkinViewStates.Moneyless:
                 Manager.ui.ShowPanelAsync<ShopPanel>();
                 _isClicked = false;
                 break;
         }
+    }
+
+    private void OnEquipClick()
+    {
+        if (_state != SkinViewStates.Owned) return;
+
+        if (_isClicked) return;
+        _isClicked = true;
+
+        switch (_type)
+        {
+            case SkinTypes.Character:
+                Manager.player.SetCharacterSkin(_skinId);
+                break;
+            case SkinTypes.Equip:
+                Manager.player.SetEquipSkin(_skinId);
+                break;
+        }
+
+        StartCoroutine(WaitServerUpdate(() =>
+        {
+            UpdateInfo();
+            _characterSkinPanel.SetButtonsInfo();
+            _equipSkinPanel.SetButtonsInfo();
+
+            _isClicked = false;
+        }));
     }
 
     private IEnumerator WaitServerUpdate(Action OnComplete)
@@ -247,5 +311,7 @@ public class SkinViewPanel : KYS.BaseUI
         yield return new WaitUntil(() => Manager.firebase.UserData.Skin.EquipSkinList.IsInit);
         yield return new WaitUntil(() => !Manager.player.Data.CharacterSkinId.IsInUpdate);
         yield return new WaitUntil(() => !Manager.player.Data.EquipSkinId.IsInUpdate);
+
+        OnComplete();
     }
 }
