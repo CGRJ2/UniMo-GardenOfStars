@@ -36,10 +36,12 @@ public class TitleCanvas : KYS.BaseUI
         }
 
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(1);
     }
 
     private void GoTutorialScene(StageData data)
     {
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(1);
     }
 }

@@ -57,7 +57,6 @@ public class InfoPanel_Harvest2 : BaseUI
 
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_Close.onClick.AddListener(Close);
-
         // 언어 변경 이벤트 구독
         BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
         IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
@@ -139,6 +138,7 @@ public class InfoPanel_Harvest2 : BaseUI
     }
     private void Close()
     {
+        Manager.Audio.SfxPlay("SFX_ButtonClickBack");
         Manager.ui.ClosePopup();
     }
 
