@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class SkinSwitchPanel : KYS.BaseUI
 {
+    [SerializeField] private Sprite _switchImage;
+    [SerializeField] private Sprite _switchActiveImage;
+
     [SerializeField] private GameObject _characterSkinPanel;
     [SerializeField] private GameObject _equipSkinPanel;
 
@@ -22,6 +25,9 @@ public class SkinSwitchPanel : KYS.BaseUI
 
             _characterSkinPanel.SetActive(true);
             _equipSkinPanel.SetActive(false);
+
+            _characterButton.image.sprite = _switchActiveImage;
+            _equipButton.image.sprite = _switchImage;
         });
 
         _equipButton.onClick.AddListener(() =>
@@ -30,6 +36,9 @@ public class SkinSwitchPanel : KYS.BaseUI
 
             _characterSkinPanel.SetActive(false);
             _equipSkinPanel.SetActive(true);
+
+            _characterButton.image.sprite = _switchImage;
+            _equipButton.image.sprite = _switchActiveImage;
         });
     }
 }

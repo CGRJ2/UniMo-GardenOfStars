@@ -53,10 +53,6 @@ public class BuyButton : KYS.BaseUI
     {
         _shopPanel = shopPanel;
 
-        CodelessIAPStoreListener.Instance.RemoveButton(_iapButton);
-        _iapButton.productId = productId;
-        CodelessIAPStoreListener.Instance.AddButton(_iapButton);
-
         BuyButtonDataCsv data = Manager.data.Buy.Values[productId];
 
         _costText.text = data.Cost.ToString();
@@ -68,6 +64,9 @@ public class BuyButton : KYS.BaseUI
         if (data.CostType == CostTypes.RealMoney)
         {
             _costTypeText.gameObject.SetActive(true);
+            CodelessIAPStoreListener.Instance.RemoveButton(_iapButton);
+            _iapButton.productId = productId;
+            CodelessIAPStoreListener.Instance.AddButton(_iapButton);
         }
         else
         {

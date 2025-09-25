@@ -6,6 +6,6 @@ public class GemAdPanel : AdPanel
 {
     protected override void GetReward()
     {
-        Manager.player.Data.Gem.Value += 50;
+        Manager.player.Data.Gem.Value += 10;
     }
 }
