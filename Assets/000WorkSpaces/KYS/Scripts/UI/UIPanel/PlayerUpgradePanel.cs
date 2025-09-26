@@ -66,7 +66,12 @@ namespace KYS
 
             Manager.Audio.SfxPlay("DoorBell");
 
-            SetTutoButtonAction();
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages(new() { "UpgradeButton" });
+                TutorialManager.Instance.overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(false);
+                TutorialManager.Instance.overlayPanel_UpradeBtnInPlayerInfoPanel.SetActive(true);
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -296,40 +301,6 @@ namespace KYS
             Debug.Log($"[PlayerUpgradePanel] AssetDetail: {assetDetail != null}");
             Debug.Log($"[PlayerUpgradePanel] AssetToggleBackground: {assetToggleBackground != null}");
             Debug.Log($"[PlayerUpgradePanel] AssetToggleCheckmark: {assetToggleCheckmark != null}");
-        }
-
-        void SetTutoButtonAction()
-        {
-            tutoOverlayButton.onClick.AddListener(() =>
-            {
-                Manager.firebase.UserData.Player.MoveSpeedLv.Value++;
-                
-                // 업그레이드 패널 닫기
-                Manager.ui.CloseAllPanels();
-                Manager.ui.CloseAllPopups();
-            });
-        }
-
-        private void OnEnable()
-        {
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(true);
-                TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(false);
-
-                tutoOverlayPanel.SetActive(true);
-            }
-            else
-            {
-                tutoOverlayPanel.SetActive(false);
-            }
-        }
-        private void OnDisable()
-        {
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(false);
-            }
         }
     }
 }
