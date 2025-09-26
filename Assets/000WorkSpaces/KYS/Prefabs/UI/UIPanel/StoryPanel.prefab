@@ -2919,7 +2919,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5039226711119559864
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3141,6 +3141,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
@@ -3510,6 +3511,7 @@ MonoBehaviour:
   hideEase: 31
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
