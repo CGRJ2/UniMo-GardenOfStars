@@ -317,6 +317,8 @@ namespace KYS
 
         private void OnInputBegan(Vector2 position)
         {
+            if (isSnapping) return;
+
             isDragging = true;
             lastTouchPos = position;
 
@@ -333,6 +335,7 @@ namespace KYS
 
         private void OnInputMoved(Vector2 position)
         {
+            if (isSnapping) return;
             if (!isDragging) return;
 
             Vector2 vector1 = _startTouchPostion - (Vector2)wheelParent.position;
@@ -359,6 +362,7 @@ namespace KYS
 
         private void OnInputEnded(Vector2 position)
         {
+            if (isSnapping) return;
             if (!isDragging) return;
 
             isDragging = false;
@@ -425,7 +429,6 @@ namespace KYS
             Debug.Log($"스냅 완료: 최종 각도 {currentRotation:F1}°");
 
             UpdateSelectedStage();
-            isSnapping = false;
         }
 
         private float CalculateSnapAngle(float currentAngle)
@@ -897,6 +900,8 @@ namespace KYS
                     selectedImage.color = selectedColor;
                     selectedTransform.localScale = Vector3.one * selectedScale;
                     selectedTransform.position = originalPositions[stageIndex] + new Vector3(0, selectedYOffset, 0);
+
+                    isSnapping = false;
                 }
             }
         }
