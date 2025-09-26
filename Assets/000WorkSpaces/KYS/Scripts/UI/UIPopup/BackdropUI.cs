@@ -112,5 +112,13 @@ namespace KYS
                 backdropImage.raycastTarget = enable;
             }
         }
+
+        /// <summary>
+        /// 현재 Backdrop 클릭 가능 여부 반환
+        /// </summary>
+        public bool IsClickable()
+        {
+            return enableBackdropClick;
+        }
     }
 }
