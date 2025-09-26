@@ -81,7 +81,7 @@ public class TutorialManager : MonoBehaviour
         Manager.firebase.UserData.TutorialSequence.Subscribe(SwitchTutorialSequence);
 
         // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
-        Addressables.LoadAssetAsync<GameObject>("FX/Highlighted.Prefab").Completed += task =>
+        Addressables.LoadAssetAsync<GameObject>("FX/Highlighted.prefab").Completed += task =>
         {
             _Pool_FX_Highlighted = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
         };

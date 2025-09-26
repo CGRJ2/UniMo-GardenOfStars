@@ -9,11 +9,11 @@ namespace GameNpc
     [Serializable]
     public class NpcData : FirebaseData
     {
-        private NpcDataCsv _npcCsv => Manager.data.Npc.Values[Id];
-        public string NpcName => _npcCsv.Name_KR;
-        public string Description => _npcCsv.Description;
-        public List<string> TextLines_KR = new();
-        public List<string> TextLines_EN = new();
+        //private NpcDataCsv _npcCsv => Manager.data.Npc.Values[Id];
+        //public string NpcName => _npcCsv.Name_KR;
+        //public string Description => _npcCsv.Description;
+        //public List<string> TextLines_KR = new();
+        //public List<string> TextLines_EN = new();
 
         // 대화 관련
         public FirebaseProperty<string> NpcID;
@@ -27,12 +27,12 @@ namespace GameNpc
 
         public NpcData(string id, string parentPath = null) : base(id, parentPath)
         {
-            var textlines = Manager.data.NpcTextLines.Values.Where((kvp) => kvp.Value.NpcId == Id);
+            /*var textlines = Manager.data.NpcTextLines.Values.Where((kvp) => kvp.Value.NpcId == Id);
             foreach (KeyValuePair<string, NpcTextLineDataCsv> kvp in textlines)
             {
                 TextLines_KR.Add(kvp.Value.TextLine_KR);
                 TextLines_EN.Add(kvp.Value.TextLine_EN);
-            }
+            }*/
 
             NpcID = new FirebaseProperty<string>("ID", Path);
             InitList.Add(NpcID);
