@@ -297,6 +297,7 @@ public class WorkerManager : MonoBehaviour
             if (Manager.firebase.UserData.TutorialSequence.Value == 6)
             {
                 TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(false);
                 Manager.ui.ClosePanel();
             }
         }

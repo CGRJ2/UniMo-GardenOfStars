@@ -961,6 +961,7 @@ public class TutorialManager : MonoBehaviour
         portal.SetActive(true);
 
         // 포탈 강조 FX
+        yield return new WaitUntil(() => _Pool_FX_Highlighted != null);
         PlayHighLightFX(portal.transform);
 
         // 포탈 포커스 카메라 컷씬 진행
