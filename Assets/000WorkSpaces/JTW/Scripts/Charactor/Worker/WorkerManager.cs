@@ -41,6 +41,11 @@ public class WorkerManager : MonoBehaviour
             InstantiateWorker(worker);
         }
 
+        foreach(WorkerRuntimeData worker in _workerList)
+        {
+            worker.WorkerController.Stun();
+        }
+
         Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
     }
 
