@@ -11,7 +11,7 @@ public class PlayerData : FirebaseData
     public int MoveSpeedMaxLv => PlayerCsv.MaxSpeedMaxLv;
     public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
-    public int MaxCapacity => LvCsv[(MaxCapacityLv.Value).ToString()].Capacity;
+    public int MaxCapacity => LvCsv[(MaxCapacityLv.Value + 2).ToString()].Capacity;
     public FirebaseProperty<int> MaxCapacityLv;
     public int MaxCapacityMaxLv => PlayerCsv.MaxCapacityMaxLv;
     public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;

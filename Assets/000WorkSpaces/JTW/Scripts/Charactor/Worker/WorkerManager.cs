@@ -8,7 +8,7 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
-    [SerializeField] private float _stunDelay = 10f;
+    [SerializeField] private float _stunDelay = 120f;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
