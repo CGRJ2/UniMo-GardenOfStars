@@ -74,6 +74,12 @@ public class WorkerRuntimeData : CharaterRuntimeData
     {
         _data = data;
         StartCoroutine(SavePositionCoroutine());
+
+        if(data.Rank == 4)
+        {
+            data.MoveSpeedLv.Value = 6;
+            data.MaxCapacityLv.Value = 6;
+        }
     }
 
     public void SetWorkstation(IWorkStation workstation)
