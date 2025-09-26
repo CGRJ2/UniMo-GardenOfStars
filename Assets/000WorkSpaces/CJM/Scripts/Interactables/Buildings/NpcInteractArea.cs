@@ -34,7 +34,7 @@ public class NpcInteractArea : InteractableBase
             // 리팩토링 필요 => 전부 TutorialManager에서 처리할 수 있도록
 
             // 튜토리얼 NPC면 바로 첫대화 진행
-            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            if (TutorialManager.Instance != null)
             {
                 if (Manager.firebase.UserData.TutorialSequence.Value == 0)
                 {
@@ -49,7 +49,6 @@ public class NpcInteractArea : InteractableBase
 
                     // 그냥 키를 넣었음
                     Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"Quest_{npc.NpcID.Value}_Start");
-                    // TODO: 다른 스테이지들에도 첫 대화 이후에 퀘스트가 진행되도록 수정해야됨.
                     // 해당 대화가 종료되면 콜백함수로 Sequence00 종료
                     return;
                 }
@@ -66,10 +65,7 @@ public class NpcInteractArea : InteractableBase
                 {
                     // 대화 실행 후, 대화 종료 시 퀘스트 발판 업데이트
 
-                    Manager.dialogue.OnDialogueCompleted += (data) =>
-                    {
-                        GetComponent<NpcController>().UpdateQuestData();
-                    }; 
+                    Manager.dialogue.OnDialogueCompleted += FirstTalkInited;
 
                     Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Quest_{npc.NpcID.Value}_Start");
                 }
@@ -80,6 +76,14 @@ public class NpcInteractArea : InteractableBase
                 }
             }
         }
+    }
+
+    void FirstTalkInited(DialogueData data)
+    {
+        Manager.dialogue.OnDialogueCompleted -= FirstTalkInited;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        GetComponent<NpcController>().UpdateQuestData();
+        npc.IsTalked.Value = true;
     }
 
     // 건물 활성화 범위 상호작용
