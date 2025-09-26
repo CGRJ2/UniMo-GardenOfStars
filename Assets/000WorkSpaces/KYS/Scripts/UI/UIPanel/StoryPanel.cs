@@ -495,6 +495,11 @@ namespace KYS
                     Debug.Log("[StoryPanel] 선택지 노드 - 클릭 무시");
                     break;
                     
+                case "startchoice":
+                    // startchoice 노드는 choice와 동일하게 처리 (클릭 무시)
+                    Debug.Log("[StoryPanel] startchoice 노드 - 클릭 무시");
+                    break;
+                    
                 case "end":
                     Debug.Log("[StoryPanel] 종료 노드 - 대화 종료");
                     EndDialogue();
@@ -858,9 +863,9 @@ namespace KYS
                         break;
 
                     case "choice":
-                        // 선택지 데이터 확인
-                        var choiceTexts = dialogueData.GetLocalizedChoiceTexts(currentLanguage);
-                        var choiceNextIds = dialogueData.GetChoiceNextIds();
+                        // 선택지 데이터 확인 (조건부 필터링 적용)
+                        var choiceTexts = dialogueData.GetFilteredChoiceTexts(currentLanguage);
+                        var choiceNextIds = dialogueData.GetFilteredChoiceNextIds();
                         Debug.Log($"[StoryPanel] 선택지 노드: {dialogueData.Id}");
                         Debug.Log($"[StoryPanel] ChoiceText1: '{dialogueData.ChoiceText1}' -> ChoiceNext1: '{dialogueData.ChoiceNext1}'");
                         Debug.Log($"[StoryPanel] ChoiceText2: '{dialogueData.ChoiceText2}' -> ChoiceNext2: '{dialogueData.ChoiceNext2}'");
@@ -985,6 +990,48 @@ namespace KYS
                         }
                         break;
 
+                    case "startchoice":
+                        // startchoice 노드는 choice와 동일하게 처리 (조건부 필터링 적용)
+                        var startchoiceTexts = dialogueData.GetFilteredChoiceTexts(currentLanguage);
+                        var startchoiceNextIds = dialogueData.GetFilteredChoiceNextIds();
+                        Debug.Log($"[StoryPanel] startchoice 노드: {dialogueData.Id}");
+                        Debug.Log($"[StoryPanel] ChoiceText1: '{dialogueData.ChoiceText1}' -> ChoiceNext1: '{dialogueData.ChoiceNext1}'");
+                        Debug.Log($"[StoryPanel] ChoiceText2: '{dialogueData.ChoiceText2}' -> ChoiceNext2: '{dialogueData.ChoiceNext2}'");
+                        Debug.Log($"[StoryPanel] ChoiceText3: '{dialogueData.ChoiceText3}' -> ChoiceNext3: '{dialogueData.ChoiceNext3}'");
+                        Debug.Log($"[StoryPanel] ChoiceText4: '{dialogueData.ChoiceText4}' -> ChoiceNext4: '{dialogueData.ChoiceText4}'");
+                        Debug.Log($"[StoryPanel] 로컬라이즈된 선택지 텍스트: [{string.Join(", ", startchoiceTexts)}]");
+                        Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", startchoiceNextIds)}]");
+
+                        // 선택지 텍스트가 있으면 선택지 설정 (startchoiceTexts 기준)
+                        if (startchoiceTexts.Length > 0)
+                        {
+                            SwitchToChoiceMode();
+                            string startchoiceLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
+                            Debug.Log($"[StoryPanel] startchoice 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{startchoiceLocalizedSpeaker}', 언어: {currentLanguage}");
+                            SetChoiceCharacterName(startchoiceLocalizedSpeaker);
+                            SetChoiceQuestion(dialogueData.GetLocalizedDialogueText(currentLanguage));
+                            
+                            Debug.Log($"[StoryPanel] startchoice 설정 - 텍스트: {startchoiceTexts.Length}개, 다음노드: {startchoiceNextIds.Length}개");
+                            SetupChoices(startchoiceTexts, OnCSVChoiceSelected);
+                        }
+                        else
+                        {
+                            Debug.Log("[StoryPanel] startchoice 선택지가 없음 - 대화 종료");
+                            EndDialogue();
+                        }
+                        
+                        // CharacterImage 처리 (이 case 블록 내에서)
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            Debug.Log("[StoryPanel] startchoice - CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
+                        break;
+
                     default:
                         Debug.LogWarning($"[StoryPanel] 알 수 없는 노드 타입: {dialogueData.NodeType}");
                         // 기본적으로 대화 모드로 처리
@@ -1075,7 +1122,7 @@ namespace KYS
             }
             
             var currentData = DialogueManager.Instance.CurrentDialogueData;
-            var choiceNextIds = currentData.GetChoiceNextIds();
+            var choiceNextIds = currentData.GetFilteredChoiceNextIds();
             Debug.Log($"[StoryPanel] 현재 노드: {currentData.Id}");
             Debug.Log($"[StoryPanel] 선택 가능한 다음 노드들: [{string.Join(", ", choiceNextIds)}]");
             
@@ -1253,6 +1300,11 @@ namespace KYS
                     break;
                     
                 case NodeType.Choice:
+                    ExecuteChoiceNode();
+                    break;
+                    
+                case NodeType.StartChoice:
+                    // startchoice는 choice와 동일하게 처리
                     ExecuteChoiceNode();
                     break;
                     
@@ -2602,10 +2654,10 @@ namespace KYS
                                 dialogueData.Id.ToLower().Contains("normal");
             
             bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
-            
+            bool isStartChoiceNode = dialogueData.NodeType?.ToLower() == "startchoice";
 
-            // OR 조건으로 버튼 표시
-            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && isStartNode);
+            // OR 조건으로 버튼 표시 (start, startchoice 노드에서만 normal이면 표시)
+            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && (isStartNode || isStartChoiceNode));
             
             // 버튼 상태 업데이트 (다음 노드 유무와 관계없이 표시)
             SetUpgradeButtonVisible(shouldShowButton, dialogueData.Id);
@@ -2630,9 +2682,11 @@ namespace KYS
                                     dialogueData.Id.ToLower().Contains("stratchoice");
             
             bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
+            bool isChoiceNode = dialogueData.NodeType?.ToLower() == "choice";
+            bool isStartChoiceNode = dialogueData.NodeType?.ToLower() == "startchoice";
             
-            // Choice 표시 조건: choice가 있거나, (normal이면서 start)이거나, stratchoice가 있으면 표시
-            bool shouldShowChoice = hasChoiceInId || (hasNormalInId && isStartNode) || hasStratchoiceInId;
+            // Choice 표시 조건: choice가 있거나, (normal이면서 start)이거나, stratchoice가 있거나, 노드 타입이 choice/startchoice면 표시
+            bool shouldShowChoice = hasChoiceInId || (hasNormalInId && isStartNode) || hasStratchoiceInId || isChoiceNode || isStartChoiceNode;
             
             // Choice 상태 업데이트
             SetChoiceVisible(shouldShowChoice, dialogueData.Id);
