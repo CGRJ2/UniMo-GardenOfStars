@@ -37,6 +37,7 @@ namespace KYS
         [Header("UI Behavior Settings")]
         [SerializeField] protected bool canCloseWithESC = false;
         [SerializeField] protected bool canCloseWithBackdrop = false;
+        [SerializeField] protected bool allowBackdropClickInTutorial = false; // 튜토리얼에서도 Backdrop 클릭 허용
         [SerializeField] protected bool hidePreviousUI = false; // 이전 UI 숨김 여부 (SetActive(false))
         [SerializeField] protected bool disablePreviousUI = false; // 이전 UI 비활성화 여부 (CanvasGroup.interactable = false)
         [SerializeField] protected bool createBackdropForPopup = false; // Popup일 때 Backdrop 자동 생성
@@ -451,10 +452,14 @@ namespace KYS
         {
             if (ownBackdrop == null) return;
 
-            // Backdrop 클릭 가능 여부 설정
-            ownBackdrop.SetBackdropClickable(canCloseWithBackdrop);
+            // 튜토리얼 단계에서는 기본적으로 Backdrop 클릭 비활성화, 단 allowBackdropClickInTutorial이 true면 허용
+            bool isTutorialStage = Manager.firebase?.UserData?.CurStage?.Value == "Tutorial";
+            bool canCloseWithBackdropInTutorial = canCloseWithBackdrop && (!isTutorialStage || allowBackdropClickInTutorial);
 
-            if (canCloseWithBackdrop)
+            // Backdrop 클릭 가능 여부 설정
+            ownBackdrop.SetBackdropClickable(canCloseWithBackdropInTutorial);
+
+            if (canCloseWithBackdropInTutorial)
             {
                 ownBackdrop.OnBackdropClicked += () =>
                 {
@@ -472,7 +477,14 @@ namespace KYS
             }
             else
             {
-                //Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
+                if (isTutorialStage && !allowBackdropClickInTutorial)
+                {
+                    //Debug.Log($"[BaseUI] {gameObject.name}은 튜토리얼 단계에서 Backdrop 클릭으로 닫을 수 없습니다.");
+                }
+                else
+                {
+                    //Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
+                }
             }
         }
 
@@ -482,6 +494,27 @@ namespace KYS
         public BackdropUI GetOwnBackdrop()
         {
             return ownBackdrop;
+        }
+
+        /// <summary>
+        /// 런타임에 Backdrop 클릭 가능 여부 동적 설정
+        /// </summary>
+        /// <param name="clickable">클릭 가능 여부</param>
+        public void SetBackdropClickable(bool clickable)
+        {
+            if (ownBackdrop != null)
+            {
+                ownBackdrop.SetBackdropClickable(clickable);
+                //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 가능 여부를 {clickable}로 설정");
+            }
+        }
+
+        /// <summary>
+        /// 현재 Backdrop 클릭 가능 여부 반환
+        /// </summary>
+        public bool IsBackdropClickable()
+        {
+            return ownBackdrop?.IsClickable() ?? false;
         }
 
         #endregion
