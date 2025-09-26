@@ -1525,6 +1525,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
@@ -2051,7 +2052,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -1115}
+  m_AnchoredPosition: {x: 540, y: -1180}
   m_SizeDelta: {x: 1080, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9020679187987773150
@@ -2239,6 +2240,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
@@ -2789,7 +2791,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -230}
+  m_AnchoredPosition: {x: 540, y: -295}
   m_SizeDelta: {x: 900, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8352494866859647308
@@ -2863,7 +2865,7 @@ MonoBehaviour:
     m_Left: 0
     m_Right: 0
     m_Top: 0
-    m_Bottom: 0
+    m_Bottom: 150
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
@@ -3373,6 +3375,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
@@ -4514,6 +4517,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
