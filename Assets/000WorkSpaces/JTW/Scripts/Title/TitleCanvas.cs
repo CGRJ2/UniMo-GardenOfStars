@@ -17,13 +17,13 @@ public class TitleCanvas : KYS.BaseUI
 
     private void OnEnable()
     {
-        GetEvent("Panel").Click += OnClick;
+        GetEvent("TitlePanel").Click += OnClick;
         Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
     }
 
     private void OnDisable()
     {
-        GetEvent("Panel").Click -= OnClick;
+        GetEvent("TitlePanel").Click -= OnClick;
         Manager.firebase.UserData.StageList.OnAdded.RemoveListener(GoTutorialScene);
     }
 

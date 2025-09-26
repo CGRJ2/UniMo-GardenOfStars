@@ -71,6 +71,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 작업 준비 진행 중에, 영역 내에서 움직인 경우
             if (curWorker.IsMove.Value)
             {
+                curWorker.IsWork.Value = false;
                 prepareProgressedTime = 0; // 진행도 초기화
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
@@ -183,6 +184,11 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
         if (curWorker == null)
         {
+            if(characterRuntimeData is PlayerRunTimeData data)
+            {
+                data.CurWorkStation = this;
+            }
+
             StartCoroutine(PrepareTask());
         }
     }
