@@ -38,10 +38,11 @@ public class QuestManager : Singleton<QuestManager>
         CurrentQuestList.OnAdded.AddListener(QuestDataInitEvent);
 
         string curStageID = Manager.firebase.UserData.CurStage.Value;
-        string npcDataId = Manager.firebase.UserData.CurStageData.Npc.NpcID.Value;
+        string npcId = Manager.data.Stage.Values[curStageID].NpcID;
+        Manager.firebase.UserData.CurStageData.Npc.NpcID.Value = npcId;
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
-        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcDataId);
+        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcId);
         foreach (var questDataKVP in curStageQuestDatas)
         {
             // 퀘스트 데이터 초기화
@@ -162,6 +163,20 @@ public class QuestManager : Singleton<QuestManager>
             if (curQuestId.Value == questList[i].Id && i < questList.Count - 1)
             {
                 curQuestId.Value = questList[i + 1].Id;
+
+                if (i == stageClearTargetQuestIndex)
+                {
+                    Debug.LogError("현재 스테이지의 목표 퀘스트까지 완료함! 다음 스테이지 언락");
+
+                    foreach (var kvp in Manager.data.Stage.Values)
+                    {
+                        if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
+                        {
+                            Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
+                            break;
+                        }
+                    }
+                }
             }
             // 마지막 스테이지가 완료되었다
             else if (i == questList.Count - 1)
@@ -169,21 +184,6 @@ public class QuestManager : Singleton<QuestManager>
                 Debug.LogWarning("마지막 퀘스트까지 완료함!");
                 break;
             }
-
-            if (i == stageClearTargetQuestIndex)
-            {
-                Debug.LogWarning("현재 스테이지의 목표 퀘스트까지 완료함! 다음 스테이지 언락");
-
-                foreach (var kvp in Manager.data.Stage.Values)
-                {
-                    if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
-                    {
-                        Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
-                        break;
-                    }
-                }
-            }
-
         }
     }
 
