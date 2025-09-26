@@ -38,9 +38,22 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public ObservableProperty<bool> IsPlayerTriggered = new();
 
+    private WaitForSeconds _saveDelay = new WaitForSeconds(60f);
+
     private void Awake()
     {
         _workerController = GetComponent<WorkerController>();
+    }
+
+    private IEnumerator SavePositionCoroutine()
+    {
+        while (true)
+        {
+            _data.PositionX.Value = transform.position.x;
+            _data.PositionZ.Value = transform.position.z;
+
+            yield return _saveDelay;
+        }
     }
 
     public void SetWorkerManager(WorkerManager manager)

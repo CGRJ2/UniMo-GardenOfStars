@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
-    [SerializeField] private float _stunDelay = 10f;
+    [SerializeField] private float _stunDelay = 120f;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
@@ -33,23 +32,18 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
 
-        int x = 0;
-        int z = 0;
-
         foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
             WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
 
             if (worker == null) continue;
 
-            InstantiateWorker(worker, new Vector3(-x, 0, -z));
+            InstantiateWorker(worker);
+        }
 
-            z++;
-            if(z > 2)
-            {
-                z = 0;
-                x++;
-            }
+        foreach(WorkerRuntimeData worker in _workerList)
+        {
+            worker.WorkerController.Stun();
         }
 
         Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
@@ -209,9 +203,20 @@ public class WorkerManager : MonoBehaviour
         return false;
     }
 
-    public void InstantiateWorker(WorkerData data, Vector3 offset = default)
+    public void InstantiateWorker(WorkerData data)
     {
-        WorkerRuntimeData worker = Instantiate(_workerPrefab, Manager.buildings.workerBuilding.GetSpawnPos() + offset, Quaternion.identity).GetComponent<WorkerRuntimeData>();
+        Vector3 spawnPos;
+
+        if(data.PositionX.Value == 0 && data.PositionZ.Value == 0)
+        {
+            spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+        }
+        else
+        {
+            spawnPos = new Vector3(data.PositionX.Value, 0, data.PositionZ.Value);
+        }
+
+        WorkerRuntimeData worker = Instantiate(_workerPrefab, spawnPos, Quaternion.identity).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
