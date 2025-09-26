@@ -109,15 +109,15 @@ namespace KYS
             SetupAutoLocalization();
 
             // CinemachineBrain 초기화 - 튜토리얼 매니저와 동일한 방식
-            Debug.Log($"[HUDAllPanel] CinemachineBrain 초기화 시작 - 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            ////Debug.Log($"[HUDAllPanel] CinemachineBrain 초기화 시작 - 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
             
             if (cineBrain == null)
             {
-                Debug.Log("[HUDAllPanel] cineBrain이 null이므로 Camera.main에서 찾기 시도");
+                //Debug.Log("[HUDAllPanel] cineBrain이 null이므로 Camera.main에서 찾기 시도");
                 cineBrain = Camera.main.GetComponent<CinemachineBrain>();
                 if (cineBrain != null)
                 {
-                    Debug.Log($"[HUDAllPanel] CinemachineBrain 초기화 완료 - 카메라: {Camera.main.name}");
+                    //Debug.Log($"[HUDAllPanel] CinemachineBrain 초기화 완료 - 카메라: {Camera.main.name}");
                 }
                 else
                 {
@@ -134,8 +134,8 @@ namespace KYS
             }
             else
             {
-                Debug.Log($"[HUDAllPanel] CinemachineBrain이 이미 설정됨 - 카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"}");
-                Debug.Log($"[HUDAllPanel] cineBrain 활성 가상 카메라: {cineBrain.ActiveVirtualCamera?.Name ?? "없음"}");
+                //Debug.Log($"[HUDAllPanel] CinemachineBrain이 이미 설정됨 - 카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"}");
+                //Debug.Log($"[HUDAllPanel] cineBrain 활성 가상 카메라: {cineBrain.ActiveVirtualCamera?.Name ?? "없음"}");
             }
 
             // 언어 변경 이벤트 구독
@@ -164,7 +164,7 @@ namespace KYS
             Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             //Initialized = true;
-            Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
+            //Debug.Log("[HUDAllPanel] HUD 완전 초기화 완료");
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -186,7 +186,7 @@ namespace KYS
 
             // OnEnable에서 CompleteInitialization이 호출되므로 여기서는 기본 초기화만
             // 실제 초기화는 CompleteInitialization()에서 수행
-            Debug.Log("[HUDAllPanel] Initialize 호출됨 (CompleteInitialization에서 실제 초기화 수행)");
+            //Debug.Log("[HUDAllPanel] Initialize 호출됨 (CompleteInitialization에서 실제 초기화 수행)");
         }
 
         public override void Cleanup()
@@ -226,17 +226,17 @@ namespace KYS
             }
 
             base.Cleanup();
-            //Debug.Log("[HUDAllPanel] HUD 정리 완료");
+            ////Debug.Log("[HUDAllPanel] HUD 정리 완료");
         }
 
         private void SetupButtons()
         {
-            Debug.Log($"[HUDAllPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+            ////Debug.Log($"[HUDAllPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
 
             // 이미 설정되었으면 중복 호출 방지
             if (isButtonsSetup)
             {
-                Debug.Log($"[HUDAllPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                //Debug.Log($"[HUDAllPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
                 return;
             }
 
@@ -448,7 +448,7 @@ namespace KYS
 
         private void OnSettingButtonClicked()
         {
-            Debug.Log("[HUDAllPanel] SettingPopUp 버튼 클릭");
+            //Debug.Log("[HUDAllPanel] SettingPopUp 버튼 클릭");
 
             if (UIManager.Instance != null)
             {
@@ -457,7 +457,7 @@ namespace KYS
                 {
                     if (popup != null)
                     {
-                        Debug.Log("[HUDAllPanel] SettingPopUp 성공적으로 열림");
+                        //Debug.Log("[HUDAllPanel] SettingPopUp 성공적으로 열림");
                     }
                     else
                     {
@@ -473,7 +473,7 @@ namespace KYS
 
         private void OnShopButtonClicked()
         {
-            //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
+            ////Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
 
             if (UIManager.Instance == null)
             {
@@ -487,7 +487,7 @@ namespace KYS
             {
                 if (panel is ShopPanel)
                 {
-                    //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    ////Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
                 }
             }
@@ -497,7 +497,7 @@ namespace KYS
             {
                 if (panel != null)
                 {
-                    //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
+                    ////Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
 
                 }
                 else
@@ -510,7 +510,7 @@ namespace KYS
 
         private void OnSkinShopButtonClicked()
         {
-            //Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
+            ////Debug.Log("[HUDAllPanel] 인벤토리 버튼 클릭");
 
             if (UIManager.Instance == null)
             {
@@ -524,7 +524,7 @@ namespace KYS
             {
                 if (panel is SkinShopPanel)
                 {
-                    //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
+                    ////Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                     return;
                 }
             }
@@ -535,7 +535,7 @@ namespace KYS
             {
                 if (panel != null)
                 {
-                    //Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
+                    ////Debug.Log("[HUDAllPanel] TitlePanel 성공적으로 열림");
 
                 }
                 else
@@ -616,7 +616,7 @@ namespace KYS
 
         private void OnAssetToggleClicked()
         {
-            Debug.Log("[HUDAllPanel] AssetToggle 클릭됨");
+            //Debug.Log("[HUDAllPanel] AssetToggle 클릭됨");
             
             // AssetDetail 토글
             ToggleAssetDetail();
@@ -638,7 +638,7 @@ namespace KYS
             // 토글 버튼의 시각적 상태 변경
             UpdateToggleVisualState();
             
-            Debug.Log($"[HUDAllPanel] AssetDetail {(isAssetDetailVisible ? "표시" : "숨김")}");
+            //Debug.Log($"[HUDAllPanel] AssetDetail {(isAssetDetailVisible ? "표시" : "숨김")}");
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace KYS
                     assetToggleCheckmark.transform.SetAsLastSibling();
                 }
                 
-                Debug.Log($"[HUDAllPanel] 체크마크 {(isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleCheckmark.name}, 활성상태: {assetToggleCheckmark.activeInHierarchy}");
+                //Debug.Log($"[HUDAllPanel] 체크마크 {(isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleCheckmark.name}, 활성상태: {assetToggleCheckmark.activeInHierarchy}");
             }
             else
             {
@@ -668,7 +668,7 @@ namespace KYS
             if (assetToggleBackground != null)
             {
                 assetToggleBackground.SetActive(!isAssetDetailVisible);
-                Debug.Log($"[HUDAllPanel] 배경 {(!isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleBackground.name}, 활성상태: {assetToggleBackground.activeInHierarchy}");
+                //Debug.Log($"[HUDAllPanel] 배경 {(!isAssetDetailVisible ? "표시" : "숨김")} - 오브젝트: {assetToggleBackground.name}, 활성상태: {assetToggleBackground.activeInHierarchy}");
             }
             else
             {
@@ -686,7 +686,7 @@ namespace KYS
 
         private void OnCompossButtonPressed()
         {
-            //Debug.Log("[HUDAllPanel] CompossButton 눌림");
+            ////Debug.Log("[HUDAllPanel] CompossButton 눌림");
 
             compossButtonPressStartTime = Time.time;
 
@@ -699,7 +699,7 @@ namespace KYS
 
         private void OnCompossButtonReleased()
         {
-            //Debug.Log("[HUDAllPanel] CompossButton 해제됨");
+            ////Debug.Log("[HUDAllPanel] CompossButton 해제됨");
 
 
 
@@ -711,27 +711,27 @@ namespace KYS
 
         private void OnCompossButtonLongPressed()
         {
-            Debug.Log("[HUDAllPanel] CompossButton 길게 눌림 (롱프레스)");
+            //Debug.Log("[HUDAllPanel] CompossButton 길게 눌림 (롱프레스)");
             // 롱프레스 시 추가 기능 (필요시 구현)
         }
 
         private void StartCompossButtonHoldEffect()
         {
             // 버튼을 누르고 있을 때 실행될 효과
-            Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 시작");
+            //Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 시작");
 
             // 쿨다운 시간 확인
             float currentTime = Time.time;
             if (currentTime - lastCompassButtonTime < COMPASS_BUTTON_COOLDOWN)
             {
-                Debug.Log($"[HUDAllPanel] Compass 버튼 쿨다운 중입니다. 남은 시간: {COMPASS_BUTTON_COOLDOWN - (currentTime - lastCompassButtonTime):F2}초");
+                //Debug.Log($"[HUDAllPanel] Compass 버튼 쿨다운 중입니다. 남은 시간: {COMPASS_BUTTON_COOLDOWN - (currentTime - lastCompassButtonTime):F2}초");
                 return;
             }
 
             // 이미 버튼이 눌려있으면 중복 실행 방지
             if (isCompassButtonPressed)
             {
-                Debug.Log("[HUDAllPanel] Compass 버튼이 이미 눌려있습니다.");
+                //Debug.Log("[HUDAllPanel] Compass 버튼이 이미 눌려있습니다.");
                 return;
             }
 
@@ -742,7 +742,7 @@ namespace KYS
             // 기존 팝업이 있으면 닫기 (안전하게 처리)
             if (currentCompassPopup != null)
             {
-                Debug.Log("[HUDAllPanel] 기존 Compass 팝업을 닫습니다.");
+                //Debug.Log("[HUDAllPanel] 기존 Compass 팝업을 닫습니다.");
                 if (currentCompassPopup.gameObject != null)
                 {
                     Manager.ui.ClosePopup();
@@ -753,7 +753,7 @@ namespace KYS
             // 기존 카메라 코루틴이 있으면 정리
             if (compassCameraCoroutine != null)
             {
-                Debug.Log("[HUDAllPanel] 기존 카메라 코루틴을 정리합니다.");
+                //Debug.Log("[HUDAllPanel] 기존 카메라 코루틴을 정리합니다.");
                 StopCoroutine(compassCameraCoroutine);
                 compassCameraCoroutine = null;
             }
@@ -761,7 +761,7 @@ namespace KYS
             // 카메라 상태 초기화
             if (isCompassCameraActive)
             {
-                Debug.Log("[HUDAllPanel] 기존 카메라 상태를 초기화합니다.");
+                //Debug.Log("[HUDAllPanel] 기존 카메라 상태를 초기화합니다.");
                 isCompassCameraActive = false;
                 Manager.camera.FocusPlayer();
             }
@@ -781,7 +781,7 @@ namespace KYS
             // 버튼이 여전히 눌려있는지 확인
             if (!isCompassButtonPressed)
             {
-                Debug.Log("[HUDAllPanel] 대기 중 버튼이 해제되어 시퀀스를 시작하지 않습니다.");
+                //Debug.Log("[HUDAllPanel] 대기 중 버튼이 해제되어 시퀀스를 시작하지 않습니다.");
                 yield break;
             }
             
@@ -792,7 +792,7 @@ namespace KYS
         private void StopCompossButtonHoldEffect()
         {
             // 버튼을 놓았을 때 실행될 효과
-            Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 종료");
+            //Debug.Log("[HUDAllPanel] CompossButton 홀드 효과 종료");
 
             // 버튼 상태 초기화
             isCompassButtonPressed = false;
@@ -806,14 +806,14 @@ namespace KYS
                 // CompassMassagePopup 닫기
                 if (currentCompassPopup != null && currentCompassPopup.gameObject != null)
                 {
-                    Debug.Log("[HUDAllPanel] CompassMassagePopup 닫기");
+                    //Debug.Log("[HUDAllPanel] CompassMassagePopup 닫기");
                     Manager.ui.ClosePopup();
                 }
                 currentCompassPopup = null;
 
                 // 카메라를 플레이어 포커스로 복귀
             Manager.camera.FocusPlayer();
-                Debug.Log("[HUDAllPanel] Compass 카메라 원위치 복귀");
+                //Debug.Log("[HUDAllPanel] Compass 카메라 원위치 복귀");
             }
         }
 
@@ -823,14 +823,14 @@ namespace KYS
         private IEnumerator CompassCameraSequence()
         {
             isCompassCameraActive = true;
-            Debug.Log("[HUDAllPanel] Compass 카메라 전환 시퀀스 시작");
+            //Debug.Log("[HUDAllPanel] Compass 카메라 전환 시퀀스 시작");
 
             // 1단계: NPC 포커스 카메라로 전환
             Manager.camera.FocusNPC();
-            Debug.Log("[HUDAllPanel] NPC 포커스 카메라로 전환");
+            //Debug.Log("[HUDAllPanel] NPC 포커스 카메라로 전환");
 
             // 2단계: 카메라 전환 완료 대기
-            Debug.Log($"[HUDAllPanel] CompassCameraSequence - cineBrain 상태: {(cineBrain != null ? $"존재 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            //Debug.Log($"[HUDAllPanel] CompassCameraSequence - cineBrain 상태: {(cineBrain != null ? $"존재 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
             
             // cineBrain이 null이면 다시 찾기 시도
             if (cineBrain == null)
@@ -839,7 +839,7 @@ namespace KYS
                 cineBrain = Camera.main.GetComponent<CinemachineBrain>();
                 if (cineBrain != null)
                 {
-                    Debug.Log($"[HUDAllPanel] cineBrain 재발견 - 카메라: {Camera.main.name}");
+                    //Debug.Log($"[HUDAllPanel] cineBrain 재발견 - 카메라: {Camera.main.name}");
                 }
                 else
                 {
@@ -857,16 +857,16 @@ namespace KYS
             
             if (cineBrain != null)
             {
-                Debug.Log("[HUDAllPanel] CinemachineBrain이 있음 - 카메라 전환 대기 시작");
-                Debug.Log($"[HUDAllPanel] 현재 IsBlending 상태: {cineBrain.IsBlending}");
+                //Debug.Log("[HUDAllPanel] CinemachineBrain이 있음 - 카메라 전환 대기 시작");
+                //Debug.Log($"[HUDAllPanel] 현재 IsBlending 상태: {cineBrain.IsBlending}");
                 
                 // 카메라 전환이 시작될 때까지 대기
                 yield return new WaitUntil(() => cineBrain.IsBlending);
-                Debug.Log("[HUDAllPanel] 카메라 전환 시작됨");
+                //Debug.Log("[HUDAllPanel] 카메라 전환 시작됨");
                 
                 // 카메라 전환이 완료될 때까지 대기
                 yield return new WaitUntil(() => !cineBrain.IsBlending);
-                Debug.Log("[HUDAllPanel] NPC 포커스 카메라 전환 완료");
+                //Debug.Log("[HUDAllPanel] NPC 포커스 카메라 전환 완료");
             }
             else
             {
@@ -884,13 +884,13 @@ namespace KYS
                 
                 // CinemachineBrain이 없으면 대기 시간으로 대체
                 yield return new WaitForSeconds(compassCameraMoveWaitTime);
-                Debug.Log("[HUDAllPanel] CinemachineBrain이 없어 대기 시간으로 대체");
+                //Debug.Log("[HUDAllPanel] CinemachineBrain이 없어 대기 시간으로 대체");
             }
 
             // 버튼이 여전히 눌려있는지 확인
             if (!isCompassButtonPressed)
             {
-                Debug.Log("[HUDAllPanel] 버튼이 해제되어 팝업 표시를 건너뜁니다.");
+                //Debug.Log("[HUDAllPanel] 버튼이 해제되어 팝업 표시를 건너뜁니다.");
                 isCompassCameraActive = false;
                 compassCameraCoroutine = null;
                 yield break;
@@ -901,7 +901,7 @@ namespace KYS
 
             // 4단계: 버튼을 놓을 때까지 대기 (무한 대기)
             yield return new WaitUntil(() => !isCompassCameraActive);
-            Debug.Log("[HUDAllPanel] Compass 버튼이 해제되어 시퀀스 종료");
+            //Debug.Log("[HUDAllPanel] Compass 버튼이 해제되어 시퀀스 종료");
 
             // 시퀀스 완료
             compassCameraCoroutine = null;
@@ -915,7 +915,7 @@ namespace KYS
             // 버튼이 여전히 눌려있는지 다시 한번 확인
             if (!isCompassButtonPressed || !isCompassCameraActive)
             {
-                Debug.Log("[HUDAllPanel] 팝업 생성 전 버튼 상태 확인 - 버튼이 해제되었거나 카메라가 비활성화됨");
+                //Debug.Log("[HUDAllPanel] 팝업 생성 전 버튼 상태 확인 - 버튼이 해제되었거나 카메라가 비활성화됨");
                 yield break;
             }
 
@@ -929,7 +929,7 @@ namespace KYS
             int randomIndex = Random.Range(1, compassMessageNodeCount + 1); // 1부터 compassMessageNodeCount까지
             string randomNodeId = $"{compassMessageNodePrefix}_{randomIndex}";
 
-            Debug.Log($"[HUDAllPanel] CompassMassagePopup 표시 - 접두사: {compassMessageNodePrefix}, 노드 개수: {compassMessageNodeCount}, 랜덤 노드 ID: {randomNodeId}");
+            //Debug.Log($"[HUDAllPanel] CompassMassagePopup 표시 - 접두사: {compassMessageNodePrefix}, 노드 개수: {compassMessageNodeCount}, 랜덤 노드 ID: {randomNodeId}");
 
             // 팝업 생성 완료 플래그
             bool popupCreated = false;
@@ -948,7 +948,7 @@ namespace KYS
                 // 버튼 상태 재확인 (팝업 생성 시점에서)
                 if (!isCompassButtonPressed || !isCompassCameraActive)
                 {
-                    Debug.Log("[HUDAllPanel] 팝업 생성 중 버튼 상태 확인 - 팝업 생성 취소");
+                    //Debug.Log("[HUDAllPanel] 팝업 생성 중 버튼 상태 확인 - 팝업 생성 취소");
                     if (popup != null && popup.gameObject != null)
                     {
                         Manager.ui.ClosePopup();
@@ -966,7 +966,7 @@ namespace KYS
                 // 노드 ID 설정 (이제 SetCompassNode에서 자동으로 대화 시작)
                 popup.SetCompassNode(randomNodeId);
                 
-                Debug.Log($"[HUDAllPanel] CompassMessagePopup 설정 완료 - 랜덤 노드 ID: {randomNodeId}");
+                //Debug.Log($"[HUDAllPanel] CompassMessagePopup 설정 완료 - 랜덤 노드 ID: {randomNodeId}");
                 
                 // 팝업 생성 완료 플래그 설정
                 popupCreated = true;
@@ -979,7 +979,7 @@ namespace KYS
                 // 버튼 상태 재확인
                 if (!isCompassButtonPressed || !isCompassCameraActive)
                 {
-                    Debug.Log("[HUDAllPanel] 팝업 대기 중 버튼 상태 확인 - 대기 중단");
+                    //Debug.Log("[HUDAllPanel] 팝업 대기 중 버튼 상태 확인 - 대기 중단");
                     yield break;
                 }
                 
@@ -989,7 +989,7 @@ namespace KYS
 
             if (popupCreated)
             {
-                Debug.Log("[HUDAllPanel] CompassMessagePopup 생성 완료 - 다음 단계 진행");
+                //Debug.Log("[HUDAllPanel] CompassMessagePopup 생성 완료 - 다음 단계 진행");
             }
             else
             {
@@ -1028,11 +1028,11 @@ namespace KYS
                     if (dialogueData != null && !string.IsNullOrEmpty(dialogueData.Id) && dialogueData.Id.StartsWith(searchPattern))
                     {
                         count++;
-                        Debug.Log($"[HUDAllPanel] Compass 노드 발견: {dialogueData.Id}");
+                        //Debug.Log($"[HUDAllPanel] Compass 노드 발견: {dialogueData.Id}");
                     }
                 }
                 
-                Debug.Log($"[HUDAllPanel] 접두사 '{nodePrefix}' 기준으로 {count}개의 Compass 노드를 찾았습니다.");
+                //Debug.Log($"[HUDAllPanel] 접두사 '{nodePrefix}' 기준으로 {count}개의 Compass 노드를 찾았습니다.");
                 
                 // 노드가 없으면 기본값 1 반환
                 return count > 0 ? count : 1;
@@ -1159,51 +1159,51 @@ namespace KYS
         [ContextMenu("UI 요소 정보 출력")]
         public void PrintUIElementInfo()
         {
-            Debug.Log($"[HUDAllPanel] UI 요소 정보:");
-            Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
-            Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - PropertyButton: {ShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(ShopButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - HRRoomButton: {SkinShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(SkinShopButtonName) != null ? "찾음" : "없음")}");
-            Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
-            //Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
+            //Debug.Log($"[HUDAllPanel] UI 요소 정보:");
+            //Debug.Log($"  - moneyText: {moneyTextName} -> {(moneyText != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - settingButton: {settingButtonName} -> {(GetUI<UnityEngine.UI.Button>(settingButtonName) != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - PropertyButton: {ShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(ShopButtonName) != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - HRRoomButton: {SkinShopButtonName} -> {(GetUI<UnityEngine.UI.Button>(SkinShopButtonName) != null ? "찾음" : "없음")}");
+            //Debug.Log($"  - CompossButton: {compossButtonName} -> {(GetUI<UnityEngine.UI.Button>(compossButtonName) != null ? "찾음" : "없음")}");
+            ////Debug.Log($"  - levelText: {levelTextName} -> {(levelText != null ? "찾음" : "없음")}");
+            ////Debug.Log($"  - questProgressText: {questProgressTextName} -> {(questProgressText != null ? "찾음" : "없음")}");
         }
 
         [ContextMenu("카메라 찾기 테스트")]
         public void TestFindCamera()
         {
-            Debug.Log("[HUDAllPanel] 카메라 찾기 테스트 시작");
+            //Debug.Log("[HUDAllPanel] 카메라 찾기 테스트 시작");
             
             // 현재 cineBrain 상태 확인
-            Debug.Log($"[HUDAllPanel] 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
+            //Debug.Log($"[HUDAllPanel] 현재 cineBrain: {(cineBrain != null ? $"설정됨 (카메라: {cineBrain.GetComponent<Camera>()?.name ?? "알 수 없음"})" : "null")}");
             
             // Camera.main 확인
-            Debug.Log($"[HUDAllPanel] Camera.main: {(Camera.main != null ? Camera.main.name : "null")}");
+            //Debug.Log($"[HUDAllPanel] Camera.main: {(Camera.main != null ? Camera.main.name : "null")}");
             
             // 모든 카메라 출력
             Camera[] allCameras = FindObjectsOfType<Camera>();
-            Debug.Log($"[HUDAllPanel] 씬에서 발견된 카메라 개수: {allCameras.Length}");
+            //Debug.Log($"[HUDAllPanel] 씬에서 발견된 카메라 개수: {allCameras.Length}");
             
             for (int i = 0; i < allCameras.Length; i++)
             {
                 var cam = allCameras[i];
-                Debug.Log($"[HUDAllPanel] 카메라 {i}: {cam.name}, 활성화: {cam.enabled}, 게임오브젝트 활성화: {cam.gameObject.activeInHierarchy}");
-                Debug.Log($"[HUDAllPanel]   위치: {cam.transform.position}, 태그: {cam.tag}");
+                //Debug.Log($"[HUDAllPanel] 카메라 {i}: {cam.name}, 활성화: {cam.enabled}, 게임오브젝트 활성화: {cam.gameObject.activeInHierarchy}");
+                //Debug.Log($"[HUDAllPanel]   위치: {cam.transform.position}, 태그: {cam.tag}");
                 
                 // 시네머신 브레인 확인
                 CinemachineBrain brain = cam.GetComponent<CinemachineBrain>();
                 if (brain != null)
                 {
-                    Debug.Log($"[HUDAllPanel]   시네머신 브레인 있음, 활성 가상 카메라: {brain.ActiveVirtualCamera?.Name ?? "없음"}");
+                    //Debug.Log($"[HUDAllPanel]   시네머신 브레인 있음, 활성 가상 카메라: {brain.ActiveVirtualCamera?.Name ?? "없음"}");
                 }
             }
             
             // 시네머신 가상 카메라들도 찾기
             var virtualCameras = FindObjectsOfType<CinemachineVirtualCamera>();
-            Debug.Log($"[HUDAllPanel] 시네머신 가상 카메라 개수: {virtualCameras.Length}");
+            //Debug.Log($"[HUDAllPanel] 시네머신 가상 카메라 개수: {virtualCameras.Length}");
             foreach (var vcam in virtualCameras)
             {
-                Debug.Log($"[HUDAllPanel] 가상 카메라: {vcam.name}, 우선순위: {vcam.Priority}, 활성화: {vcam.enabled}");
+                //Debug.Log($"[HUDAllPanel] 가상 카메라: {vcam.name}, 우선순위: {vcam.Priority}, 활성화: {vcam.enabled}");
             }
         }
 

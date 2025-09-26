@@ -229,7 +229,7 @@ namespace KYS
                 return false;
             }
 
-            //Debug.Log($"[DialogueManager] Dialogue 데이터 로드됨 - 총 {Manager.data.Dialogue.Values.Count}개 노드");
+            Debug.Log($"[DialogueManager] Dialogue 데이터 로드됨 - 총 {Manager.data.Dialogue.Values.Count}개 노드");
 
             // CSV에서 노드 데이터 찾기
             if (!Manager.data.Dialogue.Values.TryGetValue(nodeId, out DialogueDataCsv csvData))
@@ -237,7 +237,7 @@ namespace KYS
                 Debug.LogError($"[DialogueManager] 노드 '{nodeId}'를 찾을 수 없습니다. 사용 가능한 노드들:");
                 foreach (var availableNode in Manager.data.Dialogue.Values.Values)
                 {
-                    //Debug.Log($"  - {availableNode.Id} ({availableNode.NodeType})");
+                    Debug.Log($"  - {availableNode.Id} ({availableNode.NodeType})");
                 }
                 return false;
             }
@@ -295,7 +295,7 @@ namespace KYS
         /// </summary>
         public bool SelectChoice(int choiceIndex)
         {
-            //Debug.Log($"[DialogueManager] SelectChoice 호출됨 - 인덱스: {choiceIndex}");
+            Debug.Log($"[DialogueManager] SelectChoice 호출됨 - 인덱스: {choiceIndex}");
             
             if (currentDialogueData == null)
             {
@@ -303,9 +303,9 @@ namespace KYS
                 return false;
             }
 
-            //Debug.Log($"[DialogueManager] 현재 노드: {currentDialogueData.Id}");
-            //Debug.Log($"[DialogueManager] 노드 타입: {currentDialogueData.NodeType}");
-            //Debug.Log($"[DialogueManager] 선택지 존재 여부: {currentDialogueData.HasChoices}");
+            Debug.Log($"[DialogueManager] 현재 노드: {currentDialogueData.Id}");
+            Debug.Log($"[DialogueManager] 노드 타입: {currentDialogueData.NodeType}");
+            Debug.Log($"[DialogueManager] 선택지 존재 여부: {currentDialogueData.HasChoices}");
             
             if (!currentDialogueData.HasChoices)
             {
@@ -313,12 +313,12 @@ namespace KYS
                 return false;
             }
 
-            string[] choiceNextIds = currentDialogueData.GetChoiceNextIds();
-            //Debug.Log($"[DialogueManager] 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
+            string[] choiceNextIds = currentDialogueData.GetFilteredChoiceNextIds();
+            Debug.Log($"[DialogueManager] 필터링된 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
             
-            // 선택지 개수를 기준으로 인덱스 확인 (choiceNextIds가 더 적을 수 있음)
-            int availableChoices = currentDialogueData.ChoiceCount;
-            //Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
+            // 필터링된 선택지 개수를 기준으로 인덱스 확인
+            int availableChoices = choiceNextIds.Length;
+            Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
             
             if (choiceIndex < 0 || choiceIndex >= availableChoices)
             {
@@ -333,23 +333,19 @@ namespace KYS
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
             // 선택지에 따른 다음 노드로 이동
-            string nextNodeId = "";
-            if (choiceIndex < choiceNextIds.Length)
-            {
-                nextNodeId = choiceNextIds[choiceIndex];
-            }
-            //Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
+            string nextNodeId = choiceNextIds[choiceIndex];
+            Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
             
-            if (string.IsNullOrEmpty(nextNodeId))
+            if (string.IsNullOrEmpty(nextNodeId) || nextNodeId.ToLower() == "end")
             {
-                Debug.LogWarning("[DialogueManager] 다음 노드 ID가 비어있음 - 대화 종료");
+                Debug.LogWarning($"[DialogueManager] 다음 노드 ID가 비어있거나 'end': '{nextNodeId}' - 대화 종료");
                 EndDialogue();
                 return false;
             }
 
-            //Debug.Log($"[DialogueManager] MoveToNode 호출: {nextNodeId}");
+            Debug.Log($"[DialogueManager] MoveToNode 호출: {nextNodeId}");
             bool result = MoveToNode(nextNodeId);
-            //Debug.Log($"[DialogueManager] MoveToNode 결과: {result}");
+            Debug.Log($"[DialogueManager] MoveToNode 결과: {result}");
             
             return result;
         }

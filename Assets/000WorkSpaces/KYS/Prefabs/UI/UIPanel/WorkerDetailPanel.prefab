@@ -48,8 +48,8 @@ RectTransform:
   - {fileID: 4382226593895407451}
   - {fileID: 2351171088279664156}
   - {fileID: 1561688493661023520}
-  - {fileID: 291460099020976224}
   - {fileID: 3613216836671336042}
+  - {fileID: 291460099020976224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.1, y: 0.15}
@@ -709,7 +709,7 @@ GameObject:
   - component: {fileID: 5790153187546985264}
   - component: {fileID: 8028918524882437822}
   m_Layer: 5
-  m_Name: RunBeforeUpgradeNum1
+  m_Name: RunCurSpeedText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1031,7 +1031,7 @@ GameObject:
   - component: {fileID: 8974612117951842324}
   - component: {fileID: 6474697954348676248}
   m_Layer: 5
-  m_Name: RunAfterUpgradeNum1
+  m_Name: RunUpgradeCapacityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1582,7 +1582,7 @@ GameObject:
   - component: {fileID: 6714078803327399534}
   - component: {fileID: 6039495968449909549}
   m_Layer: 5
-  m_Name: RunAfterUpgradeNum1
+  m_Name: RunUpgradeSpeedText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1834,7 +1834,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.2738426, y: 0.42251194}
   m_AnchorMax: {x: 0.52657413, y: 0.45814964}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.000030517578, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7200279288188940119
@@ -2305,7 +2305,7 @@ GameObject:
   - component: {fileID: 5066674311440091488}
   - component: {fileID: 880375797442533419}
   m_Layer: 5
-  m_Name: RunBeforeUpgradeNum1
+  m_Name: RunCurCapacityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

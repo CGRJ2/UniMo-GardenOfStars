@@ -433,7 +433,7 @@ namespace KYS
         [ContextMenu("MoneyAdd")]
         private void MoneyAdd()
         {
-            Manager.player.Data.Money.Value += 1000;
+            Manager.player.Data.Money.Value += 100000;
         }
 
         [ContextMenu("현재 퀘스트 인덱스 확인")]

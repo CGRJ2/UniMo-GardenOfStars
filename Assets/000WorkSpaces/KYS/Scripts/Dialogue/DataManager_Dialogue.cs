@@ -72,6 +72,7 @@ public partial class DataManager
                 dialogue.ChoiceText4_Korea = GetFieldValue(words, dict, "ChoiceText4_Korea");
                 dialogue.ChoiceText4_English = GetFieldValue(words, dict, "ChoiceText4_English");
                 dialogue.ChoiceNext4 = GetFieldValue(words, dict, "ChoiceNext4");
+                dialogue.Choice2Condition = GetFieldValue(words, dict, "Choice2Condition");
                 dialogue.Choice3Condition = GetFieldValue(words, dict, "Choice3Condition");
                 dialogue.Choice4Condition = GetFieldValue(words, dict, "Choice4Condition");
                 dialogue.CharacterImage = GetFieldValue(words, dict, "CharacterImage");

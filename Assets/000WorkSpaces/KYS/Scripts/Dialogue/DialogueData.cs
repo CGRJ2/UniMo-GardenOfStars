@@ -239,16 +239,25 @@ namespace KYS
             var csvData = Manager.data.Dialogue.Values[Id];
             var choices = new List<string>();
 
+            Debug.Log($"[DialogueData] GetFilteredChoiceTexts 시작 - 노드 ID: {Id}");
+
             // 4개 선택지 모두 확인하고 조건 체크
             for (int i = 1; i <= 4; i++)
             {
                 string localizedText = GetLocalizedChoiceTextDynamic(csvData, i, language);
-                if (!string.IsNullOrEmpty(localizedText) && ShouldShowChoice(i))
+                bool shouldShow = ShouldShowChoice(i);
+                string nextId = GetChoiceNextByIndex(i);
+                
+                Debug.Log($"[DialogueData] Choice{i} - 텍스트: '{localizedText}', 표시여부: {shouldShow}, NextId: '{nextId}'");
+                
+                if (!string.IsNullOrEmpty(localizedText) && shouldShow)
                 {
                     choices.Add(localizedText);
+                    Debug.Log($"[DialogueData] Choice{i} 추가됨: '{localizedText}'");
                 }
             }
 
+            Debug.Log($"[DialogueData] GetFilteredChoiceTexts 완료 - 총 {choices.Count}개 선택지: [{string.Join(", ", choices)}]");
             return choices.ToArray();
         }
 
@@ -262,19 +271,35 @@ namespace KYS
             // GetFilteredChoiceTexts와 동일한 로직으로 필터링
             var csvData = Manager.data.Dialogue.Values[Id];
             
+            Debug.Log($"[DialogueData] GetFilteredChoiceNextIds 시작 - 노드 ID: {Id}");
+            
             for (int i = 1; i <= 4; i++)
             {
-                string choiceText = GetChoiceTextByIndex(csvData, i);
-                if (!string.IsNullOrEmpty(choiceText) && ShouldShowChoice(i))
+                // GetFilteredChoiceTexts와 동일하게 로컬라이즈된 텍스트 확인
+                string localizedText = GetLocalizedChoiceTextDynamic(csvData, i, SystemLanguage.Korean);
+                bool shouldShow = ShouldShowChoice(i);
+                string nextId = GetChoiceNextByIndex(i);
+                
+                Debug.Log($"[DialogueData] Choice{i} NextId - 텍스트: '{localizedText}', 표시여부: {shouldShow}, NextId: '{nextId}'");
+                
+                if (!string.IsNullOrEmpty(localizedText) && shouldShow)
                 {
-                    string nextId = GetChoiceNextByIndex(i);
+                    // NextId가 비어있으면 "end"로 대화 종료 처리
+                    string finalNextId = string.IsNullOrEmpty(nextId) ? "end" : nextId;
+                    nextIds.Add(finalNextId);
+                    
                     if (!string.IsNullOrEmpty(nextId))
                     {
-                        nextIds.Add(nextId);
+                        Debug.Log($"[DialogueData] Choice{i} NextId 추가됨: '{nextId}'");
+                    }
+                    else
+                    {
+                        Debug.Log($"[DialogueData] Choice{i} NextId 추가됨: 'end' (대화 종료용)");
                     }
                 }
             }
 
+            Debug.Log($"[DialogueData] GetFilteredChoiceNextIds 완료 - 총 {nextIds.Count}개 NextId: [{string.Join(", ", nextIds)}]");
             return nextIds.ToArray();
         }
 
@@ -333,11 +358,16 @@ namespace KYS
             string conditionFieldName = $"Choice{choiceIndex}Condition";
             var conditionField = csvData.GetType().GetField(conditionFieldName);
             
+            Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, fieldName: '{conditionFieldName}', fieldFound: {conditionField != null}");
+            
             if (conditionField != null)
             {
-                return conditionField.GetValue(csvData)?.ToString() ?? "";
+                string conditionValue = conditionField.GetValue(csvData)?.ToString() ?? "";
+                Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, conditionValue: '{conditionValue}'");
+                return conditionValue;
             }
             
+            Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, field not found, returning empty string");
             return "";
         }
 
@@ -543,6 +573,7 @@ namespace KYS
         public string ChoiceText4_Korea;
         public string ChoiceText4_English;
         public string ChoiceNext4;
+        public string Choice2Condition; // Choice2 표시 조건
         public string Choice3Condition; // Choice3 표시 조건
         public string Choice4Condition; // Choice4 표시 조건
         public string CharacterImage;
