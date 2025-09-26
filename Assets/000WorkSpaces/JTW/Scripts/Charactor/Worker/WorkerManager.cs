@@ -1,13 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using UnityEngine.AI;
 
 public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
     [SerializeField] private float _stunDelay = 120f;
+
+    [SerializeField] private LayerMask _workerLayer;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
@@ -41,12 +46,18 @@ public class WorkerManager : MonoBehaviour
             InstantiateWorker(worker);
         }
 
-        foreach(WorkerRuntimeData worker in _workerList)
-        {
-            worker.WorkerController.Stun();
-        }
+        StartCoroutine(StunAllWorker());
 
         Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
+    }
+
+    private IEnumerator StunAllWorker()
+    {
+        foreach (WorkerRuntimeData worker in _workerList)
+        {
+            yield return new WaitUntil(() => worker.WorkerPresenter.IsInit);
+            worker.WorkerController.Stun();
+        }
     }
 
     private void OnDestroy()
@@ -215,6 +226,37 @@ public class WorkerManager : MonoBehaviour
         {
             spawnPos = new Vector3(data.PositionX.Value, 0, data.PositionZ.Value);
         }
+        bool isCanSpawn = false;
+        int count = 0;
+
+        while (!isCanSpawn)
+        {
+            if(count > 100)
+            {
+                spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+                break;
+            }
+
+            count++;
+            if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hitTemp, 0.5f, NavMesh.AllAreas) && !Physics.CheckSphere(spawnPos, 0.5f, _workerLayer))
+            {
+                isCanSpawn = true;
+            }
+            else
+            {
+                Vector3 temp = Random.insideUnitSphere;
+                temp.y = 0;
+                temp = temp.normalized;
+
+                spawnPos += temp;
+
+                if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                {
+                    spawnPos = hit.position;
+                }
+            }
+        }
+
 
         WorkerRuntimeData worker = Instantiate(_workerPrefab, spawnPos, Quaternion.identity).GetComponent<WorkerRuntimeData>();
 

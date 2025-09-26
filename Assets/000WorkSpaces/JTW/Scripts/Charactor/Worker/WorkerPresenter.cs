@@ -14,6 +14,8 @@ public class WorkerPresenter : MonoBehaviour
 
     private GameObject _avatar;
 
+    public bool IsInit;
+
     void Start()
     {
         _data = GetComponent<WorkerRuntimeData>();
@@ -36,6 +38,8 @@ public class WorkerPresenter : MonoBehaviour
         _data.IsWork.Subscribe(OnWorkChanged);
         _data.IsStun.Subscribe(OnStunChanged);
         _data.IsAwake.Subscribe(OnAwakeChanged);
+
+        IsInit = true;
     }
 
     private void OnDisable()

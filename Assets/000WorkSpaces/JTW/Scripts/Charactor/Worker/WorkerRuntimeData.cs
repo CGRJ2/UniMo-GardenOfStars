@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerRuntimeData : CharaterRuntimeData
 {
+    [SerializeField] private GameObject _stunUI;
+    public GameObject StunUI => _stunUI;
+    [SerializeField] private Image _stunImage;
+    public Image StunImage => _stunImage;
+
     private WorkerData _data;
 
     #region WorkerDatas
@@ -28,6 +34,8 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public WorkerManager WorkerManager => _workerManager;
     private WorkerController _workerController;
     public WorkerController WorkerController => _workerController;
+    private WorkerPresenter _workerPresenter;
+    public WorkerPresenter WorkerPresenter => _workerPresenter;
 
     public ObservableProperty<IWorkStation> CurWorkstation = new ObservableProperty<IWorkStation>();
     public int NavMeshPriority;
@@ -43,6 +51,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
     private void Awake()
     {
         _workerController = GetComponent<WorkerController>();
+        _workerPresenter = GetComponent<WorkerPresenter>();
     }
 
     private IEnumerator SavePositionCoroutine()
@@ -64,6 +73,7 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public void SetWorkerData(WorkerData data)
     {
         _data = data;
+        StartCoroutine(SavePositionCoroutine());
     }
 
     public void SetWorkstation(IWorkStation workstation)
