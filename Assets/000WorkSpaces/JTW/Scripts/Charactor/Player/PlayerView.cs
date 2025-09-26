@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerView : MonoBehaviour
 {
     [SerializeField] private Transform _avatar;
+    public Transform Avatar => _avatar;
 
     [SerializeField] private RuntimeAnimatorController _avatarController;
     [SerializeField] private RuntimeAnimatorController _equipController;
@@ -33,6 +34,8 @@ public class PlayerView : MonoBehaviour
 
     public void SetForwardToMoveDir(Vector3 worldMoveDir, float deltaTime)
     {
+        if (_data.Direction == Vector3.zero) return;
+
         // XZ 평면만 사용
         worldMoveDir.y = 0f;
 
