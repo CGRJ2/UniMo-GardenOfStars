@@ -29,6 +29,11 @@ namespace KYS
         private GameObject assetDetail => GetUI(assetDetailName);
         private GameObject assetToggleBackground => GetUI(assetToggleBackgroundName);
         private GameObject assetToggleCheckmark => GetUI(assetToggleCheckmarkName);
+        private GameObject tutoOverlayPanel => GetUI("Panel_TutoOverlay");
+        private Button tutoOverlayButton => GetUI<Button>("UpgradeButton_Tuto");
+
+        
+
 
         // AssetDetail 토글 상태 관리
         private bool isAssetDetailVisible = false;
@@ -60,6 +65,13 @@ namespace KYS
             Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             Manager.Audio.SfxPlay("DoorBell");
+
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages(new() { "UpgradeButton" });
+                TutorialManager.Instance.overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(false);
+                TutorialManager.Instance.overlayPanel_UpradeBtnInPlayerInfoPanel.SetActive(true);
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -289,22 +301,6 @@ namespace KYS
             Debug.Log($"[PlayerUpgradePanel] AssetDetail: {assetDetail != null}");
             Debug.Log($"[PlayerUpgradePanel] AssetToggleBackground: {assetToggleBackground != null}");
             Debug.Log($"[PlayerUpgradePanel] AssetToggleCheckmark: {assetToggleCheckmark != null}");
-        }
-
-        private void OnEnable()
-        {
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(true);
-                TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(false);
-            }
-        }
-        private void OnDisable()
-        {
-            if (TutorialManager.Instance != null)
-            {
-                TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(false);
-            }
         }
     }
 }

@@ -49,6 +49,13 @@ public class InfoPanel_Harvest2 : BaseUI
         }
 
         Init();
+
+        if (TutorialManager.Instance != null)
+        {
+            BlockAllImages(new() { "UpGradeButton1" });
+            TutorialManager.Instance.overlayPanel_BiPanelUpgrade.SetActive(false);
+            TutorialManager.Instance.overlayPanel_InfoPopUpgradeBtn.SetActive(true);
+        }
     }
 
     public void Init()  // 초기화를 어디서 해줘야 할까요?

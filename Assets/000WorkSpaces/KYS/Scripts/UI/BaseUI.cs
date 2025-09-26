@@ -95,6 +95,23 @@ namespace KYS
             SetupMVP();
         }
 
+        public void BlockAllImages(List<string> exceptionalImages = null)
+        {
+            foreach(var kvp in compDict)
+            {
+                if(kvp.Value is Image image)
+                {
+                    if (exceptionalImages == null || !exceptionalImages.Contains(image.gameObject.name))
+                        image.raycastTarget = false;
+                }
+                if (kvp.Value is TextMeshProUGUI tmp)
+                {
+                    if (exceptionalImages == null || !exceptionalImages.Contains(tmp.gameObject.name))
+                        tmp.raycastTarget = false;
+                }
+            }
+        }
+
         protected virtual void Start()
         {
             presenter?.Initialize();

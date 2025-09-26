@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerRunTimeData : CharaterRuntimeData
 {
     public Vector3 Direction;
+    public InteractableBase CurWorkStation;
 
     public override int GetMaxCapacity()
     {

@@ -20,11 +20,19 @@ public class OfflineRewardPopup : BaseUI
 
         btn_Ad.onClick.AddListener(() =>
         {
-            Manager.ad.ShowRewardedAd(() =>
+            if (Manager.firebase.UserData.AdRemoved.Value)
             {
                 Manager.firebase.UserData.Player.Money.Value += 4 * StageManager.Instance.GetTotalAutoReward();
                 Manager.ui.ClosePopup();
-            });
+            }
+            else
+            {
+                Manager.ad.ShowRewardedAd(() =>
+                {
+                    Manager.firebase.UserData.Player.Money.Value += 4 * StageManager.Instance.GetTotalAutoReward();
+                    Manager.ui.ClosePopup();
+                });
+            }
         });
 
         btn_Esc.onClick.AddListener(() => Manager.ui.ClosePopup());

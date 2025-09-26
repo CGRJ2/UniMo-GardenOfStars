@@ -8,7 +8,9 @@ public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
-    [SerializeField] private float _stunDelay = 10f;
+    [SerializeField] private float _stunDelay = 120f;
+
+    [SerializeField] private LayerMask _workerLayer;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
@@ -33,26 +35,27 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
 
-        int x = 0;
-        int z = 0;
-
         foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
             WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
 
             if (worker == null) continue;
 
-            InstantiateWorker(worker, new Vector3(-x, 0, -z));
-
-            z++;
-            if(z > 2)
-            {
-                z = 0;
-                x++;
-            }
+            InstantiateWorker(worker);
         }
 
+        StartCoroutine(StunAllWorker());
+
         Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
+    }
+
+    private IEnumerator StunAllWorker()
+    {
+        foreach (WorkerRuntimeData worker in _workerList)
+        {
+            yield return new WaitUntil(() => worker.WorkerPresenter.IsInit);
+            worker.WorkerController.Stun();
+        }
     }
 
     private void OnDestroy()
@@ -209,9 +212,51 @@ public class WorkerManager : MonoBehaviour
         return false;
     }
 
-    public void InstantiateWorker(WorkerData data, Vector3 offset = default)
+    public void InstantiateWorker(WorkerData data)
     {
-        WorkerRuntimeData worker = Instantiate(_workerPrefab, Manager.buildings.workerBuilding.GetSpawnPos() + offset, Quaternion.identity).GetComponent<WorkerRuntimeData>();
+        Vector3 spawnPos;
+
+        if(data.PositionX.Value == 0 && data.PositionZ.Value == 0)
+        {
+            spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+        }
+        else
+        {
+            spawnPos = new Vector3(data.PositionX.Value, 0, data.PositionZ.Value);
+        }
+        bool isCanSpawn = false;
+        int count = 0;
+
+        while (!isCanSpawn)
+        {
+            if(count > 100)
+            {
+                spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+                break;
+            }
+
+            count++;
+            if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hitTemp, 0.5f, NavMesh.AllAreas) && !Physics.CheckSphere(spawnPos, 0.5f, _workerLayer))
+            {
+                isCanSpawn = true;
+            }
+            else
+            {
+                Vector3 temp = Random.insideUnitSphere;
+                temp.y = 0;
+                temp = temp.normalized;
+
+                spawnPos += temp;
+
+                if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                {
+                    spawnPos = hit.position;
+                }
+            }
+        }
+
+
+        WorkerRuntimeData worker = Instantiate(_workerPrefab, spawnPos, Quaternion.identity).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
@@ -250,6 +295,7 @@ public class WorkerManager : MonoBehaviour
             if (Manager.firebase.UserData.TutorialSequence.Value == 6)
             {
                 TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(false);
                 Manager.ui.ClosePanel();
             }
         }

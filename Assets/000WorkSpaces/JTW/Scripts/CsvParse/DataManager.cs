@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -8,6 +9,12 @@ public partial class DataManager : Singleton<DataManager>
 {
     private void Awake()
     {
+        StartCoroutine(WaitInit());
+    }
+
+    IEnumerator WaitInit()
+    {
+        yield return new WaitUntil(() => Manager.game.initialized);
         Init();
     }
 
@@ -18,7 +25,7 @@ public partial class DataManager : Singleton<DataManager>
         DialogueRoutine();
         BuildingLocalizationRoutine();
         IngrediantLocalizationRoutine();
-        NpcTextLinesRoutine(); // 반드시 NpcRoutine 이전에 실행되어야함.
+        //NpcTextLinesRoutine(); // 반드시 NpcRoutine 이전에 실행되어야함.
         NpcRoutine();
         QuestRoutine();
         QuestContentRoutine();

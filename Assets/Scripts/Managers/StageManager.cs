@@ -59,7 +59,6 @@ public class StageManager : MonoBehaviour
         Manager.quest.CurStageQuestDataInit();
 
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
         Debug.LogWarning("QuestList Inited");
 
         Init();
@@ -102,9 +101,9 @@ public class StageManager : MonoBehaviour
 
         // 현재 스테이지의 Npc에서, 진행중인 퀘스트 ID 등록
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        //foreach (var value in npc.QuestList.List)
-
+        
         bool allQuestCleared = true;
+
         for (int i = 0; i < npc.QuestList.List.Count; i++)
         {
             //if (Manager.data.Quest.Values[value.QuestId].)

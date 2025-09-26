@@ -41,7 +41,7 @@ public partial class DataManager
     private const string _npcTextLinesaddress = "CYE/SampleNpcTextLinesData";
 
     public DataTableParser<NpcDataCsv> Npc;
-    public DataTableParser<NpcTextLineDataCsv> NpcTextLines;
+    //public DataTableParser<NpcTextLineDataCsv> NpcTextLines;
 
     public async void NpcRoutine()
     {
@@ -57,7 +57,7 @@ public partial class DataManager
                 npc.Name_EN = words[dict["Name_EN"]];
                 npc.Description = words[dict["Description"]];
 
-                string spritePath_Default = words[dict["Sprite_Default"]];
+                string spritePath_Default = words[dict["SpritePath_Default"]];
                 if (Addressables.ResourceLocators.Any(locator => locator.Locate($"{spritePath_Default}", typeof(Sprite), out var locations)))
                 {
                     Addressables.LoadAssetAsync<Sprite>($"{spritePath_Default}").Completed += task =>
@@ -75,7 +75,7 @@ public partial class DataManager
             Npc.Load(rawData);
         }
     }
-    public async void NpcTextLinesRoutine()
+    /*public async void NpcTextLinesRoutine()
     {
         string rawData = await GetDataString(_isNpcTextLinesAdressable, _isNpcTextLinesAdressable ? _npcTextLinesaddress : _npcTextLinesDataTableURL);
         if (rawData != null)
@@ -94,5 +94,5 @@ public partial class DataManager
 
             NpcTextLines.Load(rawData);
         }
-    }
+    }*/
 }

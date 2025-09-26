@@ -574,7 +574,16 @@ namespace KYS
                 // 잠긴 스테이지인 경우 이름에 잠금 표시 추가
                 if (!isUnlocked)
                 {
-                    stageName += " [잠김]";
+                    bool isRealUnlocked = Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+
+                    if (!isRealUnlocked)
+                    {
+                        stageName += " [잠김]";
+                    }
+                    else
+                    {
+                        stageName += " [준비중]";
+                    }
                 }
 
                 stageNameText.text = stageName;
@@ -752,7 +761,10 @@ namespace KYS
         /// </summary>
         private bool IsStageUnlocked(int stageIndex)
         {
-            return Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+            bool isUnlocked = Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+            bool isReleased = Manager.data.Stage.Values[zodiacStages[stageIndex].stageId].IsRelease;
+
+            return isUnlocked && isReleased;
         }
 
         /// <summary>

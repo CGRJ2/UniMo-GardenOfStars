@@ -55,6 +55,11 @@ namespace KYS
             Initialize();
 
             Manager.Audio.SfxPlay("DoorBell");
+
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages();
+            }
         }
         public override string[] GetAutoLocalizeKeys()
         {

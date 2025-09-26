@@ -45,6 +45,12 @@ namespace KYS
             Initialize();
 
             Manager.Audio.SfxPlay("DoorBell");
+
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages();
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(true);
+            }
         }
 
         protected override void OnDestroy()

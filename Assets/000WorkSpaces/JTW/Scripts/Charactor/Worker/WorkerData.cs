@@ -29,6 +29,10 @@ public class WorkerData : FirebaseData
     public float StunChance => WorkerCsv.StunChance;
     public string StunRank => WorkerCsv.StunRank;
 
+    public FirebaseProperty<float> PositionX;
+    public FirebaseProperty<float> PositionZ;
+
+
     public WorkerData(string id, string parentPath = null) : base(id, parentPath)
     {
         MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
@@ -36,6 +40,12 @@ public class WorkerData : FirebaseData
 
         MaxCapacityLv = new FirebaseProperty<int>("MaxCapacityLv", Path, 1);
         InitList.Add(MaxCapacityLv);
+
+        PositionX = new FirebaseProperty<float>("PositionX", Path);
+        InitList.Add(PositionX);
+
+        PositionZ = new FirebaseProperty<float>("PositionZ", Path);
+        InitList.Add(PositionZ);
     }
 
     public void UpgradeMoveSpeed()

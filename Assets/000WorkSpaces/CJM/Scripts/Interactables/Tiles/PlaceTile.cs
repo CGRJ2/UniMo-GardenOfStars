@@ -88,7 +88,7 @@ public class PlaceTile : InteractableBase
         }
 
         // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
-        Addressables.LoadAssetAsync<GameObject>("FX/Constructing.Prefab").Completed += task =>
+        Addressables.LoadAssetAsync<GameObject>("FX/Constructing.prefab").Completed += task =>
         {
             _Pool_FX_Construct = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
         };

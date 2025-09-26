@@ -1928,13 +1928,13 @@ namespace KYS
                 // CharacterImage가 없으면 NpcSprite 시도
                 if (Manager.dialogue?.CurrentDialogueData != null)
                 {
-                    Sprite npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                    /*Sprite npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
                     if (npcSprite != null)
                     {
                         Debug.Log("[StoryPanel] CharacterImage가 없어서 NpcSprite 사용");
                         SetCharacterImage(npcSprite);
                         return;
-                    }
+                    }*/
                 }
                 
                 Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있습니다.");
@@ -2460,7 +2460,7 @@ namespace KYS
             if (Manager.dialogue?.CurrentDialogueData != null)
             {
                 characterImage = Manager.dialogue.CurrentDialogueData.CharacterImage;
-                npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
+                //npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
                 
                 if (string.IsNullOrEmpty(characterImage) && npcSprite == null)
                 {
@@ -2884,9 +2884,9 @@ namespace KYS
         /// 스킵 모드 상태 확인
         /// </summary>
         public bool IsSkipMode => isSkipMode;
-        
+
         #endregion
-        
+
         #endregion
     }
 }

@@ -55,6 +55,12 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages(new() { "SpeedUpgradeButton" });
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(false);
+                TutorialManager.Instance.overlayPanel_WorkerUpgradeBtn.SetActive(true);
+            }
         }
 
         protected override void OnDestroy()
@@ -121,10 +127,14 @@ namespace KYS
                 _upgradeSpeedText.text = Manager.data.CharacterLv
                     .Values[(_worker.MoveSpeedLv.Value + 1).ToString()].Speed.ToString();
 
-                float Multi = Manager.data.UpgradeMulti.Values[_worker.Id].Multi;
-                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MoveSpeedLv.Value.ToString()].Speed;
+                int cost = Manager.data.WorkerUpgradeCost.Values[$"{(_worker.MoveSpeedLv.Value + 1)}_{_worker.Rank}"].Speed;
 
-                _upgradeSpeedCost = (int)(Multi * cost);
+                if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+                {
+                    cost = 0;
+                }
+
+                _upgradeSpeedCost = (int)(cost);
 
                 _upgradeSpeedCostText.text = _upgradeSpeedCost.ToString();
             }
@@ -149,10 +159,14 @@ namespace KYS
                 _upgradeCapacityText.text = Manager.data.CharacterLv
                     .Values[(_worker.MaxCapacityLv.Value + 1).ToString()].Capacity.ToString();
 
-                float Multi = Manager.data.UpgradeMulti.Values[_worker.Id].Multi;
-                int cost = Manager.data.WorkerUpgradeCost.Values[_worker.MaxCapacityLv.Value.ToString()].Capacity;
+                int cost = Manager.data.WorkerUpgradeCost.Values[$"{(_worker.MaxCapacityLv.Value + 1)}_{_worker.Rank}"].Capacity;
 
-                _upgradeCapacityCost = (int)(Multi * cost);
+                if(Manager.firebase.UserData.CurStage.Value == "Tutorial")
+                {
+                    cost = 0;
+                }
+
+                _upgradeCapacityCost = (int)(cost);
 
                 _upgradeCapacityCostText.text = _upgradeCapacityCost.ToString();
             }

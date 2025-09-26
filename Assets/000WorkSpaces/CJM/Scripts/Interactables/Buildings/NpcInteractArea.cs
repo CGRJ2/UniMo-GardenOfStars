@@ -1,4 +1,5 @@
-﻿using KYS;
+﻿using GameNpc;
+using KYS;
 using UnityEngine;
 
 public class NpcInteractArea : InteractableBase
@@ -33,7 +34,7 @@ public class NpcInteractArea : InteractableBase
             // 리팩토링 필요 => 전부 TutorialManager에서 처리할 수 있도록
 
             // 튜토리얼 NPC면 바로 첫대화 진행
-            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            if (TutorialManager.Instance != null)
             {
                 if (Manager.firebase.UserData.TutorialSequence.Value == 0)
                 {
@@ -47,16 +48,42 @@ public class NpcInteractArea : InteractableBase
                     Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd; // 대화 완료 시, 시퀀스 00종료
 
                     // 그냥 키를 넣었음
-                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_game_01_001");
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"Quest_{npc.NpcID.Value}_Start");
                     // 해당 대화가 종료되면 콜백함수로 Sequence00 종료
                     return;
                 }
                 else return;
             }
 
-            if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화
+            else
+            {
+                var npc = Manager.firebase.UserData.CurStageData.Npc;
+                string stageID = Manager.firebase.UserData.CurStage.Value;
+
+                // 첫 대화 진행이 안된 경우
+                if (!npc.IsTalked.Value)
+                {
+                    // 대화 실행 후, 대화 종료 시 퀘스트 발판 업데이트
+
+                    Manager.dialogue.OnDialogueCompleted += FirstTalkInited;
+
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Quest_{npc.NpcID.Value}_Start");
+                }
+                else
+                {
+                    if (activatePopUI != null)
+                        activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화
+                }
+            }
         }
+    }
+
+    void FirstTalkInited(DialogueData data)
+    {
+        Manager.dialogue.OnDialogueCompleted -= FirstTalkInited;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        GetComponent<NpcController>().UpdateQuestData();
+        npc.IsTalked.Value = true;
     }
 
     // 건물 활성화 범위 상호작용
