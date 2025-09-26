@@ -15,6 +15,7 @@ public class PlayerManager : Singleton<PlayerManager>
     private GameObject _equipSkin;
 
     private Transform _characterskinParent;
+    private Transform _equipkinParent;
     private PlayerView _playerView;
 
     public bool IsControl = true;
@@ -29,7 +30,8 @@ public class PlayerManager : Singleton<PlayerManager>
     public void SpawnPlayer(Vector3 position = default)
     {
         _playerObj = Instantiate(_playerPrefab, position, Quaternion.identity);
-        _characterskinParent = _playerObj.transform.Find("AvatarRoot");
+        _characterskinParent = _playerObj.transform.Find("AvatarRoot/CharacterRoot");
+        _equipkinParent = _playerObj.transform.Find("AvatarRoot");
         _playerView = _playerObj.GetComponent<PlayerView>();
 
         SetCharacterSkin(Manager.player.Data.CharacterSkinId.Value);
@@ -62,7 +64,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
         GameObject skin = Manager.data.EquipSkin.Values[id].Skin;
 
-        _equipSkin = Instantiate(skin, PlayerObj.transform);
+        _equipSkin = Instantiate(skin, _equipkinParent);
         _playerView.SetEquipAnimator(_equipSkin.GetComponent<Animator>());
     }
 }

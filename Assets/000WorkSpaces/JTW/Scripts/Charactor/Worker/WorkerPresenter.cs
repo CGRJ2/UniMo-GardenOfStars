@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class WorkerPresenter : MonoBehaviour
 {
+    [Header("AnimationController")]
     [SerializeField] private RuntimeAnimatorController _characterController;
     [SerializeField] private RuntimeAnimatorController _equipController;
+
+    [Header("Particle")]
+    [SerializeField] private ParticleSystem _moveParticle;
+    [SerializeField] private ParticleSystem _workParticle;
+    [SerializeField] private ParticleSystem _stunParticle;
+    [SerializeField] private ParticleSystem _stunBreakParticle;
 
     private Animator _characterAnimator;
     private Animator _equipAnimator;
@@ -54,23 +61,31 @@ public class WorkerPresenter : MonoBehaviour
     {
         _characterAnimator.SetBool("IsMove", value);
         _equipAnimator.SetBool("IsMove", value);
+
+        _moveParticle.gameObject.SetActive(value);
     }
 
     private void OnWorkChanged(bool value)
     {
         _characterAnimator.SetBool("IsWork", value);
         _equipAnimator.SetBool("IsWork", value);
+
+        _workParticle.gameObject.SetActive(value);
     }
 
     private void OnStunChanged(bool value)
     {
         _characterAnimator.SetBool("IsStun", value);
         _equipAnimator.SetBool("IsStun", value);
+
+        _stunParticle.gameObject.SetActive(value);
     }
 
     private void OnAwakeChanged(bool value)
     {
         _characterAnimator.SetBool("IsAwake", value);
         _equipAnimator.SetBool("IsAwake", value);
+
+        _stunBreakParticle.gameObject.SetActive(value);
     }
 }
