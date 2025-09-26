@@ -57,8 +57,8 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] float waitTimeAfterDissolve = 1f;
     [SerializeField] ShopBuilding shopBuilding;
     [SerializeField] NpcInteractAreaUI talk_Button;
-    public GameObject handPointer_PlayerUpradeBtn;
-    public GameObject handPointer_InPlayerUpradePanel;
+    public GameObject overlayPanel_PlayerUpradeBtnInTalkPanel;
+    public GameObject overlayPanel_UpradeBtnInPlayerInfoPanel;
 
     [Header("튜토리얼 #11 설정")]
     [SerializeField] GameObject portal;
@@ -894,6 +894,17 @@ public class TutorialManager : MonoBehaviour
             StartCoroutine(Sequence09_CheckUpgradeState());
         });
     }
+    public IEnumerator Sequence09_NormalTalkButtonClick()
+    {
+        Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
+
+        var stageID = Manager.firebase.UserData.CurStage.Value;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
+
+        yield return new WaitForSeconds(0.2f);
+        overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(true);
+    }
 
     IEnumerator Sequence09_CheckUpgradeState()
     {
@@ -904,30 +915,23 @@ public class TutorialManager : MonoBehaviour
 
         // 이동속도만 1 업그레이드 하면 진행됨
         yield return new WaitUntil(() => userData.Player.MoveSpeedLv.Value > 1);
+        
+        // 업그레이드 패널 닫기
+        Manager.ui.CloseAllPanels();
+        Manager.ui.CloseAllPopups();
+        overlayPanel_UpradeBtnInPlayerInfoPanel.SetActive(false);
 
         // 업그레이드 확인 시 시퀀스 종료
         SequenceEnd();
     }
 
-    public IEnumerator Sequence09_NormalTalkButtonClick()
-    {
-        Debug.LogWarning("튜토리얼 완료 대화 실행(업그레이드 패널 진입 용도)");
-
-        var stageID = Manager.firebase.UserData.CurStage.Value;
-        var npc = Manager.firebase.UserData.CurStageData.Npc;
-        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
-
-        yield return new WaitForSeconds(0.5f);
-        handPointer_PlayerUpradeBtn.SetActive(true);
-    }
+    
 
     public void TutorialSequence10()
     {
         Debug.LogWarning("시퀀스 10 시작");
 
         talk_Button.gameObject.SetActive(false);
-
-        
 
         Manager.camera.cam_PlayerFocus.Priority = 10;
         Manager.camera.cam_NpcFocus.Priority = 11;
@@ -957,6 +961,7 @@ public class TutorialManager : MonoBehaviour
         portal.SetActive(true);
 
         // 포탈 강조 FX
+        yield return new WaitUntil(() => _Pool_FX_Highlighted != null);
         PlayHighLightFX(portal.transform);
 
         // 포탈 포커스 카메라 컷씬 진행

@@ -1,4 +1,5 @@
-﻿using KYS;
+﻿using GameNpc;
+using KYS;
 using UnityEngine;
 
 public class NpcInteractArea : InteractableBase
@@ -55,8 +56,29 @@ public class NpcInteractArea : InteractableBase
                 else return;
             }
 
-            if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화
+            else
+            {
+                var npc = Manager.firebase.UserData.CurStageData.Npc;
+                string stageID = Manager.firebase.UserData.CurStage.Value;
+
+                // 첫 대화 진행이 안된 경우
+                if (!npc.IsTalked.Value)
+                {
+                    // 대화 실행 후, 대화 종료 시 퀘스트 발판 업데이트
+
+                    Manager.dialogue.OnDialogueCompleted += (data) =>
+                    {
+                        GetComponent<NpcController>().UpdateQuestData();
+                    }; 
+
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Quest_{npc.NpcID.Value}_Start");
+                }
+                else
+                {
+                    if (activatePopUI != null)
+                        activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화
+                }
+            }
         }
     }
 

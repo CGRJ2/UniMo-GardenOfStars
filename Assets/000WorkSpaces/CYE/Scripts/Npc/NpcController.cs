@@ -61,10 +61,15 @@ namespace GameNpc
 
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
-                UpdateQuestData();
+                var npc = Manager.firebase.UserData.CurStageData.Npc;
+
+                // 첫 대화 진행된 경우 바로 퀘스트 발판 보여주기
+                if (npc.IsTalked.Value)
+                {
+                    UpdateQuestData();
+                }
 
                 // 스테이지ID에 맞는 NPC ID의 메쉬와 재질로 설정해주기
-
                 string stageID = Manager.firebase.UserData.CurStage.Value;
                 string numberPart = Regex.Match(stageID, @"\d+").Value; // "01"
                 int stageNumber = int.Parse(numberPart);

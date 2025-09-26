@@ -2834,11 +2834,5 @@ namespace KYS
         #endregion
 
         #endregion
-
-        private void OnDisable()
-        {
-            if (TutorialManager.Instance != null)
-                TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(false);
-        }
     }
 }

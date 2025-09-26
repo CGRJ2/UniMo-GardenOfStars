@@ -55,6 +55,12 @@ namespace KYS
         protected override void Awake()
         {
             base.Awake();
+            if (TutorialManager.Instance != null)
+            {
+                BlockAllImages(new() { "SpeedUpgradeButton" });
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(false);
+                TutorialManager.Instance.overlayPanel_WorkerUpgradeBtn.SetActive(true);
+            }
         }
 
         protected override void OnDestroy()
