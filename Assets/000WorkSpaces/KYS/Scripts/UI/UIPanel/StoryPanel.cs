@@ -1046,6 +1046,9 @@ namespace KYS
 
             // 업그레이드 버튼 관리
             ManageUpgradeButton(dialogueData);
+            
+            // Choice 관리 (stratchoice 타입 지원)
+            ManageChoice(dialogueData);
 
             // UI 업데이트 완료 (모든 경우에 실행)
             isUpdatingUI = false;
@@ -2608,6 +2611,33 @@ namespace KYS
             SetUpgradeButtonVisible(shouldShowButton, dialogueData.Id);
         }
         
+        /// <summary>
+        /// Choice 관리 (대화 노드에 따라 표시/숨김) - stratchoice 타입 지원
+        /// </summary>
+        private void ManageChoice(DialogueData dialogueData)
+        {
+            if (dialogueData == null) return;
+            
+            // Choice 표시 조건들
+            bool hasChoiceInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                               (dialogueData.Id.ToLower().Contains("choice") || 
+                                dialogueData.Id.ToLower().Contains("선택"));
+            
+            bool hasNormalInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                               dialogueData.Id.ToLower().Contains("normal");
+            
+            bool hasStratchoiceInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                    dialogueData.Id.ToLower().Contains("stratchoice");
+            
+            bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
+            
+            // Choice 표시 조건: choice가 있거나, (normal이면서 start)이거나, stratchoice가 있으면 표시
+            bool shouldShowChoice = hasChoiceInId || (hasNormalInId && isStartNode) || hasStratchoiceInId;
+            
+            // Choice 상태 업데이트
+            SetChoiceVisible(shouldShowChoice, dialogueData.Id);
+        }
+        
         #endregion
         
         #region 업그레이드 버튼 기능
@@ -2652,6 +2682,30 @@ namespace KYS
         public bool IsUpgradeButtonActive()
         {
             return isUpgradeButtonVisible && upgradeButton != null && upgradeButton.activeInHierarchy;
+        }
+        
+        #endregion
+        
+        #region Choice 기능
+        
+        /// <summary>
+        /// Choice 표시/숨김
+        /// </summary>
+        public void SetChoiceVisible(bool visible, string nodeId = "")
+        {
+            if (choicePanel != null)
+            {
+                choicePanel.SetActive(visible);
+                Debug.Log($"[StoryPanel] Choice {(visible ? "표시" : "숨김")} - 노드 ID: {nodeId}");
+            }
+        }
+        
+        /// <summary>
+        /// 현재 노드에서 Choice가 활성화되어 있는지 확인
+        /// </summary>
+        public bool IsChoiceActive()
+        {
+            return choicePanel != null && choicePanel.activeInHierarchy;
         }
         
         #endregion
