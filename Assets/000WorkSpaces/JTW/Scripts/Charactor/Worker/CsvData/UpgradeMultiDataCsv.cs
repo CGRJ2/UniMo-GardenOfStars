@@ -41,7 +41,7 @@ public partial class DataManager
         {
             UpgradeMultiDataCsv multi = new UpgradeMultiDataCsv();
 
-            multi.Id = words[dict["CharacterID"]];
+            multi.Id = words[dict["StageID"]];
 
             float.TryParse(words[dict["UpgradeMultiplier"]], out multi.Multi);
 
