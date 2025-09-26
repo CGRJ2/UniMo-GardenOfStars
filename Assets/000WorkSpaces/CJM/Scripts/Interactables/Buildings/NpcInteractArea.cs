@@ -47,7 +47,8 @@ public class NpcInteractArea : InteractableBase
                     Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd; // 대화 완료 시, 시퀀스 00종료
 
                     // 그냥 키를 넣었음
-                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_game_01_001");
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"Quest_{npc.NpcID.Value}_Start");
+                    // TODO: 다른 스테이지들에도 첫 대화 이후에 퀘스트가 진행되도록 수정해야됨.
                     // 해당 대화가 종료되면 콜백함수로 Sequence00 종료
                     return;
                 }

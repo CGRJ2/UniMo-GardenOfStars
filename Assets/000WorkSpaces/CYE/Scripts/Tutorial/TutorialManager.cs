@@ -36,15 +36,26 @@ public class TutorialManager : MonoBehaviour
     [Header("튜토리얼 #1 설정")]
     [SerializeField] ProdsArea prodsArea;
 
+    [Header("튜토리얼 #2 설정")]
+    public GameObject overlayPanel_BiPanelBuy;
+
+
     [Header("튜토리얼 #3 설정")]
     [SerializeField] PlaceTile placeTile;
 
+    [Header("튜토리얼 #5 설정")]
+    public GameObject overlayPanel_BiPanelUpgrade;
+    public GameObject overlayPanel_InfoPopUpgradeBtn;
+
+    [Header("튜토리얼 #7 설정")]
+    public GameObject overlayPanel_HRPanelBtn;
     [Header("튜토리얼 #8 설정")]
+    public GameObject overlayPanel_WorkerUpgradeBtn;
+
+    [Header("튜토리얼 #9 설정")]
     [Tooltip("석상 활성화(재질 디졸브) 이후 대화가 출력되기 까지 대기 시간")]
     [SerializeField] float waitTimeAfterDissolve = 1f;
     [SerializeField] ShopBuilding shopBuilding;
-
-    [Header("튜토리얼 #9 설정")]
     [SerializeField] NpcInteractAreaUI talk_Button;
     public GameObject handPointer_PlayerUpradeBtn;
     public GameObject handPointer_InPlayerUpradePanel;
@@ -344,6 +355,8 @@ public class TutorialManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         Debug.LogWarning("시퀀스03 시작");
+        
+        overlayPanel_BiPanelBuy.SetActive(false);
 
         StartCoroutine(Sequence03_CutScene());
     }
@@ -564,6 +577,7 @@ public class TutorialManager : MonoBehaviour
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
+        overlayPanel_InfoPopUpgradeBtn.SetActive(false);
 
         PlayHighLightFX(null);
         tutorialNPC.ShowQuestTiles();
@@ -717,8 +731,6 @@ public class TutorialManager : MonoBehaviour
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
-        
-
         // 플레이어 조작 활성화
         Manager.player.IsControl = true;
 
@@ -757,12 +769,12 @@ public class TutorialManager : MonoBehaviour
         ////////////////////////////////////////////////////
 
         // 일꾼이 업그레이드 된 상태라면
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.WorkerList.List[0].MaxCapacityLv.Value > 1 &&
-            Manager.firebase.UserData.CurStageData.WorkerList.List[0].MoveSpeedLv.Value > 1);
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.WorkerList.List[0].MoveSpeedLv.Value > 1);
 
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
+        overlayPanel_WorkerUpgradeBtn.SetActive(false);
 
         // 전당포 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[8].Priority = 11;
@@ -915,9 +927,7 @@ public class TutorialManager : MonoBehaviour
 
         talk_Button.gameObject.SetActive(false);
 
-        // 업그레이드 패널 닫기
-        Manager.ui.CloseAllPanels();
-        Manager.ui.CloseAllPopups();
+        
 
         Manager.camera.cam_PlayerFocus.Priority = 10;
         Manager.camera.cam_NpcFocus.Priority = 11;

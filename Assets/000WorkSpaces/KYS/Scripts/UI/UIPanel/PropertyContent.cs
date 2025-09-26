@@ -74,6 +74,23 @@ namespace KYS
         private void OnEnable()
         {
             BuildingCountUpdate();
+
+            // 튜토리얼 씬이라면
+            if (TutorialManager.Instance != null)
+            {
+                // 건물 구매 단계
+                if (Manager.firebase.UserData.TutorialSequence.Value == 2)
+                {
+                    TutorialManager.Instance.overlayPanel_BiPanelBuy.SetActive(true);
+                    BlockAllImages(new() { "BuyButton" });
+                }
+                // 건물 강화 단계
+                else if (Manager.firebase.UserData.TutorialSequence.Value == 5)
+                {
+                    TutorialManager.Instance.overlayPanel_BiPanelUpgrade.SetActive(true);
+                    BlockAllImages(new() { "UpgradeButton" });
+                }
+            }
         }
 
         // 그냥 구매버튼 & First구매버튼 둘 다 이 함수를 사용하도록 바꿨습니다.

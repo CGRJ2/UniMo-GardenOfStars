@@ -29,6 +29,11 @@ namespace KYS
         private GameObject assetDetail => GetUI(assetDetailName);
         private GameObject assetToggleBackground => GetUI(assetToggleBackgroundName);
         private GameObject assetToggleCheckmark => GetUI(assetToggleCheckmarkName);
+        private GameObject tutoOverlayPanel => GetUI("Panel_TutoOverlay");
+        private Button tutoOverlayButton => GetUI<Button>("UpgradeButton_Tuto");
+
+        
+
 
         // AssetDetail 토글 상태 관리
         private bool isAssetDetailVisible = false;
@@ -60,6 +65,8 @@ namespace KYS
             Manager.player.Data.Gem.Subscribe(OnGemChanged);
 
             Manager.Audio.SfxPlay("DoorBell");
+
+            SetTutoButtonAction();
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -291,12 +298,30 @@ namespace KYS
             Debug.Log($"[PlayerUpgradePanel] AssetToggleCheckmark: {assetToggleCheckmark != null}");
         }
 
+        void SetTutoButtonAction()
+        {
+            tutoOverlayButton.onClick.AddListener(() =>
+            {
+                Manager.firebase.UserData.Player.MoveSpeedLv.Value++;
+                
+                // 업그레이드 패널 닫기
+                Manager.ui.CloseAllPanels();
+                Manager.ui.CloseAllPopups();
+            });
+        }
+
         private void OnEnable()
         {
             if (TutorialManager.Instance != null)
             {
                 TutorialManager.Instance.handPointer_InPlayerUpradePanel.SetActive(true);
                 TutorialManager.Instance.handPointer_PlayerUpradeBtn.SetActive(false);
+
+                tutoOverlayPanel.SetActive(true);
+            }
+            else
+            {
+                tutoOverlayPanel.SetActive(false);
             }
         }
         private void OnDisable()
