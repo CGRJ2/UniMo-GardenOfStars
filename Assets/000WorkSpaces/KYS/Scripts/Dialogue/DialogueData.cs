@@ -15,7 +15,7 @@ namespace KYS
         public string NodeType => Manager.data.Dialogue.Values[Id].NodeType;
         public string Speaker => Manager.data.Dialogue.Values[Id].Speaker;
         public string DialogueText => Manager.data.Dialogue.Values[Id].DialogueText;
-        public string NextNodeId => Manager.data.Dialogue.Values[Id].NextNodeId;
+        public string NextNodeId => GetConditionalNextNodeId();
         public string ChoiceText1 => Manager.data.Dialogue.Values[Id].ChoiceText1;
         public string ChoiceNext1 => Manager.data.Dialogue.Values[Id].ChoiceNext1;
         public string ChoiceText2 => Manager.data.Dialogue.Values[Id].ChoiceText2;
@@ -232,6 +232,328 @@ namespace KYS
         }
 
         /// <summary>
+        /// 조건부 선택지 텍스트 배열 반환 (조건에 따라 필터링)
+        /// </summary>
+        public string[] GetFilteredChoiceTexts(SystemLanguage language = SystemLanguage.Korean)
+        {
+            var csvData = Manager.data.Dialogue.Values[Id];
+            var choices = new List<string>();
+
+            Debug.Log($"[DialogueData] GetFilteredChoiceTexts 시작 - 노드 ID: {Id}");
+
+            // 4개 선택지 모두 확인하고 조건 체크
+            for (int i = 1; i <= 4; i++)
+            {
+                string localizedText = GetLocalizedChoiceTextDynamic(csvData, i, language);
+                bool shouldShow = ShouldShowChoice(i);
+                string nextId = GetChoiceNextByIndex(i);
+                
+                Debug.Log($"[DialogueData] Choice{i} - 텍스트: '{localizedText}', 표시여부: {shouldShow}, NextId: '{nextId}'");
+                
+                if (!string.IsNullOrEmpty(localizedText) && shouldShow)
+                {
+                    choices.Add(localizedText);
+                    Debug.Log($"[DialogueData] Choice{i} 추가됨: '{localizedText}'");
+                }
+            }
+
+            Debug.Log($"[DialogueData] GetFilteredChoiceTexts 완료 - 총 {choices.Count}개 선택지: [{string.Join(", ", choices)}]");
+            return choices.ToArray();
+        }
+
+        /// <summary>
+        /// 조건부 선택지 다음 노드 ID 배열 반환 (조건에 따라 필터링)
+        /// </summary>
+        public string[] GetFilteredChoiceNextIds()
+        {
+            var nextIds = new List<string>();
+            
+            // GetFilteredChoiceTexts와 동일한 로직으로 필터링
+            var csvData = Manager.data.Dialogue.Values[Id];
+            
+            Debug.Log($"[DialogueData] GetFilteredChoiceNextIds 시작 - 노드 ID: {Id}");
+            
+            for (int i = 1; i <= 4; i++)
+            {
+                // GetFilteredChoiceTexts와 동일하게 로컬라이즈된 텍스트 확인
+                string localizedText = GetLocalizedChoiceTextDynamic(csvData, i, SystemLanguage.Korean);
+                bool shouldShow = ShouldShowChoice(i);
+                string nextId = GetChoiceNextByIndex(i);
+                
+                Debug.Log($"[DialogueData] Choice{i} NextId - 텍스트: '{localizedText}', 표시여부: {shouldShow}, NextId: '{nextId}'");
+                
+                if (!string.IsNullOrEmpty(localizedText) && shouldShow)
+                {
+                    // NextId가 비어있으면 "end"로 대화 종료 처리
+                    string finalNextId = string.IsNullOrEmpty(nextId) ? "end" : nextId;
+                    nextIds.Add(finalNextId);
+                    
+                    if (!string.IsNullOrEmpty(nextId))
+                    {
+                        Debug.Log($"[DialogueData] Choice{i} NextId 추가됨: '{nextId}'");
+                    }
+                    else
+                    {
+                        Debug.Log($"[DialogueData] Choice{i} NextId 추가됨: 'end' (대화 종료용)");
+                    }
+                }
+            }
+
+            Debug.Log($"[DialogueData] GetFilteredChoiceNextIds 완료 - 총 {nextIds.Count}개 NextId: [{string.Join(", ", nextIds)}]");
+            return nextIds.ToArray();
+        }
+
+        /// <summary>
+        /// 선택지 텍스트 가져오기
+        /// </summary>
+        private string GetChoiceTextByIndex(DialogueDataCsv csvData, int index)
+        {
+            string fieldName = $"ChoiceText{index}";
+            var field = csvData.GetType().GetField(fieldName);
+            return field?.GetValue(csvData)?.ToString() ?? "";
+        }
+
+        /// <summary>
+        /// 선택지 다음 노드 ID 가져오기
+        /// </summary>
+        private string GetChoiceNextByIndex(int index)
+        {
+            switch (index)
+            {
+                case 1: return ChoiceNext1;
+                case 2: return ChoiceNext2;
+                case 3: return ChoiceNext3;
+                case 4: return ChoiceNext4;
+                default: return "";
+            }
+        }
+
+        /// <summary>
+        /// 선택지 표시 조건 체크
+        /// </summary>
+        private bool ShouldShowChoice(int choiceIndex)
+        {
+            // Choice1, Choice4는 항상 표시 (기본 대화, 대화 종료)
+            if (choiceIndex == 1 || choiceIndex == 4)
+            {
+                Debug.Log($"[DialogueData] Choice{choiceIndex} 표시 - 항상 표시 (기본/종료)");
+                return true;
+            }
+
+            // Choice2, Choice3는 조건 체크
+            string condition = GetChoiceCondition(choiceIndex);
+            bool shouldShow = CheckChoiceCondition(condition);
+            
+            Debug.Log($"[DialogueData] Choice{choiceIndex} 표시 조건 체크 - 조건: '{condition}', 결과: {shouldShow}");
+            
+            return shouldShow;
+        }
+
+        /// <summary>
+        /// 선택지 조건 가져오기
+        /// </summary>
+        private string GetChoiceCondition(int choiceIndex)
+        {
+            var csvData = Manager.data.Dialogue.Values[Id];
+            string conditionFieldName = $"Choice{choiceIndex}Condition";
+            var conditionField = csvData.GetType().GetField(conditionFieldName);
+            
+            Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, fieldName: '{conditionFieldName}', fieldFound: {conditionField != null}");
+            
+            if (conditionField != null)
+            {
+                string conditionValue = conditionField.GetValue(csvData)?.ToString() ?? "";
+                Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, conditionValue: '{conditionValue}'");
+                return conditionValue;
+            }
+            
+            Debug.Log($"[DialogueData] GetChoiceCondition - choiceIndex: {choiceIndex}, field not found, returning empty string");
+            return "";
+        }
+
+        /// <summary>
+        /// 선택지 조건 체크
+        /// </summary>
+        private bool CheckChoiceCondition(string condition)
+        {
+            if (string.IsNullOrEmpty(condition))
+            {
+                Debug.Log($"[DialogueData] 조건이 비어있음 - true 반환");
+                return true;
+            }
+
+            // "quest_cleared:quest0001,quest0005" 형식 파싱
+            if (condition.StartsWith("quest_cleared:"))
+            {
+                string questIds = condition.Substring("quest_cleared:".Length);
+                string[] requiredQuests = questIds.Split(',');
+                
+                string currentQuest = GetCurrentQuestId();
+                
+                Debug.Log($"[DialogueData] quest_cleared 조건 체크 - 필수 퀘스트: [{string.Join(", ", requiredQuests)}], 현재 퀘스트: '{currentQuest}'");
+                
+                // 모든 필수 퀘스트가 클리어되었는지 체크
+                foreach (string requiredQuest in requiredQuests)
+                {
+                    if (!IsQuestCleared(requiredQuest.Trim(), currentQuest))
+                    {
+                        Debug.Log($"[DialogueData] 퀘스트 클리어 조건 실패 - requiredQuest: '{requiredQuest.Trim()}'");
+                        return false;
+                    }
+                }
+                
+                Debug.Log($"[DialogueData] 모든 퀘스트 클리어 조건 만족");
+                return true;
+            }
+
+            Debug.Log($"[DialogueData] 알 수 없는 조건 형식: '{condition}' - true 반환");
+            return true;
+        }
+
+        /// <summary>
+        /// 현재 퀘스트 ID 가져오기
+        /// </summary>
+        private string GetCurrentQuestId()
+        {
+            // 현재 퀘스트 ID 가져오기 (실제 구현에 맞게 수정 필요)
+            if (Manager.firebase?.UserData?.CurStageData?.Npc?.CurQuestData != null)
+            {
+                return Manager.firebase.UserData.CurStageData.Npc.CurQuestData.Id;
+            }
+            
+            return "";
+        }
+
+        /// <summary>
+        /// 퀘스트 클리어 여부 체크
+        /// </summary>
+        private bool IsQuestCleared(string requiredQuest, string currentQuest)
+        {
+            if (string.IsNullOrEmpty(requiredQuest) || string.IsNullOrEmpty(currentQuest))
+            {
+                Debug.Log($"[DialogueData] 퀘스트 클리어 체크 실패 - requiredQuest: '{requiredQuest}', currentQuest: '{currentQuest}'");
+                return false;
+            }
+
+            // 퀘스트 ID에서 숫자 추출
+            int requiredNum = ExtractQuestNumber(requiredQuest);
+            int currentNum = ExtractQuestNumber(currentQuest);
+            
+            bool isCleared = currentNum > requiredNum;
+            
+            Debug.Log($"[DialogueData] 퀘스트 클리어 체크 - requiredQuest: '{requiredQuest}' ({requiredNum}), currentQuest: '{currentQuest}' ({currentNum}), 결과: {isCleared}");
+            
+            // 현재 퀘스트가 더 높으면 이전 퀘스트들은 클리어된 것으로 간주
+            // 예: 현재 퀘스트가 2면, 퀘스트 1은 클리어된 상태
+            return isCleared;
+        }
+
+        /// <summary>
+        /// 퀘스트 ID에서 숫자 추출
+        /// </summary>
+        private int ExtractQuestNumber(string questId)
+        {
+            // "quest0001" -> 1
+            string numberPart = questId.Replace("quest", "").TrimStart('0');
+            return int.TryParse(numberPart, out int number) ? number : 0;
+        }
+
+        /// <summary>
+        /// 조건부 NextNodeId 반환 (클리어 상태에 따라 다른 노드로 이동)
+        /// </summary>
+        private string GetConditionalNextNodeId()
+        {
+            var csvData = Manager.data.Dialogue.Values[Id];
+            
+            // 기본 NextNodeId
+            string defaultNextNodeId = csvData.NextNodeId;
+            
+            // 클리어 후 NextNodeId가 있는지 확인 (NextNodeIdAfterClear 필드)
+            string nextNodeIdAfterClear = GetNextNodeIdAfterClear(csvData);
+            
+            // 클리어 후 NextNodeId가 있으면 조건 체크
+            if (!string.IsNullOrEmpty(nextNodeIdAfterClear))
+            {
+                // NextNodeIdCondition 필드에서 조건 확인
+                string condition = GetNextNodeIdCondition(csvData);
+                
+                if (!string.IsNullOrEmpty(condition))
+                {
+                    bool shouldUseAfterClear = CheckNextNodeIdCondition(condition);
+                    
+                    Debug.Log($"[DialogueData] NextNodeId 조건 체크 - 조건: '{condition}', 결과: {shouldUseAfterClear}");
+                    
+                    if (shouldUseAfterClear)
+                    {
+                        Debug.Log($"[DialogueData] 클리어 후 NextNodeId 사용: '{nextNodeIdAfterClear}'");
+                        return nextNodeIdAfterClear;
+                    }
+                }
+            }
+            
+            Debug.Log($"[DialogueData] 기본 NextNodeId 사용: '{defaultNextNodeId}'");
+            return defaultNextNodeId;
+        }
+
+        /// <summary>
+        /// 클리어 후 NextNodeId 가져오기
+        /// </summary>
+        private string GetNextNodeIdAfterClear(DialogueDataCsv csvData)
+        {
+            // NextNodeIdAfterClear 필드가 있는지 확인
+            var field = csvData.GetType().GetField("NextNodeIdAfterClear");
+            return field?.GetValue(csvData)?.ToString() ?? "";
+        }
+
+        /// <summary>
+        /// NextNodeId 조건 가져오기
+        /// </summary>
+        private string GetNextNodeIdCondition(DialogueDataCsv csvData)
+        {
+            // NextNodeIdCondition 필드가 있는지 확인
+            var field = csvData.GetType().GetField("NextNodeIdCondition");
+            return field?.GetValue(csvData)?.ToString() ?? "";
+        }
+
+        /// <summary>
+        /// NextNodeId 조건 체크
+        /// </summary>
+        private bool CheckNextNodeIdCondition(string condition)
+        {
+            if (string.IsNullOrEmpty(condition))
+            {
+                return false;
+            }
+
+            // "quest_cleared:quest0001" 형식 파싱
+            if (condition.StartsWith("quest_cleared:"))
+            {
+                string questIds = condition.Substring("quest_cleared:".Length);
+                string[] requiredQuests = questIds.Split(',');
+                
+                string currentQuest = GetCurrentQuestId();
+                
+                Debug.Log($"[DialogueData] NextNodeId quest_cleared 조건 체크 - 필수 퀘스트: [{string.Join(", ", requiredQuests)}], 현재 퀘스트: '{currentQuest}'");
+                
+                // 모든 필수 퀘스트가 클리어되었는지 체크
+                foreach (string requiredQuest in requiredQuests)
+                {
+                    if (!IsQuestCleared(requiredQuest.Trim(), currentQuest))
+                    {
+                        Debug.Log($"[DialogueData] NextNodeId 퀘스트 클리어 조건 실패 - requiredQuest: '{requiredQuest.Trim()}'");
+                        return false;
+                    }
+                }
+                
+                Debug.Log($"[DialogueData] NextNodeId 모든 퀘스트 클리어 조건 만족");
+                return true;
+            }
+
+            Debug.Log($"[DialogueData] NextNodeId 알 수 없는 조건 형식: '{condition}' - false 반환");
+            return false;
+        }
+
+        /// <summary>
         /// 동적 방식으로 선택지 번역 텍스트 가져오기
         /// </summary>
         private string GetLocalizedChoiceTextDynamic(DialogueDataCsv csvData, int choiceIndex, SystemLanguage language)
@@ -330,6 +652,8 @@ namespace KYS
         public string DialogueText_Korea;
         public string DialogueText_English;
         public string NextNodeId;
+        public string NextNodeIdAfterClear; // 클리어 후 이동할 노드 ID
+        public string NextNodeIdCondition; // NextNodeIdAfterClear 사용 조건
         public string ChoiceText1;
         public string ChoiceText1_Korea;
         public string ChoiceText1_English;
@@ -346,6 +670,9 @@ namespace KYS
         public string ChoiceText4_Korea;
         public string ChoiceText4_English;
         public string ChoiceNext4;
+        public string Choice2Condition; // Choice2 표시 조건
+        public string Choice3Condition; // Choice3 표시 조건
+        public string Choice4Condition; // Choice4 표시 조건
         public string CharacterImage;
         public string CharacterImagePosition; // left, right, center
         public string UseTypingEffect; // true, false

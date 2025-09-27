@@ -166,7 +166,7 @@ namespace KYS
             
             // 초기화 완료 이벤트 호출
             OnInitializationCompleted?.Invoke();
-            Debug.Log("[StoryPanel] 초기화 완료 - OnInitializationCompleted 이벤트 호출");
+            //Debug.Log("[StoryPanel] 초기화 완료 - OnInitializationCompleted 이벤트 호출");
         }
 
         public override void Hide()
@@ -186,7 +186,7 @@ namespace KYS
         /// </summary>
         public void ClosePanel()
         {
-            Debug.Log("[StoryPanel] ClosePanel 호출 - 이미지 정리 후 패널 닫기");
+            //Debug.Log("[StoryPanel] ClosePanel 호출 - 이미지 정리 후 패널 닫기");
             
             // 스킵 모드 중지 (먼저 중지)
             StopSkipMode();
@@ -249,12 +249,12 @@ namespace KYS
 
         private void SetupButtons()
         {
-            Debug.Log($"[StoryPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+            //Debug.Log($"[StoryPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
 
             // 이미 설정되었으면 중복 호출 방지
             if (isButtonsSetup)
             {
-                Debug.Log($"[StoryPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                //Debug.Log($"[StoryPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
                 return;
             }
 
@@ -360,7 +360,7 @@ namespace KYS
             {
                 currentPage++;
                 UpdateUI();
-                Debug.Log($"[StoryPanel] 다음 페이지로 이동: {currentPage + 1}");
+                //Debug.Log($"[StoryPanel] 다음 페이지로 이동: {currentPage + 1}");
             }
         }
 
@@ -380,7 +380,7 @@ namespace KYS
             // 스킵 모드일 때 터치로 스킵 취소
             if (isSkipMode && allowTouchToCancelSkip)
             {
-                Debug.Log("[StoryPanel] 스킵 모드에서 터치 감지 - 스킵 취소");
+                //Debug.Log("[StoryPanel] 스킵 모드에서 터치 감지 - 스킵 취소");
                 StopSkipMode();
                 return;
             }
@@ -391,12 +391,12 @@ namespace KYS
                 return;
             }
 
-            Debug.Log($"[StoryPanel] OnChatWindowClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}, isTypingCompleted: {typingEffectManager.IsTypingCompleted}");
+            //Debug.Log($"[StoryPanel] OnChatWindowClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}, isTypingCompleted: {typingEffectManager.IsTypingCompleted}");
             
             // 타이핑 중이면 즉시 완료하고 종료
             if (typingEffectManager.IsTyping)
             {
-                Debug.Log("[StoryPanel] 타이핑 중 - 즉시 완료 후 종료");
+                //Debug.Log("[StoryPanel] 타이핑 중 - 즉시 완료 후 종료");
                 CompleteTyping();
                 return; // 타이핑 완료 후 즉시 종료
             }
@@ -404,7 +404,7 @@ namespace KYS
             // 타이핑이 방금 완료된 상태라면 바로 다음 노드로 이동
             if (typingEffectManager.IsTypingCompleted)
             {
-                Debug.Log("[StoryPanel] 타이핑 완료됨 - 바로 다음 노드로 이동");
+                //Debug.Log("[StoryPanel] 타이핑 완료됨 - 바로 다음 노드로 이동");
                 typingEffectManager.ResetTypingCompleted(); // 다음 클릭을 위해 초기화
                 // return 제거 - 바로 다음 노드로 이동
             }
@@ -412,7 +412,7 @@ namespace KYS
             // CSV 기반 대화가 진행 중이면 처리
             if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
             {
-                Debug.Log("[StoryPanel] CSV 기반 대화 진행 중 - 다음 노드로 이동");
+                //Debug.Log("[StoryPanel] CSV 기반 대화 진행 중 - 다음 노드로 이동");
                 OnCSVDialogueClicked();
                 return;
             }
@@ -420,7 +420,7 @@ namespace KYS
             // 노드 기반 대화가 진행 중이면 처리
             if (IsNodeBasedDialogueActive())
             {
-                Debug.Log("[StoryPanel] 노드 기반 대화 진행 중");
+                //Debug.Log("[StoryPanel] 노드 기반 대화 진행 중");
                 OnNodeBasedDialogueClicked();
                 return;
             }
@@ -428,7 +428,7 @@ namespace KYS
             // 멀티 캐릭터 대화가 진행 중이면 처리
             if (IsMultiCharacterDialogueActive())
             {
-                Debug.Log("[StoryPanel] 멀티 캐릭터 대화 진행 중");
+                //Debug.Log("[StoryPanel] 멀티 캐릭터 대화 진행 중");
                 OnMultiDialogueClicked();
                 return;
             }
@@ -436,13 +436,13 @@ namespace KYS
             // 외부 콜백이 설정되어 있으면 호출
             if (onChatWindowClickedCallback != null)
             {
-                Debug.Log("[StoryPanel] 외부 콜백 호출");
+                //Debug.Log("[StoryPanel] 외부 콜백 호출");
                 onChatWindowClickedCallback.Invoke();
                 return;
             }
             
             // 기본 동작: 다음 페이지로 진행
-            Debug.Log("[StoryPanel] 기본 동작 - 다음 페이지로 진행");
+            //Debug.Log("[StoryPanel] 기본 동작 - 다음 페이지로 진행");
             NextPage();
         }
         
@@ -464,7 +464,7 @@ namespace KYS
                 return;
             }
             
-            Debug.Log($"[StoryPanel] CSV 대화 클릭 - 현재 노드: {currentDialogueData.Id}, 타입: {currentDialogueData.NodeType}");
+            //Debug.Log($"[StoryPanel] CSV 대화 클릭 - 현재 노드: {currentDialogueData.Id}, 타입: {currentDialogueData.NodeType}");
             
             // 노드 타입에 따른 처리
             switch (currentDialogueData.NodeType.ToLower())
@@ -474,13 +474,13 @@ namespace KYS
                     // 대화 노드는 다음 노드로 이동
                     if (!string.IsNullOrEmpty(currentDialogueData.NextNodeId))
                     {
-                        Debug.Log($"[StoryPanel] 다음 노드로 이동: {currentDialogueData.NextNodeId}");
+                        //Debug.Log($"[StoryPanel] 다음 노드로 이동: {currentDialogueData.NextNodeId}");
                         DialogueManager.Instance.MoveToNextNode();
                         // UpdateUIFromDialogueData()는 OnDialogueNodeChanged 이벤트에서 자동 호출됨
                     }
                     else
                     {
-                        Debug.Log("[StoryPanel] 다음 노드가 없음 - 대화 종료");
+                        //Debug.Log("[StoryPanel] 다음 노드가 없음 - 대화 종료");
                         EndDialogue();
                     }
                     break;
@@ -492,11 +492,16 @@ namespace KYS
                     
                 case "choice":
                     // 선택지 노드는 클릭 무시 (선택지 버튼으로 처리)
-                    Debug.Log("[StoryPanel] 선택지 노드 - 클릭 무시");
+                    //Debug.Log("[StoryPanel] 선택지 노드 - 클릭 무시");
+                    break;
+                    
+                case "startchoice":
+                    // startchoice 노드는 choice와 동일하게 처리 (클릭 무시)
+                    //Debug.Log("[StoryPanel] startchoice 노드 - 클릭 무시");
                     break;
                     
                 case "end":
-                    Debug.Log("[StoryPanel] 종료 노드 - 대화 종료");
+                    //Debug.Log("[StoryPanel] 종료 노드 - 대화 종료");
                     EndDialogue();
                     break;
                     
@@ -513,24 +518,24 @@ namespace KYS
         {
             if (typingEffectManager == null) return;
             
-            Debug.Log($"[StoryPanel] OnNodeBasedDialogueClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}");
+            //Debug.Log($"[StoryPanel] OnNodeBasedDialogueClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}");
             
             // 현재 타이핑이 진행 중이면 즉시 완료하고 종료
             if (typingEffectManager.IsTyping)
             {
-                Debug.Log("[StoryPanel] 노드 기반 대화에서 타이핑 중 - 즉시 완료 후 종료");
+                //Debug.Log("[StoryPanel] 노드 기반 대화에서 타이핑 중 - 즉시 완료 후 종료");
                 CompleteTyping();
                 return; // 타이핑 완료 후 즉시 종료
             }
             
-            Debug.Log($"[StoryPanel] 노드 타입: {currentNode.nodeType}");
+            //Debug.Log($"[StoryPanel] 노드 타입: {currentNode.nodeType}");
             
             // 노드 타입에 따른 처리
             switch (currentNode.nodeType)
             {
                 case NodeType.Dialogue:
                 case NodeType.Story:
-                    Debug.Log("[StoryPanel] 대화/스토리 노드 - 다음 노드로 진행");
+                    //Debug.Log("[StoryPanel] 대화/스토리 노드 - 다음 노드로 진행");
                     // 다음 노드로 진행
                     if (currentNode.nextNodeIds.Length > 0)
                     {
@@ -543,13 +548,13 @@ namespace KYS
                     break;
                     
                 case NodeType.Choice:
-                    Debug.Log("[StoryPanel] 선택지 노드 - 클릭으로 진행하지 않음");
+                    //Debug.Log("[StoryPanel] 선택지 노드 - 클릭으로 진행하지 않음");
                     // 선택지 노드에서는 클릭으로 진행하지 않음
                     break;
                     
                 case NodeType.Event:
                 case NodeType.End:
-                    Debug.Log("[StoryPanel] 이벤트/종료 노드 - 이미 처리됨");
+                    //Debug.Log("[StoryPanel] 이벤트/종료 노드 - 이미 처리됨");
                     // 이미 처리됨
                     break;
             }
@@ -562,30 +567,30 @@ namespace KYS
         {
             if (typingEffectManager == null) return;
             
-            Debug.Log($"[StoryPanel] OnMultiDialogueClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}");
+            //Debug.Log($"[StoryPanel] OnMultiDialogueClicked 호출됨 - isTyping: {typingEffectManager.IsTyping}");
             
             // 현재 타이핑이 진행 중이면 즉시 완료하고 종료
             if (typingEffectManager.IsTyping)
             {
-                Debug.Log("[StoryPanel] 멀티 대화에서 타이핑 중 - 즉시 완료 후 종료");
+                //Debug.Log("[StoryPanel] 멀티 대화에서 타이핑 중 - 즉시 완료 후 종료");
                 CompleteTyping();
                 return; // 타이핑 완료 후 즉시 종료
             }
             
-            Debug.Log("[StoryPanel] 멀티 대화 - 다음 대화로 진행");
+            //Debug.Log("[StoryPanel] 멀티 대화 - 다음 대화로 진행");
             // 다음 대화로 진행
             StartNextMultiDialogue();
         }
 
         private void OnLogButtonClicked()
         {
-            Debug.Log("[StoryPanel] 로그 버튼 클릭");
+            //Debug.Log("[StoryPanel] 로그 버튼 클릭");
             // 로그 기능 구현
         }
 
         private void OnSkipButtonClicked()
         {
-            Debug.Log("[StoryPanel] 스킵 버튼 클릭");
+            //Debug.Log("[StoryPanel] 스킵 버튼 클릭");
             
             if (isSkipMode)
             {
@@ -625,7 +630,7 @@ namespace KYS
             if (targetText != null)
             {
                 typingEffectManager.CompleteTyping(targetText);
-                Debug.Log("[StoryPanel] 타이핑 효과 즉시 완료됨");
+                //Debug.Log("[StoryPanel] 타이핑 효과 즉시 완료됨");
             }
         }
 
@@ -740,11 +745,11 @@ namespace KYS
         /// </summary>
         public void StartCSVDialogue(string npcId, string stageId, string startNodeId = null)
         {
-            Debug.Log($"[StoryPanel] StartCSVDialogue 호출: {npcId}, {stageId}, {startNodeId}");
+            //Debug.Log($"[StoryPanel] StartCSVDialogue 호출: {npcId}, {stageId}, {startNodeId}");
             
             if (DialogueManager.Instance.StartDialogue(npcId, stageId, startNodeId))
             {
-                Debug.Log("[StoryPanel] 대화 시작 성공, Show() 호출");
+                //Debug.Log("[StoryPanel] 대화 시작 성공, Show() 호출");
                 Show();
                 // UpdateUIFromDialogueData()는 OnDialogueStarted 이벤트에서 자동 호출됨
             }
@@ -761,12 +766,12 @@ namespace KYS
         {
             if (isUpdatingUI)
             {
-                Debug.Log("[StoryPanel] UpdateUIFromDialogueData 중복 호출 방지");
+                //Debug.Log("[StoryPanel] UpdateUIFromDialogueData 중복 호출 방지");
                 return;
             }
 
             isUpdatingUI = true;
-            Debug.Log("[StoryPanel] UpdateUIFromDialogueData 호출됨");
+            //Debug.Log("[StoryPanel] UpdateUIFromDialogueData 호출됨");
 
             var dialogueData = DialogueManager.Instance.CurrentDialogueData;
             if (dialogueData == null)
@@ -777,7 +782,7 @@ namespace KYS
                 return;
             }
 
-            Debug.Log($"[StoryPanel] UI 업데이트: {dialogueData.Id} - {dialogueData.NodeType} - {dialogueData.Speaker}");
+            //Debug.Log($"[StoryPanel] UI 업데이트: {dialogueData.Id} - {dialogueData.NodeType} - {dialogueData.Speaker}");
 
             // 현재 언어 설정 가져오기
             var currentLanguage = LocalizationManager.Instance?.CurrentLanguage ?? SystemLanguage.Korean;
@@ -788,7 +793,7 @@ namespace KYS
             {
                 useTypingEffect = dialogueData.UseTypingEffect.ToLower() == "true";
             }
-            Debug.Log($"[StoryPanel] 타이핑 효과 사용: {useTypingEffect}");
+            //Debug.Log($"[StoryPanel] 타이핑 효과 사용: {useTypingEffect}");
 
             // Speaker와 NodeType에 따른 UI 모드 설정 (먼저 텍스트 표시)
             if (dialogueData.Speaker.ToLower() == "story")
@@ -805,7 +810,7 @@ namespace KYS
                     case "dialogue":
                         // CharacterImagePosition에 따라 올바른 모드로 전환
                         string imagePosition = dialogueData.CharacterImagePosition?.ToLower() ?? "left";
-                        Debug.Log($"[StoryPanel] CharacterImagePosition: '{dialogueData.CharacterImagePosition}' -> 파싱된 위치: '{imagePosition}'");
+                        //Debug.Log($"[StoryPanel] CharacterImagePosition: '{dialogueData.CharacterImagePosition}' -> 파싱된 위치: '{imagePosition}'");
                         
                         if (imagePosition == "right")
                         {
@@ -823,11 +828,11 @@ namespace KYS
                         }
                         
                         string localizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
-                        Debug.Log($"[StoryPanel] 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{localizedSpeaker}', 언어: {currentLanguage}");
+                        //Debug.Log($"[StoryPanel] 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{localizedSpeaker}', 언어: {currentLanguage}");
                         
                         // CharacterImagePosition에 따라 올바른 이름 위치 설정
                         bool isLeftCharacter = (imagePosition == "left");
-                        Debug.Log($"[StoryPanel] 이름 위치 설정 - isLeftCharacter: {isLeftCharacter} (imagePosition: '{imagePosition}')");
+                        //Debug.Log($"[StoryPanel] 이름 위치 설정 - isLeftCharacter: {isLeftCharacter} (imagePosition: '{imagePosition}')");
                         SetDialogueCharacterName(localizedSpeaker, isLeftCharacter);
                         
                         // UseTypingEffect를 안전하게 파싱 (기본값: true)
@@ -848,7 +853,7 @@ namespace KYS
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
                         {
-                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            //Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
                             HideAllCharacterImages();
                         }
                         else
@@ -858,39 +863,39 @@ namespace KYS
                         break;
 
                     case "choice":
-                        // 선택지 데이터 확인
-                        var choiceTexts = dialogueData.GetLocalizedChoiceTexts(currentLanguage);
-                        var choiceNextIds = dialogueData.GetChoiceNextIds();
-                        Debug.Log($"[StoryPanel] 선택지 노드: {dialogueData.Id}");
-                        Debug.Log($"[StoryPanel] ChoiceText1: '{dialogueData.ChoiceText1}' -> ChoiceNext1: '{dialogueData.ChoiceNext1}'");
-                        Debug.Log($"[StoryPanel] ChoiceText2: '{dialogueData.ChoiceText2}' -> ChoiceNext2: '{dialogueData.ChoiceNext2}'");
-                        Debug.Log($"[StoryPanel] ChoiceText3: '{dialogueData.ChoiceText3}' -> ChoiceNext3: '{dialogueData.ChoiceNext3}'");
-                        Debug.Log($"[StoryPanel] ChoiceText4: '{dialogueData.ChoiceText4}' -> ChoiceNext4: '{dialogueData.ChoiceText4}'");
-                        Debug.Log($"[StoryPanel] 로컬라이즈된 선택지 텍스트: [{string.Join(", ", choiceTexts)}]");
-                        Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", choiceNextIds)}]");
+                        // 선택지 데이터 확인 (조건부 필터링 적용)
+                        var choiceTexts = dialogueData.GetFilteredChoiceTexts(currentLanguage);
+                        var choiceNextIds = dialogueData.GetFilteredChoiceNextIds();
+                        //Debug.Log($"[StoryPanel] 선택지 노드: {dialogueData.Id}");
+                        //Debug.Log($"[StoryPanel] ChoiceText1: '{dialogueData.ChoiceText1}' -> ChoiceNext1: '{dialogueData.ChoiceNext1}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText2: '{dialogueData.ChoiceText2}' -> ChoiceNext2: '{dialogueData.ChoiceNext2}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText3: '{dialogueData.ChoiceText3}' -> ChoiceNext3: '{dialogueData.ChoiceNext3}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText4: '{dialogueData.ChoiceText4}' -> ChoiceNext4: '{dialogueData.ChoiceText4}'");
+                        //Debug.Log($"[StoryPanel] 로컬라이즈된 선택지 텍스트: [{string.Join(", ", choiceTexts)}]");
+                        //Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", choiceNextIds)}]");
 
                         // 선택지 텍스트가 있으면 선택지 설정 (choiceTexts 기준)
                         if (choiceTexts.Length > 0)
                         {
                             SwitchToChoiceMode();
                             string choiceLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
-                            Debug.Log($"[StoryPanel] 선택창 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{choiceLocalizedSpeaker}', 언어: {currentLanguage}");
+                            //Debug.Log($"[StoryPanel] 선택창 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{choiceLocalizedSpeaker}', 언어: {currentLanguage}");
                             SetChoiceCharacterName(choiceLocalizedSpeaker);
                             SetChoiceQuestion(dialogueData.GetLocalizedDialogueText(currentLanguage));
                             
-                            Debug.Log($"[StoryPanel] 선택지 설정 - 텍스트: {choiceTexts.Length}개, 다음노드: {choiceNextIds.Length}개");
+                            //Debug.Log($"[StoryPanel] 선택지 설정 - 텍스트: {choiceTexts.Length}개, 다음노드: {choiceNextIds.Length}개");
                             SetupChoices(choiceTexts, OnCSVChoiceSelected);
                         }
                         else
                         {
-                            Debug.Log("[StoryPanel] 선택지가 없음 - 대화 종료");
+                            //Debug.Log("[StoryPanel] 선택지가 없음 - 대화 종료");
                             EndDialogue();
                         }
                         
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
                         {
-                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            //Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
                             HideAllCharacterImages();
                         }
                         else
@@ -920,7 +925,7 @@ namespace KYS
                         // CharacterImage 처리 (이 case 블록 내에서)
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
                         {
-                            Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            //Debug.Log("[StoryPanel] CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
                             HideAllCharacterImages();
                         }
                         else
@@ -933,7 +938,7 @@ namespace KYS
                         // end 노드는 dialogue와 동일하게 처리 (대사 표시 후 클릭 시 종료)
                         // CharacterImagePosition에 따라 올바른 모드로 전환
                         string endImagePosition = dialogueData.CharacterImagePosition?.ToLower() ?? "left";
-                        Debug.Log($"[StoryPanel] end 노드 CharacterImagePosition: '{dialogueData.CharacterImagePosition}' -> 파싱된 위치: '{endImagePosition}'");
+                        //Debug.Log($"[StoryPanel] end 노드 CharacterImagePosition: '{dialogueData.CharacterImagePosition}' -> 파싱된 위치: '{endImagePosition}'");
                         
                         if (endImagePosition == "right")
                         {
@@ -951,11 +956,11 @@ namespace KYS
                         }
                         
                         string endLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
-                        Debug.Log($"[StoryPanel] end 노드 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{endLocalizedSpeaker}', 언어: {currentLanguage}");
+                        //Debug.Log($"[StoryPanel] end 노드 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{endLocalizedSpeaker}', 언어: {currentLanguage}");
                         
                         // CharacterImagePosition에 따라 올바른 이름 위치 설정
                         bool endIsLeftCharacter = (endImagePosition == "left");
-                        Debug.Log($"[StoryPanel] end 노드 이름 위치 설정 - isLeftCharacter: {endIsLeftCharacter} (imagePosition: '{endImagePosition}')");
+                        //Debug.Log($"[StoryPanel] end 노드 이름 위치 설정 - isLeftCharacter: {endIsLeftCharacter} (imagePosition: '{endImagePosition}')");
                         SetDialogueCharacterName(endLocalizedSpeaker, endIsLeftCharacter);
                         
                         // UseTypingEffect를 안전하게 파싱 (기본값: true)
@@ -976,7 +981,49 @@ namespace KYS
                         // CharacterImage 처리
                         if (string.IsNullOrEmpty(dialogueData.CharacterImage))
                         {
-                            Debug.Log("[StoryPanel] end 노드 CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            //Debug.Log("[StoryPanel] end 노드 CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
+                            HideAllCharacterImages();
+                        }
+                        else
+                        {
+                            LoadAndSetCharacterImage(dialogueData.CharacterImage);
+                        }
+                        break;
+
+                    case "startchoice":
+                        // startchoice 노드는 choice와 동일하게 처리 (조건부 필터링 적용)
+                        var startchoiceTexts = dialogueData.GetFilteredChoiceTexts(currentLanguage);
+                        var startchoiceNextIds = dialogueData.GetFilteredChoiceNextIds();
+                        //Debug.Log($"[StoryPanel] startchoice 노드: {dialogueData.Id}");
+                        //Debug.Log($"[StoryPanel] ChoiceText1: '{dialogueData.ChoiceText1}' -> ChoiceNext1: '{dialogueData.ChoiceNext1}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText2: '{dialogueData.ChoiceText2}' -> ChoiceNext2: '{dialogueData.ChoiceNext2}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText3: '{dialogueData.ChoiceText3}' -> ChoiceNext3: '{dialogueData.ChoiceNext3}'");
+                        //Debug.Log($"[StoryPanel] ChoiceText4: '{dialogueData.ChoiceText4}' -> ChoiceNext4: '{dialogueData.ChoiceText4}'");
+                        //Debug.Log($"[StoryPanel] 로컬라이즈된 선택지 텍스트: [{string.Join(", ", startchoiceTexts)}]");
+                        //Debug.Log($"[StoryPanel] 선택지 다음 노드 ID: [{string.Join(", ", startchoiceNextIds)}]");
+
+                        // 선택지 텍스트가 있으면 선택지 설정 (startchoiceTexts 기준)
+                        if (startchoiceTexts.Length > 0)
+                        {
+                            SwitchToChoiceMode();
+                            string startchoiceLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
+                            //Debug.Log($"[StoryPanel] startchoice 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{startchoiceLocalizedSpeaker}', 언어: {currentLanguage}");
+                            SetChoiceCharacterName(startchoiceLocalizedSpeaker);
+                            SetChoiceQuestion(dialogueData.GetLocalizedDialogueText(currentLanguage));
+                            
+                            //Debug.Log($"[StoryPanel] startchoice 설정 - 텍스트: {startchoiceTexts.Length}개, 다음노드: {startchoiceNextIds.Length}개");
+                            SetupChoices(startchoiceTexts, OnCSVChoiceSelected);
+                        }
+                        else
+                        {
+                            //Debug.Log("[StoryPanel] startchoice 선택지가 없음 - 대화 종료");
+                            EndDialogue();
+                        }
+                        
+                        // CharacterImage 처리 (이 case 블록 내에서)
+                        if (string.IsNullOrEmpty(dialogueData.CharacterImage))
+                        {
+                            //Debug.Log("[StoryPanel] startchoice - CharacterImage가 비어있어서 모든 캐릭터 이미지를 숨깁니다.");
                             HideAllCharacterImages();
                         }
                         else
@@ -990,7 +1037,7 @@ namespace KYS
                         // 기본적으로 대화 모드로 처리
                         SwitchToDialogueMode();
                         string defaultLocalizedSpeaker = dialogueData.GetLocalizedSpeaker(currentLanguage);
-                        Debug.Log($"[StoryPanel] 기본 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{defaultLocalizedSpeaker}', 언어: {currentLanguage}");
+                        //Debug.Log($"[StoryPanel] 기본 스피커 이름 - 원본: '{dialogueData.Speaker}', 로컬라이즈: '{defaultLocalizedSpeaker}', 언어: {currentLanguage}");
                         SetDialogueCharacterName(defaultLocalizedSpeaker, dialogueData.Speaker == "player");
                         
                         // UseTypingEffect를 안전하게 파싱 (기본값: true)
@@ -1023,29 +1070,32 @@ namespace KYS
             // 배경 이미지 효과 처리
             if (!string.IsNullOrEmpty(dialogueData.BackgroundImage))
             {
-                Debug.Log($"[StoryPanel] 배경 이미지 로드: {dialogueData.BackgroundImage}");
+                //Debug.Log($"[StoryPanel] 배경 이미지 로드: {dialogueData.BackgroundImage}");
                 LoadAndSetBackgroundImage(dialogueData.BackgroundImage);
             }
             else
             {
-                Debug.Log("[StoryPanel] 배경 이미지가 비어있어서 배경 이미지를 숨깁니다.");
+                //Debug.Log("[StoryPanel] 배경 이미지가 비어있어서 배경 이미지를 숨깁니다.");
                 HideBackgroundImage();
             }
 
             // 별자리 이미지 효과 처리
             if (!string.IsNullOrEmpty(dialogueData.ConstellationImage))
             {
-                Debug.Log($"[StoryPanel] 별자리 이미지 로드: {dialogueData.ConstellationImage}");
+                //Debug.Log($"[StoryPanel] 별자리 이미지 로드: {dialogueData.ConstellationImage}");
                 LoadAndSetConstellationImage(dialogueData.ConstellationImage);
             }
             else
             {
-                Debug.Log("[StoryPanel] 별자리 이미지가 비어있어서 별자리 이미지를 숨깁니다.");
+                //Debug.Log("[StoryPanel] 별자리 이미지가 비어있어서 별자리 이미지를 숨깁니다.");
                 HideConstellationImage();
             }
 
             // 업그레이드 버튼 관리
             ManageUpgradeButton(dialogueData);
+            
+            // Choice 관리 (stratchoice 타입 지원)
+            ManageChoice(dialogueData);
 
             // UI 업데이트 완료 (모든 경우에 실행)
             isUpdatingUI = false;
@@ -1072,13 +1122,21 @@ namespace KYS
             }
             
             var currentData = DialogueManager.Instance.CurrentDialogueData;
-            var choiceNextIds = currentData.GetChoiceNextIds();
+            var choiceTexts = currentData.GetFilteredChoiceTexts();
+            var choiceNextIds = currentData.GetFilteredChoiceNextIds();
+            
             Debug.Log($"[StoryPanel] 현재 노드: {currentData.Id}");
+            Debug.Log($"[StoryPanel] 선택지 텍스트들: [{string.Join(", ", choiceTexts)}]");
             Debug.Log($"[StoryPanel] 선택 가능한 다음 노드들: [{string.Join(", ", choiceNextIds)}]");
+            
+            if (choiceIndex < choiceTexts.Length)
+            {
+                Debug.Log($"[StoryPanel] 선택된 선택지 텍스트: '{choiceTexts[choiceIndex]}'");
+            }
             
             if (choiceIndex < choiceNextIds.Length)
             {
-                Debug.Log($"[StoryPanel] 선택된 다음 노드: {choiceNextIds[choiceIndex]}");
+                Debug.Log($"[StoryPanel] 선택된 다음 노드: '{choiceNextIds[choiceIndex]}'");
             }
             else
             {
@@ -1115,7 +1173,7 @@ namespace KYS
                 return;
             }
             
-            Debug.Log($"[StoryPanel] OnDialogueStarted 이벤트 수신: {dialogueData?.Id}");
+            //Debug.Log($"[StoryPanel] OnDialogueStarted 이벤트 수신: {dialogueData?.Id}");
             
             // 대화 시작 시 업그레이드 버튼 초기화
             SetUpgradeButtonVisible(false);
@@ -1135,7 +1193,7 @@ namespace KYS
                 return;
             }
             
-            Debug.Log($"[StoryPanel] OnDialogueNodeChanged 이벤트 수신: {nodeId}");
+            //Debug.Log($"[StoryPanel] OnDialogueNodeChanged 이벤트 수신: {nodeId}");
             UpdateUIFromDialogueData();
         }
         
@@ -1151,7 +1209,7 @@ namespace KYS
                 return;
             }
             
-            Debug.Log($"[StoryPanel] OnDialogueCompleted 이벤트 수신: {dialogueData?.Id}");
+            //Debug.Log($"[StoryPanel] OnDialogueCompleted 이벤트 수신: {dialogueData?.Id}");
             
             // 패널 닫기
             ClosePanel();
@@ -1226,7 +1284,7 @@ namespace KYS
             // 노드 조건 검사
             if (!currentDialogueGraph.CheckNodeConditions(currentNode))
             {
-                Debug.Log($"[StoryPanel] 노드 조건 불충족: {currentNode.nodeId}");
+                //Debug.Log($"[StoryPanel] 노드 조건 불충족: {currentNode.nodeId}");
                 // 조건 불충족 시 다음 노드로 진행 (기본 분기)
                 if (currentNode.nextNodeIds.Length > 0)
                 {
@@ -1250,6 +1308,11 @@ namespace KYS
                     break;
                     
                 case NodeType.Choice:
+                    ExecuteChoiceNode();
+                    break;
+                    
+                case NodeType.StartChoice:
+                    // startchoice는 choice와 동일하게 처리
                     ExecuteChoiceNode();
                     break;
                     
@@ -1331,7 +1394,7 @@ namespace KYS
         private void ExecuteEventNode()
         {
             // 이벤트 실행 (효과는 이미 실행됨)
-            Debug.Log($"[StoryPanel] 이벤트 노드 실행: {currentNode.nodeId}");
+            //Debug.Log($"[StoryPanel] 이벤트 노드 실행: {currentNode.nodeId}");
             
             // 이벤트 노드는 즉시 다음 노드로 진행
             if (currentNode.nextNodeIds.Length > 0)
@@ -1349,7 +1412,7 @@ namespace KYS
         /// </summary>
         private void ExecuteEndNode()
         {
-            Debug.Log($"[StoryPanel] 대화 종료 노드: {currentNode.nodeId}");
+            //Debug.Log($"[StoryPanel] 대화 종료 노드: {currentNode.nodeId}");
             EndNodeBasedDialogue();
         }
         
@@ -1530,11 +1593,11 @@ namespace KYS
         /// </summary>
         public void SetDialogueLeftCharacterName(string name)
         {
-            Debug.Log($"[StoryPanel] SetDialogueLeftCharacterName - 이름: '{name}', UI 요소 존재: {dialogueLCharacterNameText != null}");
+            //Debug.Log($"[StoryPanel] SetDialogueLeftCharacterName - 이름: '{name}', UI 요소 존재: {dialogueLCharacterNameText != null}");
             if (dialogueLCharacterNameText != null)
             {
                 dialogueLCharacterNameText.text = name;
-                Debug.Log($"[StoryPanel] 왼쪽 이름 설정 완료: '{dialogueLCharacterNameText.text}'");
+                //Debug.Log($"[StoryPanel] 왼쪽 이름 설정 완료: '{dialogueLCharacterNameText.text}'");
             }
             else
             {
@@ -1547,11 +1610,11 @@ namespace KYS
         /// </summary>
         public void SetDialogueRightCharacterName(string name)
         {
-            Debug.Log($"[StoryPanel] SetDialogueRightCharacterName - 이름: '{name}', UI 요소 존재: {dialogueRCharacterNameText != null}");
+            //Debug.Log($"[StoryPanel] SetDialogueRightCharacterName - 이름: '{name}', UI 요소 존재: {dialogueRCharacterNameText != null}");
             if (dialogueRCharacterNameText != null)
             {
                 dialogueRCharacterNameText.text = name;
-                Debug.Log($"[StoryPanel] 오른쪽 이름 설정 완료: '{dialogueRCharacterNameText.text}'");
+                //Debug.Log($"[StoryPanel] 오른쪽 이름 설정 완료: '{dialogueRCharacterNameText.text}'");
             }
             else
             {
@@ -1573,7 +1636,7 @@ namespace KYS
         /// </summary>
         public void SetChoiceCharacterName(string name)
         {
-            Debug.Log($"[StoryPanel] SetChoiceCharacterName - 이름: '{name}', UI 요소 존재: {choiceRCharacterNameText != null}");
+            //Debug.Log($"[StoryPanel] SetChoiceCharacterName - 이름: '{name}', UI 요소 존재: {choiceRCharacterNameText != null}");
             if (choiceRCharacterNameText != null)
                 choiceRCharacterNameText.text = name;
         }
@@ -1675,18 +1738,18 @@ namespace KYS
         /// <param name="isLeftCharacter">true: 왼쪽 이미지 위치, false: 오른쪽 이미지 위치</param>
         public void SetDialogueCharacterName(string name, bool isLeftCharacter = true)
         {
-            Debug.Log($"[StoryPanel] SetDialogueCharacterName - 이름: '{name}', 왼쪽 이미지 위치: {isLeftCharacter}");
+            //Debug.Log($"[StoryPanel] SetDialogueCharacterName - 이름: '{name}', 왼쪽 이미지 위치: {isLeftCharacter}");
             
             if (isLeftCharacter)
             {
                 // 왼쪽 이미지 위치: 왼쪽 이미지 + 오른쪽 이름 표시
-                Debug.Log($"[StoryPanel] 왼쪽 이미지 위치 → 오른쪽 이름 설정: '{name}'");
+                //Debug.Log($"[StoryPanel] 왼쪽 이미지 위치 → 오른쪽 이름 설정: '{name}'");
                 SetDialogueRightCharacterName(name);
             }
             else
             {
                 // 오른쪽 이미지 위치: 오른쪽 이미지 + 왼쪽 이름 표시
-                Debug.Log($"[StoryPanel] 오른쪽 이미지 위치 → 왼쪽 이름 설정: '{name}'");
+                //Debug.Log($"[StoryPanel] 오른쪽 이미지 위치 → 왼쪽 이름 설정: '{name}'");
                 SetDialogueLeftCharacterName(name);
             }
         }
@@ -1818,7 +1881,7 @@ namespace KYS
                 storyRCharacterImage.sprite = sprite;
                 if (sprite == null)
                 {
-                    Debug.Log("[StoryPanel] 스토리 캐릭터 이미지를 숨깁니다.");
+                    //Debug.Log("[StoryPanel] 스토리 캐릭터 이미지를 숨깁니다.");
                     storyRCharacterImage.gameObject.SetActive(false);
                 }
                 else
@@ -1838,7 +1901,7 @@ namespace KYS
                 dialogueLCharacterImage.sprite = sprite;
                 if (sprite == null)
                 {
-                    Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지를 숨깁니다.");
+                    //Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지를 숨깁니다.");
                     dialogueLCharacterImage.gameObject.SetActive(false);
                 }
                 else
@@ -1858,7 +1921,7 @@ namespace KYS
                 dialogueRCharacterImage.sprite = sprite;
                 if (sprite == null)
                 {
-                    Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지를 숨깁니다.");
+                    //Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지를 숨깁니다.");
                     dialogueRCharacterImage.gameObject.SetActive(false);
                 }
                 else
@@ -1878,7 +1941,7 @@ namespace KYS
                 choiceLCharacterImage.sprite = sprite;
                 if (sprite == null)
                 {
-                    Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지를 숨깁니다.");
+                    //Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지를 숨깁니다.");
                     choiceLCharacterImage.gameObject.SetActive(false);
                 }
                 else
@@ -1928,17 +1991,17 @@ namespace KYS
                     /*Sprite npcSprite = Manager.dialogue.CurrentDialogueData.NpcSprite;
                     if (npcSprite != null)
                     {
-                        Debug.Log("[StoryPanel] CharacterImage가 없어서 NpcSprite 사용");
+                        //Debug.Log("[StoryPanel] CharacterImage가 없어서 NpcSprite 사용");
                         SetCharacterImage(npcSprite);
                         return;
                     }*/
                 }
                 
-                Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있습니다.");
+                //Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있습니다.");
                 return;
             }
 
-            Debug.Log($"[StoryPanel] 캐릭터 이미지 로드 시작: {imageName}");
+            //Debug.Log($"[StoryPanel] 캐릭터 이미지 로드 시작: {imageName}");
             Sprite characterSprite = null;
 
             // 1. DataManager의 이미지 캐시에서 직접 확인 (동기)
@@ -1947,7 +2010,7 @@ namespace KYS
                 characterSprite = Manager.data.GetCachedCharacterImage(imageName);
                 if (characterSprite != null)
                 {
-                    Debug.Log($"[StoryPanel] DataManager 캐시에서 이미지 발견: {imageName}");
+                    //Debug.Log($"[StoryPanel] DataManager 캐시에서 이미지 발견: {imageName}");
                 }
             }
 
@@ -1959,7 +2022,7 @@ namespace KYS
                     characterSprite = await Manager.data.LoadCharacterImageAsync(imageName);
                     if (characterSprite != null)
                     {
-                        Debug.Log($"[StoryPanel] DataManager에서 이미지 로드 완료: {imageName}");
+                        //Debug.Log($"[StoryPanel] DataManager에서 이미지 로드 완료: {imageName}");
                     }
                 }
                 catch (System.Exception e)
@@ -2009,7 +2072,7 @@ namespace KYS
                 if (currentDialogueData != null)
                 {
                     string imagePosition = currentDialogueData.CharacterImagePosition?.ToLower() ?? "left";
-                    Debug.Log($"[StoryPanel] CharacterImagePosition: {imagePosition}");
+                    //Debug.Log($"[StoryPanel] CharacterImagePosition: {imagePosition}");
                     
                     switch (imagePosition)
                     {
@@ -2039,7 +2102,7 @@ namespace KYS
                 SetChoiceLeftCharacterImage(characterSprite);
             }
 
-            Debug.Log($"[StoryPanel] 캐릭터 이미지 설정 완료: {imageName}");
+            //Debug.Log($"[StoryPanel] 캐릭터 이미지 설정 완료: {imageName}");
         }
         
         /// <summary>
@@ -2047,37 +2110,37 @@ namespace KYS
         /// </summary>
         public void HideAllCharacterImages()
         {
-            Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 시작");
+            //Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 시작");
             
             if (storyRCharacterImage != null)
             {
                 storyRCharacterImage.sprite = null; // 스프라이트 제거
                 storyRCharacterImage.gameObject.SetActive(false);
-                Debug.Log("[StoryPanel] 스토리 오른쪽 캐릭터 이미지 숨김");
+                //Debug.Log("[StoryPanel] 스토리 오른쪽 캐릭터 이미지 숨김");
             }
             if (dialogueLCharacterImage != null)
             {
                 dialogueLCharacterImage.sprite = null; // 스프라이트 제거
                 dialogueLCharacterImage.gameObject.SetActive(false);
-                Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지 숨김");
+                //Debug.Log("[StoryPanel] 대화 왼쪽 캐릭터 이미지 숨김");
             }
             if (dialogueRCharacterImage != null)
             {
                 dialogueRCharacterImage.sprite = null; // 스프라이트 제거
                 dialogueRCharacterImage.gameObject.SetActive(false);
-                Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지 숨김");
+                //Debug.Log("[StoryPanel] 대화 오른쪽 캐릭터 이미지 숨김");
             }
             if (choiceLCharacterImage != null)
             {
                 choiceLCharacterImage.sprite = null; // 스프라이트 제거
                 choiceLCharacterImage.gameObject.SetActive(false);
-                Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지 숨김");
+                //Debug.Log("[StoryPanel] 선택지 왼쪽 캐릭터 이미지 숨김");
             }
             
             // 이미지 로딩 상태 초기화
             isCharacterImageLoaded = false;
             
-            Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 완료");
+            //Debug.Log("[StoryPanel] HideAllCharacterImages - 모든 캐릭터 이미지 숨김 완료");
         }
         
         /// <summary>
@@ -2085,7 +2148,7 @@ namespace KYS
         /// </summary>
         private void ForceHideAllImages()
         {
-            Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화");
+            //Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화");
             
             // 모든 캐릭터 이미지 UI 강제 비활성화
             if (storyRCharacterImage != null)
@@ -2121,7 +2184,7 @@ namespace KYS
                 centerImage.enabled = false;
             }
             
-            Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화 완료");
+            //Debug.Log("[StoryPanel] ForceHideAllImages - 모든 이미지 UI 강제 비활성화 완료");
         }
         
         /// <summary>
@@ -2188,13 +2251,13 @@ namespace KYS
         {
             try
             {
-                Debug.Log($"[StoryPanel] 배경 이미지 로딩 시작: {imageKey}");
+                //Debug.Log($"[StoryPanel] 배경 이미지 로딩 시작: {imageKey}");
                 
                 // 먼저 캐시에서 확인
                 Sprite cachedSprite = Manager.data.GetCachedCharacterImage(imageKey);
                 if (cachedSprite != null)
                 {
-                    Debug.Log($"[StoryPanel] 배경 이미지 캐시에서 로드: {imageKey}");
+                    //Debug.Log($"[StoryPanel] 배경 이미지 캐시에서 로드: {imageKey}");
                     SetBackgroundImage(cachedSprite);
                     return;
                 }
@@ -2203,7 +2266,7 @@ namespace KYS
                 Sprite sprite = await Manager.data.LoadCharacterImageAsync(imageKey);
                 if (sprite != null)
                 {
-                    Debug.Log($"[StoryPanel] 배경 이미지 Addressable에서 로드: {imageKey}");
+                    //Debug.Log($"[StoryPanel] 배경 이미지 Addressable에서 로드: {imageKey}");
                     SetBackgroundImage(sprite);
                 }
                 else
@@ -2224,13 +2287,13 @@ namespace KYS
         {
             try
             {
-                Debug.Log($"[StoryPanel] 별자리 이미지 로딩 시작: {imageKey}");
+                //Debug.Log($"[StoryPanel] 별자리 이미지 로딩 시작: {imageKey}");
                 
                 // 먼저 캐시에서 확인
                 Sprite cachedSprite = Manager.data.GetCachedCharacterImage(imageKey);
                 if (cachedSprite != null)
                 {
-                    Debug.Log($"[StoryPanel] 별자리 이미지 캐시에서 로드: {imageKey}");
+                    //Debug.Log($"[StoryPanel] 별자리 이미지 캐시에서 로드: {imageKey}");
                     SetConstellationImage(cachedSprite);
                     return;
                 }
@@ -2239,7 +2302,7 @@ namespace KYS
                 Sprite sprite = await Manager.data.LoadCharacterImageAsync(imageKey);
                 if (sprite != null)
                 {
-                    Debug.Log($"[StoryPanel] 별자리 이미지 Addressable에서 로드: {imageKey}");
+                    //Debug.Log($"[StoryPanel] 별자리 이미지 Addressable에서 로드: {imageKey}");
                     SetConstellationImage(sprite);
                 }
                 else
@@ -2277,7 +2340,7 @@ namespace KYS
             // 빈 값이거나 null인 경우 기존 이미지 숨기기
             if (string.IsNullOrEmpty(imageKey))
             {
-                Debug.Log("[StoryPanel] 가운데 이미지 키가 비어있음 - 기존 이미지 숨김");
+                //Debug.Log("[StoryPanel] 가운데 이미지 키가 비어있음 - 기존 이미지 숨김");
                 HideCenterImage();
                 return;
             }
@@ -2285,14 +2348,14 @@ namespace KYS
             // 이전 센터 이미지가 활성화되어 있으면 먼저 숨기기
             if (isCenterImageActive)
             {
-                Debug.Log("[StoryPanel] 이전 센터 이미지가 활성화되어 있어서 먼저 숨김");
+                //Debug.Log("[StoryPanel] 이전 센터 이미지가 활성화되어 있어서 먼저 숨김");
                 HideCenterImage();
             }
             
             // 같은 이미지가 이미 표시 중인 경우
             if (isCenterImageActive && currentCenterImageKey == imageKey)
             {
-                Debug.Log($"[StoryPanel] 같은 이미지가 이미 표시 중: {imageKey} - 연속 표시 모드");
+                //Debug.Log($"[StoryPanel] 같은 이미지가 이미 표시 중: {imageKey} - 연속 표시 모드");
                 
                 // 무한 표시가 아닌 경우에만 시간 연장
                 if (!infinite)
@@ -2394,13 +2457,13 @@ namespace KYS
             else
             {
                 // 연속 표시인 경우 - 이미 표시 중이므로 페이드인 생략
-                Debug.Log($"[StoryPanel] 연속 표시 모드 - 페이드인 생략: {imageKey}");
+                //Debug.Log($"[StoryPanel] 연속 표시 모드 - 페이드인 생략: {imageKey}");
             }
             
             if (infinite)
             {
                 // 무한 표시 - 수동으로 숨길 때까지 대기
-                Debug.Log($"[StoryPanel] 가운데 이미지 무한 표시 모드: {imageKey}");
+                //Debug.Log($"[StoryPanel] 가운데 이미지 무한 표시 모드: {imageKey}");
                 yield return new WaitUntil(() => !isCenterImageActive); // 수동으로 숨길 때까지 대기
             }
             else
@@ -2445,7 +2508,7 @@ namespace KYS
             // 센터 이미지가 활성화되어 있으면 캐릭터 이미지 표시하지 않음
             if (isCenterImageActive)
             {
-                Debug.Log("[StoryPanel] 센터 이미지가 활성화되어 있어서 캐릭터 이미지를 표시하지 않습니다.");
+                //Debug.Log("[StoryPanel] 센터 이미지가 활성화되어 있어서 캐릭터 이미지를 표시하지 않습니다.");
                 return;
             }
             
@@ -2461,14 +2524,14 @@ namespace KYS
                 
                 if (string.IsNullOrEmpty(characterImage) && npcSprite == null)
                 {
-                    Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
+                    //Debug.Log("[StoryPanel] CharacterImage와 NpcSprite 모두 비어있어서 캐릭터 이미지를 표시하지 않습니다.");
                     HideAllCharacterImages();
                     return;
                 }
                 
                 // 이미지 로딩이 실패했을 수 있으므로 실제로 이미지가 로드되었는지 확인
                 // 이미지가 로딩되지 않았으면 숨김 상태를 유지
-                Debug.Log($"[StoryPanel] ShowCharacterImages - CharacterImage: {characterImage}");
+                //Debug.Log($"[StoryPanel] ShowCharacterImages - CharacterImage: {characterImage}");
             }
             
             // 현재 대화 데이터에서 캐릭터 위치 정보 가져오기
@@ -2481,12 +2544,12 @@ namespace KYS
             // CharacterImage가 있으면 로딩 상태 확인, NpcSprite는 바로 사용 가능
             if (!string.IsNullOrEmpty(characterImage) && !isCharacterImageLoaded)
             {
-                Debug.Log("[StoryPanel] ShowCharacterImages - CharacterImage가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
+                //Debug.Log("[StoryPanel] ShowCharacterImages - CharacterImage가 로딩되지 않았으므로 캐릭터 이미지를 표시하지 않습니다.");
                 HideAllCharacterImages();
                 return;
             }
             
-            Debug.Log("[StoryPanel] ShowCharacterImages - 이미지를 표시합니다.");
+            //Debug.Log("[StoryPanel] ShowCharacterImages - 이미지를 표시합니다.");
             
             // 모든 캐릭터 이미지 먼저 숨기기
             if (storyRCharacterImage != null) storyRCharacterImage.gameObject.SetActive(false);
@@ -2499,13 +2562,13 @@ namespace KYS
             if (npcSprite != null)
             {
                 spriteToUse = npcSprite;
-                Debug.Log("[StoryPanel] NpcSprite 사용");
+                //Debug.Log("[StoryPanel] NpcSprite 사용");
             }
             else if (!string.IsNullOrEmpty(characterImage))
             {
                 // CharacterImage가 로딩된 경우 해당 스프라이트 사용
                 spriteToUse = Manager.data?.GetCachedCharacterImage(characterImage);
-                Debug.Log($"[StoryPanel] CharacterImage 사용: {characterImage}");
+                //Debug.Log($"[StoryPanel] CharacterImage 사용: {characterImage}");
             }
             
             // 현재 모드에 따라 다른 캐릭터 이미지 표시
@@ -2599,13 +2662,42 @@ namespace KYS
                                 dialogueData.Id.ToLower().Contains("normal");
             
             bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
-            
+            bool isStartChoiceNode = dialogueData.NodeType?.ToLower() == "startchoice";
 
-            // OR 조건으로 버튼 표시
-            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && isStartNode);
+            // OR 조건으로 버튼 표시 (start, startchoice 노드에서만 normal이면 표시)
+            bool shouldShowButton = hasUpgradeInId || (hasNormalInId && (isStartNode || isStartChoiceNode));
             
             // 버튼 상태 업데이트 (다음 노드 유무와 관계없이 표시)
             SetUpgradeButtonVisible(shouldShowButton, dialogueData.Id);
+        }
+        
+        /// <summary>
+        /// Choice 관리 (대화 노드에 따라 표시/숨김) - stratchoice 타입 지원
+        /// </summary>
+        private void ManageChoice(DialogueData dialogueData)
+        {
+            if (dialogueData == null) return;
+            
+            // Choice 표시 조건들
+            bool hasChoiceInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                               (dialogueData.Id.ToLower().Contains("choice") || 
+                                dialogueData.Id.ToLower().Contains("선택"));
+            
+            bool hasNormalInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                               dialogueData.Id.ToLower().Contains("normal");
+            
+            bool hasStratchoiceInId = !string.IsNullOrEmpty(dialogueData.Id) && 
+                                    dialogueData.Id.ToLower().Contains("stratchoice");
+            
+            bool isStartNode = dialogueData.NodeType?.ToLower() == "start";
+            bool isChoiceNode = dialogueData.NodeType?.ToLower() == "choice";
+            bool isStartChoiceNode = dialogueData.NodeType?.ToLower() == "startchoice";
+            
+            // Choice 표시 조건: choice가 있거나, (normal이면서 start)이거나, stratchoice가 있거나, 노드 타입이 choice/startchoice면 표시
+            bool shouldShowChoice = hasChoiceInId || (hasNormalInId && isStartNode) || hasStratchoiceInId || isChoiceNode || isStartChoiceNode;
+            
+            // Choice 상태 업데이트
+            SetChoiceVisible(shouldShowChoice, dialogueData.Id);
         }
         
         #endregion
@@ -2617,7 +2709,7 @@ namespace KYS
         /// </summary>
         private void OnUpgradeButtonClicked()
         {
-            Debug.Log("[StoryPanel] 업그레이드 버튼 클릭됨");
+            //Debug.Log("[StoryPanel] 업그레이드 버튼 클릭됨");
             
             // 플레이어 업그레이드 패널 열기
             if (Manager.ui != null)
@@ -2642,7 +2734,7 @@ namespace KYS
                 isUpgradeButtonVisible = visible;
                 currentUpgradeButtonNodeId = nodeId;
                 
-                Debug.Log($"[StoryPanel] 업그레이드 버튼 {(visible ? "표시" : "숨김")} - 노드 ID: {nodeId}");
+                //Debug.Log($"[StoryPanel] 업그레이드 버튼 {(visible ? "표시" : "숨김")} - 노드 ID: {nodeId}");
             }
         }
         
@@ -2652,6 +2744,30 @@ namespace KYS
         public bool IsUpgradeButtonActive()
         {
             return isUpgradeButtonVisible && upgradeButton != null && upgradeButton.activeInHierarchy;
+        }
+        
+        #endregion
+        
+        #region Choice 기능
+        
+        /// <summary>
+        /// Choice 표시/숨김
+        /// </summary>
+        public void SetChoiceVisible(bool visible, string nodeId = "")
+        {
+            if (choicePanel != null)
+            {
+                choicePanel.SetActive(visible);
+                //Debug.Log($"[StoryPanel] Choice {(visible ? "표시" : "숨김")} - 노드 ID: {nodeId}");
+            }
+        }
+        
+        /// <summary>
+        /// 현재 노드에서 Choice가 활성화되어 있는지 확인
+        /// </summary>
+        public bool IsChoiceActive()
+        {
+            return choicePanel != null && choicePanel.activeInHierarchy;
         }
         
         #endregion
@@ -2666,7 +2782,7 @@ namespace KYS
             if (isSkipMode) return;
             
             isSkipMode = true;
-            Debug.Log($"[StoryPanel] 스킵 모드 활성화 - 속도: {GetCurrentSkipSpeed()}초");
+            //Debug.Log($"[StoryPanel] 스킵 모드 활성화 - 속도: {GetCurrentSkipSpeed()}초");
             
             // 타이핑 효과 즉시 완료
             if (typingEffectManager != null)
@@ -2692,7 +2808,7 @@ namespace KYS
             if (!isSkipMode) return;
             
             isSkipMode = false;
-            Debug.Log("[StoryPanel] 스킵 모드 비활성화");
+            //Debug.Log("[StoryPanel] 스킵 모드 비활성화");
             
             // 자동 진행 중지
             StopAutoAdvance();
@@ -2745,7 +2861,7 @@ namespace KYS
                 currentSkipSpeedIndex = speedIndex;
                 skipAutoAdvanceDelay = GetCurrentSkipSpeed();
                 
-                Debug.Log($"[StoryPanel] 스킵 속도 설정: {skipAutoAdvanceDelay}초");
+                //Debug.Log($"[StoryPanel] 스킵 속도 설정: {skipAutoAdvanceDelay}초");
                 
                 // 현재 스킵 모드가 활성화되어 있으면 속도 즉시 적용
                 if (isSkipMode)
@@ -2797,7 +2913,7 @@ namespace KYS
                     // 선택지가 있는 경우 스킵 중지
                     if (currentDialogueData != null && currentDialogueData.HasChoices)
                     {
-                        Debug.Log("[StoryPanel] 선택지가 있는 노드에서 스킵 중지");
+                        //Debug.Log("[StoryPanel] 선택지가 있는 노드에서 스킵 중지");
                         StopSkipMode();
                         break;
                     }

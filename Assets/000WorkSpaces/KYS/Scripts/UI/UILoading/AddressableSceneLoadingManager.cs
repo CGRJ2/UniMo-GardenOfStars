@@ -433,7 +433,40 @@ namespace KYS
         [ContextMenu("MoneyAdd")]
         private void MoneyAdd()
         {
-            Manager.player.Data.Money.Value += 1000;
+            Manager.player.Data.Money.Value += 100000;
+        }
+
+        [ContextMenu("현재 퀘스트 인덱스 확인")]
+        private void CheckCurrentQuestIndex()
+        {
+            if (Manager.firebase?.UserData?.CurStageData?.Npc?.CurQuestData != null)
+            {
+                string currentQuestId = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.Id;
+                int questIndex = ExtractQuestNumber(currentQuestId);
+                
+                Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 ID: {currentQuestId}");
+                Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 인덱스: {questIndex}");
+                
+                // 스테이지 정보도 함께 출력
+                if (Manager.firebase.UserData.CurStageData != null)
+                {
+                    Debug.Log($"[AddressableSceneLoadingManager] 현재 스테이지: {Manager.firebase.UserData.CurStageData.Id}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 현재 퀘스트 데이터를 찾을 수 없습니다.");
+            }
+        }
+
+        // 퀘스트 ID에서 숫자 추출하는 헬퍼 메서드
+        private int ExtractQuestNumber(string questId)
+        {
+            if (string.IsNullOrEmpty(questId))
+                return 0;
+                
+            string numberPart = questId.Replace("quest", "").TrimStart('0');
+            return int.TryParse(numberPart, out int number) ? number : 0;
         }
     }
 }

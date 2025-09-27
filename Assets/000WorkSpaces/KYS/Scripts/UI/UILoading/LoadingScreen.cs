@@ -244,13 +244,13 @@ namespace KYS
             // 초기 이미지 설정 (첫 번째 이미지만 활성화)
             if (loadingImages != null && loadingImages.Length > 0)
             {
-                Debug.Log($"[LoadingScreen] SetupLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
+                //Debug.Log($"[LoadingScreen] SetupLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
                 for (int i = 0; i < loadingImages.Length; i++)
                 {
                     if (loadingImages[i] != null)
                     {
                         loadingImages[i].gameObject.SetActive(i == 0);
-                        Debug.Log($"[LoadingScreen] SetupLoadingScreen: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")} - 알파값: {loadingImages[i].color.a}");
+                        //Debug.Log($"[LoadingScreen] SetupLoadingScreen: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")} - 알파값: {loadingImages[i].color.a}");
                         
                         // 첫 번째 이미지의 알파값을 강제로 1로 설정
                         if (i == 0)
@@ -258,7 +258,7 @@ namespace KYS
                             Color color = loadingImages[i].color;
                             color.a = 1f;
                             loadingImages[i].color = color;
-                            Debug.Log($"[LoadingScreen] SetupLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
+                            //Debug.Log($"[LoadingScreen] SetupLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
                         }
                     }
                     else
@@ -267,7 +267,7 @@ namespace KYS
                     }
                 }
                 currentImageIndex = 0;
-                Debug.Log("[LoadingScreen] SetupLoadingScreen: 초기 이미지 인덱스: 0");
+                //Debug.Log("[LoadingScreen] SetupLoadingScreen: 초기 이미지 인덱스: 0");
             }
             else
             {
