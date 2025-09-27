@@ -56,6 +56,8 @@ public partial class DataManager
                 dialogue.DialogueText_Korea = GetFieldValue(words, dict, "DialogueText_Korea");
                 dialogue.DialogueText_English = GetFieldValue(words, dict, "DialogueText_English");
                 dialogue.NextNodeId = GetFieldValue(words, dict, "NextNodeId");
+                dialogue.NextNodeIdAfterClear = GetFieldValue(words, dict, "NextNodeIdAfterClear");
+                dialogue.NextNodeIdCondition = GetFieldValue(words, dict, "NextNodeIdCondition");
                 dialogue.ChoiceText1 = GetFieldValue(words, dict, "ChoiceText1");
                 dialogue.ChoiceText1_Korea = GetFieldValue(words, dict, "ChoiceText1_Korea");
                 dialogue.ChoiceText1_English = GetFieldValue(words, dict, "ChoiceText1_English");

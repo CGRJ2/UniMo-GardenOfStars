@@ -15,7 +15,7 @@ namespace KYS
         public string NodeType => Manager.data.Dialogue.Values[Id].NodeType;
         public string Speaker => Manager.data.Dialogue.Values[Id].Speaker;
         public string DialogueText => Manager.data.Dialogue.Values[Id].DialogueText;
-        public string NextNodeId => Manager.data.Dialogue.Values[Id].NextNodeId;
+        public string NextNodeId => GetConditionalNextNodeId();
         public string ChoiceText1 => Manager.data.Dialogue.Values[Id].ChoiceText1;
         public string ChoiceNext1 => Manager.data.Dialogue.Values[Id].ChoiceNext1;
         public string ChoiceText2 => Manager.data.Dialogue.Values[Id].ChoiceText2;
@@ -459,6 +459,101 @@ namespace KYS
         }
 
         /// <summary>
+        /// 조건부 NextNodeId 반환 (클리어 상태에 따라 다른 노드로 이동)
+        /// </summary>
+        private string GetConditionalNextNodeId()
+        {
+            var csvData = Manager.data.Dialogue.Values[Id];
+            
+            // 기본 NextNodeId
+            string defaultNextNodeId = csvData.NextNodeId;
+            
+            // 클리어 후 NextNodeId가 있는지 확인 (NextNodeIdAfterClear 필드)
+            string nextNodeIdAfterClear = GetNextNodeIdAfterClear(csvData);
+            
+            // 클리어 후 NextNodeId가 있으면 조건 체크
+            if (!string.IsNullOrEmpty(nextNodeIdAfterClear))
+            {
+                // NextNodeIdCondition 필드에서 조건 확인
+                string condition = GetNextNodeIdCondition(csvData);
+                
+                if (!string.IsNullOrEmpty(condition))
+                {
+                    bool shouldUseAfterClear = CheckNextNodeIdCondition(condition);
+                    
+                    Debug.Log($"[DialogueData] NextNodeId 조건 체크 - 조건: '{condition}', 결과: {shouldUseAfterClear}");
+                    
+                    if (shouldUseAfterClear)
+                    {
+                        Debug.Log($"[DialogueData] 클리어 후 NextNodeId 사용: '{nextNodeIdAfterClear}'");
+                        return nextNodeIdAfterClear;
+                    }
+                }
+            }
+            
+            Debug.Log($"[DialogueData] 기본 NextNodeId 사용: '{defaultNextNodeId}'");
+            return defaultNextNodeId;
+        }
+
+        /// <summary>
+        /// 클리어 후 NextNodeId 가져오기
+        /// </summary>
+        private string GetNextNodeIdAfterClear(DialogueDataCsv csvData)
+        {
+            // NextNodeIdAfterClear 필드가 있는지 확인
+            var field = csvData.GetType().GetField("NextNodeIdAfterClear");
+            return field?.GetValue(csvData)?.ToString() ?? "";
+        }
+
+        /// <summary>
+        /// NextNodeId 조건 가져오기
+        /// </summary>
+        private string GetNextNodeIdCondition(DialogueDataCsv csvData)
+        {
+            // NextNodeIdCondition 필드가 있는지 확인
+            var field = csvData.GetType().GetField("NextNodeIdCondition");
+            return field?.GetValue(csvData)?.ToString() ?? "";
+        }
+
+        /// <summary>
+        /// NextNodeId 조건 체크
+        /// </summary>
+        private bool CheckNextNodeIdCondition(string condition)
+        {
+            if (string.IsNullOrEmpty(condition))
+            {
+                return false;
+            }
+
+            // "quest_cleared:quest0001" 형식 파싱
+            if (condition.StartsWith("quest_cleared:"))
+            {
+                string questIds = condition.Substring("quest_cleared:".Length);
+                string[] requiredQuests = questIds.Split(',');
+                
+                string currentQuest = GetCurrentQuestId();
+                
+                Debug.Log($"[DialogueData] NextNodeId quest_cleared 조건 체크 - 필수 퀘스트: [{string.Join(", ", requiredQuests)}], 현재 퀘스트: '{currentQuest}'");
+                
+                // 모든 필수 퀘스트가 클리어되었는지 체크
+                foreach (string requiredQuest in requiredQuests)
+                {
+                    if (!IsQuestCleared(requiredQuest.Trim(), currentQuest))
+                    {
+                        Debug.Log($"[DialogueData] NextNodeId 퀘스트 클리어 조건 실패 - requiredQuest: '{requiredQuest.Trim()}'");
+                        return false;
+                    }
+                }
+                
+                Debug.Log($"[DialogueData] NextNodeId 모든 퀘스트 클리어 조건 만족");
+                return true;
+            }
+
+            Debug.Log($"[DialogueData] NextNodeId 알 수 없는 조건 형식: '{condition}' - false 반환");
+            return false;
+        }
+
+        /// <summary>
         /// 동적 방식으로 선택지 번역 텍스트 가져오기
         /// </summary>
         private string GetLocalizedChoiceTextDynamic(DialogueDataCsv csvData, int choiceIndex, SystemLanguage language)
@@ -557,6 +652,8 @@ namespace KYS
         public string DialogueText_Korea;
         public string DialogueText_English;
         public string NextNodeId;
+        public string NextNodeIdAfterClear; // 클리어 후 이동할 노드 ID
+        public string NextNodeIdCondition; // NextNodeIdAfterClear 사용 조건
         public string ChoiceText1;
         public string ChoiceText1_Korea;
         public string ChoiceText1_English;

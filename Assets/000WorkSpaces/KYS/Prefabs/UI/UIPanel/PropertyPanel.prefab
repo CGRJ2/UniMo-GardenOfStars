@@ -731,7 +731,7 @@ RectTransform:
   - {fileID: 2776264579605000129}
   m_Father: {fileID: 2869079528284254965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.1}
   m_AnchorMax: {x: 1, y: 0.9843924}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -2386,6 +2386,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
