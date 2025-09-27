@@ -148,7 +148,7 @@ public class BuildingSeller : InteractableBase
                 // 플레이어 조작 막기
                 Manager.player.IsControl = false;
 
-                Manager.ui.ShowMessagePopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+                Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
                 {
                     Debug.LogWarning("팝업 닫음 콜백 함수 실행");
 

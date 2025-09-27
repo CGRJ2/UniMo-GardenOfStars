@@ -296,7 +296,7 @@ public class TutorialManager : MonoBehaviour
         Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence01-1", () =>
         {
             Debug.LogWarning("팝업 닫음 콜백 함수 실행");
-            Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence02-2", () =>
+            Manager.ui.ShowTutorialPopUpWithKeyAsync("msg_tutorial_questSquence01-2", () =>
             {
                 // 카메라 복귀
                 cameras_TutoCutScene[2].Priority = 10;
@@ -473,6 +473,9 @@ public class TutorialManager : MonoBehaviour
         {
             Debug.LogWarning("팝업 열었을 때, 작업형 건물이 빛나는 효과 실행");
             PlayHighLightFX(prodsArea.ownerInstance.transform);
+
+            tutorialNPC.ShowQuestTiles();
+            tutorialNPC.UpdateQuestData();
         });
     }
     public void TutorialSequence05()
@@ -950,6 +953,7 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.LogWarning("시퀀스 11 시작");
 
+        Manager.firebase.UserData.StageList.Add("Stage01");
         // 플레이어 조작 비활성화
         Manager.player.IsControl = false;
 

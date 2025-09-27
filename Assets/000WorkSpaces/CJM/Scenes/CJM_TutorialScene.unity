@@ -268,6 +268,7 @@ GameObject:
   m_Component:
   - component: {fileID: 237109282}
   - component: {fileID: 237109281}
+  - component: {fileID: 237109283}
   m_Layer: 0
   m_Name: Camera_TutoCut01-8(ShopFocus)
   m_TagString: Untagged
@@ -330,6 +331,21 @@ Transform:
   - {fileID: 264215594}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30, y: 45, z: 0}
+--- !u!114 &237109283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 237109280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0, z: -40}
+  m_ApplyAfter: 1
+  m_PreserveComposition: 0
 --- !u!1 &255052793
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,6 +356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 255052795}
   - component: {fileID: 255052794}
+  - component: {fileID: 255052796}
   m_Layer: 0
   m_Name: Camera_TutoCut01-7(PortalFocus)
   m_TagString: Untagged
@@ -402,6 +419,21 @@ Transform:
   - {fileID: 963202951}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30, y: 45, z: 0}
+--- !u!114 &255052796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255052793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0, z: -40}
+  m_ApplyAfter: 0
+  m_PreserveComposition: 0
 --- !u!1 &264215593
 GameObject:
   m_ObjectHideFlags: 3
@@ -449,7 +481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: -15, y: 15, z: -15}
+  m_FollowOffset: {x: 0, y: 0, z: 0}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -1046,6 +1078,7 @@ GameObject:
   m_Component:
   - component: {fileID: 632933418}
   - component: {fileID: 632933417}
+  - component: {fileID: 632933419}
   m_Layer: 0
   m_Name: Camera_TutoCut01-6(EstateFocus)
   m_TagString: Untagged
@@ -1108,6 +1141,21 @@ Transform:
   - {fileID: 1689960299}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30, y: 45, z: 0}
+--- !u!114 &632933419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632933416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0, z: -40}
+  m_ApplyAfter: 0
+  m_PreserveComposition: 0
 --- !u!1001 &633254186
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1665,7 +1713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: -15, y: 15, z: -15}
+  m_FollowOffset: {x: 0, y: 0, z: 0}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -4722,7 +4770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: -15, y: 15, z: -15}
+  m_FollowOffset: {x: 0, y: 0, z: 0}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -5312,6 +5360,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1817656094}
   - component: {fileID: 1817656093}
+  - component: {fileID: 1817656095}
   m_Layer: 0
   m_Name: Camera_TutoCut01-5(WorkerFocus)
   m_TagString: Untagged
@@ -5374,6 +5423,21 @@ Transform:
   - {fileID: 1901588722}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30, y: 45, z: 0}
+--- !u!114 &1817656095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817656092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0, z: -40}
+  m_ApplyAfter: 0
+  m_PreserveComposition: 0
 --- !u!1 &1831721071
 GameObject:
   m_ObjectHideFlags: 0
@@ -5518,7 +5582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: -15, y: 15, z: -15}
+  m_FollowOffset: {x: 0, y: 0, z: 0}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
