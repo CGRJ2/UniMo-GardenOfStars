@@ -169,6 +169,18 @@ namespace KYS
             //Debug.Log("[StoryPanel] 초기화 완료 - OnInitializationCompleted 이벤트 호출");
         }
 
+        public override void Show()
+        {
+            base.Show();
+            
+            // 패널이 다시 활성화될 때 현재 대화 상태 복원
+            if (Manager.dialogue?.IsDialogueActive == true && Manager.dialogue.CurrentDialogueData != null)
+            {
+                // UI 업데이트를 통해 이미지와 선택지 복원
+                UpdateUIFromDialogueData();
+            }
+        }
+
         public override void Hide()
         {
             // 화면 숨기기 전에 모든 이미지 정리
