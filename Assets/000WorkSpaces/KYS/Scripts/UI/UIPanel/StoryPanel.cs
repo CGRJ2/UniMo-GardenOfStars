@@ -1640,7 +1640,18 @@ namespace KYS
         public void SetChoiceQuestion(string question)
         {
             if (choiceQuestionText != null)
-                choiceQuestionText.text = question;
+            {
+                // 질문이 비어있거나 대사키만 있는 경우 숨김 처리
+                if (string.IsNullOrEmpty(question) || question.Trim().Length <= 2)
+                {
+                    choiceQuestionText.gameObject.SetActive(false);
+                }
+                else
+                {
+                    choiceQuestionText.text = question;
+                    choiceQuestionText.gameObject.SetActive(true);
+                }
+            }
         }
 
         /// <summary>

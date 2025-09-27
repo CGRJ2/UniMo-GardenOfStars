@@ -155,8 +155,50 @@ namespace KYS
                 return localizedText;
             }
 
-            // 2. 기본 텍스트 반환
+            // 2. 기본 텍스트가 대화키인지 확인
+            if (IsDialogueKey(csvData.DialogueText))
+            {
+                // 대화키인 경우 빈 문자열 반환 (질문이 없는 초이스)
+                return string.Empty;
+            }
+
+            // 3. 실제 대사인 경우 반환
             return csvData.DialogueText;
+        }
+        
+        /// <summary>
+        /// 대화키인지 확인 (예: "dialogue_001", "choice_question_01" 등)
+        /// </summary>
+        private bool IsDialogueKey(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return true;
+            
+            // 대화키 패턴 확인
+            string trimmed = text.Trim();
+            
+            // 1. 언더스코어가 포함된 경우 (dialogue_001, choice_question_01 등)
+            if (trimmed.Contains("_"))
+            {
+                return true;
+            }
+            
+            // 2. 숫자로만 구성된 경우 (001, 002 등)
+            if (System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^\d+$"))
+            {
+                return true;
+            }
+            
+            // 3. 대화키 형식인 경우 (dialogue, choice, question 등으로 시작)
+            string lowerText = trimmed.ToLower();
+            if (lowerText.StartsWith("dialogue") || 
+                lowerText.StartsWith("choice") || 
+                lowerText.StartsWith("question") ||
+                lowerText.StartsWith("text"))
+            {
+                return true;
+            }
+            
+            return false;
         }
 
         /// <summary>

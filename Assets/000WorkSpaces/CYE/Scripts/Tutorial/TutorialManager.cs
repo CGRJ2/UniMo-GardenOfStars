@@ -919,6 +919,12 @@ public class TutorialManager : MonoBehaviour
         // 이동속도만 1 업그레이드 하면 진행됨
         yield return new WaitUntil(() => userData.Player.MoveSpeedLv.Value > 1);
         
+        // 대화 상태 정리 (패널 닫기 전에)
+        if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
+        {
+            Manager.dialogue.EndDialogue();
+        }
+        
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
