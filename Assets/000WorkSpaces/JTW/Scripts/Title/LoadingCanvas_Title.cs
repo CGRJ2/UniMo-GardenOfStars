@@ -29,6 +29,7 @@ public class LoadingCanvas_Title : KYS.BaseUI
             yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
             yield return new WaitUntil(() => Manager.firebase.UserData != null);
             yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+            yield return new WaitUntil(() => Manager.data.IsDataInit);
             yield break;
         }
 
@@ -43,6 +44,7 @@ public class LoadingCanvas_Title : KYS.BaseUI
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitUntil(() => Manager.data.IsDataInit);
 
         yield return delay;
     }

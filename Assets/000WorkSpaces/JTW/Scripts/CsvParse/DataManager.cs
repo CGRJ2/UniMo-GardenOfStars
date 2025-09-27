@@ -7,6 +7,31 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public partial class DataManager : Singleton<DataManager>
 {
+    public bool IsDataInit
+    {
+        get
+        {
+            return Worker.IsInit
+                && CharacterLv.IsInit
+                && Dialogue.IsInit
+                && BuildingLocalization.IsInit
+                && IngrediantLocalization.IsInit
+                && Npc.IsInit
+                && Quest.IsInit
+                && QuestContent.IsInit
+                && WorkerUpgradeCost.IsInit
+                && WorkerEmployCost.IsInit
+                && Stage.IsInit
+                && Character.IsInit
+                && PlayerUpgradeCost.IsInit
+                && Player.IsInit
+                && UpgradeMulti.IsInit
+                && Buy.IsInit
+                && CharacterSkin.IsInit
+                && EquipSkin.IsInit;
+        }
+    }
+
     private void Awake()
     {
         StartCoroutine(WaitInit());
