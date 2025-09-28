@@ -44,6 +44,7 @@ namespace KYS
 
         [Header("Backdrop Settings")]
         // Backdrop Prefab Reference는 UIManager에서 관리
+        private bool isCreatingBackdrop = false; // Backdrop 생성 중인지 확인하는 플래그
 
         [Header("Audio Settings")]
         [SerializeField] protected bool enableSFX = true;
@@ -196,6 +197,9 @@ namespace KYS
         {
             if (!IsActive) return;
 
+            // Backdrop 생성 중이면 중단
+            isCreatingBackdrop = false;
+
             // UI 닫기 사운드 재생 (버튼 클릭으로만 효과음 재생하도록 주석 처리)
             // PlayCloseSound();
 
@@ -331,12 +335,22 @@ namespace KYS
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
 
-            // 이미 Backdrop가 있는지 확인
-            if (ownBackdrop != null)
+            // GameObject가 파괴되었는지 확인
+            if (this == null || gameObject == null)
             {
-                //Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재합니다.");
+                //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop 생성 중단");
                 return;
             }
+
+            // 이미 Backdrop가 있거나 생성 중인지 확인
+            if (ownBackdrop != null || isCreatingBackdrop)
+            {
+                //Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재하거나 생성 중입니다.");
+                return;
+            }
+
+            // Backdrop 생성 시작 플래그 설정
+            isCreatingBackdrop = true;
 
             // PopupCanvas 가져오기
             Canvas popupCanvas = UIManager.Instance?.GetCanvasByLayer(UILayerType.Popup);
@@ -360,6 +374,17 @@ namespace KYS
                 // Backdrop Prefab을 Addressables로 로드 및 인스턴스 생성 (PopupCanvas의 자식으로)
                 AsyncOperationHandle<GameObject> handle = backdropPrefabRef.InstantiateAsync(popupCanvas.transform);
                 await handle.Task;
+
+                // await 이후 GameObject 파괴 확인
+                if (this == null || gameObject == null)
+                {
+                    //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop 생성 중단 (await 후)");
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
+                    return;
+                }
 
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
@@ -416,6 +441,11 @@ namespace KYS
                 Debug.LogError($"[BaseUI] Backdrop Prefab 생성 중 오류 발생: {e.Message}");
                 CreateBackdropFallback(popupCanvas);
             }
+            finally
+            {
+                // Backdrop 생성 완료 플래그 해제
+                isCreatingBackdrop = false;
+            }
         }
 
         /// <summary>
@@ -424,6 +454,13 @@ namespace KYS
         private void CreateBackdropFallback(Canvas popupCanvas)
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
+
+            // GameObject가 파괴되었는지 확인
+            if (this == null || gameObject == null)
+            {
+                //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop Fallback 생성 중단");
+                return;
+            }
 
             // Backdrop GameObject 생성 (PopupCanvas의 자식으로)
             GameObject backdropGO = new GameObject("Backdrop");
@@ -460,6 +497,9 @@ namespace KYS
             SetupBackdropClickEvent();
 
             //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+            
+            // Backdrop 생성 완료 플래그 해제
+            isCreatingBackdrop = false;
         }
 
         /// <summary>
