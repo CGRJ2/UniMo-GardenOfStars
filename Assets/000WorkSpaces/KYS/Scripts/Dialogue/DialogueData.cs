@@ -132,13 +132,20 @@ namespace KYS
             string localizedSpeaker = GetLocalizedTextByLanguage(csvData, "Speaker", language);
             Debug.Log($"[DialogueData] GetLocalizedSpeaker - ID: {Id}, 언어: {language}, 로컬라이즈 결과: '{localizedSpeaker}', 기본 Speaker: '{csvData.Speaker}'");
 
-            if (!string.IsNullOrEmpty(localizedSpeaker))
+            // 빈 값이나 기본값("이름") 체크
+            if (!string.IsNullOrEmpty(localizedSpeaker) && localizedSpeaker != "이름" && localizedSpeaker != "Name")
             {
                 return localizedSpeaker;
             }
 
-            // 2. 기본 Speaker 반환
-            return csvData.Speaker;
+            // 2. 기본 Speaker 반환 (빈 값이나 기본값 체크)
+            if (!string.IsNullOrEmpty(csvData.Speaker) && csvData.Speaker != "이름" && csvData.Speaker != "Name")
+            {
+                return csvData.Speaker;
+            }
+
+            // 3. 모두 기본값이면 빈 문자열 반환
+            return string.Empty;
         }
 
         /// <summary>

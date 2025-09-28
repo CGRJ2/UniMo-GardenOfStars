@@ -337,8 +337,9 @@ namespace KYS
                 }
             }
 
+            // BottomArrow는 항상 표시 (사용자 경험 개선)
             if (storyBottomArrow != null)
-                storyBottomArrow.SetActive(currentPage < storyPages.Length - 1);
+                storyBottomArrow.SetActive(true);
         }
 
         private void UpdateDialogueModeUI()
@@ -355,8 +356,9 @@ namespace KYS
                 }
             }
 
+            // BottomArrow는 항상 표시 (사용자 경험 개선)
             if (dialogueBottomArrow != null)
-                dialogueBottomArrow.SetActive(currentPage < storyPages.Length - 1);
+                dialogueBottomArrow.SetActive(true);
         }
 
         public void SetStoryData(string[] pages)
@@ -498,8 +500,17 @@ namespace KYS
                     break;
                     
                 case "story":
-                    // 스토리 노드는 다음 페이지로 이동
-                    NextPage();
+                    // 스토리 노드는 다음 노드로 이동
+                    if (!string.IsNullOrEmpty(currentDialogueData.NextNodeId))
+                    {
+                        //Debug.Log($"[StoryPanel] 스토리 노드 다음 노드로 이동: {currentDialogueData.NextNodeId}");
+                        DialogueManager.Instance.MoveToNextNode();
+                    }
+                    else
+                    {
+                        //Debug.Log("[StoryPanel] 스토리 노드 다음 노드가 없음 - 대화 종료");
+                        EndDialogue();
+                    }
                     break;
                     
                 case "choice":

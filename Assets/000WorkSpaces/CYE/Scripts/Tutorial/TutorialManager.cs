@@ -96,6 +96,7 @@ public class TutorialManager : MonoBehaviour
         {
             _Pool_FX_Highlighted = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
         };
+
     }
 
 
@@ -185,6 +186,20 @@ public class TutorialManager : MonoBehaviour
         // 1. 플레이어 조작 막기
         Manager.player.IsControl = false;
 
+        // 대화 완료 이벤트 구독 (대화 시작 전에 구독)
+        Manager.dialogue.OnDialogueCompleted += OnTutorialSequence00DialogueCompleted;
+
+        Manager.dialogue.StartDialogueWithPanel("ribby_00", "Tutorial", "tutorial_scn001");
+    }
+
+    /// <summary>
+    /// 튜토리얼 시퀀스00 대화 완료 후 처리
+    /// </summary>
+    private void OnTutorialSequence00DialogueCompleted(DialogueData dialogueData)
+    {
+        // 이벤트 구독 해제
+        Manager.dialogue.OnDialogueCompleted -= OnTutorialSequence00DialogueCompleted;
+        
         // 2. 시퀀스00 컷씬 시작
         StartCoroutine(Sequence00_CutScene());
     }
@@ -247,6 +262,7 @@ public class TutorialManager : MonoBehaviour
 
         // 이후에 NPC 영역에 접근하면 대화 진행 후, 대화 종료 시 Sequence00 완료, Sequence01로 전환
     }
+
 
 
 
@@ -355,7 +371,7 @@ public class TutorialManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         Debug.LogWarning("시퀀스03 시작");
-        
+
         overlayPanel_BiPanelBuy.SetActive(false);
 
         StartCoroutine(Sequence03_CutScene());
@@ -918,13 +934,13 @@ public class TutorialManager : MonoBehaviour
 
         // 이동속도만 1 업그레이드 하면 진행됨
         yield return new WaitUntil(() => userData.Player.MoveSpeedLv.Value > 1);
-        
+
         // 대화 상태 정리 (패널 닫기 전에)
         if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
         {
             Manager.dialogue.EndDialogue();
         }
-        
+
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
@@ -934,7 +950,7 @@ public class TutorialManager : MonoBehaviour
         SequenceEnd();
     }
 
-    
+
 
     public void TutorialSequence10()
     {

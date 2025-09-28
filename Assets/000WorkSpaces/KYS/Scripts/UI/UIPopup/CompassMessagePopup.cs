@@ -72,8 +72,7 @@ namespace KYS
             canCloseWithBackdrop = false;
             canCloseWithESC = true;
             
-            // Backdrop 생성 활성화
-            createBackdropForPopup = true;
+            // Backdrop 생성은 프리팹 설정에서 관리 (중복 생성 방지)
         }
 
         protected override void OnShow()
