@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerUpgradePresenter : KYS.BaseUI
 {
@@ -26,6 +27,12 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         
         // 초기 상태 설정
         SetInfo();
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        _workerUpgradePanel.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
     }
 
 
@@ -55,7 +62,8 @@ public class WorkerUpgradePresenter : KYS.BaseUI
                 }
             }
         }
-        
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_workerUpgradePanel.GetComponent<RectTransform>());
         Debug.Log($"[WorkerUpgradePresenter] {_workerPanelList.Count}개의 워커 패널 생성 완료");
     }
 
