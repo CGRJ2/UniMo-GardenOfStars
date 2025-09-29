@@ -801,6 +801,7 @@ public class TutorialManager : MonoBehaviour
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
         overlayPanel_WorkerUpgradeBtn.SetActive(false);
+        Manager.buildings.workerBuilding.HideWaitingTile();
 
         // 전당포 포커스 카메라 컷씬 진행
         cameras_TutoCutScene[8].Priority = 11;

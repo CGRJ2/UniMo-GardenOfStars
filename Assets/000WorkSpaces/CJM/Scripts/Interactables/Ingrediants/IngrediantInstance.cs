@@ -184,8 +184,6 @@ public class IngrediantInstance : PooledObject
         {
             if (targetAttachTransform == null) yield break;
 
-            Debug.LogError(targetAttachTransform.parent.gameObject.name);
-
             Vector3 targetPos = targetAttachTransform.position;
             Quaternion targetRot = targetAttachTransform.rotation;
 
