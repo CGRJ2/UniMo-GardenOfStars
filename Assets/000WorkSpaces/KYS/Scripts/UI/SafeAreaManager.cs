@@ -19,6 +19,7 @@ namespace KYS
         [SerializeField] private bool enableBackgroundPanel = true;
         [SerializeField] private Color backgroundColor = Color.black;
         
+        
         [Header("Simulator Test Settings")]
         [SerializeField] private bool useTestSafeArea = false;
         [SerializeField] private Rect testSafeArea = new Rect(50, 100, 275, 500); // 테스트용 SafeArea (화면 크기 내에서)
@@ -62,6 +63,7 @@ namespace KYS
         /// <summary>
         /// SafeArea 계산
         /// </summary>
+
         private (Vector2 min, Vector2 max) CalculateSafeArea()
         {
             // 시뮬레이터 테스트용 SafeArea 사용
@@ -305,7 +307,7 @@ namespace KYS
                 SafeAreaPanel safeAreaPanelComponent = safeAreaPanel.GetComponent<SafeAreaPanel>();
                 if (safeAreaPanelComponent != null)
                 {
-                    // 계산된 SafeArea 값을 SafeAreaPanel에 전달
+                    // 모든 Canvas에서 동일한 SafeArea 사용
                     var (anchorMin, anchorMax) = CalculateSafeArea();
                     safeAreaPanelComponent.UpdateSafeAreaAnchors(anchorMin, anchorMax);
                     
@@ -351,6 +353,7 @@ namespace KYS
             }
         }
         
+
         /// <summary>
         /// BackgroundPanel 표시/숨김
         /// </summary>
@@ -638,6 +641,8 @@ namespace KYS
         {
             //Debug.Log("[SafeAreaManager] 모든 SafeAreaPanel Anchors 업데이트 시작");
             
+            var (anchorMin, anchorMax) = CalculateSafeArea();
+            
             foreach (var kvp in safeAreaPanels)
             {
                 if (kvp.Value != null)
@@ -651,6 +656,33 @@ namespace KYS
             }
             
             //Debug.Log($"[SafeAreaManager] {safeAreaPanels.Count}개의 SafeAreaPanel Anchors 업데이트 완료");
+        }
+        
+        /// <summary>
+        /// 씬의 모든 SafeAreaPanel 강제 업데이트 (기존 생성된 것들 포함)
+        /// </summary>
+        [ContextMenu("Force Update All SafeArea Panels in Scene")]
+        public void ForceUpdateAllSafeAreaPanelsInScene()
+        {
+            Debug.Log("[SafeAreaManager] 씬의 모든 SafeAreaPanel 강제 업데이트 시작");
+            
+            var (anchorMin, anchorMax) = CalculateSafeArea();
+            Debug.Log($"[SafeAreaManager] 계산된 SafeArea: 앵커({anchorMin} ~ {anchorMax})");
+            
+            // 씬의 모든 SafeAreaPanel 찾기
+            SafeAreaPanel[] allSafeAreaPanels = FindObjectsOfType<SafeAreaPanel>();
+            Debug.Log($"[SafeAreaManager] 씬에서 발견된 SafeAreaPanel 수: {allSafeAreaPanels.Length}");
+            
+            foreach (SafeAreaPanel panel in allSafeAreaPanels)
+            {
+                if (panel != null)
+                {
+                    Debug.Log($"[SafeAreaManager] SafeAreaPanel 업데이트: {panel.name}");
+                    panel.UpdateSafeAreaAnchors(anchorMin, anchorMax);
+                }
+            }
+            
+            Debug.Log("[SafeAreaManager] 씬의 모든 SafeAreaPanel 강제 업데이트 완료");
         }
         
         /// <summary>

@@ -824,6 +824,18 @@ namespace KYS
             }
         }
         
+
+        /// <summary>
+        /// 씬의 모든 SafeAreaPanel 강제 업데이트
+        /// </summary>
+        public void ForceUpdateAllSafeAreaPanelsInScene()
+        {
+            if (safeAreaManager != null)
+            {
+                safeAreaManager.ForceUpdateAllSafeAreaPanelsInScene();
+            }
+        }
+
         /// <summary>
         /// Panel Canvas의 배경 표시/숨김
         /// </summary>
