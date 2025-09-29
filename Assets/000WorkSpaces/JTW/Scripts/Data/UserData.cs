@@ -15,6 +15,9 @@ public partial class UserData : FirebaseData
     public FirebaseProperty<string> CurStage;
 
     public FirebaseProperty<int> TutorialSequence;
+
+    public FirebaseProperty<bool> AdRemoved; // 광고제거 상품 구매 여부
+
     public StageData CurStageData => StageList.Get(CurStage.Value);
 
 
@@ -38,6 +41,9 @@ public partial class UserData : FirebaseData
 
         CurStage = new FirebaseProperty<string>("CurStage", Path, "Tutorial");
         InitList.Add(CurStage);
+
+        AdRemoved = new FirebaseProperty<bool>("AdRemoved", Path);
+        InitList.Add(AdRemoved);
 
         TutorialSequence = new FirebaseProperty<int>("TutorialSequence", Path);
         InitList.Add(TutorialSequence);

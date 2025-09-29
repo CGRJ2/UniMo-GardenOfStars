@@ -21,7 +21,7 @@ public class ProdsArea : InteractableBase, IWorkStation
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() 
     {
-        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.restrictedProdID; 
+        if (!isReserved) return ownerInstance.originData.ProductID == StageManager.Instance.finalProdID; 
         return isReserved; 
     }
     public void SetReserveState(bool reserve) { isReserved = reserve; }
@@ -84,7 +84,7 @@ public class ProdsArea : InteractableBase, IWorkStation
             PickUp();
             //_SpawnedProduct = null;
             //tmp_Count.text = $"{ProdsCount}";
-            yield return new WaitForSeconds(ownerInstance.prodsAbsorbDelayTime);
+            yield return new WaitForSeconds(ownerInstance.insertDelayTime);
         }
     }
 
@@ -155,6 +155,8 @@ public class ProdsArea : InteractableBase, IWorkStation
             canvas_ProdsResult.gameObject.SetActive(true);
             tmp_Count.text = $"x{value}";
 
+            // SFX 실행
+            Manager.Audio.SfxPlay("SFX_ProdSpawn", transform);
         }
         else
         {

@@ -76,6 +76,9 @@ namespace KYS
         {
             base.Awake();
 
+            Manager.Audio.BgmPlay("StageTran", 0.5f);
+            Manager.Audio.SfxPlay("Portal");
+
             zodiacStages.Clear();
             foreach (StageDataCsv data in Manager.data.Stage.Values.Values)
             {
@@ -124,12 +127,23 @@ namespace KYS
         #region Initialization
         private void SetupButtons()
         {
+            Debug.Log($"[StageTransitionPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[StageTransitionPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
             // 뒤로가기 버튼 설정
             var backEventHandler = GetEventWithSFX(backButtonName, "SFX_ButtonClickBack");
             if (backEventHandler != null)
             {
                 backEventHandler.Click += (data) => OnBackButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void SetupWheel()
@@ -321,9 +335,6 @@ namespace KYS
         {
             if (!isDragging) return;
 
-            Vector2 delta = position - lastTouchPos;
-            float rotationDelta = delta.x * rotationSpeed * Time.deltaTime;
-
             Vector2 vector1 = _startTouchPostion - (Vector2)wheelParent.position;
             Vector2 vector2 = position - (Vector2)wheelParent.position;
 
@@ -344,19 +355,6 @@ namespace KYS
 
             lastTouchPos = position;
             return;
-
-            // 회전 속도 제한 (급격한 회전 방지)
-            float maxRotationDelta = 15f; // 한 프레임당 최대 회전 각도
-            rotationDelta = Mathf.Clamp(rotationDelta, -maxRotationDelta, maxRotationDelta);
-
-            currentRotation += rotationDelta;
-
-            // 돌림판 회전 (Z축만 회전, 크기 변화 방지)
-            if (wheelParent != null)
-            {
-                Vector3 currentRotationEuler = wheelParent.rotation.eulerAngles;
-                wheelParent.rotation = Quaternion.Euler(currentRotationEuler.x, currentRotationEuler.y, currentRotation);
-            }
         }
 
         private void OnInputEnded(Vector2 position)
@@ -706,10 +704,7 @@ namespace KYS
             // 로딩 화면 표시 (필요한 경우)
             // ShowLoadingScreen();
 
-            // Addressables 씬 로딩 (실제 구현은 Addressables 패키지에 따라 다름)
-            // TODO: Addressables 패키지 구현 시 사용
-
-            // 임시로 일반 씬 로딩 사용
+            Manager.Audio.SfxPlay("Portal");
             var handle = Addressables.LoadSceneAsync("StageScene");
 
             while (!handle.IsDone)
@@ -897,6 +892,7 @@ namespace KYS
         private void OnBackButtonClicked()
         {
             Debug.Log("뒤로가기");
+            Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
             Manager.ui.ClosePanel();
         }
         #endregion

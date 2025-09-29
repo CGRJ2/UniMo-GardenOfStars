@@ -27,6 +27,8 @@ namespace KYS
             base.Awake();
             Manager.player.Data.Money.Subscribe(OnMoneyChanged);
             Initialize();
+
+            Manager.Audio.SfxPlay("DoorBell");
         }
 
         protected override void OnDestroy()
@@ -67,20 +69,23 @@ namespace KYS
 
         private void SetupButtons()
         {
-            // CloseButton 이벤트 설정 (중복 등록 방지)
+            Debug.Log($"[HRRoomPanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[HRRoomPanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
+
+            // CloseButton 이벤트 설정
             var closeEventHandler = GetEventWithSFX(closeButtonName, "SFX_ButtonClickBack");
             if (closeEventHandler != null)
             {
-                // 기존 이벤트 해제
-                if (closeButtonHandler != null)
-                {
-                    closeEventHandler.Click -= closeButtonHandler;
-                }
-                
-                // 새 이벤트 핸들러 생성 및 등록
-                closeButtonHandler = (data) => OnCloseButtonClicked();
-                closeEventHandler.Click += closeButtonHandler;
+                closeEventHandler.Click += (data) => OnCloseButtonClicked();
             }
+
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void UpdateUI()

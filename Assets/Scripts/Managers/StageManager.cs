@@ -19,8 +19,7 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    // 임시로 넣어둠. StageDataCSV에서 최종 생산물(일꾼이 들면 안되는 생산물) ID를 지정해줘야 함
-    public string restrictedProdID = "it10121";
+    public string finalProdID => GetFinalProdID();
 
     private void Awake()
     {
@@ -61,10 +60,16 @@ public class StageManager : MonoBehaviour
         Debug.LogWarning("QuestList Inited");
 
         Init();
+
+        // 기다렸다 배너 광고 띄우기
+        yield return new WaitForSeconds(5f); // UI 조정이 끝난 후 실행되도록 대기
+        Manager.ad.ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
     }
 
     void Init()
     {
+        Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
+
         // 임시 테스트용(인게임씬으로 바로 실행하는 경우)
         if (string.IsNullOrEmpty(Manager.firebase.UserData.CurStage.Value))
         {
@@ -121,31 +126,23 @@ public class StageManager : MonoBehaviour
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
     }
 
-    public void TryUnlockNextStage(int curQuestIndex)
+    // 스테이지 별로 최종 생산물 설정
+    string GetFinalProdID()
     {
-        //Debug.Log($"클리어 이후 진행도 {curQuestIndex}");
-        // 언락 인덱스가 -면 다음 스테이지가 없음
-        StageData curStageData = Manager.firebase.UserData.CurStageData;
-        if (curStageData.requiredQuestIndex < 0)
+        string finalProdID = "";
+        foreach (var value in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
         {
-            Debug.Log("다음 스테이지가 없음, 언락 조건 체크 안할거임");
-            return;
+            if (!Manager.data.Building.ContainsKey(value.BuildingID.Value)) continue;
+
+            // 작업형 건물의 가장 높은 ID의 재료를 반환하도록
+            if (Manager.data.Building[value.BuildingID.Value] is ManufactureBD bd)
+            {
+                int result = finalProdID.CompareTo(bd.ProductID);
+
+                // 기존ID 보다 값이 더 크다면
+                if (result > 0) finalProdID = bd.ProductID;
+            }
         }
-
-        // 언락조건에 도달 안되면 return
-        if (curStageData.requiredQuestIndex > curQuestIndex) return;
-
-        // 언락 조건에 도달 시
-        Manager.game.StageUnlock(curStageData.nextStageId);
-    }
-
-    void OnEnable()
-    {
-        QuestEventBus.QuestProgressChangedEvent += TryUnlockNextStage;
-    }
-
-    void OnDisable()
-    {
-        QuestEventBus.QuestProgressChangedEvent -= TryUnlockNextStage;
+        return finalProdID;
     }
 }

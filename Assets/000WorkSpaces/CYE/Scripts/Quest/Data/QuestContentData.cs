@@ -48,6 +48,9 @@ namespace GameQuest
             {
                 Debug.LogWarning($"QC(id:{Id}) 클리어");
 
+                // 클리어 SFX 실행 
+                // Manager.Audio.SfxPlay("SFX_QuestClear", Manager.player.PlayerObj.transform);
+
                 bool questCleared;
 
                 // 현재 퀘스트의 모든 Content가 Clear상태인지 체크
@@ -61,7 +64,8 @@ namespace GameQuest
             {
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)
                 Debug.LogWarning("스텝 클리어, 보상 수령");
-                // TO DO: 보상 수령
+
+                // 보상 수령
                 switch (ContentSteps[ProgressdIndex.Value].RewardId)
                 {
                     case "Coin":
@@ -74,7 +78,10 @@ namespace GameQuest
                         Debug.LogWarning($"[QuestManager] 보상 지급 실패. 올바르지 않은 보상 형식입니다.({ContentSteps[ProgressdIndex.Value].RewardId})");
                         break;
                 }
-                Debug.Log($"[QuestManager] {Manager.firebase.UserData.Player.Money.Value}");
+
+                // 클리어 SFX 실행
+                Manager.Audio.SfxPlay("SFX_QuestClear", Manager.player.PlayerObj.transform);
+
                 ///.../// 스텝 완료 이펙트 종료 후에
 
 

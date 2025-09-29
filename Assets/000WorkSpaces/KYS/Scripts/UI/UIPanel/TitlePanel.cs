@@ -73,14 +73,20 @@ namespace KYS
 
         private void SetupButtons()
         {
-            //Debug.Log("[TitlePanel] SetupButtons() 시작");
+            Debug.Log($"[TitlePanel] SetupButtons() 시작 - Time: {Time.time}, isButtonsSetup: {isButtonsSetup}");
+
+            // 이미 설정되었으면 중복 호출 방지
+            if (isButtonsSetup)
+            {
+                Debug.Log($"[TitlePanel] SetupButtons 이미 완료됨 - 중복 호출 방지");
+                return;
+            }
             
             // BaseUI의 GetEventWithSFX 사용 (PointerHandler 기반)
             var confirmEventHandler = GetEventWithSFX(confirmButtonName, "SFX_ButtonClick");
             if (confirmEventHandler != null)
             {
                 confirmEventHandler.Click += OnConfirmClicked;
-                //Debug.Log($"[TitlePanel] 확인 버튼 이벤트 설정 완료: {confirmButtonName}");
             }
             else
             {
@@ -91,14 +97,13 @@ namespace KYS
             if (closeEventHandler != null)
             {
                 closeEventHandler.Click += OnCancelClicked;
-                //Debug.Log($"[TitlePanel] 닫기 버튼 이벤트 설정 완료: {closeButtonName}");
             }
             else
             {
                 Debug.LogError($"[TitlePanel] 닫기 버튼 이벤트 설정 실패: {closeButtonName}");
             }
             
-            //Debug.Log("[TitlePanel] SetupButtons() 완료");
+            isButtonsSetup = true; // 설정 완료 플래그
         }
 
         private void OnConfirmClicked(PointerEventData data)

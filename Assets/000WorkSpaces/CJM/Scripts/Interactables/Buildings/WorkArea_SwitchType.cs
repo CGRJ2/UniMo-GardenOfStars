@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,12 +32,16 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     // 현재 작업 중인 일꾼 정보
     public CharaterRuntimeData curWorker;
 
+    string _Guid;
+
     public void Init(ManufactureBuilding instance)
     {
         this.ownerInstance = instance;
         Manager.buildings.workStatinLists.workAreas_SwitchType.Add(this);
         prepareProgressBar.gameObject.SetActive(false);
         taskProgressBar.gameObject.SetActive(false);
+
+        _Guid = Guid.NewGuid().ToString("N");
     }
 
     // 작업 준비 단계
@@ -44,7 +49,6 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
     {
         isReserved = false;
         curWorker = characterRD;
-        curWorker.IsWork.Value = true;
         curCharacterProdSpeed = characterRD.GetProductionSpeed();
 
         while (curWorker == personalTaskOwner) // 현재 작업자가 있는 동안 계속 실행
@@ -73,6 +77,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 재료 소진 시
             if (ownerInstance.ingrediantStack.Count <= 0)
             {
+                curWorker.IsWork.Value = false;
                 prepareProgressedTime = 0; // 진행도 초기화
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
@@ -81,6 +86,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 쌓여있는 재료가 있을때만 실행
             if (ownerInstance.ingrediantStack.Count > 0)
             {
+                curWorker.IsWork.Value = true;
                 // 준비 시작 시, 진행도 표기
                 prepareProgressBar.gameObject.SetActive(true);
                 prepareProgressedTime += Time.deltaTime;
@@ -126,12 +132,22 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
         while (isOperating)
         {
+            if (ownerInstance.progressedTime == 0)
+            {
+                // SFX 실행
+                Manager.Audio.SfxPlayLoop(_Guid, "SFX_ManufactureBuilding", transform);
+            }
+
             ownerInstance.progressedTime += Time.deltaTime;
 
             if (calculatedProduceTime < ownerInstance.progressedTime)
             {
                 CompleteTask(); // 결과물 생성
                 ownerInstance.progressedTime = 0; // 진행도 초기화
+
+                // SFX 끄기
+                Manager.Audio.SfxStopLoop(_Guid, 0.5f);
+
                 isOperating = false; // 작업 처리 정지
             }
 

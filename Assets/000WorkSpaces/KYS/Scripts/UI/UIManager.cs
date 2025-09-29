@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -165,6 +166,10 @@ namespace KYS
                     {
                         hasExistingLoadingCanvas = true;
                         loadingCanvas = canvas;
+                        
+                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
+                        loadingCanvas.sortingOrder = 40;
+                        
                         //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
                         
                         // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
@@ -305,7 +310,7 @@ namespace KYS
                     return safeAreaPanel.transform;
                 }
             }
-
+            
             Debug.LogWarning($"[UIManager] HUD용 SafeAreaPanel 생성 실패, HUD Canvas를 직접 사용: {hudCanvas.name}");
             return hudCanvas.transform;
         }
@@ -952,13 +957,17 @@ namespace KYS
         /// <summary>
         /// 패널 닫기
         /// </summary>
+        [ContextMenu("Close Panel")]
         public void ClosePanel()
         {
+            Debug.Log($"[UIManager] ClosePanel 호출됨 - Time: {Time.time}, Stack Count: {panelStack.Count}");
+            
             if (panelStack.Count == 0) return;
 
             BaseUI currentPanel = panelStack.Pop();
             if (currentPanel != null)
             {
+                Debug.Log($"[UIManager] 패널 닫기: {currentPanel.name} - Time: {Time.time}");
                 // 스택 구조에서는 항상 파괴
                 UnregisterUI(currentPanel);
                 currentPanel.Hide();
@@ -1053,6 +1062,7 @@ namespace KYS
         /// <summary>
         /// 현재 열린 Popup 닫기
         /// </summary>
+        [ContextMenu("Close Popup")]
         public void ClosePopup()
         {
             if (popupStack.Count == 0)
@@ -1351,6 +1361,190 @@ namespace KYS
                 loadingScreenInstance = null;
                 isLoadingScreenInitialized = false;
             }
+        }
+
+
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (배경 이미지만 표시, 시간 조절 가능)
+        /// </summary>
+        [ContextMenu("Show Ultra Simple Loading Screen")]
+        public void ShowUltraSimpleLoadingScreen(float displayTime = 2f)
+        {
+            // LoadingCanvas 먼저 활성화 (더 확실하게)
+            if (loadingCanvas != null)
+            {
+                loadingCanvas.gameObject.SetActive(true);
+                loadingCanvas.enabled = true;
+                
+                // LoadingCanvas의 SortOrder를 가장 높게 설정 (다른 모든 UI 위에 표시)
+                loadingCanvas.sortingOrder = 40;
+                
+                Debug.Log($"LoadingCanvas 활성화됨 (SortOrder: {loadingCanvas.sortingOrder})");
+                
+                // LoadingCanvas의 모든 자식 요소들 비활성화 (배경 이미지만 남김)
+                var allChildren = loadingCanvas.GetComponentsInChildren<Transform>(true);
+                foreach (var child in allChildren)
+                {
+                    if (child != loadingCanvas.transform) // LoadingCanvas 자신은 제외
+                    {
+                        // TextMeshProUGUI, Slider, Image (Fill 타입 제외) 비활성화
+                        if (child.GetComponent<TextMeshProUGUI>() != null ||
+                            child.GetComponent<Slider>() != null ||
+                            (child.GetComponent<Image>() != null && child.GetComponent<Image>().type == UnityEngine.UI.Image.Type.Filled))
+                        {
+                            child.gameObject.SetActive(false);
+                            Debug.Log($"비활성화된 요소: {child.name}");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+                return;
+            }
+            
+            // 로딩 스크린 표시
+            ShowLoadingScreen();
+            
+            // 초간단 모드 설정 (배경 이미지만 표시)
+            if (loadingScreenInstance != null)
+            {
+                // LoadingScreen의 초간단 모드 활성화
+                loadingScreenInstance.SetUltraSimpleMode(true);
+                
+                // 자동으로 지정된 시간 후 숨기기
+                StartCoroutine(AutoHideAfterTime(displayTime));
+            }
+            else
+            {
+                Debug.LogError("loadingScreenInstance가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 지정된 시간 후 자동으로 로딩 스크린 숨기기
+        /// </summary>
+        private IEnumerator AutoHideAfterTime(float displayTime)
+        {
+            yield return new WaitForSeconds(displayTime);
+            HideLoadingScreen();
+        }
+
+        /// <summary>
+        /// 테스트용 초간단 로딩 스크린 (2초간 표시)
+        /// </summary>
+        [ContextMenu("Test Ultra Simple Loading Screen (2초)")]
+        public void TestShowUltraSimpleLoadingScreen()
+        {
+            ShowUltraSimpleLoadingScreen(2f);
+        }
+
+        /// <summary>
+        /// 테스트용 초간단 로딩 스크린 (5초간 표시)
+        /// </summary>
+        [ContextMenu("Test Ultra Simple Loading Screen (5초)")]
+        public void TestShowUltraSimpleLoadingScreen5Sec()
+        {
+            ShowUltraSimpleLoadingScreen(5f);
+        }
+
+        /// <summary>
+        /// LoadingCanvas 강제 활성화 테스트
+        /// </summary>
+        [ContextMenu("Activate LoadingCanvas")]
+        public void ActivateLoadingCanvas()
+        {
+            if (loadingCanvas != null)
+            {
+                loadingCanvas.gameObject.SetActive(true);
+                loadingCanvas.enabled = true;
+                Debug.Log("LoadingCanvas 활성화됨");
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 모든 캔버스 상태 확인
+        /// </summary>
+        [ContextMenu("Check All Canvas Status")]
+        public void CheckAllCanvasStatus()
+        {
+            Debug.Log("=== 캔버스 상태 확인 ===");
+            Debug.Log($"HUDCanvas: {(hudCanvas != null ? hudCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"PanelCanvas: {(panelCanvas != null ? panelCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"PopupCanvas: {(popupCanvas != null ? popupCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"LoadingCanvas: {(loadingCanvas != null ? loadingCanvas.gameObject.activeInHierarchy.ToString() : "null")}");
+            Debug.Log($"LoadingScreenInstance: {(loadingScreenInstance != null ? loadingScreenInstance.gameObject.activeInHierarchy.ToString() : "null")}");
+        }
+
+        /// <summary>
+        /// LoadingCanvas의 특정 요소들 비활성화
+        /// </summary>
+        [ContextMenu("Disable LoadingCanvas Elements")]
+        public void DisableLoadingCanvasElements()
+        {
+            if (loadingCanvas != null)
+            {
+                // LoadingText 비활성화
+                var loadingText = loadingCanvas.transform.Find("LoadingText");
+                if (loadingText != null)
+                {
+                    loadingText.gameObject.SetActive(false);
+                    Debug.Log("LoadingText 비활성화됨");
+                }
+                else
+                {
+                    Debug.Log("LoadingText를 찾을 수 없습니다.");
+                }
+
+                // DownloadSlider 비활성화
+                var downloadSlider = loadingCanvas.transform.Find("DownloadSlider");
+                if (downloadSlider != null)
+                {
+                    downloadSlider.gameObject.SetActive(false);
+                    Debug.Log("DownloadSlider 비활성화됨");
+                }
+                else
+                {
+                    Debug.Log("DownloadSlider를 찾을 수 없습니다.");
+                }
+
+                // 모든 TextMeshProUGUI 비활성화
+                var allTexts = loadingCanvas.GetComponentsInChildren<TextMeshProUGUI>(true);
+                foreach (var text in allTexts)
+                {
+                    text.gameObject.SetActive(false);
+                    Debug.Log($"Text 비활성화됨: {text.name}");
+                }
+
+                // 모든 Slider 비활성화
+                var allSliders = loadingCanvas.GetComponentsInChildren<Slider>(true);
+                foreach (var slider in allSliders)
+                {
+                    slider.gameObject.SetActive(false);
+                    Debug.Log($"Slider 비활성화됨: {slider.name}");
+                }
+            }
+            else
+            {
+                Debug.LogError("LoadingCanvas가 null입니다!");
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (비동기 버전, 시간 조절 가능)
+        /// </summary>
+        public async System.Threading.Tasks.Task ShowUltraSimpleLoadingScreenAsync(float displayTime = 2f)
+        {
+            ShowUltraSimpleLoadingScreen(displayTime);
+            
+            // 지정된 시간만큼 대기
+            await System.Threading.Tasks.Task.Delay((int)(displayTime * 1000));
         }
 
         /// <summary>
@@ -1926,7 +2120,7 @@ namespace KYS
         /// <summary>
         /// 제네릭 팝업 UI 표시 (비동기 버전)
         /// </summary>
-        public async Task<GameObject> ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
+        public void ShowPopUpAsync<T>(System.Action<T> onComplete = null) where T : BaseUI
         {
             string popupName = typeof(T).Name;
             
@@ -1935,12 +2129,10 @@ namespace KYS
             {
                 Debug.Log($"[UIManager] 이미 팝업 생성 중이므로 {popupName} 무시합니다.");
                 onComplete?.Invoke(null);
-                return null;
             }
             
             isCreatingPopup = true;
-            GameObject obj = await ShowPopUpAsyncCoroutine<T>(onComplete);
-            return obj;
+            StartCoroutine(ShowPopUpAsyncCoroutine<T>(onComplete));
         }
         
         /// <summary>
@@ -1973,7 +2165,7 @@ namespace KYS
             StartCoroutine(ShowPanelAsyncCoroutine<T>(onComplete));
         }
 
-        private async Task<GameObject> ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
+        private IEnumerator ShowPopUpAsyncCoroutine<T>(System.Action<T> onComplete) where T : BaseUI
         {
             string prefabName = typeof(T).Name;
 
@@ -1995,7 +2187,7 @@ namespace KYS
             foreach (string addressableKey in possibleKeys)
             {
                 handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-                await handle.Task;
+                yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -2017,7 +2209,7 @@ namespace KYS
                 Debug.LogError($"[UIManager] {prefabName} 팝업 로드 실패 - 모든 키 시도 완료");
                 onComplete?.Invoke(null);
                 isCreatingPopup = false;
-                return null;
+                yield break;
             }
 
             try
@@ -2028,7 +2220,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName} 프리팹을 GameObject로 캐스팅할 수 없습니다.");
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // UI 타입에 따라 적절한 Canvas 선택
@@ -2037,7 +2229,7 @@ namespace KYS
                 {
                     Debug.LogError($"[UIManager] {prefabName}에 대한 적절한 Canvas를 찾을 수 없습니다.");
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // Unity의 기본 Instantiate 사용 (Addressables.InstantiateAsync 대신)
@@ -2049,7 +2241,7 @@ namespace KYS
                     Debug.LogError($"[UIManager] {prefabName}에서 {typeof(T).Name} 컴포넌트를 찾을 수 없습니다.");
                     Destroy(uiInstance);
                     onComplete?.Invoke(null);
-                    return null;
+                    yield break;
                 }
 
                 // UI 타입에 따라 적절한 메서드 호출
@@ -2063,8 +2255,6 @@ namespace KYS
                 }
 
                 onComplete?.Invoke(uiComponent);
-
-                return uiInstance;
             }
             catch (System.Exception e)
             {
@@ -2081,8 +2271,6 @@ namespace KYS
                     Addressables.Release(handle);
                 }
             }
-
-            return null;
         }
         
         /// <summary>
@@ -2240,6 +2428,58 @@ namespace KYS
 
         #endregion
 
+        #region TutorialPopUp Methods
+
+        /// <summary>
+        /// 메시지 팝업 표시 (비동기 버전)
+        /// </summary>
+        public void ShowTutorialPopUpAsync(string message, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessage(message);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 사용)
+        /// </summary>
+        public void ShowTutorialPopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 + 포맷팅 지원)
+        /// </summary>
+        public void ShowTutorialPopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<TutorialPopUp> onComplete = null, params object[] args)
+        {
+            ShowPopUpAsync<TutorialPopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        #endregion
+
         #region MessagePopUp Methods
 
         /// <summary>
@@ -2268,6 +2508,22 @@ namespace KYS
                 if (popup != null)
                 {
                     popup.SetMessageKey(messageKey);
+                    popup.SetCloseCallback(closeCallback);
+                }
+                onComplete?.Invoke(popup);
+            });
+        }
+
+        /// <summary>
+        /// 메시지 팝업 표시 (로컬라이제이션 키 + 포맷팅 지원)
+        /// </summary>
+        public void ShowMessagePopUpWithKeyAsync(string messageKey, System.Action closeCallback = null, System.Action<MessagePopUp> onComplete = null, params object[] args)
+        {
+            ShowPopUpAsync<MessagePopUp>((popup) =>
+            {
+                if (popup != null)
+                {
+                    popup.SetMessageKey(messageKey, args);
                     popup.SetCloseCallback(closeCallback);
                 }
                 onComplete?.Invoke(popup);

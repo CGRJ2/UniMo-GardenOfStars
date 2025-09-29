@@ -178,6 +178,7 @@ public class UpgradeData : FirebaseData
 public partial class DataManager
 {
     public Dictionary<string, BuildingData> Building = new();
+    public Dictionary<string, IngrediantData> Ingrediant = new();
 
     public void BuildingDataInitRoutine()
     {
@@ -189,6 +190,21 @@ public partial class DataManager
                 else
                 {
                     Building.Add(data.ID, data);
+                }
+            }
+        };
+    }
+
+    public void IngrediantDataInitRoutine()
+    {
+        Addressables.LoadAssetsAsync<IngrediantData>("Data", null, true).Completed += task =>
+        {
+            foreach (var data in task.Result)
+            {
+                if (Ingrediant.ContainsKey(data.ID)) continue;
+                else
+                {
+                    Ingrediant.Add(data.ID, data);
                 }
             }
         };

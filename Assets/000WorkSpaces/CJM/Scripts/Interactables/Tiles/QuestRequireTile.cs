@@ -58,7 +58,10 @@ public class QuestRequireTile : InteractableBase
     {
         for (int i = 0; i < lamps.Length; i++)
         {
-            if (i < progressIndex) lamps[i].UpdateView(true);
+            if (i < progressIndex)
+            {
+                lamps[i].UpdateView(true);
+            }
             else lamps[i].UpdateView(false);
         }
     }
@@ -88,11 +91,8 @@ public class QuestRequireTile : InteractableBase
                 }
             }
 
-            Addressables.LoadAssetAsync<IngrediantData>(QC_Data.ContentTargetId).Completed += task =>
-            {
-                ingrediantData = task.Result;
-                image_Ingrediant.sprite = ingrediantData.Sprite;
-            };
+            ingrediantData = Manager.data.Ingrediant[QC_Data.ContentTargetId];
+            image_Ingrediant.sprite = ingrediantData.Sprite;
         }
 
     }

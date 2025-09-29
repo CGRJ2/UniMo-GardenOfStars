@@ -17,69 +17,28 @@ public class GameManager : Singleton<GameManager>
 
     private void Awake() => Init();
 
-    // 스테이지Id(key) 별, 언락여부(value) 딕셔너리 => 해당 데이터는 Firebase DB로 대체될 예정
-    Dictionary<string, bool> stageUnlockDic = new();
-    public void StageUnlock(string stageId) { stageUnlockDic[stageId] = true; } // DB에 바로 저장하는 걸로 대체될 예정
-    public bool GetStageUnlockCheck(string stageId) { return stageUnlockDic[stageId]; } // DB에 바로 불러오는 걸로 대체될 예정
-
-
-    // 스테이지 데이터에 관한 딕셔너리 (CSV파일을 로드해서 스테이지 id별로 데이터를 저장해둔 공간)
-    public Dictionary<string, StageData> stageDataDic = new();
-
-
     void Init()
     {
         base.SingletonInit();
         Application.targetFrameRate = 60;
 
         StartCoroutine(Fetch());
-        StageDatasInit();
     }
     
-    void StageDatasInit()
-    {
-        Addressables.LoadAssetAsync<Temp_StageDataCsv>("Temp_StageDataCSV").Completed += csv =>
-        {
-            foreach(var value in csv.Result.stageDataColumns)
-            {
-                if (!stageUnlockDic.ContainsKey(value.StageId))
-                {
-                    // 첫 스테이지면 언락 항상 true /// for문으로 바꿔서 인덱스 0인걸로 처리해두면 키값 상관없이 가능할듯?
-                    if (value.StageId == "Stage00")
-                        stageUnlockDic.Add(value.StageId, true);
-                    else
-                        stageUnlockDic.Add(value.StageId, false);
-                }
-
-                // 스테이지 별 다음단계 언락 조건도 저장
-                stageDataDic.TryAdd(value.StageId, value);
-
-                // 데이터 베이스에서 로드 시엔 키 체크 후 해당 bool값으로 할당
-            }
-        };
-    }
-
-    /*void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            *//*Addressables.LoadAssetAsync<GameObject>("TestCube").Completed += task =>
-            {
-                Instantiate(task.Result);
-            };*//*
-
-            // 씬로드 테스트
-        }
-    }*/
-
-
     #region Addressable Assets Storage 동기화 체크
 
-    IEnumerator Fetch()
+    public IEnumerator Fetch()
     {
         yield return Addressables.InitializeAsync(true);
         var checkHandle = Addressables.CheckForCatalogUpdates(false);  // 변경된 카탈로그 ID들
         yield return checkHandle;
+
+        if(checkHandle.Status == AsyncOperationStatus.Failed)
+        {
+            Manager.firebase.NetworkDisconnected();
+            yield break;
+        }
+
         Debug.Log($"업데이트 존재 여부 => {checkHandle.Result.Count}");
 
         if (checkHandle.Result.Count > 0)
@@ -87,6 +46,12 @@ public class GameManager : Singleton<GameManager>
             // 새로 로드된 카탈로그의 IResourceLocator들
             var updateCatalogHandle = Addressables.UpdateCatalogs(checkHandle.Result, false);
             yield return updateCatalogHandle;
+
+            if(updateCatalogHandle.Status == AsyncOperationStatus.Failed)
+            {
+                Manager.firebase.NetworkDisconnected();
+                yield break;
+            }
 
             // IResourceLocator들을 IResourceLocation으로 치환
             var locators = updateCatalogHandle.Result;
@@ -105,6 +70,11 @@ public class GameManager : Singleton<GameManager>
             // 다운로드 사이즈 체크
             var sizeCheckHandle = Addressables.GetDownloadSizeAsync(locations);
             yield return sizeCheckHandle;
+            if (sizeCheckHandle.Status == AsyncOperationStatus.Failed)
+            {
+                Manager.firebase.NetworkDisconnected();
+                yield break;
+            }
             Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
 
             if(sizeCheckHandle.Result <= 0)
@@ -126,6 +96,13 @@ public class GameManager : Singleton<GameManager>
                 DownloadStatus downloadStatus = downloadHandle.GetDownloadStatus();
                 Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes 다운됨. 퍼센트:{(int)downloadStatus.Percent * 100}");
                 downloadProgress.Value = downloadStatus.Percent;
+
+                if(downloadHandle.Status == AsyncOperationStatus.Failed)
+                {
+                    inDownloading = false;
+                    Manager.firebase.NetworkDisconnected();
+                    yield break;
+                }
             }
             downloadProgress.Value = 1f;
 
@@ -153,22 +130,6 @@ public class GameManager : Singleton<GameManager>
     }
 
     #endregion
-
-
-    public IEnumerator Temp_InGameLoad()
-    {
-        //Manager.game.curStageId = "Stage00";
-        Manager.ui.ShowLoadingScreen();
-        yield return new WaitForSeconds(0.3f);  // 임시
-
-        var loadSceneHanlde = Addressables.LoadSceneAsync("StageScene");
-        while (loadSceneHanlde.IsDone)
-        {
-            yield return null;
-        }
-        yield return loadSceneHanlde;
-        Manager.ui.HideLoadingScreen();
-    }
 }
 
 public class StageDataCsv : IUsableId
@@ -186,8 +147,6 @@ public class StageDataCsv : IUsableId
 
     public string NpcID;
     public string BuildingIDs;
-    public string FinalProdID;
-
     public string GetId()
     {
         return Id;
@@ -269,9 +228,6 @@ public partial class DataManager
 
             stage.NpcID = words[dict["NpcID"]];
             stage.BuildingIDs = words[dict["BuildingIDs"]];
-            stage.FinalProdID = words[dict["FinalProdID"]];
-            
-
 
             return stage;
         });
