@@ -15,6 +15,10 @@ namespace KYS
         [SerializeField] private Color debugColor = new Color(1, 0, 0, 0.3f);
         [SerializeField] private bool showDebugArea = false;
         
+        [Header("Background Settings")]
+        [SerializeField] private bool enableBackgroundPanel = true;
+        [SerializeField] private Color backgroundColor = Color.black;
+        
         [Header("Simulator Test Settings")]
         [SerializeField] private bool useTestSafeArea = false;
         [SerializeField] private Rect testSafeArea = new Rect(50, 100, 275, 500); // 테스트용 SafeArea (화면 크기 내에서)
@@ -30,6 +34,7 @@ namespace KYS
         
         // 생성된 SafeArea 패널들
         private Dictionary<Canvas, GameObject> safeAreaPanels = new Dictionary<Canvas, GameObject>();
+        private Dictionary<Canvas, GameObject> backgroundPanels = new Dictionary<Canvas, GameObject>();
 
 
         private void Awake()
@@ -102,6 +107,56 @@ namespace KYS
             return (anchorMin, anchorMax);
         }
         
+        /// <summary>
+        /// BackgroundPanel 생성 또는 가져오기 (전체 화면 배경)
+        /// </summary>
+        private GameObject GetOrCreateBackgroundPanel(Canvas canvas)
+        {
+            if (!enableBackgroundPanel) return null;
+            
+            // 이미 존재하는 BackgroundPanel이 있는지 확인
+            if (backgroundPanels.ContainsKey(canvas))
+            {
+                GameObject existingPanel = backgroundPanels[canvas];
+                if (existingPanel != null)
+                {
+                    return existingPanel;
+                }
+                else
+                {
+                    // null인 경우 딕셔너리에서 제거
+                    backgroundPanels.Remove(canvas);
+                }
+            }
+            
+            // BackgroundPanel 생성
+            GameObject backgroundPanel = new GameObject("BackgroundPanel");
+            backgroundPanel.transform.SetParent(canvas.transform);
+            
+            // RectTransform 설정 (전체 화면)
+            RectTransform backgroundRect = backgroundPanel.AddComponent<RectTransform>();
+            backgroundRect.anchorMin = Vector2.zero;
+            backgroundRect.anchorMax = Vector2.one;
+            backgroundRect.offsetMin = Vector2.zero;
+            backgroundRect.offsetMax = Vector2.zero;
+            backgroundRect.localScale = Vector3.one;
+            
+            // Image 컴포넌트 추가 (배경색)
+            Image backgroundImage = backgroundPanel.AddComponent<Image>();
+            backgroundImage.color = backgroundColor;
+            
+            // BackgroundPanel을 Canvas의 첫 번째 자식으로 이동 (SafeAreaPanel보다 뒤에)
+            backgroundPanel.transform.SetAsFirstSibling();
+            
+            // 기본적으로 비활성화 상태로 생성
+            backgroundPanel.SetActive(false);
+            
+            // 딕셔너리에 저장
+            backgroundPanels[canvas] = backgroundPanel;
+            
+            return backgroundPanel;
+        }
+
         /// <summary>
         /// SafeArea 패널 프리팹 생성 (런타임)
         /// </summary>
@@ -221,6 +276,9 @@ namespace KYS
             
             try
             {
+                // BackgroundPanel 생성 또는 가져오기 (전체 화면 배경)
+                GameObject backgroundPanel = GetOrCreateBackgroundPanel(canvas);
+                
                 // SafeArea 패널 생성
                 GameObject safeAreaPanel = Instantiate(safeAreaPanelPrefab, canvas.transform);
                 safeAreaPanel.name = "SafeAreaPanel";
@@ -230,8 +288,15 @@ namespace KYS
                 //Debug.Log($"[SafeAreaManager] SafeArea 패널 부모: {safeAreaPanel.transform.parent?.name}");
                 //Debug.Log($"[SafeAreaManager] SafeArea 패널 위치: {safeAreaPanel.transform.position}");
                 
-                // SafeArea 패널을 Canvas의 첫 번째 자식으로 이동
-                safeAreaPanel.transform.SetAsFirstSibling();
+                // SafeArea 패널을 BackgroundPanel 다음으로 이동 (BackgroundPanel이 맨 뒤에)
+                if (backgroundPanel != null)
+                {
+                    safeAreaPanel.transform.SetSiblingIndex(1);
+                }
+                else
+                {
+                    safeAreaPanel.transform.SetAsFirstSibling();
+                }
                 
                 //Debug.Log($"[SafeAreaManager] SafeArea 패널을 첫 번째 자식으로 이동 완료");
                 //Debug.Log($"[SafeAreaManager] Canvas 자식 수: {canvas.transform.childCount}");
@@ -253,6 +318,10 @@ namespace KYS
                 
                 // 딕셔너리에 저장
                 safeAreaPanels[canvas] = safeAreaPanel;
+                if (backgroundPanel != null)
+                {
+                    backgroundPanels[canvas] = backgroundPanel;
+                }
                 
                 //Debug.Log($"[SafeAreaManager] ✅ Canvas '{canvas.name}'에 SafeArea 적용 완료");
                 //Debug.Log($"[SafeAreaManager] 현재 관리 중인 SafeArea 패널 수: {safeAreaPanels.Count}");
@@ -264,10 +333,55 @@ namespace KYS
         }
         
         /// <summary>
+        /// BackgroundPanel 색상 변경
+        /// </summary>
+        public void SetBackgroundColor(Canvas canvas, Color color)
+        {
+            if (backgroundPanels.ContainsKey(canvas))
+            {
+                GameObject backgroundPanel = backgroundPanels[canvas];
+                if (backgroundPanel != null)
+                {
+                    Image backgroundImage = backgroundPanel.GetComponent<Image>();
+                    if (backgroundImage != null)
+                    {
+                        backgroundImage.color = color;
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// BackgroundPanel 표시/숨김
+        /// </summary>
+        public void SetBackgroundVisible(Canvas canvas, bool visible)
+        {
+            if (backgroundPanels.ContainsKey(canvas))
+            {
+                GameObject backgroundPanel = backgroundPanels[canvas];
+                if (backgroundPanel != null)
+                {
+                    backgroundPanel.SetActive(visible);
+                }
+            }
+        }
+
+        /// <summary>
         /// SafeArea 패널 제거 (자식 UI 요소 보존)
         /// </summary>
         public void RemoveSafeAreaFromCanvas(Canvas canvas)
         {
+            // BackgroundPanel 비활성화 (삭제하지 않음)
+            if (backgroundPanels.ContainsKey(canvas))
+            {
+                GameObject backgroundPanel = backgroundPanels[canvas];
+                if (backgroundPanel != null)
+                {
+                    backgroundPanel.SetActive(false);
+                }
+            }
+            
+            // SafeAreaPanel 제거
             if (safeAreaPanels.ContainsKey(canvas))
             {
                 GameObject panel = safeAreaPanels[canvas];

@@ -814,6 +814,28 @@ namespace KYS
         }
 
         /// <summary>
+        /// Panel Canvas의 배경색 변경
+        /// </summary>
+        public void SetPanelBackgroundColor(Color color)
+        {
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundColor(panelCanvas, color);
+            }
+        }
+        
+        /// <summary>
+        /// Panel Canvas의 배경 표시/숨김
+        /// </summary>
+        public void SetPanelBackgroundVisible(bool visible)
+        {
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, visible);
+            }
+        }
+
+        /// <summary>
         /// 레이어별 Canvas 가져오기
         /// </summary>
         public Canvas GetCanvasByLayer(UILayerType layerType)
@@ -948,6 +970,12 @@ namespace KYS
             RegisterUI(panel);
             panel.Show();
 
+            // Panel이 열릴 때 BackgroundPanel 활성화
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, true);
+            }
+
             //Debug.Log($"[UIManager] 패널 열기 완료: {panel.name}");
             DebugStackStatus();
             
@@ -994,6 +1022,14 @@ namespace KYS
                     }
 
                     previousPanel.Show();
+                }
+            }
+            else
+            {
+                // Panel 스택이 비어있으면 BackgroundPanel 비활성화
+                if (panelCanvas != null && safeAreaManager != null)
+                {
+                    safeAreaManager.SetBackgroundVisible(panelCanvas, false);
                 }
             }
 
@@ -2600,6 +2636,12 @@ namespace KYS
             while (panelStack.Count > 0)
             {
                 ClosePanel();
+            }
+            
+            // 모든 패널이 닫혔으므로 BackgroundPanel 비활성화
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, false);
             }
         }
 
