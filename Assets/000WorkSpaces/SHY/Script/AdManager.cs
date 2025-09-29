@@ -54,6 +54,7 @@ public class AdManager : Singleton<AdManager>
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.AdRemoved.IsInit);
 
+        Manager.firebase.UserDataProperty.Subscribe(data => data.AdRemoved.Subscribe(ApplyBannerState));
         Manager.firebase.UserData.AdRemoved.Subscribe(ApplyBannerState);
         ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
         if (!isRefreshingRewardedAd) StartCoroutine(AutoRefreshRewardedAd());
@@ -264,8 +265,6 @@ public class AdManager : Singleton<AdManager>
             // 광고 제거 ui 비 활성화
             //noadsbutton.interactable = false;
             //noadsbutton.GetComponentInChildren<TextMeshProUGUI>().text = "구매완료";
-            GameObject.Find("광고제거버튼(임시)").GetComponent<Button>().interactable = false;
-            GameObject.Find("광고제거버튼(임시)").GetComponentInChildren<TextMeshProUGUI>().text = "구매완료";
 
         }
         else

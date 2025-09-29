@@ -19,7 +19,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private FirebaseDatabase _database;
     public FirebaseDatabase Database => _database;
 
-    public UserData UserData;
+    public ObservableProperty<UserData> UserDataProperty = new();
+
+    public UserData UserData => UserDataProperty.Value;
     private DataSnapshot _rootDataSnapshot;
     private bool _isUserDataInit;
 
@@ -110,7 +112,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
             _rootDataSnapshot = task.Result;
 
-            UserData = new UserData(userPath, "");
+            UserDataProperty.Value = new UserData(userPath, "");
 
             StartCoroutine(CheckUserDataInit());
         });
