@@ -187,8 +187,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.68700004, y: 0}
   m_AnchorMax: {x: 0.90900004, y: 1.0202638}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -9.7681}
+  m_SizeDelta: {x: 0, y: -9.7681}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &9027987791608784328
 CanvasRenderer:
@@ -2268,7 +2268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b79b5624d944058bd39aad2b90fb275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  productId: noads
+  productId: 501
   buttonType: 0
   automaticallyConfirmTransaction: 1
   onProductFetched:
