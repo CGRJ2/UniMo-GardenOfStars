@@ -95,6 +95,10 @@ public class BuildingInstance : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
+            // 튜토리얼 시퀀스 5 이하에서는 표기 안뜸
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial" &&
+                Manager.firebase.UserData.TutorialSequence.Value < 5) return;
+
             if (activatePopUI != null)
             {
                 // for test

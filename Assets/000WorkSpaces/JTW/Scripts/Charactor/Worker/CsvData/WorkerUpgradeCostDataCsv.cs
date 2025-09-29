@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class WorkerUpgradeCostDataCsv : IUsableId
 {
+    public string Id;
+
     public string Lv;
+    public int Rank;
 
     public int Speed;
     public int Capacity;
 
     public string GetId()
     {
-        return Lv;
+        return Id;
     }
 }
 
@@ -43,9 +46,13 @@ public partial class DataManager
         {
             WorkerUpgradeCostDataCsv cost = new WorkerUpgradeCostDataCsv();
 
+            cost.Id = $"{words[dict["LV"]]}_{words[dict["CharacterRank"]]}";
+
             cost.Lv = words[dict["LV"]];
-            int.TryParse(words[dict["SpeedValue"]], out cost.Speed);
-            int.TryParse(words[dict["CapacityValue"]], out cost.Capacity);
+            int.TryParse(words[dict["CharacterRank"]], out cost.Rank);
+
+            int.TryParse(words[dict["SpeedBaseCost"]], out cost.Speed);
+            int.TryParse(words[dict["CapacityBaseCost"]], out cost.Capacity);
 
             return cost;
         });

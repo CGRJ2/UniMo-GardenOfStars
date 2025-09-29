@@ -8,7 +8,7 @@ public abstract class FirebaseData : IUsableId
 {
     public string Id;
     protected string ParentPath;
-    protected string Path => string.IsNullOrEmpty(ParentPath) ? Id : $"{ParentPath}/{Id}";
+    public string Path => string.IsNullOrEmpty(ParentPath) ? Id : $"{ParentPath}/{Id}";
 
     protected List<FirebaseData> InitList = new();
     public int ListInitCount;

@@ -51,6 +51,7 @@ namespace KYS.DialogueSystem
     {
         Dialogue,       // 일반 대화
         Choice,         // 선택지
+        StartChoice,    // startchoice (choice와 동일하게 동작)
         Story,          // 스토리 (캐릭터 없음)
         Event,          // 이벤트 트리거
         End             // 대화 종료

@@ -8,6 +8,7 @@ public class WorkerState_Idle : WorkerStateBase
         : base(stateMachine, data)
     {
     }
+
     public override void Enter()
     {
         WorkerData.CurWorkstation.Value = null;

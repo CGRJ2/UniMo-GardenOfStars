@@ -24,6 +24,7 @@ namespace KYS
         [SerializeField] private string runUnlockContentName = "RunUnlockContentText";
         [SerializeField] private string UpgradeButtonName = "UpgradeButton";
         [SerializeField] private string UpgradeButtonTextName = "UpgradeButtonText";
+        [SerializeField] private string RunBuilidingCountTextName = "RunBuildingCountText";
 
 
         // UI 요소들 (BaseUI GetUI<T>() 사용)
@@ -42,10 +43,9 @@ namespace KYS
         private GameObject ItemContent1 => GetUI(ItemContent1Name);
         private GameObject ItemContent2 => GetUI(ItemContent2Name);
         private Button UpgradeButton => GetUI<Button>(UpgradeButtonName);
-
+        private TextMeshProUGUI RunBuildingCountText => GetUI<TextMeshProUGUI>(RunBuilidingCountTextName);
 
         [Header("Build Settings")]
-        [SerializeField] private string buildingName = "";
         private string buildingID;
         private int buildingCost = 0;
         private BuildingData currentBuildingData; // 현재 건물 데이터 저장
@@ -68,6 +68,28 @@ namespace KYS
             else
             {
                 Debug.LogError($"[PropertyContent] buyButton을 찾을 수 없습니다: {buildBuyButtonName}");
+            }
+        }
+
+        private void OnEnable()
+        {
+            BuildingCountUpdate();
+
+            // 튜토리얼 씬이라면
+            if (TutorialManager.Instance != null)
+            {
+                // 건물 구매 단계
+                if (Manager.firebase.UserData.TutorialSequence.Value == 2)
+                {
+                    TutorialManager.Instance.overlayPanel_BiPanelBuy.SetActive(true);
+                    BlockAllImages(new() { "BuyButton" });
+                }
+                // 건물 강화 단계
+                else if (Manager.firebase.UserData.TutorialSequence.Value == 5)
+                {
+                    TutorialManager.Instance.overlayPanel_BiPanelUpgrade.SetActive(true);
+                    BlockAllImages(new() { "UpgradeButton" });
+                }
             }
         }
 
@@ -102,7 +124,10 @@ namespace KYS
 
             // 돈 체크 후 구매 진행
             int curMoney = Manager.player.Data.Money.Value;
-            int cost = Manager.data.Building[buildingID].Cost;
+            // 스테이지 배수 연산
+            string curStageID = Manager.firebase.UserData.CurStage.Value; 
+            int cost = Manager.data.Building[buildingID].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
             Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
             if (cost <= curMoney)
             {
@@ -209,11 +234,11 @@ namespace KYS
 
         public void SetBuildingData(BuildingData buildingData, UpgradeData upgradeData = null)
         {
+            string curStageID = Manager.firebase.UserData.CurStage.Value;
             buildingID = buildingData.ID;
-            buildingName = buildingData.Name;
-            buildingCost = buildingData.Cost;
+            buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
-
+            BuildingCountUpdate();
             if (buildingData is HarvestBD harvestBD)
             {
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
@@ -260,6 +285,17 @@ namespace KYS
             UpdateUI();
         }
 
+        private void BuildingCountUpdate()
+        {
+            int count = 0;
+            foreach (PlaceTileData tileData in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
+            {
+                // 해당 건물이 설치되어 있다면 개수 ++
+                if (buildingID == tileData.BuildingID.Value) count++;
+            }
+            Debug.LogError($"[PropertyContent] BuildingConuntUpdate - 현재 설치된 {buildingID} 건물 개수: {count}");
+            RunBuildingCountText.text = $"X{count.ToString("D2")}";
+        }
 
         private void OnFirstBuyClicked()
         {
@@ -283,7 +319,7 @@ namespace KYS
                 if (currentBuildingData is HarvestBD harvestBD)
                 {
                     // 수확형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((popup) =>
                     {
                         if (popup != null)
                         {
@@ -294,7 +330,7 @@ namespace KYS
                 else if (currentBuildingData is ManufactureBD manufactureBD)
                 {
                     // 제조형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture2>((popup) =>
                     {
                         if (popup != null)
                         {

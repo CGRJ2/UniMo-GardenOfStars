@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerRuntimeData : CharaterRuntimeData
 {
+    [SerializeField] private GameObject _stunUI;
+    public GameObject StunUI => _stunUI;
+    [SerializeField] private Image _stunImage;
+    public Image StunImage => _stunImage;
+
     private WorkerData _data;
 
     #region WorkerDatas
@@ -28,6 +34,8 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public WorkerManager WorkerManager => _workerManager;
     private WorkerController _workerController;
     public WorkerController WorkerController => _workerController;
+    private WorkerPresenter _workerPresenter;
+    public WorkerPresenter WorkerPresenter => _workerPresenter;
 
     public ObservableProperty<IWorkStation> CurWorkstation = new ObservableProperty<IWorkStation>();
     public int NavMeshPriority;
@@ -38,9 +46,23 @@ public class WorkerRuntimeData : CharaterRuntimeData
 
     public ObservableProperty<bool> IsPlayerTriggered = new();
 
+    private WaitForSeconds _saveDelay = new WaitForSeconds(60f);
+
     private void Awake()
     {
         _workerController = GetComponent<WorkerController>();
+        _workerPresenter = GetComponent<WorkerPresenter>();
+    }
+
+    private IEnumerator SavePositionCoroutine()
+    {
+        while (true)
+        {
+            _data.PositionX.Value = transform.position.x;
+            _data.PositionZ.Value = transform.position.z;
+
+            yield return _saveDelay;
+        }
     }
 
     public void SetWorkerManager(WorkerManager manager)
@@ -51,6 +73,13 @@ public class WorkerRuntimeData : CharaterRuntimeData
     public void SetWorkerData(WorkerData data)
     {
         _data = data;
+        StartCoroutine(SavePositionCoroutine());
+
+        if(data.Rank == 4)
+        {
+            data.MoveSpeedLv.Value = 6;
+            data.MaxCapacityLv.Value = 6;
+        }
     }
 
     public void SetWorkstation(IWorkStation workstation)

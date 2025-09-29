@@ -14,17 +14,10 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public BuildingSeller buildingSeller;
     public WorkerManageBuilding workerBuilding;
-
-    // 건물id(string)에 해당하는 업그레이드 정보를 저장
-    public Dictionary<string, UpgradeData> upgradeDataDic = new();
-
-    // 스테이지id(string) 별, 건물들의 배치 정보를 저장
-    //Dictionary<string, Dictionary<Vector3Int, BiPlacementData>> biPlacementDataDic = new();
-
     public UnityAction<int> upgradeEvent;
 
     // 건물 구매 시, 건축모드 On / 설치 시, 건축모드 Off
-    public Action<bool> BuildModEvent;
+    public Action<bool, string> BuildModEvent;
 
     private void Awake() => Init();
     void Init()
@@ -90,10 +83,10 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public void UpdateUpgradedData(string buildingId, int statProdTimeAdd, int statCapacityAdd = 0)
     {
-        upgradeDataDic[buildingId].Upgrade(statProdTimeAdd, statCapacityAdd);
+        UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingId);
+        upgradeData.Upgrade(statProdTimeAdd, statCapacityAdd);
     }
 
-    UpgradeData temp_UpgradeData;
 
     public UpgradeData GetUpgradeData(string buildingId)
     {
@@ -101,26 +94,13 @@ public class BuildingManager : Singleton<BuildingManager>
         UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(buildingId);
         if (upgradeData == null)
         {
-            Manager.firebase.UserData.BuildingUpgradeList.OnAdded.AddListener(UpgradeDataAddEvent);
             Manager.firebase.UserData.BuildingUpgradeList.Add(buildingId);
-
-            upgradeDataDic.TryAdd(buildingId, temp_UpgradeData);
-            return temp_UpgradeData;
+            return null;
         }
         else
         {
-            upgradeDataDic.TryAdd(buildingId, upgradeData);
             return upgradeData;
         }
-    }
-
-
-    private void UpgradeDataAddEvent(UpgradeData upgradeData)
-    {
-        Debug.Log("리스트의 값이 변화해도 이벤트가 실행되나?");
-        
-        temp_UpgradeData = upgradeData;
-        Manager.firebase.UserData.BuildingUpgradeList.OnAdded.RemoveListener(UpgradeDataAddEvent);
     }
 }
 

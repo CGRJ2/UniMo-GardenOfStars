@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.UIElements;
 
 public class StageManager : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class StageManager : MonoBehaviour
     }
 
     public string finalProdID => GetFinalProdID();
+
 
     private void Awake()
     {
@@ -56,7 +59,6 @@ public class StageManager : MonoBehaviour
         Manager.quest.CurStageQuestDataInit();
 
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
-        //yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count > 0);
         Debug.LogWarning("QuestList Inited");
 
         Init();
@@ -99,10 +101,10 @@ public class StageManager : MonoBehaviour
 
         // 현재 스테이지의 Npc에서, 진행중인 퀘스트 ID 등록
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        //foreach (var value in npc.QuestList.List)
-
+        
         bool allQuestCleared = true;
-        for (int i = 0; i < npc.QuestList.List.Count; i ++)
+
+        for (int i = 0; i < npc.QuestList.List.Count; i++)
         {
             //if (Manager.data.Quest.Values[value.QuestId].)
             var value = npc.QuestList.List[i];
@@ -117,13 +119,49 @@ public class StageManager : MonoBehaviour
         }
 
         // 전부 다 클리어 된 상태일 때 => 마지막 퀘스트만 넣어주기
-        if (allQuestCleared) 
+        if (allQuestCleared)
         {
             npc.CurrentQuestID.Value = npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId;
             Debug.LogWarning($"현재 스테이지 내의 모든 퀘스트를 완료하여 마지막 퀘스트ID가 설정됨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
         }
 
+        // 플레이어로 카메라 맞춰주기
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
+
+        // 스테이지 ExitTime 체크
+        _StageID = Manager.firebase.UserData.CurStage.Value;
+
+        // 오프라인 보상 팝업 여부
+        if (_StageID == "Tutorial") return;
+        var questList = npc.QuestList.List;
+        // 마지막 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
+        if (questList[questList.Count - 1].State == GameQuest.QuestState.Completed)
+        {
+            double diffTime = GetStageAutoEarnTime(_StageID);
+            if (diffTime > _AutoRewardMinTime)
+            {
+                //Debug.LogError("보상 팝업 열기");
+                // 보상 팝업 열기
+                Manager.ui.ShowPopUpAsync<OfflineRewardPopup>((popup) =>
+                {
+                    // 보상 팝업 닫힐 때 기본 보상 지급 & 시간 체크 루틴 실행
+                    StartCoroutine(OfflineRewardInitAfterPopupClose(popup.gameObject));
+                });
+            }
+            else
+            {
+                //Debug.LogError("보상 팝업 안열고 그냥 진행");
+                // 보상 팝업 없이 바로 시간 체크 루틴 실행
+                OfflineRewardInited();
+            }
+        }
+    }
+
+    IEnumerator OfflineRewardInitAfterPopupClose(GameObject obj)
+    {
+        yield return new WaitUntil(() => obj == null);
+        Manager.firebase.UserData.Player.Money.Value += GetTotalAutoReward();
+        OfflineRewardInited();
     }
 
     // 스테이지 별로 최종 생산물 설정
@@ -145,4 +183,119 @@ public class StageManager : MonoBehaviour
         }
         return finalProdID;
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            CheckStageExitTime(Manager.firebase.UserData.CurStage.Value);
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            GetTotalAutoReward(Manager.firebase.UserData.CurStage.Value);
+        }
+    }
+
+    #region 오프라인 보상
+
+    // 클리어된 스테이지 한정
+    // 최대 누적 2시간 => 최대보상
+    // 현재 스테이지에 쌓인 재화 반환
+    string _StageID;
+    float _AutoRewardMinTime = 10f;     // 최소 보상 시간
+    float _AutoRewardMaxTime = 7200f;   // 최대 보상 시간
+    bool _AutoRewardInited = false;
+
+    public void CheckStageExitTime(string targetStageID = null)
+    {
+        string _stageID;
+        if (targetStageID == null)
+            _stageID = _StageID;
+        else
+            _stageID = targetStageID;
+
+        var stageData = Manager.firebase.UserData.CurStageData;
+
+        // 현재 시간 저장
+        Manager.firebase.UserData.StageList.Get(_stageID).StageLastExitTime.SaveCurTime();
+    }
+
+    public double GetStageAutoEarnTime(string targetStageID = null)
+    {
+        string _stageID;
+        if (targetStageID == null)
+            _stageID = _StageID;
+        else
+            _stageID = targetStageID;
+
+        var stageData = Manager.firebase.UserData.CurStageData;
+        long t = Manager.firebase.UserData.StageList.Get(_stageID).StageLastExitTime.Value;
+
+        DateTime lastClaimUtc = DateTimeOffset.FromUnixTimeMilliseconds(t).UtcDateTime;
+
+        DateTime lastClaimKst = lastClaimUtc.AddHours(9);
+        DateTime nowKst = DateTime.UtcNow.AddHours(9);
+
+        TimeSpan diff = nowKst - lastClaimKst;
+
+        // 초 단위로 변환
+        double seconds = diff.TotalSeconds;
+        return seconds;
+    }
+
+    public int GetTotalAutoReward(string targetStageID = null)
+    {
+        string _stageID;
+        if (targetStageID == null)
+             _stageID = _StageID;
+        else
+            _stageID = targetStageID;
+
+        int fullReward = Manager.data.Stage.Values[_stageID].StageAutoReward;
+
+        float rewardPercent = Mathf.Clamp01((int)GetStageAutoEarnTime(_stageID) / _AutoRewardMaxTime);    // 최대보상 => 2시간
+
+        int finalReward = (int)(fullReward * rewardPercent) * 100;
+
+        //Debug.LogWarning($"방치 시간:{GetStageAutoEarnTime(_stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
+
+        return finalReward;
+    }
+    
+
+    private IEnumerator ExitTimeCheckRoutine()
+    {
+        while (true)
+        {
+            Debug.LogWarning("현재 시간 저장");
+            CheckStageExitTime(_StageID);
+            yield return new WaitForSeconds(_AutoRewardMinTime / 2f);
+        }
+    }
+
+    public void OfflineRewardInited()
+    {
+        _AutoRewardInited = true;
+        StartCoroutine(ExitTimeCheckRoutine());
+    }
+
+    #endregion
+    private void OnDestroy()
+    {
+        if (_AutoRewardInited)
+            CheckStageExitTime(_StageID);
+    }
 }
+
+public class StageExitTimeData : FirebaseData
+{
+    public FirebaseProperty<long> LastTime;
+
+    public StageExitTimeData(string id, string parentPath) : base(id, parentPath)
+    {
+        LastTime = new FirebaseProperty<long>("LastExitTime", Path);
+        InitList.Add(LastTime);
+    }
+}
+

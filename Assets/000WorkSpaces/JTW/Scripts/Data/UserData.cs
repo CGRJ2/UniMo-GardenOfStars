@@ -18,9 +18,12 @@ public partial class UserData : FirebaseData
 
     public FirebaseProperty<bool> AdRemoved; // 광고제거 상품 구매 여부
 
+    public FirebaseDataList<DailyAdData> DailyAdList;
+
+
     public StageData CurStageData => StageList.Get(CurStage.Value);
 
-
+    public SkinData Skin;
 
     public UserData(string id, string parentPath = null) : base(id, parentPath)
     {
@@ -45,7 +48,16 @@ public partial class UserData : FirebaseData
         AdRemoved = new FirebaseProperty<bool>("AdRemoved", Path);
         InitList.Add(AdRemoved);
 
+        DailyAdList = new FirebaseDataList<DailyAdData>("DailyAdList", Path, (id, parentPath) =>
+        {
+            return new DailyAdData(id, parentPath);
+        });
+        InitList.Add(DailyAdList);
+
         TutorialSequence = new FirebaseProperty<int>("TutorialSequence", Path);
         InitList.Add(TutorialSequence);
+
+        Skin = new SkinData("Skin", Path);
+        InitList.Add(Skin);
     }
 }

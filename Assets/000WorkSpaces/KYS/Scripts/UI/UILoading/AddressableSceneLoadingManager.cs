@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.SceneManagement;
 
 namespace KYS
 {
@@ -306,12 +304,6 @@ namespace KYS
             Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
         }
 
-        [ContextMenu("TutorialPopUpAfterActionClose2")]
-        public  void Temp_TutorialPopUpTest2()
-        {
-            
-             Manager.dialogue.ShowTutorialPopUp("npc001_quest0001", TutorialPopUp_Old.TutorialPositionType.Top);
-        }
 
 
         [ContextMenu("ShowHUDUI 활용 기본 UI 활성화")]
@@ -410,7 +402,7 @@ namespace KYS
         public void OnDialogueUpgradeButtonTest()
         {
             // DialoguePanel의 UpgradeButton 테스트용 메서드
-            Manager.dialogue.StartDialogueWithPanel("","","Test_upgrade");
+            Manager.dialogue.StartDialogueWithPanel("", "", "Test_upgrade");
         }
         [ContextMenu("ShowDialogue Test_upgrade_choice_1")]
         public void OnDialogueUpgradeChoice1Test()
@@ -419,5 +411,62 @@ namespace KYS
             Manager.dialogue.StartDialogueWithPanel("", "", "Test_upgrade_choice_1");
         }
 
+        [ContextMenu("PropertyPanelCheck")]
+        private void PropertyPanelCheck()
+        {
+            Manager.ui.ShowPanelAsync<PropertyPanel>();
+        }
+
+        [ContextMenu("HRRoomPanelCheck")]
+        private void HRRoomPanelCheck()
+        {
+            Manager.ui.ShowPanelAsync<HRRoomPanel>();
+
+        }
+
+        [ContextMenu("PlayerUpgradeContentCheck")]
+        private void PlayerUpgradeContentCheck()
+        {
+            Manager.ui.ShowPanelAsync<PlayerUpgradePanel>();
+        }
+
+        [ContextMenu("MoneyAdd")]
+        private void MoneyAdd()
+        {
+            Manager.player.Data.Money.Value += 100000;
+        }
+
+        [ContextMenu("현재 퀘스트 인덱스 확인")]
+        private void CheckCurrentQuestIndex()
+        {
+            if (Manager.firebase?.UserData?.CurStageData?.Npc?.CurQuestData != null)
+            {
+                string currentQuestId = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.Id;
+                int questIndex = ExtractQuestNumber(currentQuestId);
+                
+                Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 ID: {currentQuestId}");
+                Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 인덱스: {questIndex}");
+                
+                // 스테이지 정보도 함께 출력
+                if (Manager.firebase.UserData.CurStageData != null)
+                {
+                    Debug.Log($"[AddressableSceneLoadingManager] 현재 스테이지: {Manager.firebase.UserData.CurStageData.Id}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 현재 퀘스트 데이터를 찾을 수 없습니다.");
+            }
+        }
+
+        // 퀘스트 ID에서 숫자 추출하는 헬퍼 메서드
+        private int ExtractQuestNumber(string questId)
+        {
+            if (string.IsNullOrEmpty(questId))
+                return 0;
+                
+            string numberPart = questId.Replace("quest", "").TrimStart('0');
+            return int.TryParse(numberPart, out int number) ? number : 0;
+        }
     }
 }

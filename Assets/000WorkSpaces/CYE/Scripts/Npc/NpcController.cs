@@ -1,17 +1,20 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameNpc
 {
     public class NpcController : MonoBehaviour
     {
         [SerializeField] Transform requireTilesParent;
+        [SerializeField] Transform view;
+        public Transform view_Dissolve;
         QuestRequireTile[] requireTiles;
+        [SerializeField] Mesh[] npcMeshList;
 
         [SerializeField] private Transform _focusPopUpCanvas;
-        private TMP_Text _focusPopUpText;
-
         void Awake()
         {
             // 타이틀씬에서 시작 시
@@ -55,18 +58,43 @@ namespace GameNpc
         private void Init()
         {
             requireTiles = requireTilesParent.GetComponentsInChildren<QuestRequireTile>(true);
-            _focusPopUpText = _focusPopUpCanvas.GetComponentInChildren<TMP_Text>(true);
 
             if (Manager.firebase.UserData.CurStage.Value != "Tutorial")
             {
-                UpdateQuestData();
+                var npc = Manager.firebase.UserData.CurStageData.Npc;
+
+                // 첫 대화 진행된 경우 바로 퀘스트 발판 보여주기
+                if (npc.IsTalked.Value)
+                {
+                    UpdateQuestData();
+                }
+
+                // 스테이지ID에 맞는 NPC ID의 메쉬와 재질로 설정해주기
+                string stageID = Manager.firebase.UserData.CurStage.Value;
+                string numberPart = Regex.Match(stageID, @"\d+").Value; // "01"
+                int stageNumber = int.Parse(numberPart);
+                view.GetComponent<MeshFilter>().mesh = npcMeshList[stageNumber - 1];
+                view_Dissolve.gameObject.SetActive(false);
             }
             else
             {
-                TutorialManager.Instance.tutorialNPC = this;
+                // 튜토리얼 퀘스트가 진행중인 시퀀스 01, 05, 08에는 퀘스트 발판 바로 띄우기
+                if (Manager.firebase.UserData.TutorialSequence.Value == 1 ||
+                    Manager.firebase.UserData.TutorialSequence.Value == 5 ||
+                    Manager.firebase.UserData.TutorialSequence.Value == 8) UpdateQuestData();
 
-                // 튜토리얼 진행도가 1 이상으로 저장되어있는 경우엔 퀘스트 발판 바로 띄우기
-                if (Manager.firebase.UserData.TutorialSequence.Value > 1) UpdateQuestData();
+                // 석상 깨어난 상태 => 우주 재질
+                if (Manager.firebase.UserData.TutorialSequence.Value >= 9)
+                {
+                    view_Dissolve.gameObject.SetActive(false);
+                }
+                // 깨어나지 않은 상태 => 돌 재질
+                else
+                {
+                    view_Dissolve.gameObject.SetActive(true);
+                }
+
+                TutorialManager.Instance.tutorialNPC = this;
             }
 
             Manager.npc.CurStageNpc.CurrentQuestID.Subscribe(UpdateQuestData);
@@ -105,27 +133,6 @@ namespace GameNpc
         public void ShowQuestTiles()
         {
             requireTilesParent.gameObject.SetActive(true);
-        }
-
-        /*public void Talk()
-        {
-            //Debug.Log($"[NpcContoller] {nameof(Talk)} Call");
-            // Dialogue 실행
-            Manager.dialogue.StartDialogueWithPanel("npc001", "stage_01", "npc001_start");
-        }*/
-
-        public void Focus()
-        {
-            int randomTextLineIndex = NpcUtil.GetRandomIndex(Manager.npc.CurStageNpc.TextLines_KR.Count);
-            string randomTextLine = Manager.npc.CurStageNpc.TextLines_KR[randomTextLineIndex];
-            _focusPopUpText.text = randomTextLine;
-
-            _focusPopUpCanvas.gameObject.SetActive(true);
-        }
-        public void FocusOut()
-        { 
-            _focusPopUpText.text = "";
-            _focusPopUpCanvas.gameObject.SetActive(false);
         }
     }
 }

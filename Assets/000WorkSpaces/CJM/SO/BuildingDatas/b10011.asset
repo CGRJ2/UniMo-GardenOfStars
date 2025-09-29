@@ -13,22 +13,33 @@ MonoBehaviour:
   m_Name: b10011
   m_EditorClassIdentifier: Assembly-CSharp::HarvestBD
   <ID>k__BackingField: b10011
-  <Name>k__BackingField: "\uCD08\uB85D\uBCC4\uAF43 \uC7AC\uBC30\uAE30"
+  <Name>k__BackingField: "\uBCC4\uAF43 \uC7AC\uBC30\uAE30"
   <Description>k__BackingField: "$\uBCC4\uAF43\uC744 \uC7AC\uBC30\uD558\uB294 \uAE30\uACC4\uC785\uB2C8\uB2E4.
     \uC801\uC808\uD55C \uC2B5\uB3C4, \uC628\uB3C4, \uBE5B\uC774 \uAC16\uCDB0\uC9C4
     \uD658\uACBD\uC744 \uC81C\uACF5\uD569\uB2C8\uB2E4. \uC798\uD558\uBA74 \uB354
     \uC88B\uC740 \uC528\uC557\uC744 \uC5BB\uC744 \uC218 \uC788\uC744\uAC81\uB2C8\uB2E4.$"
-  <Prefab>k__BackingField: {fileID: 2093617931379704920, guid: 6ac2d25af39395c4189b3e3f2304ae98, type: 3}
-  <Cost>k__BackingField: 0
+  <Cost>k__BackingField: 1000
   <ProductID>k__BackingField: it10011
   <Stat_ProdTime>k__BackingField:
-    <MaxLevel>k__BackingField: 3
+    <MaxLevel>k__BackingField: 9
     <Values>k__BackingField:
+    - 20
+    - 17
+    - 14
+    - 12
+    - 10
+    - 8
     - 6
-    - 2
-    - 1
-    - 0.5
+    - 5
+    - 4
+    - 3
     <cost>k__BackingField:
-    - 100
     - 200
-    - 300
+    - 500
+    - 1000
+    - 2000
+    - 5000
+    - 10000
+    - 25000
+    - 50000
+    - 100000

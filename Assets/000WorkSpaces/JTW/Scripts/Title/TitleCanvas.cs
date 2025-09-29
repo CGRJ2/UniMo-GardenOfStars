@@ -17,13 +17,13 @@ public class TitleCanvas : KYS.BaseUI
 
     private void OnEnable()
     {
-        GetEvent("Panel").Click += OnClick;
+        GetEvent("TitlePanel").Click += OnClick;
         Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
     }
 
     private void OnDisable()
     {
-        GetEvent("Panel").Click -= OnClick;
+        GetEvent("TitlePanel").Click -= OnClick;
         Manager.firebase.UserData.StageList.OnAdded.RemoveListener(GoTutorialScene);
     }
 
@@ -36,10 +36,12 @@ public class TitleCanvas : KYS.BaseUI
         }
 
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(2);
     }
 
     private void GoTutorialScene(StageData data)
     {
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(2);
     }
 }

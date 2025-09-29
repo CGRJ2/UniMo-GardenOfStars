@@ -4,14 +4,14 @@ using UnityEngine;
 public class PlayerData : FirebaseData
 {
     private Dictionary<string, CharacterLvDataCsv> LvCsv => Manager.data.CharacterLv.Values;
-    private PlayerDataCsv PlayerCsv => Manager.data.Player.Values["10501_F"];
+    private PlayerDataCsv PlayerCsv => Manager.data.Player.Values["201"];
 
     public float MoveSpeed => LvCsv[(MoveSpeedLv.Value + 2).ToString()].Speed;
     public FirebaseProperty<int> MoveSpeedLv;
     public int MoveSpeedMaxLv => PlayerCsv.MaxSpeedMaxLv;
     public bool IsMoveSpeedMaxLv => MoveSpeedLv.Value >= MoveSpeedMaxLv;
 
-    public int MaxCapacity => LvCsv[(MaxCapacityLv.Value).ToString()].Capacity;
+    public int MaxCapacity => LvCsv[(MaxCapacityLv.Value + 2).ToString()].Capacity;
     public FirebaseProperty<int> MaxCapacityLv;
     public int MaxCapacityMaxLv => PlayerCsv.MaxCapacityMaxLv;
     public bool IsMaxCapacityMaxLv => MaxCapacityLv.Value >= MaxCapacityMaxLv;
@@ -26,6 +26,9 @@ public class PlayerData : FirebaseData
     public FirebaseProperty<int> Money;
     public FirebaseProperty<int> Gem;
 
+    public FirebaseProperty<string> CharacterSkinId;
+    public FirebaseProperty<string> EquipSkinId;
+
     public PlayerData(string id, string parentPath) : base(id, parentPath)
     {
         MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
@@ -38,11 +41,16 @@ public class PlayerData : FirebaseData
 
         Gem = new FirebaseProperty<int>("Gem", Path, 0);
 
+        CharacterSkinId = new FirebaseProperty<string>("CharacterSkinId", Path, "101");
+        EquipSkinId = new FirebaseProperty<string>("EquipSkinId", Path, "201");
+
         InitList.Add(MoveSpeedLv);
         InitList.Add(MaxCapacityLv);
         InitList.Add(NegoLv);
         InitList.Add(Money);
         InitList.Add(Gem);
+        InitList.Add(CharacterSkinId);
+        InitList.Add(EquipSkinId);
     }
 
     public void UpgradeMoveSpeed()

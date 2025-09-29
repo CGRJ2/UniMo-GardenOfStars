@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -6,8 +7,39 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public partial class DataManager : Singleton<DataManager>
 {
+    public bool IsDataInit
+    {
+        get
+        {
+            return Worker != null && Worker.IsInit
+                && CharacterLv != null && CharacterLv.IsInit
+                && Dialogue != null && Dialogue.IsInit
+                && BuildingLocalization != null && BuildingLocalization.IsInit
+                && IngrediantLocalization != null && IngrediantLocalization.IsInit
+                && Npc != null && Npc.IsInit
+                && Quest != null && Quest.IsInit
+                && QuestContent != null && QuestContent.IsInit
+                && WorkerUpgradeCost != null && WorkerUpgradeCost.IsInit
+                && WorkerEmployCost != null && WorkerEmployCost.IsInit
+                && Stage != null && Stage.IsInit
+                && Character != null && Character.IsInit
+                && PlayerUpgradeCost != null && PlayerUpgradeCost.IsInit
+                && Player != null && Player.IsInit
+                && UpgradeMulti != null && UpgradeMulti.IsInit
+                && Buy != null && Buy.IsInit
+                && CharacterSkin != null && CharacterSkin.IsInit
+                && EquipSkin != null && EquipSkin.IsInit;
+        }
+    }
+
     private void Awake()
     {
+        StartCoroutine(WaitInit());
+    }
+
+    IEnumerator WaitInit()
+    {
+        yield return new WaitUntil(() => Manager.game.initialized);
         Init();
     }
 
@@ -18,7 +50,7 @@ public partial class DataManager : Singleton<DataManager>
         DialogueRoutine();
         BuildingLocalizationRoutine();
         IngrediantLocalizationRoutine();
-        NpcTextLinesRoutine(); // 반드시 NpcRoutine 이전에 실행되어야함.
+        //NpcTextLinesRoutine(); // 반드시 NpcRoutine 이전에 실행되어야함.
         NpcRoutine();
         QuestRoutine();
         QuestContentRoutine();
@@ -31,6 +63,9 @@ public partial class DataManager : Singleton<DataManager>
         UpgradeMultiRoutine();
         BuildingDataInitRoutine();
         IngrediantDataInitRoutine();
+        BuyRoutine();
+        CharacterSkinCsvRoutine();
+        EquipSkinCsvRoutine();
     }
 
     private async Task<string> GetDataString(bool isAdressable, string address)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WorkerUpgradePresenter : KYS.BaseUI
 {
@@ -28,6 +29,12 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         SetInfo();
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        _workerUpgradePanel.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+    }
+
 
     private void CreateWorkerPanels()
     {
@@ -41,21 +48,22 @@ public class WorkerUpgradePresenter : KYS.BaseUI
         // 워커 패널 생성
         if (_workerPanelPrefab != null && _workerUpgradePanel != null && Manager.data?.Worker?.Values != null)
         {
-            foreach (string key in Manager.data.Worker.Values.Keys.ToList())
+            foreach (var value in Manager.data.Character.Values)
             {
-                if (!Manager.data.Character.Values.ContainsKey($"{key}_{Manager.firebase.UserData.CurStage.Value}")) continue;
+                if (value.Value.StageId != Manager.firebase.UserData.CurStage.Value) continue;
 
                 WorkerPanel workerPanel = Instantiate(_workerPanelPrefab, _workerUpgradePanel.transform).GetComponent<WorkerPanel>();
                 
                 if (workerPanel != null)
                 {
                     // 워커 패널 초기화 (데이터 설정 포함)
-                    workerPanel.Init(key, this);
+                    workerPanel.Init(value.Value.Id, this);
                     _workerPanelList.Add(workerPanel);
                 }
             }
         }
-        
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_workerUpgradePanel.GetComponent<RectTransform>());
         Debug.Log($"[WorkerUpgradePresenter] {_workerPanelList.Count}개의 워커 패널 생성 완료");
     }
 
@@ -76,7 +84,7 @@ public class WorkerUpgradePresenter : KYS.BaseUI
                 continue;
             }
 
-            int questOrder = Manager.data.WorkerEmployCost.Values[$"{panel.WorkerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
+            int questOrder = Manager.data.WorkerEmployCost.Values[panel.WorkerKey].QuestOrder;
 
             if (questOrder == 0 || Manager.firebase.UserData.CurStageData.Npc.QuestList.List[questOrder - 1].QuestState.Value == 3)
             {

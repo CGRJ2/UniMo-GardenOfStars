@@ -42,7 +42,7 @@ public partial class DataManager
     private const string _npcTextLinesaddress = "CYE/SampleNpcTextLinesData";
 
     public DataTableParser<NpcDataCsv> Npc;
-    public DataTableParser<NpcTextLineDataCsv> NpcTextLines;
+    //public DataTableParser<NpcTextLineDataCsv> NpcTextLines;
 
     public async void NpcRoutine()
     {
@@ -76,7 +76,7 @@ public partial class DataManager
             Npc.Load(rawData);
         }
     }
-    public async void NpcTextLinesRoutine()
+    /*public async void NpcTextLinesRoutine()
     {
         string rawData = await GetDataString(_isNpcTextLinesAdressable, _isNpcTextLinesAdressable ? _npcTextLinesaddress : _npcTextLinesDataTableURL);
         if (rawData != null)
@@ -95,5 +95,5 @@ public partial class DataManager
 
             NpcTextLines.Load(rawData);
         }
-    }
+    }*/
 }
