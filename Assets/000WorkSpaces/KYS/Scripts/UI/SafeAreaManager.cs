@@ -188,10 +188,11 @@ namespace KYS
         {
             if (!enableSafeArea || canvas == null) return;
             
-            // LoadingCanvas는 SafeArea 적용 제외
-            if (canvas.name.Contains("LoadingCanvas") || canvas.name.Contains("Loading"))
+            // LoadingCanvas와 PopupCanvas는 SafeArea 적용 제외
+            if (canvas.name.Contains("LoadingCanvas") || canvas.name.Contains("Loading") || 
+                canvas.name.Contains("PopupCanvas") || canvas.name.Contains("Popup"))
             {
-                ////Debug.Log($"[SafeAreaManager] LoadingCanvas '{canvas.name}'는 SafeArea 적용 제외");
+                ////Debug.Log($"[SafeAreaManager] Canvas '{canvas.name}'는 SafeArea 적용 제외");
                 return;
             }
             

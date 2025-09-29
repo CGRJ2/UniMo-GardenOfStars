@@ -755,8 +755,8 @@ namespace KYS
                     break;
             }
 
-            // LoadingCanvas는 SafeAreaPanel 사용하지 않음
-            if (layerType == UILayerType.Loading)
+            // LoadingCanvas와 PopupCanvas는 SafeAreaPanel 사용하지 않음
+            if (layerType == UILayerType.Loading || layerType == UILayerType.Popup)
             {
                 return targetTransform;
             }
