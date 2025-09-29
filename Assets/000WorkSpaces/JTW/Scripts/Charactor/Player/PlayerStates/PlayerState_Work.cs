@@ -16,7 +16,7 @@ public class PlayerState_Work : PlayerStateBase
     {
         if (PlayerData.CurWorkStation is WorkArea_SwitchType workArea)
         {
-            Vector3 aimDir = workArea.ownerInstance.transform.position - _view.Avatar.position;
+            Vector3 aimDir = workArea.ownerInstance.viewPoint.position - _view.Avatar.position;
             aimDir = aimDir.normalized;
 
             _target = Quaternion.LookRotation(aimDir, Vector3.up);

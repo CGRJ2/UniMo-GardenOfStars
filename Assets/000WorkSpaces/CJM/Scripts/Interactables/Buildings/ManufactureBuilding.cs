@@ -5,6 +5,9 @@ using UnityEngine;
 public class ManufactureBuilding : BuildingInstance
 {
     [HideInInspector] public ManufactureBD originData;
+    [Header("일꾼이 바라볼 위치")]
+    [SerializeField] private Transform _viewPoint;
+    public Transform viewPoint { get => _viewPoint ?? transform; }
 
     [Header("재료를 쌓아놓을 위치")]
     public Transform attachPoint;

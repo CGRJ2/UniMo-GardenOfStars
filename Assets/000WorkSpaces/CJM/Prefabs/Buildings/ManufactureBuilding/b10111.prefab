@@ -105,7 +105,7 @@ MonoBehaviour:
   target: {fileID: 3811945880089545882}
   uiRect: {fileID: 6721887653688056088}
   canvas: {fileID: 2844547572582769167}
-  screenSpaceOffset: {x: 0, y: 0}
+  screenSpaceOffset: {x: 0, y: 200}
   worldSpaceOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &1402240264637728772
 GameObject:
@@ -253,6 +253,7 @@ MonoBehaviour:
   _OriginData: {fileID: 11400000, guid: a557bcb6796361e44828106a59d2f112, type: 2}
   activatePopUI: {fileID: 2590880520364389071}
   originData: {fileID: 0}
+  _viewPoint: {fileID: 7978592170222945744}
   attachPoint: {fileID: 7082444020060812515}
   insertDelayTime: 0.2
   progressedTime: 0
@@ -1353,6 +1354,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 3811945880089545882}
+    - target: {fileID: 3445743793712119710, guid: 1bf3b13df37a9c74bbe3854859e49095, type: 3}
+      propertyPath: screenSpaceOffset.y
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 3582767478295361198, guid: 1bf3b13df37a9c74bbe3854859e49095, type: 3}
       propertyPath: m_Pivot.x
       value: 0

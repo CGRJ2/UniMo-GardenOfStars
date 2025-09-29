@@ -105,6 +105,8 @@ public class QuestManager : Singleton<QuestManager>
                 Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd;
                 Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
 
+                // Manager.dialogue.StartDialogueWithPanel(npcId.Value, Manager.firebase.UserData.CurStage.Value, $"{npcId.Value}_{curQuestId.Value}");
+                
                 TutorialManager.Instance.tutorialNPC.HideQuestTiles();
 
                 if (Manager.firebase.UserData.TutorialSequence.Value == 8) 
