@@ -11,24 +11,24 @@ public partial class DataManager : Singleton<DataManager>
     {
         get
         {
-            return Worker.IsInit
-                && CharacterLv.IsInit
-                && Dialogue.IsInit
-                && BuildingLocalization.IsInit
-                && IngrediantLocalization.IsInit
-                && Npc.IsInit
-                && Quest.IsInit
-                && QuestContent.IsInit
-                && WorkerUpgradeCost.IsInit
-                && WorkerEmployCost.IsInit
-                && Stage.IsInit
-                && Character.IsInit
-                && PlayerUpgradeCost.IsInit
-                && Player.IsInit
-                && UpgradeMulti.IsInit
-                && Buy.IsInit
-                && CharacterSkin.IsInit
-                && EquipSkin.IsInit;
+            return Worker != null && Worker.IsInit
+                && CharacterLv != null && CharacterLv.IsInit
+                && Dialogue != null && Dialogue.IsInit
+                && BuildingLocalization != null && BuildingLocalization.IsInit
+                && IngrediantLocalization != null && IngrediantLocalization.IsInit
+                && Npc != null && Npc.IsInit
+                && Quest != null && Quest.IsInit
+                && QuestContent != null && QuestContent.IsInit
+                && WorkerUpgradeCost != null && WorkerUpgradeCost.IsInit
+                && WorkerEmployCost != null && WorkerEmployCost.IsInit
+                && Stage != null && Stage.IsInit
+                && Character != null && Character.IsInit
+                && PlayerUpgradeCost != null && PlayerUpgradeCost.IsInit
+                && Player != null && Player.IsInit
+                && UpgradeMulti != null && UpgradeMulti.IsInit
+                && Buy != null && Buy.IsInit
+                && CharacterSkin != null && CharacterSkin.IsInit
+                && EquipSkin != null && EquipSkin.IsInit;
         }
     }
 

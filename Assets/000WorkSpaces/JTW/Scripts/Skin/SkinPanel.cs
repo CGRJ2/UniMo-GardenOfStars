@@ -12,7 +12,7 @@ public class SkinPanel : MonoBehaviour
 
     private List<SkinButton> _buttonList = new List<SkinButton>();
 
-    private void Awake()
+    private void Start()
     {
         Dictionary<string, SkinDataCsv> dict;
 
@@ -35,8 +35,9 @@ public class SkinPanel : MonoBehaviour
 
             _buttonList.Add(button);
         }
-
         LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
+        LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
+        transform.parent.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
     }
 
     public void SetButtonsInfo()

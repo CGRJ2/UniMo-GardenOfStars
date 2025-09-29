@@ -24,6 +24,7 @@ public class BuyPanel : MonoBehaviour
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(_itemPanel.GetComponent<RectTransform>());
         LayoutRebuilder.ForceRebuildLayoutImmediate(_contentPanel.GetComponent<RectTransform>());
+        _contentPanel.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
         LayoutRebuilder.ForceRebuildLayoutImmediate(_shopPanel.GetComponent<RectTransform>());
     }
 }

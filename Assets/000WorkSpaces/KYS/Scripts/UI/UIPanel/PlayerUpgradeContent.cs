@@ -101,7 +101,7 @@ namespace KYS
                     }
                     else
                     {
-                        _upgradeStat = characterLvDict[(playerData.MaxCapacityLv.Value + 1).ToString()].Capacity;
+                        _upgradeStat = characterLvDict[(playerData.MaxCapacityLv.Value + 3).ToString()].Capacity;
                     }
 
                     _targerLv = playerData.MaxCapacityLv;
