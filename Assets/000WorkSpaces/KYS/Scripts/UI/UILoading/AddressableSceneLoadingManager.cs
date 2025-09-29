@@ -21,254 +21,7 @@ namespace KYS
         }
 
 
-        [ContextMenu("UIMnagerLoadingScreen Method 실행2")]
-        public async Task UIManagerLoadingScreen2()
-        {
-            string[] keys = { "loading_text", "loading_data", "loading_wait", "loading_almost_done" };
-            string[] fallbacks = { "초기화 중...", "데이터 로딩 중...", "리소스 준비 중...", "완료!" };
-            float[] progressValues = { 0.25f, 0.5f, 0.75f, 1.0f };
-            int[] delays = { 1000, 1500, 1000, 500 }; // 각 단계별 지연 시간 (밀리초)
-
-            // 완전체 메서드 사용 - 자동으로 HideLoadingScreen() 포함
-            await UIManager.Instance.ExecuteStepLoadingByKeysAsync(
-                keys,
-                fallbacks,
-                progressValues,
-                delays,
-                animationDuration: 0.8f, // 애니메이션 지속시간
-                autoHide: true, // 자동 숨기기 활성화
-                completionKey: "loading_complete", // 완료 메시지 키 (선택사항)
-                completionFallback: "로딩 완료!" // 완료 메시지 폴백
-            );
-        }
-
-        [ContextMenu("완전체 메서드 테스트")]
-        public async Task CompleteMethodTest()
-        {
-            string[] keys = { "loading_text", "loading_data", "loading_wait", "loading_almost_done" };
-            string[] fallbacks = { "초기화 중...", "데이터 로딩 중...", "리소스 준비 중...", "완료!" };
-            float[] progressValues = { 0.25f, 0.5f, 0.75f, 1.0f };
-            int[] delays = { 1000, 1500, 1000, 500 };
-
-            // 완전체 메서드 사용 - 모든 기능 포함
-            await UIManager.Instance.ExecuteStepLoadingByKeysAsync(
-                keys,
-                fallbacks,
-                progressValues,
-                delays,
-                animationDuration: 1.0f, // 긴 애니메이션
-                autoHide: true, // 자동 숨기기
-                completionKey: "loading_complete", // 완료 메시지
-                completionFallback: "모든 준비가 완료되었습니다!"
-            );
-        }
-
-        [ContextMenu("수동 숨기기 테스트")]
-        public async Task ManualHideTest()
-        {
-            string[] keys = { "loading_text", "loading_data", "loading_wait" };
-            string[] fallbacks = { "초기화 중...", "데이터 로딩 중...", "리소스 준비 중..." };
-            float[] progressValues = { 0.33f, 0.66f, 0.99f };
-            int[] delays = { 800, 1200, 800 };
-
-            // 자동 숨기기 비활성화
-            await UIManager.Instance.ExecuteStepLoadingByKeysAsync(
-                keys,
-                fallbacks,
-                progressValues,
-                delays,
-                animationDuration: 0.6f,
-                autoHide: false // 수동으로 숨기기
-            );
-
-            // 수동으로 추가 작업 후 숨기기
-            await System.Threading.Tasks.Task.Delay(2000);
-            UIManager.Instance.HideLoadingScreen();
-        }
-
-        [ContextMenu("빠른 애니메이션 테스트")]
-        public async Task FastAnimationTest()
-        {
-            string[] keys = { "loading_text", "loading_data", "loading_wait", "loading_almost_done" };
-            string[] fallbacks = { "초기화 중...", "데이터 로딩 중...", "리소스 준비 중...", "완료!" };
-            float[] progressValues = { 0.25f, 0.5f, 0.75f, 1.0f };
-            int[] delays = { 500, 800, 500, 300 }; // 빠른 지연 시간
-
-            // 빠른 애니메이션으로 실행
-            await UIManager.Instance.ExecuteStepLoadingByKeysAsync(
-                keys,
-                fallbacks,
-                progressValues,
-                delays,
-                animationDuration: 0.3f, // 빠른 애니메이션
-                autoHide: true,
-                completionKey: "loading_complete",
-                completionFallback: "빠른 로딩 완료!"
-            );
-        }
-
-
-
-
-        /// <summary>
-        /// 타이틀에서 인게임으로 이동하는 완전체 로딩 시스템
-        /// </summary>
-        [ContextMenu("Task 사용")]
-        public async System.Threading.Tasks.Task Temp_InGameLoadAsync()
-        {
-            // 완전체 로딩 시스템 사용 (자동 숨김 포함)
-            await LoadSceneWithCompleteLoadingAsync("StageScene",
-                LoadingLocalizationKeys.STAGE_PREPARE,
-                LoadingLocalizationKeys.STAGE_LOADING,
-                LoadingLocalizationKeys.STAGE_COMPLETE);
-        }
-
-        [ContextMenu("코루틴 사용")]
-        public void Temp_INGameLoadbyCoroutine()
-        {
-            StartCoroutine(Temp_InGameLoad());
-        }
-
-        /// <summary>
-        /// 타이틀에서 인게임으로 이동하는 완전체 로딩 시스템 (코루틴 버전)
-        /// </summary>
-
-        public IEnumerator Temp_InGameLoad()
-        {
-            // 완전체 로딩 시스템 사용 (자동 숨김 포함)
-            yield return StartCoroutine(LoadSceneWithCompleteLoading("StageScene",
-                LoadingLocalizationKeys.STAGE_PREPARE,
-                LoadingLocalizationKeys.STAGE_LOADING,
-                LoadingLocalizationKeys.STAGE_COMPLETE));
-        }
-
-        /// <summary>
-        /// 완전체 로딩 시스템으로 씬 로드 (로컬라이제이션 + 애니메이션 + 자동 숨김) - 비동기 버전
-        /// </summary>
-        /// <param name="sceneName">로드할 씬 이름</param>
-        /// <param name="prepareKey">준비 메시지 키</param>
-        /// <param name="loadingKey">로딩 메시지 키</param>
-        /// <param name="completeKey">완료 메시지 키</param>
-        public async System.Threading.Tasks.Task LoadSceneWithCompleteLoadingAsync(string sceneName, string prepareKey = "loading_prepare", string loadingKey = "loading_progress", string completeKey = "loading_complete")
-        {
-            Debug.Log($"[GameManager] 완전체 로딩 시작 (비동기): {sceneName}");
-
-            // 1단계: 준비 단계 (0.2초)
-            await Manager.ui.ExecuteStepLoadingByKeysAsync(
-                new string[] { prepareKey },
-                new string[] { "준비 중..." },
-                new float[] { 0.2f },
-                new int[] { 200 },
-                0.3f,
-                false,
-                null,
-                null
-            );
-
-            // 2단계: 씬 로드 시작
-            var loadSceneHandle = Addressables.LoadSceneAsync(sceneName);
-
-            // 3단계: 로딩 진행률 모니터링 (0.8초)
-            await Manager.ui.ExecuteStepLoadingByKeysAsync(
-                new string[] { loadingKey },
-                new string[] { "로딩 중..." },
-                new float[] { 0.8f },
-                new int[] { 800 },
-                0.4f,
-                false,
-                null,
-                null
-            );
-
-            // 4단계: 씬 로드 완료 대기
-            while (!loadSceneHandle.IsDone)
-            {
-                // 로딩 진행률을 실시간으로 업데이트
-                float progress = loadSceneHandle.PercentComplete;
-                Manager.ui.SetLoadingProgressAnimated(progress, 0.1f);
-                await System.Threading.Tasks.Task.Yield();
-            }
-
-            await loadSceneHandle.Task;
-
-            // 5단계: 완료 메시지 표시 및 자동 숨김 (0.5초)
-            await Manager.ui.ExecuteStepLoadingByKeysAsync(
-                new string[] { completeKey },
-                new string[] { "완료 중..." },
-                new float[] { 1.0f },
-                new int[] { 500 },
-                0.3f,
-                true,
-                "loading_success",
-                "로딩이 완료되었습니다!"
-            );
-
-            Debug.Log($"[GameManager] 완전체 로딩 완료 (비동기): {sceneName}");
-        }
-
-        /// <summary>
-        /// 완전체 로딩 시스템으로 씬 로드 (로컬라이제이션 + 애니메이션 + 자동 숨김) - 코루틴 버전
-        /// </summary>
-        /// <param name="sceneName">로드할 씬 이름</param>
-        /// <param name="prepareKey">준비 메시지 키</param>
-        /// <param name="loadingKey">로딩 메시지 키</param>
-        /// <param name="completeKey">완료 메시지 키</param>
-        public IEnumerator LoadSceneWithCompleteLoading(string sceneName, string prepareKey = "loading_prepare", string loadingKey = "loading_progress", string completeKey = "loading_complete")
-        {
-            Debug.Log($"[GameManager] 완전체 로딩 시작: {sceneName}");
-
-            // 1단계: 준비 단계 (0.2초)
-            yield return StartCoroutine(Manager.ui.ExecuteStepLoadingByKeys(
-                new string[] { prepareKey },
-                new string[] { "준비 중..." },
-                new float[] { 0.2f },
-                new int[] { 200 },
-                0.3f,
-                false,
-                null,
-                null
-            ));
-
-            // 2단계: 씬 로드 시작
-            var loadSceneHandle = Addressables.LoadSceneAsync(sceneName);
-
-            // 3단계: 로딩 진행률 모니터링 (0.8초)
-            yield return StartCoroutine(Manager.ui.ExecuteStepLoadingByKeys(
-                new string[] { loadingKey },
-                new string[] { "로딩 중..." },
-                new float[] { 0.8f },
-                new int[] { 800 },
-                0.4f,
-                false,
-                null,
-                null
-            ));
-
-            // 4단계: 씬 로드 완료 대기
-            while (!loadSceneHandle.IsDone)
-            {
-                // 로딩 진행률을 실시간으로 업데이트
-                float progress = loadSceneHandle.PercentComplete;
-                Manager.ui.SetLoadingProgressAnimated(progress, 0.1f);
-                yield return null;
-            }
-
-            yield return loadSceneHandle;
-
-            // 5단계: 완료 메시지 표시 및 자동 숨김 (0.5초)
-            yield return StartCoroutine(Manager.ui.ExecuteStepLoadingByKeys(
-                new string[] { completeKey },
-                new string[] { "완료 중..." },
-                new float[] { 1.0f },
-                new int[] { 500 },
-                0.3f,
-                true,
-                "loading_success",
-                "로딩이 완료되었습니다!"
-            ));
-
-            Debug.Log($"[GameManager] 완전체 로딩 완료: {sceneName}");
-        }
+    
 
 
         [ContextMenu("대화 시스템 로드 테스트 tutorial_scn001")]
@@ -468,5 +221,126 @@ namespace KYS
             string numberPart = questId.Replace("quest", "").TrimStart('0');
             return int.TryParse(numberPart, out int number) ? number : 0;
         }
+
+        #region Quest Clear Context Menu
+
+        [ContextMenu("현재 퀘스트 즉시 클리어")]
+        public void ClearCurrentQuest()
+        {
+            if (Manager.quest == null)
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] QuestManager를 찾을 수 없습니다.");
+                return;
+            }
+
+            var currentQuest = Manager.quest.CurrentQuest;
+            if (currentQuest == null)
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 현재 퀘스트가 없습니다.");
+                return;
+            }
+
+            Debug.Log($"[AddressableSceneLoadingManager] 퀘스트 '{currentQuest.Id}' 즉시 클리어!");
+            
+            // 퀘스트의 모든 Content를 클리어 상태로 설정
+            if (currentQuest.QuestContentList != null && currentQuest.QuestContentList.List != null)
+            {
+                foreach (var content in currentQuest.QuestContentList.List)
+                {
+                    try
+                    {
+                        // ProgressdIndex를 StepIndexForClearContent보다 크게 설정하여 클리어 상태로 만듦
+                        int stepIndexForClear = content.StepIndexForClearContent;
+                        // FirebaseProperty는 += 연산자로 안전하게 증가
+                        int currentValue = content.ProgressdIndex.Value;
+                        int targetValue = stepIndexForClear + 1;
+                        content.ProgressdIndex.Value = targetValue;
+                        Debug.Log($"  - Content '{content.Id}' 클리어 (Progress: {currentValue} -> {targetValue}/{stepIndexForClear})");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"  - Content '{content.Id}' 클리어 실패: {e.Message}");
+                        // 안전하게 큰 값으로 설정 (FirebaseProperty 방식)
+                        content.ProgressdIndex.Value = 10; // 999 대신 적당한 큰 값
+                        Debug.Log($"  - Content '{content.Id}' 안전 모드로 클리어 (Progress: {content.ProgressdIndex.Value})");
+                    }
+                }
+            }
+            
+            // 퀘스트 클리어 체크를 수동으로 실행
+            bool isCleared;
+            Manager.quest.CheckCurQuestCleared(out isCleared);
+            
+            if (isCleared)
+            {
+                Debug.Log("[AddressableSceneLoadingManager] 퀘스트 클리어 완료!");
+            }
+            else
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 퀘스트 클리어 체크 실패!");
+            }
+        }
+
+        [ContextMenu("모든 퀘스트 즉시 클리어")]
+        public void ClearAllQuests()
+        {
+            if (Manager.quest == null)
+            {
+                Debug.LogError("[AddressableSceneLoadingManager] QuestManager를 찾을 수 없습니다.");
+                return;
+            }
+
+            var questList = Manager.quest.CurrentQuestList;
+            if (questList == null || questList.List == null)
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 퀘스트 목록이 없습니다.");
+                return;
+            }
+
+            Debug.Log($"[AddressableSceneLoadingManager] {questList.List.Count}개 퀘스트 즉시 클리어!");
+            
+            foreach (var quest in questList.List)
+            {
+                // 퀘스트의 모든 Content를 클리어 상태로 설정
+                if (quest.QuestContentList != null && quest.QuestContentList.List != null)
+                {
+                    foreach (var content in quest.QuestContentList.List)
+                    {
+                        try
+                        {
+                            // ProgressdIndex를 StepIndexForClearContent보다 크게 설정하여 클리어 상태로 만듦
+                            int stepIndexForClear = content.StepIndexForClearContent;
+                            int targetValue = stepIndexForClear + 1;
+                            content.ProgressdIndex.Value = targetValue;
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError($"  - Content '{content.Id}' 클리어 실패: {e.Message}");
+                            // 안전하게 적당한 큰 값으로 설정
+                            content.ProgressdIndex.Value = 10;
+                        }
+                    }
+                }
+                
+                Debug.Log($"  - 퀘스트 '{quest.Id}' Content 클리어 완료");
+            }
+            
+            // 현재 퀘스트 클리어 체크를 수동으로 실행
+            bool isCleared;
+            Manager.quest.CheckCurQuestCleared(out isCleared);
+            
+            if (isCleared)
+            {
+                Debug.Log("[AddressableSceneLoadingManager] 모든 퀘스트 클리어 완료!");
+            }
+            else
+            {
+                Debug.LogWarning("[AddressableSceneLoadingManager] 퀘스트 클리어 체크 실패!");
+            }
+        }
+
+  
+
+        #endregion
     }
 }

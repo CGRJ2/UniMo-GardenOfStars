@@ -36,18 +36,10 @@ namespace KYS
         private Dictionary<string, Dictionary<SystemLanguage, string>> languageData = new();
         private SystemLanguage currentLanguage;
         
-        // 지원하는 언어 목록 (확장됨)
+        // 지원하는 언어 목록 (한국어, 영어만)
         private readonly SystemLanguage[] allSupportedLanguages = {
             SystemLanguage.Korean,
-            SystemLanguage.English,
-            SystemLanguage.Japanese,
-            SystemLanguage.Chinese,
-            SystemLanguage.French,
-            SystemLanguage.German,
-            SystemLanguage.Spanish,
-            SystemLanguage.Italian,
-            SystemLanguage.Portuguese,
-            SystemLanguage.Russian
+            SystemLanguage.English
         };
         
         // 현재 활성화된 언어 목록 (실제 번역이 있는 언어만)
@@ -453,20 +445,12 @@ namespace KYS
         }
 
         /// <summary>
-        /// 언어 지원 여부 확인 (확장)
+        /// 언어 지원 여부 확인 (한국어, 영어만)
         /// </summary>
         private bool IsLanguageSupported(SystemLanguage language)
         {
             return language == SystemLanguage.Korean ||
-                   language == SystemLanguage.English ||
-                   language == SystemLanguage.Japanese ||
-                   language == SystemLanguage.Chinese ||
-                   language == SystemLanguage.French ||
-                   language == SystemLanguage.German ||
-                   language == SystemLanguage.Spanish ||
-                   language == SystemLanguage.Italian ||
-                   language == SystemLanguage.Portuguese ||
-                   language == SystemLanguage.Russian;
+                   language == SystemLanguage.English;
         }
 
         /// <summary>
@@ -485,7 +469,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// 언어 이름 가져오기 (확장)
+        /// 언어 이름 가져오기 (한국어, 영어만)
         /// </summary>
         public string GetLanguageName(SystemLanguage language)
         {
@@ -495,22 +479,6 @@ namespace KYS
                     return "한국어";
                 case SystemLanguage.English:
                     return "English";
-                case SystemLanguage.Japanese:
-                    return "日本語";
-                case SystemLanguage.Chinese:
-                    return "中文";
-                case SystemLanguage.French:
-                    return "Français";
-                case SystemLanguage.German:
-                    return "Deutsch";
-                case SystemLanguage.Spanish:
-                    return "Español";
-                case SystemLanguage.Italian:
-                    return "Italiano";
-                case SystemLanguage.Portuguese:
-                    return "Português";
-                case SystemLanguage.Russian:
-                    return "Русский";
                 default:
                     return language.ToString();
             }
