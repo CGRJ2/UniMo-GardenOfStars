@@ -602,6 +602,7 @@ public class TutorialManager : MonoBehaviour
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();
         Manager.ui.CloseAllPopups();
+        Manager.buildings.buildingSeller.HideWaitingTile();
         overlayPanel_InfoPopUpgradeBtn.SetActive(false);
 
         PlayHighLightFX(null);
