@@ -35,7 +35,8 @@ public partial class DataManager
     [SerializeField] private bool _isNpcTextLinesAdressable = true;
 
     private const string _npcDataTableURL = "https://docs.google.com/spreadsheets/d/1MhKkfv6aIljgeisYmWOvPiUNaa8x4Ydqii7pZkyk4yk/export?format=csv";
-    private const string _npcAddress = "CYE/SampleNpcData";
+    // private const string _npcAddress = "CYE/SampleNpcData";
+    private const string _npcAddress = "CYE/NpcData";
 
     private const string _npcTextLinesDataTableURL = "https://docs.google.com/spreadsheets/d/1uLuoyuNNRqDrVu9tCOZ9Q0qMntUPH38xkJcX4Bjcu_k/export?format=csv";
     private const string _npcTextLinesaddress = "CYE/SampleNpcTextLinesData";
@@ -67,7 +68,7 @@ public partial class DataManager
                 }
                 else
                 {
-                    Debug.LogError($"[{npc.NpcID}]ÀÇ Å°:[{spritePath_Default}] ¿¡ ÇØ´çÇÏ´Â ½ºÇÁ¶óÀÌÆ® ¾øÀ½");
+                    Debug.LogError($"[{npc.NpcID}]ï¿½ï¿½ Å°:[{spritePath_Default}] ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½");
                 }
                 return npc;
             });

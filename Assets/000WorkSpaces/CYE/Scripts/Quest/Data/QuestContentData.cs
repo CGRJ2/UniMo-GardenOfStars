@@ -65,6 +65,7 @@ namespace GameQuest
             {
                 // 스텝 클리어 이벤트 실행(보상, 이펙트)
                 Debug.LogWarning("스텝 클리어, 보상 수령");
+                
                 // TO DO: 보상 수령
                 switch (ContentSteps[ProgressdIndex.Value].RewardId)
                 {

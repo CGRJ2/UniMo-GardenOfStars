@@ -87,13 +87,15 @@ public partial class DataManager
     // [SerializeField] private bool _isQuestContentStepAdressable = true;
 
     private const string _questDataTableURL = "https://docs.google.com/spreadsheets/d/14olmAKBDTc8EEL4fDtRC5j_vtVXu5ZZ3EXckaP9uGo8/export?format=csv";
-    private const string _questAddress = "CYE/SampleQuestData";
+    // private const string _questAddress = "CYE/SampleQuestData";
+    private const string _questAddress = "CYE/QuestData";
     
     // private const string _questRewardDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
     // private const string _questRewardAddress = "CYE/SampleQuestRewardData";
 
     private const string _questContentDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
-    private const string _questContentAddress = "CYE/SampleQuestContentData";
+    // private const string _questContentAddress = "CYE/SampleQuestContentData";
+    private const string _questContentAddress = "CYE/QuestContentData";
     
     // private const string _questContentStepDataTableURL = "https://docs.google.com/spreadsheets/d/1rggi6yeem8h4WlM2IUpQ9oGQ_Cm8G6ZHFX4RiCsXtGA/export?format=csv";
     // private const string _questContentStepAddress = "CYE/SampleQuestContentStepData";
