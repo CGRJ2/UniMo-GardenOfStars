@@ -352,7 +352,7 @@ namespace KYS
             // Backdrop 생성 시작 플래그 설정
             isCreatingBackdrop = true;
 
-            // PopupCanvas 가져오기
+            // PopupCanvas 가져오기 (SafeArea 영향받지 않도록 직접 가져오기)
             Canvas popupCanvas = UIManager.Instance?.GetCanvasByLayer(UILayerType.Popup);
             if (popupCanvas == null)
             {

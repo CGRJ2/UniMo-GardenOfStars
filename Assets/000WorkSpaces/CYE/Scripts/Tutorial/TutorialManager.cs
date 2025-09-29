@@ -97,6 +97,12 @@ public class TutorialManager : MonoBehaviour
             _Pool_FX_Highlighted = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
         };
 
+        // 튜토리얼 씬의 SafeAreaPanel 강제 업데이트
+        if (Manager.ui != null)
+        {
+            Manager.ui.ForceUpdateAllSafeAreaPanelsInScene();
+        }
+
     }
 
 
