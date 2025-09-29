@@ -523,7 +523,7 @@ MonoBehaviour:
   target: {fileID: 1167941982460896898}
   uiRect: {fileID: 8762716984513245952}
   canvas: {fileID: 264095466330146839}
-  screenSpaceOffset: {x: 0, y: 0}
+  screenSpaceOffset: {x: 0, y: 200}
   worldSpaceOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &4009997556148068892
 GameObject:
@@ -1536,6 +1536,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1167941982460896898}
+    - target: {fileID: 3445743793712119710, guid: 1bf3b13df37a9c74bbe3854859e49095, type: 3}
+      propertyPath: screenSpaceOffset.y
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 3582767478295361198, guid: 1bf3b13df37a9c74bbe3854859e49095, type: 3}
       propertyPath: m_Pivot.x
       value: 0
