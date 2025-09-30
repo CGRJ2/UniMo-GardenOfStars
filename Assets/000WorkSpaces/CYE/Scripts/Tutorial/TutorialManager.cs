@@ -942,10 +942,18 @@ public class TutorialManager : MonoBehaviour
     // 대화 노드 변경 시 호출되는 메서드
     private void OnDialogueNodeChanged(string nodeId)
     {
-        // 3번째 노드에서 업그레이드 버튼 활성화
+        // 3번째 노드에서 업그레이드 버튼 활성화 및 스킵 기능 비활성화
         if (nodeId == "tutorial_game_04_026_Upgrade")
         {
             overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(true);
+            
+            // 스킵 기능 비활성화
+            var storyPanel = FindObjectOfType<StoryPanel>();
+            if (storyPanel != null)
+            {
+                storyPanel.DisableSkipMode();
+            }
+            
             // 이벤트 구독 해제
             UnsubscribeDialogueEvents();
         }
@@ -979,6 +987,13 @@ public class TutorialManager : MonoBehaviour
         if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
         {
             Manager.dialogue.EndDialogue();
+        }
+        
+        // 스킵 기능 다시 활성화
+        var storyPanel = FindObjectOfType<StoryPanel>();
+        if (storyPanel != null)
+        {
+            storyPanel.EnableSkipMode();
         }
 
         // 업그레이드 패널 닫기
