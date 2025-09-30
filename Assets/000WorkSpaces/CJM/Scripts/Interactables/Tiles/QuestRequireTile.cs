@@ -132,6 +132,7 @@ public class QuestRequireTile : InteractableBase
 
                 // 다음 투입까지 딜레이 시간 설정
                 yield return new WaitForSeconds(insertDelayTime);
+                yield return new WaitUntil(() => QC_Data.ProgressdProdsCount.IsInUpdate == false);
 
             }
             // 플레이어 손에 재료가 없으면 바로 return
