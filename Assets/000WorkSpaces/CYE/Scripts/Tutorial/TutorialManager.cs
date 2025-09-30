@@ -1024,6 +1024,7 @@ public class TutorialManager : MonoBehaviour
     // 튜토리얼 스킵 키(임시)
     private void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.P))
         {
             Manager.firebase.UserData.TutorialSequence.Value = 11;
@@ -1038,5 +1039,5 @@ public class TutorialManager : MonoBehaviour
             }
         }
     }
-
+#endif
 }
