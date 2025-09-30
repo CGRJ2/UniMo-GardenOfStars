@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,9 @@ public class SkinSwitchPanel : KYS.BaseUI
     private Button _characterButton => GetUI<Button>("CharacterSkinButton");
     private Button _equipButton => GetUI<Button>("EquipSkinButton");
 
+    private TextMeshProUGUI _characterText => GetUI<TextMeshProUGUI>("CharacterSkinButtonText");
+    private TextMeshProUGUI _equipText => GetUI<TextMeshProUGUI>("EquipSkinButtonText");
+
     protected override void Awake()
     {
         base.Awake();
@@ -28,6 +32,12 @@ public class SkinSwitchPanel : KYS.BaseUI
 
             _characterButton.image.sprite = _switchActiveImage;
             _equipButton.image.sprite = _switchImage;
+
+            _characterButton.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            _equipButton.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+
+            _characterText.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            _equipText.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
         });
 
         _equipButton.onClick.AddListener(() =>
@@ -39,6 +49,12 @@ public class SkinSwitchPanel : KYS.BaseUI
 
             _characterButton.image.sprite = _switchImage;
             _equipButton.image.sprite = _switchActiveImage;
+
+            _characterButton.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+            _equipButton.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+
+            _characterText.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 180));
+            _equipText.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 180));
         });
     }
 }
