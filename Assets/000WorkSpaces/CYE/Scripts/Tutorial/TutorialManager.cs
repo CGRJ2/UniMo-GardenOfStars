@@ -927,10 +927,42 @@ public class TutorialManager : MonoBehaviour
 
         var stageID = Manager.firebase.UserData.CurStage.Value;
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_Upgrade");
+        
+        // 대화 노드 변경 이벤트 구독
+        Manager.dialogue.OnDialogueNodeChanged += OnDialogueNodeChanged;
+        // 대화 완료 이벤트도 구독하여 이벤트 해제 보장
+        Manager.dialogue.OnDialogueCompleted += OnDialogueCompleted;
+        
+        Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_TutoDialog_001");
 
         yield return new WaitForSeconds(0.2f);
-        overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(true);
+        //overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(true);
+    }
+    
+    // 대화 노드 변경 시 호출되는 메서드
+    private void OnDialogueNodeChanged(string nodeId)
+    {
+        // 3번째 노드에서 업그레이드 버튼 활성화
+        if (nodeId == "tutorial_game_04_026_Upgrade")
+        {
+            overlayPanel_PlayerUpradeBtnInTalkPanel.SetActive(true);
+            // 이벤트 구독 해제
+            UnsubscribeDialogueEvents();
+        }
+    }
+    
+    // 대화 완료 시 호출되는 메서드
+    private void OnDialogueCompleted(DialogueData dialogueData)
+    {
+        // 이벤트 구독 해제
+        UnsubscribeDialogueEvents();
+    }
+    
+    // 대화 이벤트 구독 해제
+    private void UnsubscribeDialogueEvents()
+    {
+        Manager.dialogue.OnDialogueNodeChanged -= OnDialogueNodeChanged;
+        Manager.dialogue.OnDialogueCompleted -= OnDialogueCompleted;
     }
 
     IEnumerator Sequence09_CheckUpgradeState()
