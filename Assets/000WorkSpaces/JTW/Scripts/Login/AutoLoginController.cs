@@ -15,6 +15,7 @@ public class AutoLoginController : MonoBehaviour
 
     private void Start()
     {
+        PlayGamesPlatform.Activate();
         PlayGamesPlatform.Instance.Authenticate(OnAuthenticate);
     }
 
