@@ -1038,6 +1038,6 @@ public class TutorialManager : MonoBehaviour
                 }
             }
         }
-    }
 #endif
+    }
 }
