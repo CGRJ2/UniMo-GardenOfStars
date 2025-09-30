@@ -35,6 +35,11 @@ namespace KYS
             base.Awake();
             SetupButtons();
             UpdateUI();
+
+            if (TutorialManager.Instance != null && _upgradeTarget != PlayerUpgradeStats.Speed)
+            {
+                BlockAllImages();
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()

@@ -2764,6 +2764,11 @@ namespace KYS
         {
             if (upgradeButton != null)
             {
+                if (visible && TutorialManager.Instance != null)
+                {
+                    BlockAllImages(new() { "PlayerUpgradeButton" });
+                }
+
                 upgradeButton.SetActive(visible);
                 isUpgradeButtonVisible = visible;
                 currentUpgradeButtonNodeId = nodeId;
