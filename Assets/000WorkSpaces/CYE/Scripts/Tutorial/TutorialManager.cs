@@ -313,6 +313,7 @@ public class TutorialManager : MonoBehaviour
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
         bool questCleared;
+        yield return new WaitUntil(() => tutorialNPC != null);
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
         {
@@ -552,6 +553,8 @@ public class TutorialManager : MonoBehaviour
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
         bool questCleared;
+        yield return new WaitUntil(() => tutorialNPC != null);
+
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
         {
@@ -815,6 +818,8 @@ public class TutorialManager : MonoBehaviour
 
         /////// 퀘스트가 완료된 상황인데, 대사를 완료하지 않고 종료해서 현재 단계를 스킵하면서 퀘스트 대사만 나오도록 한 부분
         bool questCleared;
+        yield return new WaitUntil(() => tutorialNPC != null);
+
         Manager.quest.CheckCurQuestCleared(out questCleared);
         if (questCleared)
         {
