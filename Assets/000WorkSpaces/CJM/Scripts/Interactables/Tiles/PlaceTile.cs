@@ -139,6 +139,13 @@ public class PlaceTile : InteractableBase
             }
 
             if (data.CurPlace != null && data.CurPlace != this) continue;
+
+            IngrediantInstance ownedBuilding;
+            characterRD.IngrediantStack.TryPeek(out ownedBuilding);
+            // 손에 건물이 없을 시, continue
+            if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
+            else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
+
             data.CurPlace = this;
 
             // 재가동 시, 사운드 이펙트 실행
@@ -147,12 +154,6 @@ public class PlaceTile : InteractableBase
                 Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
                 _FX_Construct = _Pool_FX_Construct.DisposePooledObj(transform.position, transform.rotation);
             }
-
-            IngrediantInstance ownedBuilding;
-            characterRD.IngrediantStack.TryPeek(out ownedBuilding);
-            // 손에 건물이 없을 시, continue
-            if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
-            else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
 
             // 작업 시작 시, 진행도 표기
             progressBar.gameObject.SetActive(true);
