@@ -339,7 +339,12 @@ namespace KYS
             }
         }
 
-  
+        [ContextMenu("대기 보상 번역 확인")]
+        public void CheckWaitingRewardsTranslation()
+        {
+
+Manager.ui.ShowPopUpAsync<OfflineRewardPopup>();
+        }
 
         #endregion
     }
