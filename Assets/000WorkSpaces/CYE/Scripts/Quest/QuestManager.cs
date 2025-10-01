@@ -81,6 +81,8 @@ public class QuestManager : Singleton<QuestManager>
             }
         }
 
+        Debug.LogError("퀘스트 완료 체크 진행");
+        Debug.LogError(allContentCleard);
         // 모든 Content가 클리어된 상황이라면 => 퀘스트 클리어 판정
         if (allContentCleard)
         {
@@ -89,7 +91,7 @@ public class QuestManager : Singleton<QuestManager>
             
             isCleared = true;
 
-            CurrentQuest.QuestState.Value = 3; // Completed
+            CurrentQuest.QuestState.Value = 2; // Completed
 
             // 현재 퀘스트 클리어 이벤트 실행
             QuestClearAction?.Invoke();
@@ -123,6 +125,8 @@ public class QuestManager : Singleton<QuestManager>
             Manager.dialogue.OnDialogueCompleted += SetNextQuestAfterDialogEnd;
             Manager.dialogue.StartDialogueWithPanel(npcId.Value, Manager.firebase.UserData.CurStage.Value, 
                 $"Quest_{npcId.Value}_{curQuestId.Value}");
+            Debug.LogError($"Quest_{npcId.Value}_{curQuestId.Value} 대화 진행");
+
         }
         else isCleared = false;
     }
@@ -149,6 +153,7 @@ public class QuestManager : Singleton<QuestManager>
         Debug.Log($"[QuestManager] {Manager.firebase.UserData.Player.Money}");
 
         MoveToNextQuest();
+        CurrentQuest.QuestState.Value = 3; // TalkEnd
         Manager.dialogue.OnDialogueCompleted -= SetNextQuestAfterDialogEnd;
     }
 
