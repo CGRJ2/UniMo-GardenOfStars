@@ -20,6 +20,10 @@ public class ProdTile : InteractableBase
     // 설치 완료 시, DB에 Id 삭제
 
     // 게임 종료 후 다시 실행 시 DB에 구매한 BulidingId가 있으면 생성
+    
+    // 설치 효과 FX
+    ObjectPool _Pool_FX_Highlighted;
+    GameObject _FX_Highlight;
 
     private void Awake()
     {
@@ -28,6 +32,12 @@ public class ProdTile : InteractableBase
 
         // 테스트용으로 바로 스테이지 씬에서 시작할 때 실행
         StartCoroutine(WaitAndLoad());
+
+        // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
+        Addressables.LoadAssetAsync<GameObject>("FX/Highlighted.prefab").Completed += task =>
+        {
+            _Pool_FX_Highlighted = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
+        };
     }
 
     IEnumerator WaitAndLoad()
@@ -71,10 +81,24 @@ public class ProdTile : InteractableBase
             rotateTween = disposedObject.transform.DORotate(new Vector3(0, 360f, 0), rotationSpeed, RotateMode.FastBeyond360)
                 .SetEase(Ease.Linear)
                 .SetLoops(-1, LoopType.Restart); // 무한 반복
+
+            // 빛 효과 추가
+            PlayHighLightFX(disposedObject.transform);
         };
     }
-   
-
+    public void PlayHighLightFX(Transform target, bool isMultipleAdd = false)
+    {
+        // 타겟이 없으면 효과 제거
+        if (target == null)
+        {
+            _Pool_FX_Highlighted.ReturnPooledObj(_FX_Highlight);
+        }
+        else
+        {
+            // 효과 활성화
+            _FX_Highlight = (_Pool_FX_Highlighted.DisposePooledObj(target.position + Vector3.up * 1.2f, target.rotation));
+        }
+    }
 
     public void PickUp()
     {
@@ -88,6 +112,9 @@ public class ProdTile : InteractableBase
         rotateTween?.Kill();
         floatTween = null;
         rotateTween = null;
+
+        // 빛 효과 제거
+        PlayHighLightFX(null);
 
         // 플레이어 보유 스택에 올려주기
         buildingItem.AttachToTarget(characterRD.ProdsAttachPoint);

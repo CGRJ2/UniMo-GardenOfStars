@@ -137,7 +137,9 @@ public class ProductGenerater : InteractableBase, IWorkStation
 
         // "생성 중" 애니메이션 종료된 상태에서만 수확 가능
         if (!_SpawnedProduct.IsReadyToHarvest()) return;
-       
+
+        if (characterRD == null) return;
+
         // 들고 있는 재료와 다른 재료라면 or 손에 최대 수량만큼 들고 있을 시 => 줍지 않게 만들기
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
