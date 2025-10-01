@@ -1066,27 +1066,4 @@ public class TutorialManager : MonoBehaviour
     {
         StopAllCoroutines();
     }
-
-
-    // 튜토리얼 스킵 키(임시)
-    private void Update()
-    {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            StopAllCoroutines();
-
-            Manager.firebase.UserData.TutorialSequence.Value = 11;
-
-            foreach (var kvp in Manager.data.Stage.Values)
-            {
-                if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
-                {
-                    Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
-                    break;
-                }
-            }
-        }
-#endif
-    }
 }

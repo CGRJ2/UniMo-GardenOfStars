@@ -176,7 +176,7 @@ public class AdManager : Singleton<AdManager>
             }
         }
     }
-    private void Update()
+    /*private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -186,7 +186,7 @@ public class AdManager : Singleton<AdManager>
         {
             HideBannerAd();
         }
-    }
+    }*/
 
     // 배너 광고
     public void LoadBannerAd()
