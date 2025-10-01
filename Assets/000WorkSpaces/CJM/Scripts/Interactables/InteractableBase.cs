@@ -26,6 +26,11 @@ public class InteractableBase : MonoBehaviour
     public virtual void Exit_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         personalTaskOwner = null;
+
+        if (this is WorkArea_SwitchType && characterRuntimeData is PlayerRunTimeData data)
+        {
+            data.CurWorkStation = null;
+        }
     }
 
     protected virtual void OnDisableAdditionalActions() { }

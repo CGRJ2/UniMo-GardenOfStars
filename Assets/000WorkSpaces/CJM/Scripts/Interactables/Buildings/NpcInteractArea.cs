@@ -1,3 +1,4 @@
+ï»¿using GameNpc;
 using KYS;
 using UnityEngine;
 
@@ -22,51 +23,79 @@ public class NpcInteractArea : InteractableBase
 
 
     bool isTutoInteracted;
-    // È°¼ºÈ­ ¹üÀ§ »óÈ£ÀÛ¿ë
+    // í™œì„±í™” ë²”ìœ„ ìƒí˜¸ì‘ìš©
     public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
 
-        // »óÈ£ÀÛ¿ëÇÑ ÁÖÃ¼°¡ ÇÃ·¹ÀÌ¾î¶ó¸é (ÇÃ·¹ÀÌ¾î ÇÑÁ¤)
+        // ìƒí˜¸ì‘ìš©í•œ ì£¼ì²´ê°€ í”Œë ˆì´ì–´ë¼ë©´ (í”Œë ˆì´ì–´ í•œì •)
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            // ¸®ÆÑÅä¸µ ÇÊ¿ä => ÀüºÎ TutorialManager¿¡¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï
+            // ë¦¬íŒ©í† ë§ í•„ìš” => ì „ë¶€ TutorialManagerì—ì„œ ì²˜ë¦¬í•  ìˆ˜ ìˆë„ë¡
 
-            // Æ©Åä¸®¾ó NPC¸é ¹Ù·Î Ã¹´ëÈ­ ÁøÇà
-            if (Manager.firebase.UserData.CurStage.Value == "Tutorial")
+            // íŠœí† ë¦¬ì–¼ NPCë©´ ë°”ë¡œ ì²«ëŒ€í™” ì§„í–‰
+            if (TutorialManager.Instance != null)
             {
-                if (Manager.firebase.UserData.TutorialSequence.Value != 0) return; // Æ©Åä ÁøÇàµµ´Â Firebase¿¡¼­ °ü¸®. ÃßÈÄ¿¡ ¼öÁ¤ÇØ¾ßµÊ
+                if (Manager.firebase.UserData.TutorialSequence.Value == 0)
+                {
+                    // ë”± í•œë²ˆë§Œ ì‹¤í–‰ë˜ê²Œ
+                    if (isTutoInteracted) return;
+                    isTutoInteracted = true;
 
-                // µü ÇÑ¹ø¸¸ ½ÇÇàµÇ°Ô
-                if (isTutoInteracted) return;
-                isTutoInteracted = true;
+                    TutorialManager.Instance.arrows[0].SetActive(false);
 
-                TutorialManager.Instance.arrows[0].SetActive(false);
+                    var npc = Manager.firebase.UserData.CurStageData.Npc;
+                    Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd; // ëŒ€í™” ì™„ë£Œ ì‹œ, ì‹œí€€ìŠ¤ 00ì¢…ë£Œ
 
-                var npc = Manager.firebase.UserData.CurStageData.Npc;
-                Manager.dialogue.OnDialogueCompleted += TutorialManager.Instance.SequenceEnd; // ´ëÈ­ ¿Ï·á ½Ã, ½ÃÄö½º 00Á¾·á
-                
-                // ±×³É Å°¸¦ ³Ö¾úÀ½
-                Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"tutorial_game_01_001");
-                // ÇØ´ç ´ëÈ­°¡ Á¾·áµÇ¸é Äİ¹éÇÔ¼ö·Î Sequence00 Á¾·á
-                return;
+                    // ê·¸ëƒ¥ í‚¤ë¥¼ ë„£ì—ˆìŒ
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, "Tutorial", $"Quest_{npc.NpcID.Value}_Start");
+                    // í•´ë‹¹ ëŒ€í™”ê°€ ì¢…ë£Œë˜ë©´ ì½œë°±í•¨ìˆ˜ë¡œ Sequence00 ì¢…ë£Œ
+                    return;
+                }
+                else return;
             }
 
-            if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(true);  // ±âº» »óÈ£ÀÛ¿ë ÆË¾÷ È°¼ºÈ­
+            else
+            {
+                var npc = Manager.firebase.UserData.CurStageData.Npc;
+                string stageID = Manager.firebase.UserData.CurStage.Value;
+
+                // ì²« ëŒ€í™” ì§„í–‰ì´ ì•ˆëœ ê²½ìš°
+                if (!npc.IsTalked.Value)
+                {
+                    // ëŒ€í™” ì‹¤í–‰ í›„, ëŒ€í™” ì¢…ë£Œ ì‹œ í€˜ìŠ¤íŠ¸ ë°œíŒ ì—…ë°ì´íŠ¸
+
+                    Manager.dialogue.OnDialogueCompleted += FirstTalkInited;
+
+                    Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Quest_{npc.NpcID.Value}_Start");
+                }
+                else
+                {
+                    if (activatePopUI != null)
+                        activatePopUI.gameObject.SetActive(true);  // ê¸°ë³¸ ìƒí˜¸ì‘ìš© íŒì—… í™œì„±í™”
+                }
+            }
         }
     }
 
-    // °Ç¹° È°¼ºÈ­ ¹üÀ§ »óÈ£ÀÛ¿ë
+    void FirstTalkInited(DialogueData data)
+    {
+        Manager.dialogue.OnDialogueCompleted -= FirstTalkInited;
+        var npc = Manager.firebase.UserData.CurStageData.Npc;
+        GetComponent<NpcController>().UpdateQuestData();
+        npc.IsTalked.Value = true;
+    }
+
+    // ê±´ë¬¼ í™œì„±í™” ë²”ìœ„ ìƒí˜¸ì‘ìš©
     public override void Exit(CharaterRuntimeData characterRuntimeData)
     {
         base.Exit(characterRuntimeData);
 
-        // »óÈ£ÀÛ¿ëÇÑ ÁÖÃ¼°¡ ÇÃ·¹ÀÌ¾î¶ó¸é (ÇÃ·¹ÀÌ¾î ÇÑÁ¤)
+        // ìƒí˜¸ì‘ìš©í•œ ì£¼ì²´ê°€ í”Œë ˆì´ì–´ë¼ë©´ (í”Œë ˆì´ì–´ í•œì •)
         if (characterRuntimeData is PlayerRunTimeData)
         {
             if (activatePopUI != null)
-                activatePopUI.gameObject.SetActive(false); // ±âº» »óÈ£ÀÛ¿ë ÆË¾÷ ºñÈ°¼ºÈ­
+                activatePopUI.gameObject.SetActive(false); // ê¸°ë³¸ ìƒí˜¸ì‘ìš© íŒì—… ë¹„í™œì„±í™”
         }
     }
 }

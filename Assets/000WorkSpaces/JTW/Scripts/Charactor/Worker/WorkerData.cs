@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class WorkerData : FirebaseData
 {
-    private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[Id];
-    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[$"{Id}_{Manager.firebase.UserData.CurStage.Value}"];
-
-    public string Name => CharacterCsv.Name_Kr;
+    private CharacterDataCsv CharacterCsv => Manager.data.Character.Values[Id];
+    private WorkerDataCsv WorkerCsv => Manager.data.Worker.Values[CharacterCsv.StatusId];
+    public string Name => CharacterCsv.Name;
     public int Rank => WorkerCsv.Rank;
 
     public Sprite Sprite => CharacterCsv.Sprite;
@@ -30,6 +29,10 @@ public class WorkerData : FirebaseData
     public float StunChance => WorkerCsv.StunChance;
     public string StunRank => WorkerCsv.StunRank;
 
+    public FirebaseProperty<float> PositionX;
+    public FirebaseProperty<float> PositionZ;
+
+
     public WorkerData(string id, string parentPath = null) : base(id, parentPath)
     {
         MoveSpeedLv = new FirebaseProperty<int>("MoveSpeedLv", Path, 1);
@@ -37,6 +40,12 @@ public class WorkerData : FirebaseData
 
         MaxCapacityLv = new FirebaseProperty<int>("MaxCapacityLv", Path, 1);
         InitList.Add(MaxCapacityLv);
+
+        PositionX = new FirebaseProperty<float>("PositionX", Path);
+        InitList.Add(PositionX);
+
+        PositionZ = new FirebaseProperty<float>("PositionZ", Path);
+        InitList.Add(PositionZ);
     }
 
     public void UpgradeMoveSpeed()

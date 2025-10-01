@@ -36,18 +36,10 @@ namespace KYS
         private Dictionary<string, Dictionary<SystemLanguage, string>> languageData = new();
         private SystemLanguage currentLanguage;
         
-        // 지원하는 언어 목록 (확장됨)
+        // 지원하는 언어 목록 (한국어, 영어만)
         private readonly SystemLanguage[] allSupportedLanguages = {
             SystemLanguage.Korean,
-            SystemLanguage.English,
-            SystemLanguage.Japanese,
-            SystemLanguage.Chinese,
-            SystemLanguage.French,
-            SystemLanguage.German,
-            SystemLanguage.Spanish,
-            SystemLanguage.Italian,
-            SystemLanguage.Portuguese,
-            SystemLanguage.Russian
+            SystemLanguage.English
         };
         
         // 현재 활성화된 언어 목록 (실제 번역이 있는 언어만)
@@ -56,6 +48,180 @@ namespace KYS
         // Addressable 핸들 관리
         private AsyncOperationHandle<TextAsset> csvHandle;
         private bool isInitialized = false;
+        
+        // 초기화 전 폴백 텍스트 (타이틀 화면용) - 다국어 지원
+        private Dictionary<string, Dictionary<SystemLanguage, string>> fallbackTexts = new()
+        {
+            {
+                "ui_titlescene_download_check",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "다운로드 확인 중..." },
+                    { SystemLanguage.English, "Checking download..." },
+                    { SystemLanguage.Japanese, "ダウンロード確認中..." },
+                    { SystemLanguage.Chinese, "检查下载中..." },
+                    { SystemLanguage.French, "Vérification du téléchargement..." },
+                    { SystemLanguage.German, "Download wird überprüft..." },
+                    { SystemLanguage.Spanish, "Verificando descarga..." },
+                    { SystemLanguage.Italian, "Verifica download..." },
+                    { SystemLanguage.Portuguese, "Verificando download..." },
+                    { SystemLanguage.Russian, "Проверка загрузки..." }
+                }
+            },
+            {
+                "ui_titlescene_downloading",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "다운로드 중..." },
+                    { SystemLanguage.English, "Downloading..." },
+                    { SystemLanguage.Japanese, "ダウンロード中..." },
+                    { SystemLanguage.Chinese, "下载中..." },
+                    { SystemLanguage.French, "Téléchargement..." },
+                    { SystemLanguage.German, "Download läuft..." },
+                    { SystemLanguage.Spanish, "Descargando..." },
+                    { SystemLanguage.Italian, "Download in corso..." },
+                    { SystemLanguage.Portuguese, "Baixando..." },
+                    { SystemLanguage.Russian, "Загрузка..." }
+                }
+            },
+            {
+                "ui_titlescene_touch_screen",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "화면을 터치해주세요!" },
+                    { SystemLanguage.English, "Please touch the screen!" },
+                    { SystemLanguage.Japanese, "画面をタッチしてください！" },
+                    { SystemLanguage.Chinese, "请触摸屏幕！" },
+                    { SystemLanguage.French, "Veuillez toucher l'écran !" },
+                    { SystemLanguage.German, "Bitte berühren Sie den Bildschirm!" },
+                    { SystemLanguage.Spanish, "¡Por favor toque la pantalla!" },
+                    { SystemLanguage.Italian, "Per favore tocca lo schermo!" },
+                    { SystemLanguage.Portuguese, "Por favor toque na tela!" },
+                    { SystemLanguage.Russian, "Пожалуйста, коснитесь экрана!" }
+                }
+            },
+            {
+                "ui_titlescene_logout_test",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "로그아웃\n테스트용" },
+                    { SystemLanguage.English, "Logout\nFor Testing" },
+                    { SystemLanguage.Japanese, "ログアウト\nテスト用" },
+                    { SystemLanguage.Chinese, "登出\n测试用" },
+                    { SystemLanguage.French, "Déconnexion\nPour test" },
+                    { SystemLanguage.German, "Abmelden\nZum Testen" },
+                    { SystemLanguage.Spanish, "Cerrar sesión\nPara pruebas" },
+                    { SystemLanguage.Italian, "Disconnetti\nPer test" },
+                    { SystemLanguage.Portuguese, "Sair\nPara teste" },
+                    { SystemLanguage.Russian, "Выйти\nДля тестирования" }
+                }
+            },
+            {
+                "ui_network_disconnected_message",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "인터넷 연결을 다시 확인해주세요." },
+                    { SystemLanguage.English, "Please check your internet connection." },
+                    { SystemLanguage.Japanese, "インターネット接続を確認してください。" },
+                    { SystemLanguage.Chinese, "请检查您的网络连接。" },
+                    { SystemLanguage.French, "Veuillez vérifier votre connexion Internet." },
+                    { SystemLanguage.German, "Bitte überprüfen Sie Ihre Internetverbindung." },
+                    { SystemLanguage.Spanish, "Por favor, verifique su conexión a Internet." },
+                    { SystemLanguage.Italian, "Si prega di controllare la connessione Internet." },
+                    { SystemLanguage.Portuguese, "Por favor, verifique sua conexão com a Internet." },
+                    { SystemLanguage.Russian, "Пожалуйста, проверьте подключение к Интернету." }
+                }
+            },
+            {
+                "ui_account_linking_start",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결을 시작합니다..." },
+                    { SystemLanguage.English, "Starting account linking..." },
+                    { SystemLanguage.Japanese, "アカウント連携を開始しています..." },
+                    { SystemLanguage.Chinese, "正在开始账户关联..." },
+                    { SystemLanguage.French, "Début de la liaison de compte..." },
+                    { SystemLanguage.German, "Kontoverknüpfung wird gestartet..." },
+                    { SystemLanguage.Spanish, "Iniciando vinculación de cuenta..." },
+                    { SystemLanguage.Italian, "Avvio collegamento account..." },
+                    { SystemLanguage.Portuguese, "Iniciando vinculação de conta..." },
+                    { SystemLanguage.Russian, "Начинаем связывание аккаунта..." }
+                }
+            },
+            {
+                "ui_account_linking_success",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결이 완료되었습니다." },
+                    { SystemLanguage.English, "Account linking completed successfully." },
+                    { SystemLanguage.Japanese, "アカウント連携が完了しました。" },
+                    { SystemLanguage.Chinese, "账户关联已成功完成。" },
+                    { SystemLanguage.French, "Liaison de compte terminée avec succès." },
+                    { SystemLanguage.German, "Kontoverknüpfung erfolgreich abgeschlossen." },
+                    { SystemLanguage.Spanish, "Vinculación de cuenta completada exitosamente." },
+                    { SystemLanguage.Italian, "Collegamento account completato con successo." },
+                    { SystemLanguage.Portuguese, "Vinculação de conta concluída com sucesso." },
+                    { SystemLanguage.Russian, "Связывание аккаунта успешно завершено." }
+                }
+            },
+            {
+                "ui_account_linking_error",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결 중 오류가 발생했습니다." },
+                    { SystemLanguage.English, "An error occurred during account linking." },
+                    { SystemLanguage.Japanese, "アカウント連携中にエラーが発生しました。" },
+                    { SystemLanguage.Chinese, "账户关联过程中发生错误。" },
+                    { SystemLanguage.French, "Une erreur s'est produite lors de la liaison de compte." },
+                    { SystemLanguage.German, "Ein Fehler ist bei der Kontoverknüpfung aufgetreten." },
+                    { SystemLanguage.Spanish, "Ocurrió un error durante la vinculación de cuenta." },
+                    { SystemLanguage.Italian, "Si è verificato un errore durante il collegamento dell'account." },
+                    { SystemLanguage.Portuguese, "Ocorreu um erro durante a vinculação da conta." },
+                    { SystemLanguage.Russian, "Произошла ошибка при связывании аккаунта." }
+                }
+            },
+            {
+                "ui_account_already_linked",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "이미 계정이 연결되어 있습니다." },
+                    { SystemLanguage.English, "Account is already linked." },
+                    { SystemLanguage.Japanese, "アカウントは既に連携されています。" },
+                    { SystemLanguage.Chinese, "账户已经关联。" },
+                    { SystemLanguage.French, "Le compte est déjà lié." },
+                    { SystemLanguage.German, "Konto ist bereits verknüpft." },
+                    { SystemLanguage.Spanish, "La cuenta ya está vinculada." },
+                    { SystemLanguage.Italian, "L'account è già collegato." },
+                    { SystemLanguage.Portuguese, "A conta já está vinculada." },
+                    { SystemLanguage.Russian, "Аккаунт уже связан." }
+                }
+            }
+        };
+
+        #endregion
+
+        #region Fallback Text Management
+
+        /// <summary>
+        /// 폴백 텍스트 추가 (CSV 로딩 전 사용)
+        /// </summary>
+        public void AddFallbackText(string key, SystemLanguage language, string text)
+        {
+            if (!fallbackTexts.ContainsKey(key))
+            {
+                fallbackTexts[key] = new Dictionary<SystemLanguage, string>();
+            }
+            
+            fallbackTexts[key][language] = text;
+        }
+
+        /// <summary>
+        /// 폴백 텍스트 일괄 추가
+        /// </summary>
+        public void AddFallbackTexts(string key, Dictionary<SystemLanguage, string> texts)
+        {
+            fallbackTexts[key] = new Dictionary<SystemLanguage, string>(texts);
+        }
 
         #endregion
 
@@ -288,20 +454,20 @@ namespace KYS
         }
 
         /// <summary>
-        /// CSV 라인 파싱 (쉼표와 따옴표, $$ 기호 처리)
+        /// CSV 라인 파싱 (쉼표와 따옴표, $ 기호 처리)
         /// </summary>
         private string[] ParseCSVLine(string line)
         {
-            // $$ 기호로 감싸진 문자열 내의 쉼표를 무시하는 정규식 사용
-            string[] fields = Regex.Split(line, @",(?=(?:[^$]*\$\$[^$]*\$\$)*[^$]*$)");
+            // $ 기호로 감싸진 문자열 내의 쉼표를 무시하는 정규식 사용
+            string[] fields = Regex.Split(line, @",(?=(?:[^$]*\$[^$]*\$)*[^$]*$)");
             
             List<string> result = new List<string>();
             
             foreach (string field in fields)
             {
-                // $$ 기호 제거 및 따옴표 처리
+                // $ 기호 제거 및 따옴표 처리
                 string processedField = field.Trim().Trim('"');
-                processedField = processedField.Replace("$$", "");
+                processedField = processedField.Replace("$", "");
                 result.Add(processedField);
             }
             
@@ -359,20 +525,12 @@ namespace KYS
         }
 
         /// <summary>
-        /// 언어 지원 여부 확인 (확장)
+        /// 언어 지원 여부 확인 (한국어, 영어만)
         /// </summary>
         private bool IsLanguageSupported(SystemLanguage language)
         {
             return language == SystemLanguage.Korean ||
-                   language == SystemLanguage.English ||
-                   language == SystemLanguage.Japanese ||
-                   language == SystemLanguage.Chinese ||
-                   language == SystemLanguage.French ||
-                   language == SystemLanguage.German ||
-                   language == SystemLanguage.Spanish ||
-                   language == SystemLanguage.Italian ||
-                   language == SystemLanguage.Portuguese ||
-                   language == SystemLanguage.Russian;
+                   language == SystemLanguage.English;
         }
 
         /// <summary>
@@ -391,7 +549,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// 언어 이름 가져오기 (확장)
+        /// 언어 이름 가져오기 (한국어, 영어만)
         /// </summary>
         public string GetLanguageName(SystemLanguage language)
         {
@@ -401,22 +559,6 @@ namespace KYS
                     return "한국어";
                 case SystemLanguage.English:
                     return "English";
-                case SystemLanguage.Japanese:
-                    return "日本語";
-                case SystemLanguage.Chinese:
-                    return "中文";
-                case SystemLanguage.French:
-                    return "Français";
-                case SystemLanguage.German:
-                    return "Deutsch";
-                case SystemLanguage.Spanish:
-                    return "Español";
-                case SystemLanguage.Italian:
-                    return "Italiano";
-                case SystemLanguage.Portuguese:
-                    return "Português";
-                case SystemLanguage.Russian:
-                    return "Русский";
                 default:
                     return language.ToString();
             }
@@ -496,6 +638,36 @@ namespace KYS
             // 디버그 로그 추가
             ////Debug.Log($"[LocalizationManager] GetText 호출: key={key}, currentLanguage={currentLanguage}, isInitialized={isInitialized}");
             
+            // 초기화 전 폴백 텍스트 사용 (다국어 지원)
+            if (!isInitialized && fallbackTexts.ContainsKey(key))
+            {
+                var fallbackData = fallbackTexts[key];
+                
+                // 현재 언어의 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(currentLanguage))
+                {
+                    return fallbackData[currentLanguage];
+                }
+                
+                // 기본 언어의 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(defaultLanguage))
+                {
+                    return fallbackData[defaultLanguage];
+                }
+                
+                // 한국어 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(SystemLanguage.Korean))
+                {
+                    return fallbackData[SystemLanguage.Korean];
+                }
+                
+                // 첫 번째 사용 가능한 언어의 텍스트 사용
+                if (fallbackData.Count > 0)
+                {
+                    return fallbackData.Values.First();
+                }
+            }
+            
             // 현재 언어에서 번역 찾기
             if (languageData.ContainsKey(key) && 
                 languageData[key].ContainsKey(currentLanguage))
@@ -514,7 +686,37 @@ namespace KYS
                 return result;
             }
             
-            // 번역을 찾을 수 없는 경우 키 반환
+            // 번역을 찾을 수 없는 경우 폴백 텍스트 시도
+            if (fallbackTexts.ContainsKey(key))
+            {
+                var fallbackData = fallbackTexts[key];
+                
+                // 현재 언어의 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(currentLanguage))
+                {
+                    return fallbackData[currentLanguage];
+                }
+                
+                // 기본 언어의 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(defaultLanguage))
+                {
+                    return fallbackData[defaultLanguage];
+                }
+                
+                // 한국어 폴백 텍스트가 있으면 사용
+                if (fallbackData.ContainsKey(SystemLanguage.Korean))
+                {
+                    return fallbackData[SystemLanguage.Korean];
+                }
+                
+                // 첫 번째 사용 가능한 언어의 텍스트 사용
+                if (fallbackData.Count > 0)
+                {
+                    return fallbackData.Values.First();
+                }
+            }
+            
+            // 폴백 텍스트도 없으면 키 반환
             //Debug.LogWarning($"[LocalizationManager] 번역을 찾을 수 없습니다: {key}, languageData.Count={languageData.Count}");
             return key;
         }

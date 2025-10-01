@@ -37,12 +37,14 @@ namespace KYS
         [Header("UI Behavior Settings")]
         [SerializeField] protected bool canCloseWithESC = false;
         [SerializeField] protected bool canCloseWithBackdrop = false;
+        [SerializeField] protected bool allowBackdropClickInTutorial = false; // 튜토리얼에서도 Backdrop 클릭 허용
         [SerializeField] protected bool hidePreviousUI = false; // 이전 UI 숨김 여부 (SetActive(false))
         [SerializeField] protected bool disablePreviousUI = false; // 이전 UI 비활성화 여부 (CanvasGroup.interactable = false)
         [SerializeField] protected bool createBackdropForPopup = false; // Popup일 때 Backdrop 자동 생성
 
         [Header("Backdrop Settings")]
         // Backdrop Prefab Reference는 UIManager에서 관리
+        private bool isCreatingBackdrop = false; // Backdrop 생성 중인지 확인하는 플래그
 
         [Header("Audio Settings")]
         [SerializeField] protected bool enableSFX = true;
@@ -92,6 +94,23 @@ namespace KYS
             InitializeComponentCache();
             InitializeUIComponents();
             SetupMVP();
+        }
+
+        public void BlockAllImages(List<string> exceptionalImages = null)
+        {
+            foreach(var kvp in compDict)
+            {
+                if(kvp.Value is Image image)
+                {
+                    if (exceptionalImages == null || !exceptionalImages.Contains(image.gameObject.name))
+                        image.raycastTarget = false;
+                }
+                if (kvp.Value is TextMeshProUGUI tmp)
+                {
+                    if (exceptionalImages == null || !exceptionalImages.Contains(tmp.gameObject.name))
+                        tmp.raycastTarget = false;
+                }
+            }
         }
 
         protected virtual void Start()
@@ -177,6 +196,9 @@ namespace KYS
         public virtual void Hide()
         {
             if (!IsActive) return;
+
+            // Backdrop 생성 중이면 중단
+            isCreatingBackdrop = false;
 
             // UI 닫기 사운드 재생 (버튼 클릭으로만 효과음 재생하도록 주석 처리)
             // PlayCloseSound();
@@ -313,14 +335,24 @@ namespace KYS
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에서 Backdrop 생성 시작");
 
-            // 이미 Backdrop가 있는지 확인
-            if (ownBackdrop != null)
+            // GameObject가 파괴되었는지 확인
+            if (this == null || gameObject == null)
             {
-                //Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재합니다.");
+                //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop 생성 중단");
                 return;
             }
 
-            // PopupCanvas 가져오기
+            // 이미 Backdrop가 있거나 생성 중인지 확인
+            if (ownBackdrop != null || isCreatingBackdrop)
+            {
+                //Debug.Log($"[BaseUI] {gameObject.name}에 이미 Backdrop가 존재하거나 생성 중입니다.");
+                return;
+            }
+
+            // Backdrop 생성 시작 플래그 설정
+            isCreatingBackdrop = true;
+
+            // PopupCanvas 가져오기 (SafeArea 영향받지 않도록 직접 가져오기)
             Canvas popupCanvas = UIManager.Instance?.GetCanvasByLayer(UILayerType.Popup);
             if (popupCanvas == null)
             {
@@ -342,6 +374,17 @@ namespace KYS
                 // Backdrop Prefab을 Addressables로 로드 및 인스턴스 생성 (PopupCanvas의 자식으로)
                 AsyncOperationHandle<GameObject> handle = backdropPrefabRef.InstantiateAsync(popupCanvas.transform);
                 await handle.Task;
+
+                // await 이후 GameObject 파괴 확인
+                if (this == null || gameObject == null)
+                {
+                    //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop 생성 중단 (await 후)");
+                    if (handle.IsValid())
+                    {
+                        Addressables.Release(handle);
+                    }
+                    return;
+                }
 
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
@@ -398,6 +441,11 @@ namespace KYS
                 Debug.LogError($"[BaseUI] Backdrop Prefab 생성 중 오류 발생: {e.Message}");
                 CreateBackdropFallback(popupCanvas);
             }
+            finally
+            {
+                // Backdrop 생성 완료 플래그 해제
+                isCreatingBackdrop = false;
+            }
         }
 
         /// <summary>
@@ -406,6 +454,13 @@ namespace KYS
         private void CreateBackdropFallback(Canvas popupCanvas)
         {
             //Debug.Log($"[BaseUI] {gameObject.name}에 기본 방식으로 Backdrop 생성");
+
+            // GameObject가 파괴되었는지 확인
+            if (this == null || gameObject == null)
+            {
+                //Debug.Log($"[BaseUI] GameObject가 파괴되어 Backdrop Fallback 생성 중단");
+                return;
+            }
 
             // Backdrop GameObject 생성 (PopupCanvas의 자식으로)
             GameObject backdropGO = new GameObject("Backdrop");
@@ -442,6 +497,9 @@ namespace KYS
             SetupBackdropClickEvent();
 
             //Debug.Log($"[BaseUI] {gameObject.name}을 Backdrop의 자식으로 이동 완료 - Backdrop 위치: {backdropGO.transform.GetSiblingIndex()}");
+            
+            // Backdrop 생성 완료 플래그 해제
+            isCreatingBackdrop = false;
         }
 
         /// <summary>
@@ -451,10 +509,12 @@ namespace KYS
         {
             if (ownBackdrop == null) return;
 
-            // Backdrop 클릭 가능 여부 설정
-            ownBackdrop.SetBackdropClickable(canCloseWithBackdrop);
+            bool canCloseWithBackdropInTutorial = canCloseWithBackdrop;
 
-            if (canCloseWithBackdrop)
+            // Backdrop 클릭 가능 여부 설정
+            ownBackdrop.SetBackdropClickable(canCloseWithBackdropInTutorial);
+
+            if (canCloseWithBackdropInTutorial)
             {
                 ownBackdrop.OnBackdropClicked += () =>
                 {
@@ -472,7 +532,6 @@ namespace KYS
             }
             else
             {
-                //Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
             }
         }
 
@@ -482,6 +541,27 @@ namespace KYS
         public BackdropUI GetOwnBackdrop()
         {
             return ownBackdrop;
+        }
+
+        /// <summary>
+        /// 런타임에 Backdrop 클릭 가능 여부 동적 설정
+        /// </summary>
+        /// <param name="clickable">클릭 가능 여부</param>
+        public void SetBackdropClickable(bool clickable)
+        {
+            if (ownBackdrop != null)
+            {
+                ownBackdrop.SetBackdropClickable(clickable);
+                //Debug.Log($"[BaseUI] {gameObject.name}의 Backdrop 클릭 가능 여부를 {clickable}로 설정");
+            }
+        }
+
+        /// <summary>
+        /// 현재 Backdrop 클릭 가능 여부 반환
+        /// </summary>
+        public bool IsBackdropClickable()
+        {
+            return ownBackdrop?.IsClickable() ?? false;
         }
 
         #endregion
@@ -1359,6 +1439,116 @@ namespace KYS
 
         #endregion
 
+        #region Money Formatting Utilities
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (1000 -> 1K, 1000000 -> 1M, 1000000000 -> 1B)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(long amount, bool showDecimals = false)
+        {
+            if (amount < 0)
+            {
+                return "-" + FormatMoney(-amount, showDecimals);
+            }
+
+            if (amount < 1000)
+            {
+                return amount.ToString();
+            }
+            else if (amount < 1000000)
+            {
+                // 1K 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000.0).ToString("F3") + " K";
+                }
+                else
+                {
+                    return (amount / 1000) + " K";
+                }
+            }
+            else if (amount < 1000000000)
+            {
+                // 1M 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000000.0).ToString("F3") + " M";
+                }
+                else
+                {
+                    return (amount / 1000000) + " M";
+                }
+            }
+            else
+            {
+                // 1B 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000000000.0).ToString("F3") + " B";
+                }
+                else
+                {
+                    return (amount / 1000000000) + " B";
+                }
+            }
+        }
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (int 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(int amount, bool showDecimals = false)
+        {
+            return FormatMoney((long)amount, showDecimals);
+        }
+
+        /// <summary>
+        /// 돈을 단위별로 포맷팅 (float 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
+        /// <returns>포맷팅된 문자열</returns>
+        public static string FormatMoney(float amount, bool showDecimals = false)
+        {
+            return FormatMoney((long)amount, showDecimals);
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (1,000,000 형태)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(long amount)
+        {
+            return amount.ToString("N0");
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (int 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(int amount)
+        {
+            return amount.ToString("N0");
+        }
+
+        /// <summary>
+        /// 돈을 천 단위 콤마로 포맷팅 (float 버전)
+        /// </summary>
+        /// <param name="amount">포맷팅할 금액</param>
+        /// <returns>콤마가 포함된 문자열</returns>
+        public static string FormatMoneyWithCommas(float amount)
+        {
+            return ((long)amount).ToString("N0");
+        }
+
+        #endregion
 
     }
 }

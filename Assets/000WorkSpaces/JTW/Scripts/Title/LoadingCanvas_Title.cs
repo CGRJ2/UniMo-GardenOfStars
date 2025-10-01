@@ -20,18 +20,18 @@ public class LoadingCanvas_Title : KYS.BaseUI
     {
         WaitForSeconds delay = new WaitForSeconds(1f);
 
-        _loadingText.text = "다운로드 받을 파일이 있는지 확인중...";
         yield return new WaitUntil(() => Manager.game.initialized || Manager.game.inDownloading);
+        yield return new WaitUntil(() => Manager.localization != null);
+        _loadingText.text = GetLocalizedText("ui_titlescene_download_check");
 
         if (Manager.game.initialized)
         {
             yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
-            yield return new WaitUntil(() => Manager.firebase.UserData != null);
-            yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+            yield return new WaitUntil(() => Manager.data.IsDataInit);
             yield break;
         }
 
-        _loadingText.text = "다운로드 중..";
+        _loadingText.text = GetLocalizedText("ui_titlescene_downloading");
         while (!Manager.game.initialized)
         {
             _slider.value = Manager.game.downloadProgress.Value;
@@ -40,8 +40,7 @@ public class LoadingCanvas_Title : KYS.BaseUI
         _slider.value = 1f;
 
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
-        yield return new WaitUntil(() => Manager.firebase.UserData != null);
-        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitUntil(() => Manager.data.IsDataInit);
 
         yield return delay;
     }

@@ -15,7 +15,7 @@ public class WorkerState_Work : WorkerStateBase
     {
         if (WorkerData.CurWorkstation.Value is WorkArea_SwitchType)
         {
-            Vector3 aimDir = (WorkerData.CurWorkstation.Value as WorkArea_SwitchType).ownerInstance.transform.position - WorkerData.transform.position;
+            Vector3 aimDir = (WorkerData.CurWorkstation.Value as WorkArea_SwitchType).ownerInstance.viewPoint.position - WorkerData.transform.position;
             aimDir = aimDir.normalized;
 
             _target = Quaternion.LookRotation(aimDir, Vector3.up);

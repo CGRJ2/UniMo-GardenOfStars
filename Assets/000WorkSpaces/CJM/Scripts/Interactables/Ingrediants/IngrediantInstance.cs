@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -21,6 +22,10 @@ public class IngrediantInstance : PooledObject
 
     [SerializeField] Animator animator;
     public ObservableProperty<ProdState> state = new();
+
+    [SerializeField] GameObject defaultForm;
+    [SerializeField] GameObject harvestedForm;
+
     private void Awake() => state.Subscribe(AnimationControll);
 
     public bool IsReadyToHarvest()
@@ -35,6 +40,11 @@ public class IngrediantInstance : PooledObject
         switch (state)
         {
             case ProdState.WaitForComplete:
+                if (harvestedForm != null)
+                {
+                    harvestedForm.SetActive(false);
+                    defaultForm.SetActive(true);
+                }
                 break;
 
             case ProdState.Completed:
@@ -46,7 +56,11 @@ public class IngrediantInstance : PooledObject
                 break;
 
             case ProdState.Harvested:
-                animator.SetTrigger("Harvest");
+                if (harvestedForm != null)
+                {
+                    harvestedForm.SetActive(true);
+                    defaultForm.SetActive(false);
+                }
                 break;
         }
     }
@@ -238,9 +252,22 @@ public class IngrediantInstance : PooledObject
         float eased = baseCurve.Evaluate(t);
         eased = Mathf.Lerp(1f - order01, 1f, eased);
 
-        // 보간
-        transform.position = Vector3.Lerp(transform.position, targetPos, eased);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, eased);
+        Vector3 dirToTargetPos;
+
+        if(ownerCharacterRD is PlayerRunTimeData)
+        {
+            dirToTargetPos = (transform.position - Manager.player.PlayerObj.transform.position).normalized;
+        }
+        else
+        {
+            dirToTargetPos = (transform.position - ownerCharacterRD.ProdsAttachPoint.parent.position).normalized;
+        }
+
+            // 보간
+            transform.position = Vector3.Lerp(transform.position, targetPos, eased);
+
+        Quaternion lookAtDir = Quaternion.LookRotation(Vector3.forward, dirToTargetPos.normalized);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookAtDir, eased);
     }
 }
 

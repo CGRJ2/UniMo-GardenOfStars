@@ -4,11 +4,16 @@ using UnityEngine;
 public class WorkerManageBuilding : InteractableBase
 {
     [SerializeField] WaitingTile interactTile;
+    [SerializeField] Vector3 spawnPointOffset;
+    public Vector3 GetSpawnPos()
+    {
+        return transform.position + spawnPointOffset;
+    }
+
 
     private void Awake()
     {
         Manager.buildings.workerBuilding = this;
-
 
         interactTile.WaitingCompletedAction = OpenWorkerPanel;
         interactTile.Init();

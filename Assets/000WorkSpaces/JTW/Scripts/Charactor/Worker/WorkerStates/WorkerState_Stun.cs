@@ -15,6 +15,9 @@ public class WorkerState_Stun : WorkerStateBase
     {
         _timer = 0;
 
+        WorkerData.StunUI.gameObject.SetActive(true);
+        WorkerData.StunImage.fillAmount = 0;
+
         Manager.Audio.SfxPlay("WorkerStun", WorkerData.transform);
 
         WorkerData.IsAwake.Value = false;
@@ -43,8 +46,9 @@ public class WorkerState_Stun : WorkerStateBase
         }
 
         _timer += Time.deltaTime;
+        WorkerData.StunImage.fillAmount = _timer / WorkerData.StunTime;
 
-        if(_timer >= WorkerData.StunTime)
+        if (_timer >= WorkerData.StunTime)
         {
             StateMachine.ChangeState(WorkerStates.Idle);
         }
@@ -55,12 +59,16 @@ public class WorkerState_Stun : WorkerStateBase
     public override void Exit()
     {
         WorkerData.IsStun.Value = false;
+        WorkerData.StunImage.fillAmount = 0;
+        WorkerData.StunUI.gameObject.SetActive(false);
     }
 
     private IEnumerator AwakeCoroutine()
     {
         WorkerData.IsAwake.Value = true;
         WorkerData.IsStun.Value = false;
+        WorkerData.StunImage.fillAmount = 0;
+        WorkerData.StunUI.gameObject.SetActive(false);
 
         yield return _delay;
 

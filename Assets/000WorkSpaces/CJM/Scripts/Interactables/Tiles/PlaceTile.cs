@@ -8,14 +8,24 @@ public class PlaceTile : InteractableBase
     [SerializeField] CanvasGroup activatedView;
     [SerializeField] CanvasGroup deactivatedView;
     public string tileId => gameObject.name;
-
-    [SerializeField] float installingTime;
-    [SerializeField] float progressedTime;
+    float progressedTime;
     [SerializeField] Transform attachPoint;
+
+    [Header("설치 시간")]
+    [SerializeField] float installingTime;
 
     [Header("설치 가능 건물 제한")]
     [SerializeField] string buildableID;
+    
+    [Header("기본 건물 여부 (스테이지 첫 진입 시, 건물을 기본으로 설치해둘 것인지)")]
+    [SerializeField] bool isDefaultBuilding;
+
     PlaceTileState state;
+
+    // 건물 설치 FX 효과
+    ObjectPool _Pool_FX_Construct;
+    GameObject _FX_Construct;
+
 
     [HideInInspector] public PlaceTileGroup _parentGroup;
 
@@ -59,6 +69,9 @@ public class PlaceTile : InteractableBase
         if (placeTileData == null)
         {
             Manager.firebase.UserData.CurStageData.PlaceTileList.Add(tileId);
+
+            if (isDefaultBuilding)
+                StartCoroutine(DefaultBuildingFirstInit());
         }
         else
         {
@@ -73,14 +86,36 @@ public class PlaceTile : InteractableBase
                 };
             }
         }
+
+        // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
+        Addressables.LoadAssetAsync<GameObject>("FX/Constructing.prefab").Completed += task =>
+        {
+            _Pool_FX_Construct = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
+        };
     }
 
+    IEnumerator DefaultBuildingFirstInit()
+    {
+        // 첫 초기화인데, 기본 건물이라면.
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
+        string[] buildingIDs = Manager.data.Stage.Values[curStageID].GetBuildingIdList();
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId) != null);
 
+        // 해당 스테이지 DB에 첫번째 건물 넣어주기
+        Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId).BuildingID.Value = buildingIDs[0];
+
+        // 인스턴스도 생성
+        Addressables.LoadAssetAsync<GameObject>(buildingIDs[0]).Completed += task =>
+        {
+            GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
+        };
+    }
     IEnumerator ProgressingTask()
     {
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             yield return null;
+            PlayerRunTimeData data = (PlayerRunTimeData)characterRD;
 
             // 작업 영역 밖으로 나가는 경우
             if (characterRD == null)
@@ -94,13 +129,23 @@ public class PlaceTile : InteractableBase
             {
                 progressBar.gameObject.SetActive(false);
                 progressedTime = 0; // 진행도 초기화
+                data.CurPlace = null;
+                if (_FX_Construct != null)
+                {
+                    _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+                    _FX_Construct = null;
+                }
                 continue;
             }
+
+            if (data.CurPlace != null && data.CurPlace != this) continue;
+            data.CurPlace = this;
 
             // 재가동 시, 사운드 이펙트 실행
             if (progressedTime == 0)
             {
                 Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
+                _FX_Construct = _Pool_FX_Construct.DisposePooledObj(transform.position, transform.rotation);
             }
 
             IngrediantInstance ownedBuilding;
@@ -108,7 +153,6 @@ public class PlaceTile : InteractableBase
             // 손에 건물이 없을 시, continue
             if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
             else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
-
 
             // 작업 시작 시, 진행도 표기
             progressBar.gameObject.SetActive(true);
@@ -118,6 +162,7 @@ public class PlaceTile : InteractableBase
             // 설치가 완료된 경우
             if (installingTime < progressedTime)
             {
+                data.CurPlace = null;
                 CompleteTask(); // 결과물 생성
                 progressedTime = 0; // 진행도 초기화
                 break;
@@ -156,6 +201,10 @@ public class PlaceTile : InteractableBase
 
             // 설치 SFX 종료
             Manager.Audio.SfxStopLoop("Contruct", 0.5f);
+
+            // 설치 FX 효과 비활성화
+            _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+
         });
 
 

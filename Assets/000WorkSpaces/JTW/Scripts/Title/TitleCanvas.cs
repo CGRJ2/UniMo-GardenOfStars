@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
@@ -9,6 +11,8 @@ using UnityEngine.UI;
 
 public class TitleCanvas : KYS.BaseUI
 {
+    private TextMeshProUGUI tapScreen => GetUI<TextMeshProUGUI>("TapScreenText");
+
     protected override void Awake()
     {
         base.Awake();
@@ -17,13 +21,14 @@ public class TitleCanvas : KYS.BaseUI
 
     private void OnEnable()
     {
-        GetEvent("Panel").Click += OnClick;
+        tapScreen.text = GetLocalizedText("ui_titlescene_touch_screen");
+        GetEvent("TitlePanel").Click += OnClick;
         Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
     }
 
     private void OnDisable()
     {
-        GetEvent("Panel").Click -= OnClick;
+        GetEvent("TitlePanel").Click -= OnClick;
         Manager.firebase.UserData.StageList.OnAdded.RemoveListener(GoTutorialScene);
     }
 
@@ -36,10 +41,12 @@ public class TitleCanvas : KYS.BaseUI
         }
 
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(2);
     }
 
     private void GoTutorialScene(StageData data)
     {
         Addressables.LoadSceneAsync("StageScene");
+        Manager.ui.ShowUltraSimpleLoadingScreen(2);
     }
 }

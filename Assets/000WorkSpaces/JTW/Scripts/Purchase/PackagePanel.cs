@@ -12,33 +12,34 @@ public class PackagePanel : KYS.BaseUI
     [SerializeField] private ShopPanel _shopPanel;
 
     // 번역이 필요할 Text
-    private TextMeshProUGUI _nameText;
-    private TextMeshProUGUI _descriptionText;
-    private TextMeshProUGUI _buttonText;
+    private TextMeshProUGUI _nameText => GetUI<TextMeshProUGUI>("PackageName");
+    private TextMeshProUGUI _descriptionText => GetUI<TextMeshProUGUI>("PackageDesc");
+    private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("PackageButtonText");
 
     private Button _buyButton;
+
+    private Image _completeImage => GetUI<Image>("CompleteBG");
+    private Image _soldImage => GetUI<Image>("SoldImage");
 
     protected override void Awake()
     {
         base.Awake();
-        _nameText = GetUI<TextMeshProUGUI>("PackageName");
-        _descriptionText = GetUI<TextMeshProUGUI>("PackageDesc");
-        _buttonText = GetUI<TextMeshProUGUI>("PackageButtonText");
-
-        _buyButton = GetUI<Button>("PackageButton");
 
         _iapButton = GetComponent<CodelessIAPButton>();
 
+        _buyButton = GetComponent<Button>();
         _buyButton.onClick.AddListener(OnClick);
 
         if (Manager.firebase.UserData.AdRemoved.Value)
         {
             _buttonText.text = "구매 완료";
+            _completeImage.gameObject.SetActive(true);
+            _soldImage.gameObject.SetActive(true);
             _buyButton.interactable = false;
         }
         else
         {
-            _buttonText.text = "구매";
+            _buttonText.text = "KRW 8900";
         }
 
         _iapButton.onOrderConfirmed.AddListener(_shopPanel.OnOrderConfirmed);
@@ -68,6 +69,8 @@ public class PackagePanel : KYS.BaseUI
     {
         Manager.firebase.UserData.AdRemoved.Value = true;
         _buttonText.text = "구매 완료";
+        _completeImage.gameObject.SetActive(true);
+        _soldImage.gameObject.SetActive(true);
         _buyButton.interactable = false;
     }
 }

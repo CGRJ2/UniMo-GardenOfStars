@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
 using GameQuest;
+using UnityEngine.SceneManagement;
 
 namespace KYS
 {
@@ -40,8 +41,10 @@ namespace KYS
         {
             if (enableDebugLogs)
             { 
-                //Debug.Log("[DialogueManager] 초기화 완료"); 
+                ////Debug.Log("[DialogueManager] 초기화 완료"); 
             }
+
+            SceneManager.sceneLoaded += (scene, mode) => OnDialogueCompleted = null;
         }
 
 
@@ -52,7 +55,7 @@ namespace KYS
         public bool StartDialogueWithPanel(string npcId, string stageId, string startNodeId = null)
         {
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] StoryPanel과 함께 대화 시작: {npcId}, {stageId}, {startNodeId}");
+                ////Debug.Log($"[DialogueManager] StoryPanel과 함께 대화 시작: {npcId}, {stageId}, {startNodeId}");
 
             // StoryPanel 생성 및 초기화 완료 대기
             StartCoroutine(StartDialogueWithPanelCoroutine(npcId, stageId, startNodeId));
@@ -66,7 +69,7 @@ namespace KYS
         private IEnumerator StartDialogueWithPanelCoroutine(string npcId, string stageId, string startNodeId)
         {
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] StoryPanel 생성 시작: {npcId}");
+                ////Debug.Log($"[DialogueManager] StoryPanel 생성 시작: {npcId}");
 
             // StoryPanel 생성
             Manager.ui.ShowPanelAsync<StoryPanel>();
@@ -93,7 +96,9 @@ namespace KYS
             }
 
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] StoryPanel 발견: {storyPanel.name}");
+            {
+                //Debug.Log($"[DialogueManager] StoryPanel 발견: {storyPanel.name}");
+            }
 
             // StoryPanel이 이미 초기화되었는지 확인
             bool isAlreadyInitialized = storyPanel.IsInitialized;
@@ -101,12 +106,16 @@ namespace KYS
             if (isAlreadyInitialized)
             {
                 if (enableDebugLogs)
-                    Debug.Log("[DialogueManager] StoryPanel이 이미 초기화됨");
+                {
+                    //Debug.Log("[DialogueManager] StoryPanel이 이미 초기화됨");
+                }
             }
             else
             {
                 if (enableDebugLogs)
-                    Debug.Log("[DialogueManager] StoryPanel 초기화 대기 중...");
+                {
+                    //Debug.Log("[DialogueManager] StoryPanel 초기화 대기 중...");
+                }
             }
 
             // 초기화 완료 대기 (이미 초기화된 경우 스킵)
@@ -116,7 +125,9 @@ namespace KYS
                 System.Action onInitializationCompleted = () => {
                     initializationCompleted = true;
                     if (enableDebugLogs)
-                        Debug.Log("[DialogueManager] StoryPanel 초기화 완료 확인됨");
+                    {
+                        //Debug.Log("[DialogueManager] StoryPanel 초기화 완료 확인됨");
+                    }
                 };
 
                 storyPanel.OnInitializationCompleted += onInitializationCompleted;
@@ -141,18 +152,22 @@ namespace KYS
 
             // 대화 시작
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] 대화 시작: {npcId}");
+            {
+                //Debug.Log($"[DialogueManager] 대화 시작: {npcId}");
+            }
 
             bool success = StartDialogue(npcId, stageId, startNodeId);
             if (success)
             {
                 if (enableDebugLogs)
-                    Debug.Log($"[DialogueManager] StoryPanel과 함께 대화 시작 성공: {npcId}");
+                {
+                    //Debug.Log($"[DialogueManager] StoryPanel과 함께 대화 시작 성공: {npcId}");
+                }
 
                 // CurrentDialogueData 확인
                 if (currentDialogueData != null)
                 {
-                    Debug.Log($"[DialogueManager] CurrentDialogueData 설정됨: {currentDialogueData.Id}");
+                    //Debug.Log($"[DialogueManager] CurrentDialogueData 설정됨: {currentDialogueData.Id}");
                 }
                 else
                 {
@@ -202,7 +217,7 @@ namespace KYS
         /// </summary>
         public bool MoveToNode(string nodeId)
         {
-            Debug.Log($"[DialogueManager] MoveToNode 호출됨 - 노드 ID: '{nodeId}'");
+            //Debug.Log($"[DialogueManager] MoveToNode 호출됨 - 노드 ID: '{nodeId}'");
             
             if (string.IsNullOrEmpty(nodeId))
             {
@@ -230,7 +245,7 @@ namespace KYS
                 return false;
             }
             
-            Debug.Log($"[DialogueManager] 노드 '{nodeId}' 찾음 - 타입: {csvData.NodeType}");
+            //Debug.Log($"[DialogueManager] 노드 '{nodeId}' 찾음 - 타입: {csvData.NodeType}");
 
             // Firebase에서 동적 데이터 가져오기 또는 생성
             DialogueData dialogueData = GetOrCreateDialogueData(nodeId);
@@ -245,7 +260,7 @@ namespace KYS
             dialogueHistory.Add(nodeId);
 
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] 노드 이동: {nodeId}");
+                //Debug.Log($"[DialogueManager] 노드 이동: {nodeId}");
 
             OnDialogueNodeChanged?.Invoke(nodeId);
             OnDialogueStarted?.Invoke(dialogueData);
@@ -301,18 +316,22 @@ namespace KYS
                 return false;
             }
 
-            string[] choiceNextIds = currentDialogueData.GetChoiceNextIds();
-            Debug.Log($"[DialogueManager] 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
+            string[] choiceNextIds = currentDialogueData.GetFilteredChoiceNextIds();
+            Debug.Log($"[DialogueManager] 필터링된 선택지 다음 노드 ID들: [{string.Join(", ", choiceNextIds)}]");
             
-            if (choiceIndex < 0 || choiceIndex >= choiceNextIds.Length)
+            // 필터링된 선택지 개수를 기준으로 인덱스 확인
+            int availableChoices = choiceNextIds.Length;
+            Debug.Log($"[DialogueManager] 사용 가능한 선택지 개수: {availableChoices}");
+            
+            if (choiceIndex < 0 || choiceIndex >= availableChoices)
             {
-                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {choiceNextIds.Length - 1})");
+                Debug.LogError($"[DialogueManager] 잘못된 선택지 인덱스: {choiceIndex} (최대: {availableChoices - 1})");
                 return false;
             }
 
             // 선택한 선택지 저장
-            currentDialogueData.ChoiceSelected.Value = choiceIndex;
-            currentDialogueData.IsCompleted.Value = true;
+            //currentDialogueData.ChoiceSelected.Value = choiceIndex;
+            //currentDialogueData.IsCompleted.Value = true;
 
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
@@ -320,9 +339,9 @@ namespace KYS
             string nextNodeId = choiceNextIds[choiceIndex];
             Debug.Log($"[DialogueManager] 선택된 다음 노드 ID: '{nextNodeId}'");
             
-            if (string.IsNullOrEmpty(nextNodeId))
+            if (string.IsNullOrEmpty(nextNodeId) || nextNodeId.ToLower() == "end")
             {
-                Debug.LogWarning("[DialogueManager] 다음 노드 ID가 비어있음 - 대화 종료");
+                Debug.LogWarning($"[DialogueManager] 다음 노드 ID가 비어있거나 'end': '{nextNodeId}' - 대화 종료");
                 EndDialogue();
                 return false;
             }
@@ -339,16 +358,16 @@ namespace KYS
         /// </summary>
         public void EndDialogue()
         {
-            Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
+            //Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
 
             if (currentDialogueData != null)
             {
-                currentDialogueData.IsCompleted.Value = true;
+                //currentDialogueData.IsCompleted.Value = true;
                 OnDialogueCompleted?.Invoke(currentDialogueData);
             }
 
             if (enableDebugLogs)
-                Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
+                //Debug.Log($"[DialogueManager] 대화 종료: {currentNpcId}");
 
             currentNpcId = null;
             currentStageId = null;
@@ -451,7 +470,7 @@ namespace KYS
             }
 
             bool isCompleted = quest.State == QuestState.Completed;
-            Debug.Log($"[DialogueManager] 퀘스트 완료 체크: {questId} = {isCompleted}");
+            //Debug.Log($"[DialogueManager] 퀘스트 완료 체크: {questId} = {isCompleted}");
             return isCompleted;
         }
 
@@ -496,7 +515,7 @@ namespace KYS
             int currentProgress = totalCount > 0 ? (completedCount * 100) / totalCount : 0;
 
             bool meetsRequirement = currentProgress >= requiredProgress;
-            Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {parts[0]} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
+            //Debug.Log($"[DialogueManager] 퀘스트 진행도 체크: {parts[0]} = {currentProgress}% >= {requiredProgress}% = {meetsRequirement}");
             return meetsRequirement;
         }
 
@@ -514,7 +533,7 @@ namespace KYS
 
             // TODO: 실제 레벨 시스템과 연동
             // 예시: PlayerManager.Instance.GetLevel(levelType) >= requiredLevel
-            Debug.Log($"[DialogueManager] 레벨 체크: {levelType} >= {requiredLevel}");
+            //Debug.Log($"[DialogueManager] 레벨 체크: {levelType} >= {requiredLevel}");
             return true; // 임시로 항상 true
         }
 
@@ -532,7 +551,7 @@ namespace KYS
 
             // TODO: 실제 인벤토리 시스템과 연동
             // 예시: InventoryManager.Instance.GetItemCount(itemId) >= requiredCount
-            Debug.Log($"[DialogueManager] 아이템 보유 체크: {itemId} >= {requiredCount}");
+            //Debug.Log($"[DialogueManager] 아이템 보유 체크: {itemId} >= {requiredCount}");
             return true; // 임시로 항상 true
         }
 
@@ -550,7 +569,7 @@ namespace KYS
 
             // TODO: 실제 플래그 시스템과 연동
             // 예시: FlagManager.Instance.GetFlag(flagKey) == expectedValue
-            Debug.Log($"[DialogueManager] 플래그 체크: {flagKey} == {expectedValue}");
+            //Debug.Log($"[DialogueManager] 플래그 체크: {flagKey} == {expectedValue}");
             return true; // 임시로 항상 true
         }
 
@@ -605,44 +624,48 @@ namespace KYS
         }
 
 
-        public void ShowTutorialPopUp(string nodeID, TutorialPopUp.TutorialPositionType positionType, int deley = 3000, bool autoClose = true)
+        /// <summary>
+        /// 컴퍼스 팝업 표시 (새로운 메서드)
+        /// </summary>
+        public void ShowCompassPopUp(string nodeID, CompassMessagePopup.CompassPositionType positionType, bool autoClose = true, int deley = 3000)
         {
             try
             {
-                Debug.Log("[DialogueManager] 튜토리얼 팝업 표시 시작");
+                //Debug.Log("[DialogueManager] 컴퍼스 팝업 표시 시작");
 
-                // 1. 튜토리얼 팝업 열기
-                Manager.ui.ShowPopUpAsync<TutorialPopUp>(popup =>
+                // 1. 컴퍼스 팝업 열기
+                Manager.ui.ShowPopUpAsync<CompassMessagePopup>(popup =>
                 {
-                    popup.SetTutorialPosition(positionType);
-                    popup.SetTutorialNode(nodeID);
+                    popup.SetCompassPosition(positionType);
+                    popup.SetCompassNode(nodeID);
 
                     if (autoClose)
                     {
-                        Debug.Log($"[DialogueManager] 튜토리얼 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
+                        //Debug.Log($"[DialogueManager] 컴퍼스 팝업이 열렸습니다. {deley / 1000}초 후 자동 종료됩니다...");
 
                         // 2. 지정된 시간 대기 후 자동 종료
                         StartCoroutine(WaitDelay(deley, popup));
                     }
                     else
                     {
-                        Debug.Log("[DialogueManager] 튜토리얼 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
+                        //Debug.Log("[DialogueManager] 컴퍼스 팝업이 수동 모드로 열렸습니다. 사용자가 직접 닫아야 합니다.");
                     }
                 });
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[DialogueManager] 튜토리얼 팝업 표시 실패: {e.Message}");
+                Debug.LogError($"[DialogueManager] 컴퍼스 팝업 표시 실패: {e.Message}");
             }
         }
 
-        private IEnumerator WaitDelay(float delay, TutorialPopUp popup)
+
+        private IEnumerator WaitDelay(float delay, CompassMessagePopup popup)
         {
             yield return new WaitForSeconds(delay / 1000);
 
             // 3. 플레이어 행동 완료 시뮬레이션
-            popup.CompleteTutorialAction();
-            Debug.Log("[AddressableSceneLoadingManager] 플레이어 행동 완료 시뮬레이션");
+            popup.CompleteCompassAction();
+            //Debug.Log("[DialogueManager] 컴퍼스 행동 완료 시뮬레이션");
         }
 
         /// <summary>
@@ -671,11 +694,13 @@ namespace KYS
             if (enableDebugLogs)
             {
                 string durationText = dialogueData.CenterImageInfinite ? "무한" : $"{dialogueData.CenterImageDuration}초";
+                /*
                 Debug.Log($"[DialogueManager] 가운데 이미지 표시: {dialogueData.CenterImage}, " +
                          $"지속시간: {durationText}, " +
                          $"페이드인: {dialogueData.CenterImageFadeInTime}초, " +
                          $"페이드아웃: {dialogueData.CenterImageFadeOutTime}초, " +
                          $"캐릭터 숨김: {dialogueData.HideCharacterImages}");
+                */
             }
         }
 
@@ -690,7 +715,7 @@ namespace KYS
                 storyPanel.ForceHideCenterImage();
                 if (enableDebugLogs)
                 {
-                    Debug.Log("[DialogueManager] 가운데 이미지 수동 숨김");
+                    //Debug.Log("[DialogueManager] 가운데 이미지 수동 숨김");
                 }
             }
         }
@@ -701,11 +726,11 @@ namespace KYS
         [ContextMenu("디버그 정보 출력")]
         public void PrintDebugInfo()
         {
-            Debug.Log($"[DialogueManager] 현재 NPC: {currentNpcId}");
-            Debug.Log($"[DialogueManager] 현재 스테이지: {currentStageId}");
-            Debug.Log($"[DialogueManager] 현재 노드: {currentNodeId}");
-            Debug.Log($"[DialogueManager] 대화 활성: {IsDialogueActive}");
-            Debug.Log($"[DialogueManager] 대화 히스토리: {string.Join(" -> ", dialogueHistory)}");
+            //Debug.Log($"[DialogueManager] 현재 NPC: {currentNpcId}");
+            //Debug.Log($"[DialogueManager] 현재 스테이지: {currentStageId}");
+            //Debug.Log($"[DialogueManager] 현재 노드: {currentNodeId}");
+            //Debug.Log($"[DialogueManager] 대화 활성: {IsDialogueActive}");
+            //Debug.Log($"[DialogueManager] 대화 히스토리: {string.Join(" -> ", dialogueHistory)}");
         }
     }
 }

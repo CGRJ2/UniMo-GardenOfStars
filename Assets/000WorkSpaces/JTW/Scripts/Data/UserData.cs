@@ -20,11 +20,10 @@ public partial class UserData : FirebaseData
 
     public FirebaseDataList<DailyAdData> DailyAdList;
 
-    public FirebaseDataList<StageExitTimeData> StageExitTimeList;
 
     public StageData CurStageData => StageList.Get(CurStage.Value);
 
-
+    public SkinData Skin;
 
     public UserData(string id, string parentPath = null) : base(id, parentPath)
     {
@@ -57,5 +56,8 @@ public partial class UserData : FirebaseData
 
         TutorialSequence = new FirebaseProperty<int>("TutorialSequence", Path);
         InitList.Add(TutorialSequence);
+
+        Skin = new SkinData("Skin", Path);
+        InitList.Add(Skin);
     }
 }

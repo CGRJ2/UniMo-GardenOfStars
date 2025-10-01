@@ -49,15 +49,9 @@ namespace KYS
         
         [Header("Debug Settings")]
         [SerializeField] private bool enableProgressSimulation = true; // 테스트용 진행률 시뮬레이션
-        [SerializeField] private bool enableExternalProgressMonitoring = true; // 외부 진행률 모니터링
         
-        // 외부 모니터링 상태 관리
-        private bool isExternalMonitoringActive = false;
-        [SerializeField] private float minDisplayTime = 1.5f; // 최소 표시 시간 (초)
-        
-        // 외부 진행률 모니터링
-        private Coroutine externalProgressCoroutine;
-        private float screenStartTime; // 화면 표시 시작 시간
+        [Header("Ultra Simple Mode")]
+        [SerializeField] private bool ultraSimpleMode = false; // 초간단 모드 (배경 이미지만 표시)
         
         // 내부 상태
         private int currentImageIndex = 0;
@@ -198,22 +192,11 @@ namespace KYS
         {
             base.Cleanup();
             StopAllCoroutines();
-            
-            // 외부 진행률 모니터링 정리
-            if (externalProgressCoroutine != null)
-            {
-                StopCoroutine(externalProgressCoroutine);
-                externalProgressCoroutine = null;
-            }
-            
-            // 외부 모니터링 상태 초기화
-            isExternalMonitoringActive = false;
         }
         
         private void SetupLoadingScreen()
         {
             //Debug.Log("[LoadingScreen] 로딩 화면 설정 시작");
-            screenStartTime = Time.time; // 화면 표시 시작 시간 기록
             
             // 로딩 화면 시작 시 진행률을 강제로 0%로 초기화
             ForceResetProgress();
@@ -261,13 +244,13 @@ namespace KYS
             // 초기 이미지 설정 (첫 번째 이미지만 활성화)
             if (loadingImages != null && loadingImages.Length > 0)
             {
-                Debug.Log($"[LoadingScreen] SetupLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
+                //Debug.Log($"[LoadingScreen] SetupLoadingScreen: loadingImages 배열 길이: {loadingImages.Length}");
                 for (int i = 0; i < loadingImages.Length; i++)
                 {
                     if (loadingImages[i] != null)
                     {
                         loadingImages[i].gameObject.SetActive(i == 0);
-                        Debug.Log($"[LoadingScreen] SetupLoadingScreen: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")} - 알파값: {loadingImages[i].color.a}");
+                        //Debug.Log($"[LoadingScreen] SetupLoadingScreen: 이미지 {i} {(i == 0 ? "활성화" : "비활성화")} - 알파값: {loadingImages[i].color.a}");
                         
                         // 첫 번째 이미지의 알파값을 강제로 1로 설정
                         if (i == 0)
@@ -275,7 +258,7 @@ namespace KYS
                             Color color = loadingImages[i].color;
                             color.a = 1f;
                             loadingImages[i].color = color;
-                            Debug.Log($"[LoadingScreen] SetupLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
+                            //Debug.Log($"[LoadingScreen] SetupLoadingScreen: 첫 번째 이미지 알파값을 1로 강제 설정");
                         }
                     }
                     else
@@ -284,7 +267,7 @@ namespace KYS
                     }
                 }
                 currentImageIndex = 0;
-                Debug.Log("[LoadingScreen] SetupLoadingScreen: 초기 이미지 인덱스: 0");
+                //Debug.Log("[LoadingScreen] SetupLoadingScreen: 초기 이미지 인덱스: 0");
             }
             else
             {
@@ -304,19 +287,8 @@ namespace KYS
                 //Debug.Log("[LoadingScreen] 자동 메시지 전환 시작");
             }
             
-            // 외부 진행률 모니터링 시작
-            if (enableExternalProgressMonitoring)
-            {
-                // 외부 모니터링 시작 전에 초기 진행률을 0%로 강제 설정
-                SetProgress(0f);
-                //Debug.Log("[LoadingScreen] 외부 모니터링 시작 전 초기 진행률 0% 설정");
-                
-                isExternalMonitoringActive = true;
-                externalProgressCoroutine = StartCoroutine(MonitorExternalProgress());
-                //Debug.Log("[LoadingScreen] 외부 진행률 모니터링 시작");
-            }
             // 테스트용 진행률 시뮬레이션 시작 (실제 사용 시 제거)
-            else if (enableProgressSimulation)
+            if (enableProgressSimulation)
             {
                 // 시뮬레이션 시작 전에 초기 진행률을 0%로 강제 설정
                 SetProgress(0f);
@@ -363,40 +335,44 @@ namespace KYS
             //Debug.Log($"[LoadingScreen] useSlider: {useSlider}, loadingProgressBar: {loadingProgressBar != null}");
             //Debug.Log($"[LoadingScreen] progressText: {progressText != null}");
             
-            // Image Fill 방식으로 진행률 표시
-            if (useImageFill && fillProgressImage != null)
+            // 초간단 모드가 아닐 때만 진행률 UI 요소들 활성화
+            if (!ultraSimpleMode)
             {
-                float previousFillAmount = fillProgressImage.fillAmount;
-                fillProgressImage.fillAmount = progress;
-                fillProgressImage.gameObject.SetActive(true); // Progress 이미지 활성화
-                //Debug.Log($"[LoadingScreen] Image Fill 진행률 업데이트: {previousFillAmount:F3} → {progress:F3} ({progress * 100:F1}%)");
-            }
-            else if (useImageFill && fillProgressImage == null)
-            {
-                //Debug.LogWarning("[LoadingScreen] useImageFill이 true이지만 fillProgressImage가 null입니다.");
-            }
-            
-            // Slider 방식으로 진행률 표시
-            if (useSlider && loadingProgressBar != null)
-            {
-                loadingProgressBar.value = progress;
-                loadingProgressBar.gameObject.SetActive(true); // Progress 바 활성화
-                //Debug.Log($"[LoadingScreen] Slider 진행률 업데이트: {progress}");
-            }
-            else if (useSlider && loadingProgressBar == null)
-            {
-                //Debug.LogWarning("[LoadingScreen] useSlider가 true이지만 loadingProgressBar가 null입니다.");
-            }
-            
-            if (progressText != null)
-            {
-                progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
-                progressText.gameObject.SetActive(true); // Progress 텍스트 활성화
-                //Debug.Log($"[LoadingScreen] Progress Text 업데이트: {Mathf.RoundToInt(progress * 100)}%");
-            }
-            else
-            {
-                //Debug.LogWarning("[LoadingScreen] progressText가 null입니다.");
+                // Image Fill 방식으로 진행률 표시
+                if (useImageFill && fillProgressImage != null)
+                {
+                    float previousFillAmount = fillProgressImage.fillAmount;
+                    fillProgressImage.fillAmount = progress;
+                    fillProgressImage.gameObject.SetActive(true); // Progress 이미지 활성화
+                    //Debug.Log($"[LoadingScreen] Image Fill 진행률 업데이트: {previousFillAmount:F3} → {progress:F3} ({progress * 100:F1}%)");
+                }
+                else if (useImageFill && fillProgressImage == null)
+                {
+                    //Debug.LogWarning("[LoadingScreen] useImageFill이 true이지만 fillProgressImage가 null입니다.");
+                }
+                
+                // Slider 방식으로 진행률 표시
+                if (useSlider && loadingProgressBar != null)
+                {
+                    loadingProgressBar.value = progress;
+                    loadingProgressBar.gameObject.SetActive(true); // Progress 바 활성화
+                    //Debug.Log($"[LoadingScreen] Slider 진행률 업데이트: {progress}");
+                }
+                else if (useSlider && loadingProgressBar == null)
+                {
+                    //Debug.LogWarning("[LoadingScreen] useSlider가 true이지만 loadingProgressBar가 null입니다.");
+                }
+                
+                if (progressText != null)
+                {
+                    progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
+                    progressText.gameObject.SetActive(true); // Progress 텍스트 활성화
+                    //Debug.Log($"[LoadingScreen] Progress Text 업데이트: {Mathf.RoundToInt(progress * 100)}%");
+                }
+                else
+                {
+                    //Debug.LogWarning("[LoadingScreen] progressText가 null입니다.");
+                }
             }
             
             OnProgressChanged?.Invoke(progress);
@@ -638,13 +614,6 @@ namespace KYS
             // 코루틴들 정리
             StopAllCoroutines();
             
-            // 외부 모니터링 상태 초기화
-            isExternalMonitoringActive = false;
-            if (externalProgressCoroutine != null)
-            {
-                StopCoroutine(externalProgressCoroutine);
-                externalProgressCoroutine = null;
-            }
             
             Debug.Log("[LoadingScreen] ResetLoadingScreen() 완료");
         }
@@ -951,134 +920,6 @@ namespace KYS
             }
         }
 
-        /// <summary>
-        /// 외부 진행률 모니터링 (AddressableSceneLoadingManager에서 데이터 가져오기)
-        /// </summary>
-        private IEnumerator MonitorExternalProgress()
-        {
-            //Debug.Log("[LoadingScreen] 외부 진행률 모니터링 시작");
-
-            // 초기 대기 시간 (로딩 화면이 완전히 준비될 때까지)
-            yield return new WaitForSeconds(0.2f);
-            //Debug.Log("[LoadingScreen] 외부 모니터링 초기 대기 완료");
-
-            // AddressableSceneLoadingManager 찾기
-            AddressableSceneLoadingManager loadingManager = null;
-            float timeoutTimer = 0f;
-            const float TIMEOUT_DURATION = 10f; // 10초 타임아웃
-
-            // 매니저 찾기 (없으면 생성될 때까지 대기)
-            while (loadingManager == null && isExternalMonitoringActive)
-            {
-                loadingManager = FindObjectOfType<AddressableSceneLoadingManager>();
-                if (loadingManager == null)
-                {
-                    timeoutTimer += 0.5f;
-                    if (timeoutTimer >= TIMEOUT_DURATION)
-                    {
-                        Debug.LogError("[LoadingScreen] AddressableSceneLoadingManager를 찾을 수 없습니다. 타임아웃 발생. 시뮬레이션 모드로 전환합니다.");
-                        // 타임아웃 시 시뮬레이션 모드로 전환
-                        enableExternalProgressMonitoring = false;
-                        enableProgressSimulation = true;
-                        StartCoroutine(SimulateProgressForTesting());
-                        yield break;
-                    }
-
-                    //Debug.Log($"[LoadingScreen] AddressableSceneLoadingManager를 찾을 수 없습니다. 대기 중... ({timeoutTimer:F1}s)");
-                    yield return new WaitForSeconds(0.5f);
-                }
-                else
-                {
-                    //Debug.Log("[LoadingScreen] AddressableSceneLoadingManager 발견!");
-                    //Debug.Log($"[LoadingScreen] 현재 매니저 진행률: {loadingManager.CurrentProgress * 100:F1}%");
-                    //Debug.Log($"[LoadingScreen] 현재 매니저 메시지: {loadingManager.CurrentMessage}");
-                    //Debug.Log($"[LoadingScreen] 현재 매니저 로딩 상태: {loadingManager.IsLoading}");
-                }
-            }
-
-            // 모니터링 루프
-            while (isExternalMonitoringActive && enableExternalProgressMonitoring)
-            {
-                // 로딩 중인지 확인
-                if (loadingManager != null && loadingManager.IsLoading)
-                {
-                    // 로딩이 완료되었는지 확인
-                    if (loadingManager.CurrentProgress >= 1f)
-                    {
-                        //Debug.Log("[LoadingScreen] 외부 모니터링에서 로딩 완료 감지 - 모니터링 중단");
-                        isExternalMonitoringActive = false;
-                        break;
-                    }
-                    
-                    try
-                    {
-                        // 현재 진행률 가져오기
-                        float progress = loadingManager.CurrentProgress;
-                        string message = loadingManager.CurrentMessage;
-
-                        // 진행률이 0%보다 크고 유효한 경우에만 업데이트
-                        if (progress > 0f)
-                        {
-                            //Debug.Log($"[LoadingScreen] 외부 진행률 업데이트: {progress * 100:F1}% - {message}");
-
-                            // UI 업데이트
-                            SetProgress(progress);
-                            if (!string.IsNullOrEmpty(message))
-                            {
-                                SetCenterMessage(message);
-                            }
-
-                            // 진행률이 100%에 도달하면 모니터링 중단
-                            if (progress >= 1f)
-                            {
-                                //Debug.Log("[LoadingScreen] 외부 모니터링에서 100% 감지 - 모니터링 중단");
-                                isExternalMonitoringActive = false;
-                                break;
-                            }
-                        }
-                        else if (progress == 0f)
-                        {
-                            // 0%인 경우에도 UI를 0%로 확실히 설정
-                            //Debug.Log("[LoadingScreen] 진행률이 0% - UI 강제 0% 설정");
-                            SetProgress(0f);
-                        }
-                        else
-                        {
-                            //Debug.Log("[LoadingScreen] 진행률이 0%이므로 업데이트 건너뜀");
-                        }
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError($"[LoadingScreen] 외부 진행률 업데이트 중 오류 발생: {e.Message}");
-                        // 오류 발생 시 시뮬레이션 모드로 전환
-                        enableExternalProgressMonitoring = false;
-                        enableProgressSimulation = true;
-                        StartCoroutine(SimulateProgressForTesting());
-                        yield break;
-                    }
-                }
-                else
-                {
-                    // 로딩이 완료되면 최소 표시 시간 보장 후 100%로 설정
-                    float elapsedTime = Time.time - screenStartTime;
-                    float remainingTime = minDisplayTime - elapsedTime;
-
-                    if (remainingTime > 0)
-                    {
-                        //Debug.Log($"[LoadingScreen] 최소 표시 시간 보장: {remainingTime:F2}초 대기");
-                        yield return new WaitForSeconds(remainingTime);
-                    }
-
-                    SetProgress(1f);
-                    //Debug.Log("[LoadingScreen] 외부 로딩 완료 감지");
-                    break;
-                }
-
-                yield return new WaitForSeconds(0.1f); // 0.1초마다 확인
-            }
-
-            //Debug.Log("[LoadingScreen] 외부 진행률 모니터링 종료");
-        }
         
         /// <summary>
         /// 테스트용 진행률 시뮬레이션 (실제 사용 시 제거)
@@ -1168,6 +1009,49 @@ namespace KYS
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.RecreateLoadingScreen();
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (배경 이미지만 표시, 시간 조절 가능)
+        /// </summary>
+        public static void ShowUltraSimpleLoadingScreen(float displayTime = 2f)
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowUltraSimpleLoadingScreen(displayTime);
+            }
+        }
+
+        /// <summary>
+        /// 초간단 로딩 스크린 (비동기 버전, 시간 조절 가능)
+        /// </summary>
+        public static async System.Threading.Tasks.Task ShowUltraSimpleLoadingScreenAsync(float displayTime = 2f)
+        {
+            if (UIManager.Instance != null)
+            {
+                await UIManager.Instance.ShowUltraSimpleLoadingScreenAsync(displayTime);
+            }
+        }
+
+        /// <summary>
+        /// 초간단 모드 설정 (배경 이미지만 표시)
+        /// </summary>
+        public void SetUltraSimpleMode(bool enabled)
+        {
+            ultraSimpleMode = enabled;
+            
+            if (enabled)
+            {
+                // 초간단 모드 활성화 시 모든 UI 요소들 비활성화
+                if (centerMessageText != null)
+                    centerMessageText.gameObject.SetActive(false);
+                if (progressText != null)
+                    progressText.gameObject.SetActive(false);
+                if (loadingProgressBar != null)
+                    loadingProgressBar.gameObject.SetActive(false);
+                if (fillProgressImage != null)
+                    fillProgressImage.gameObject.SetActive(false);
             }
         }
         

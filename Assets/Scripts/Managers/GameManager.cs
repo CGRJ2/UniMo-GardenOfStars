@@ -15,6 +15,8 @@ public class GameManager : Singleton<GameManager>
 
     public ObservableProperty<float> downloadProgress = new();
 
+    private Coroutine _fetchCoroutine;
+
     private void Awake() => Init();
 
     void Init()
@@ -22,10 +24,12 @@ public class GameManager : Singleton<GameManager>
         base.SingletonInit();
         Application.targetFrameRate = 60;
 
-        StartCoroutine(Fetch());
+        _fetchCoroutine = StartCoroutine(Fetch());
     }
-    
+
     #region Addressable Assets Storage 동기화 체크
+
+
 
     public IEnumerator Fetch()
     {
@@ -33,9 +37,9 @@ public class GameManager : Singleton<GameManager>
         var checkHandle = Addressables.CheckForCatalogUpdates(false);  // 변경된 카탈로그 ID들
         yield return checkHandle;
 
-        if(checkHandle.Status == AsyncOperationStatus.Failed)
+        if (checkHandle.Status == AsyncOperationStatus.Failed)
         {
-            Manager.firebase.NetworkDisconnected();
+            SafeRelease(ref checkHandle);
             yield break;
         }
 
@@ -47,9 +51,10 @@ public class GameManager : Singleton<GameManager>
             var updateCatalogHandle = Addressables.UpdateCatalogs(checkHandle.Result, false);
             yield return updateCatalogHandle;
 
-            if(updateCatalogHandle.Status == AsyncOperationStatus.Failed)
+            if (updateCatalogHandle.Status == AsyncOperationStatus.Failed)
             {
-                Manager.firebase.NetworkDisconnected();
+                SafeRelease(ref checkHandle);
+                SafeRelease(ref updateCatalogHandle);
                 yield break;
             }
 
@@ -72,12 +77,11 @@ public class GameManager : Singleton<GameManager>
             yield return sizeCheckHandle;
             if (sizeCheckHandle.Status == AsyncOperationStatus.Failed)
             {
-                Manager.firebase.NetworkDisconnected();
                 yield break;
             }
             Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
 
-            if(sizeCheckHandle.Result <= 0)
+            if (sizeCheckHandle.Result <= 0)
             {
                 SafeRelease(ref updateCatalogHandle);
                 SafeRelease(ref checkHandle);
@@ -97,10 +101,9 @@ public class GameManager : Singleton<GameManager>
                 Debug.Log($"다운로드진행상황{downloadStatus.DownloadedBytes} / {sizeCheckHandle.Result}bytes 다운됨. 퍼센트:{(int)downloadStatus.Percent * 100}");
                 downloadProgress.Value = downloadStatus.Percent;
 
-                if(downloadHandle.Status == AsyncOperationStatus.Failed)
+                if (downloadHandle.Status == AsyncOperationStatus.Failed)
                 {
                     inDownloading = false;
-                    Manager.firebase.NetworkDisconnected();
                     yield break;
                 }
             }
@@ -149,6 +152,9 @@ public class StageDataCsv : IUsableId
     public string BuildingIDs;
 
     public int StageInflationRate;
+    public int StageAutoReward;
+
+    public bool IsRelease;
 
 
     public string GetId()
@@ -198,36 +204,20 @@ public partial class DataManager
             stage.Name_KR = words[dict["Name_Korean"]];
             stage.Name_En = words[dict["Name_English"]];
 
-            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["WheelSprite"]]}", typeof(Sprite), out var locations)))
-            {
-                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["WheelSprite"]]}").Completed += task =>
-                {
-                    if (task.Status != AsyncOperationStatus.Succeeded)
-                    {
-                        Debug.LogWarning("WheelSprite 로드 실패");
-                        return;
-                    }
-
-                    stage.WheelSprite = task.Result;
-                };*/
-            }
-
-            if (Addressables.ResourceLocators.Any(locator => locator.Locate($"Sprite/{words[dict["CenterSprite"]]}", typeof(Sprite), out var locations)))
-            {
-                /*Addressables.LoadAssetAsync<Sprite>($"Sprite/{words[dict["CenterSprite"]]}").Completed += task =>
-                {
-                    if (task.Status != AsyncOperationStatus.Succeeded)
-                    {
-                        Debug.LogWarning("CenterSprite 로드 실패");
-                        return;
-                    }
-
-                    stage.WheelSprite = task.Result;
-                };*/
-            }
-
             int.TryParse(words[dict["RequiredQuestIndex"]], out stage.RequiredQuestIndex);
             int.TryParse(words[dict["InflationRate"]], out stage.StageInflationRate);
+            int.TryParse(words[dict["StageAutoReward"]], out stage.StageAutoReward);
+
+            int.TryParse(words[dict["IsRelease"]], out int isRelease);
+
+            if (isRelease == 0)
+            {
+                stage.IsRelease = false;
+            }
+            else
+            {
+                stage.IsRelease = true;
+            }
 
             stage.NextStageId = words[dict["NextStageId"]];
 

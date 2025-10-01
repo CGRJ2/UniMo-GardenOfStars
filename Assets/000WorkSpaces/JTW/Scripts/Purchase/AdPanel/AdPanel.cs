@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,7 +12,9 @@ public abstract class AdPanel : KYS.BaseUI
     private Button _adButton => GetUI<Button>("AdButton");
 
     private TextMeshProUGUI _countText => GetUI<TextMeshProUGUI>("CountText");
-    private TextMeshProUGUI _buttonText => GetUI<TextMeshProUGUI>("ButtonText");
+
+    private Image _completeImage => GetUI<Image>("CompletedBG");
+    private Image _bangMarkImage => GetUI<Image>("BangMark");
 
     private DailyAdData Data => Manager.firebase.UserData.DailyAdList.Get(_adPanelId);
 
@@ -47,10 +49,10 @@ public abstract class AdPanel : KYS.BaseUI
             InitInfo(Manager.firebase.UserData.DailyAdList.Get(_adPanelId));
         }
 
-            var update = new Dictionary<string, object>();
+        var update = new Dictionary<string, object>();
         update["LastTime"] = Firebase.Database.ServerValue.Timestamp;
 
-        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.DailyAdList.Path).UpdateChildrenAsync(update);
+        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Path).UpdateChildrenAsync(update);
     }
 
     protected override void OnDestroy()
@@ -67,23 +69,37 @@ public abstract class AdPanel : KYS.BaseUI
 
         if(data.Count.Value < 2)
         {
-            _buttonText.text = "±¤°í ½ÃÃ»";
         }
         else
         {
-            _buttonText.text = "È¹µæ ¿Ï·á";
+            _bangMarkImage.gameObject.SetActive(false);
+            _completeImage.gameObject.SetActive(true);
         }
     }
 
     private void InitInfo()
     {
+        _bangMarkImage.gameObject.SetActive(true);
+        _completeImage.gameObject.SetActive(false);
         _countText.text = $"0/2";
-        _buttonText.text = "±¤°í ½ÃÃ»";
     }
 
     private void OnClick()
     {
         if (Data.Count.IsInUpdate || Data.Count.Value >= 2) return;
+
+        if (Manager.firebase.UserData.AdRemoved.Value)
+        {
+            GetReward();
+            _countText.text = $"{Data.Count.Value + 1}/2";
+            if (Data.Count.Value + 1 >= 2)
+            {
+                _bangMarkImage.gameObject.SetActive(false);
+                _completeImage.gameObject.SetActive(true);
+            }
+            Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
+            return;
+        }
 
         Manager.ad.ShowRewardedAd(() =>
         {
@@ -91,7 +107,8 @@ public abstract class AdPanel : KYS.BaseUI
             _countText.text = $"{Data.Count.Value + 1}/2";
             if(Data.Count.Value + 1 >= 2)
             {
-                _buttonText.text = "È¹µæ ¿Ï·á";
+                _bangMarkImage.gameObject.SetActive(false);
+                _completeImage.gameObject.SetActive(true);
             }
             Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
         });

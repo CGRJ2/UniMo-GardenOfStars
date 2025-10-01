@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BuyPanel : MonoBehaviour
 {
     [SerializeField] private GameObject _buyButtonPrefab;
     [SerializeField] private RewardTypes _rewardTypes;
 
+    [SerializeField] private GameObject _itemPanel;
+    [SerializeField] private GameObject _contentPanel;
     [SerializeField] private ShopPanel _shopPanel;
 
-    private void Awake()
+    private void Start()
     {
         foreach (var value in Manager.data.Buy.Values)
         {
@@ -19,6 +22,9 @@ public class BuyPanel : MonoBehaviour
 
             buy.SetInfo(value.Key, _shopPanel);
         }
-
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_itemPanel.GetComponent<RectTransform>());
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_contentPanel.GetComponent<RectTransform>());
+        _contentPanel.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_shopPanel.GetComponent<RectTransform>());
     }
 }

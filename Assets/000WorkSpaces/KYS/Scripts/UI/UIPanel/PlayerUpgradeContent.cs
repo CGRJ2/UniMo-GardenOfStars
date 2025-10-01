@@ -35,6 +35,11 @@ namespace KYS
             base.Awake();
             SetupButtons();
             UpdateUI();
+
+            if (TutorialManager.Instance != null && _upgradeTarget != PlayerUpgradeStats.Speed)
+            {
+                BlockAllImages();
+            }
         }
 
         public override string[] GetAutoLocalizeKeys()
@@ -101,7 +106,7 @@ namespace KYS
                     }
                     else
                     {
-                        _upgradeStat = characterLvDict[(playerData.MaxCapacityLv.Value + 1).ToString()].Capacity;
+                        _upgradeStat = characterLvDict[(playerData.MaxCapacityLv.Value + 3).ToString()].Capacity;
                     }
 
                     _targerLv = playerData.MaxCapacityLv;
