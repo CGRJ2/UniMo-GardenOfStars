@@ -187,8 +187,20 @@ public class TutorialManager : MonoBehaviour
         PlayHighLightFX(null);
     }
 
+    void SequenceStart()
+    {
+        // 대화 상태 정리 (패널 닫기 전에)
+        if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
+        {
+            Manager.dialogue.EndDialogue();
+        }
+    }
+
     private void TutorialSequence00()
     {
+        SequenceStart();
+        Debug.LogWarning("시퀀스00 시작");
+
         // 1. 플레이어 조작 막기
         Manager.player.IsControl = false;
 
@@ -274,6 +286,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence01()
     {
+        SequenceStart();
+
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         Debug.LogWarning("시퀀스01 시작");
@@ -343,6 +357,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence02()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스02 시작");
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
@@ -374,6 +390,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence03()
     {
+        SequenceStart();
+
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         Debug.LogWarning("시퀀스03 시작");
@@ -442,6 +460,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence04()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스04 시작");
 
         // 플레이어 조작 비활성화
@@ -502,6 +522,8 @@ public class TutorialManager : MonoBehaviour
     }
     public void TutorialSequence05()
     {
+        SequenceStart();
+
         Manager.camera.cam_PlayerFocus.Priority = 11;
 
         // 이건 퀘스트 매니저에서 처리해서 따로 추가할 게 없음
@@ -618,6 +640,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence06()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스06 시작");
 
         // 플레이어 조작 막기
@@ -685,6 +709,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence07()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스07 시작");
 
         // 일꾼 건물 발판 비활성화
@@ -753,6 +779,8 @@ public class TutorialManager : MonoBehaviour
     // 퀘스트 3번 진행
     public void TutorialSequence08()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스08 시작");
 
         Manager.camera.cam_PlayerFocus.Priority = 11;
@@ -883,6 +911,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence09()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스 09 시작");
 
         StartCoroutine(Sequence09_CutScene01());
@@ -1009,6 +1039,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence10()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스 10 시작");
 
         talk_Button.gameObject.SetActive(false);
@@ -1028,6 +1060,8 @@ public class TutorialManager : MonoBehaviour
 
     public void TutorialSequence11()
     {
+        SequenceStart();
+
         Debug.LogWarning("시퀀스 11 시작");
 
         Manager.firebase.UserData.StageList.Add("Stage01");
@@ -1065,28 +1099,5 @@ public class TutorialManager : MonoBehaviour
     private void OnDestroy()
     {
         StopAllCoroutines();
-    }
-
-
-    // 튜토리얼 스킵 키(임시)
-    private void Update()
-    {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            StopAllCoroutines();
-
-            Manager.firebase.UserData.TutorialSequence.Value = 11;
-
-            foreach (var kvp in Manager.data.Stage.Values)
-            {
-                if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
-                {
-                    Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
-                    break;
-                }
-            }
-        }
-#endif
     }
 }

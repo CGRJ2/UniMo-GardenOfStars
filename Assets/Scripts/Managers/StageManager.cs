@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -152,8 +153,6 @@ public class StageManager : MonoBehaviour
 
                     // 완료 퀘스트 체크
                     bool questCleared;
-                    Debug.LogError("퀘스트 완료 체크 01");
-
                     Manager.quest.CheckCurQuestCleared(out questCleared);
                 });
             }
@@ -165,8 +164,6 @@ public class StageManager : MonoBehaviour
 
                 // 완료 퀘스트 체크
                 bool questCleared;
-                Debug.LogError("퀘스트 완료 체크 02");
-
                 Manager.quest.CheckCurQuestCleared(out questCleared);
             }
         }
@@ -174,8 +171,6 @@ public class StageManager : MonoBehaviour
         {
             // 완료 퀘스트 체크
             bool questCleared;
-            Debug.LogError("퀘스트 완료 체크 03");
-
             Manager.quest.CheckCurQuestCleared(out questCleared);
         }
     }
@@ -205,19 +200,6 @@ public class StageManager : MonoBehaviour
             }
         }
         return finalProdID;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            CheckStageExitTime(Manager.firebase.UserData.CurStage.Value);
-        }
-
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            GetTotalAutoReward(Manager.firebase.UserData.CurStage.Value);
-        }
     }
 
     #region 오프라인 보상
@@ -309,6 +291,115 @@ public class StageManager : MonoBehaviour
         if (_AutoRewardInited)
             CheckStageExitTime(_StageID);
     }
+
+
+
+    // 튜토리얼 스킵 키(임시)
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (TutorialManager.Instance != null)
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                SkipTutorial();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            RestartTutorial();
+        }
+#endif
+    }
+
+    #region 튜토리얼 스킵 & 다시하기 기능
+
+    public void RestartTutorial()
+    {
+        Manager.firebase.UserData.TutorialSequence.Value = 0;
+        Manager.firebase.UserData.CurStage.Subscribe(TransitionToStage);
+        Manager.firebase.UserData.CurStage.Value = "Tutorial";
+    }
+
+    public void SkipTutorial()
+    {
+        //// 튜토리얼 진행 중단
+        StopAllCoroutines();
+        Manager.player.IsControl = true;
+        Manager.camera.cam_PlayerFocus.Priority = 11;
+        Manager.camera.cam_NpcFocus.Priority = 10;
+        
+        // 대화 상태 정리 (패널 닫기 전에)
+        if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
+        {
+            Manager.dialogue.EndDialogue();
+        }
+        ////-----------------------------------------------------////
+
+        Manager.firebase.UserData.CurStage.Subscribe(TransitionToStage);
+
+        foreach (var kvp in Manager.data.Stage.Values)
+        {
+            if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
+            {
+                var stageList = Manager.firebase.UserData.StageList.List;
+                bool isStageDataInited = stageList.Any(s => s.Id == kvp.Value.NextStageId);
+                
+                // 열어줄 StageID 데이터가 이미 있으면 Add 안함
+                if (!isStageDataInited)
+                {
+                    Debug.LogError("Add실행");
+                    Manager.firebase.UserData.StageList.OnAdded.AddListener(StageFirstAdded);
+                    Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
+                }
+                else
+                {
+                    Manager.firebase.UserData.CurStage.Value = kvp.Value.NextStageId; // 스테이지 ID 변경
+                }
+
+                break;
+            }
+        }
+    }
+
+    private void StageFirstAdded(StageData stageData)
+    {
+        Manager.firebase.UserData.StageList.OnAdded.RemoveListener(StageFirstAdded);
+        Manager.firebase.UserData.CurStage.Value = stageData.Id; // 스테이지 ID 변경
+    }
+
+    private void TransitionToStage(string stageId)
+    {
+        Manager.firebase.UserData.CurStage.Unsubscribe(TransitionToStage);
+        // 1. 패널 닫기 (씬 이동 전에 UI 정리)
+        //Manager.ui.CloseAllPanels();
+        //Manager.ui.CloseAllPopups();
+
+        // 2. 씬 이동 실행
+        StartCoroutine(LoadSceneAsyncAddressables());
+    }
+    /// <summary>
+    /// Addressables를 사용한 비동기 씬 로딩
+    /// </summary>
+    private IEnumerator LoadSceneAsyncAddressables()
+    {
+        // 로딩 화면 표시 (필요한 경우)
+        // ShowLoadingScreen();
+        Manager.ui.ShowUltraSimpleLoadingScreen(1);
+
+        Manager.Audio.SfxPlay("Portal");
+        var handle = Addressables.LoadSceneAsync("StageScene");
+
+        while (!handle.IsDone)
+        {
+            float progress = handle.PercentComplete;
+            // UpdateLoadingProgress(progress);
+            yield return null;
+        }
+    }
+
+    #endregion
 }
 
 public class StageExitTimeData : FirebaseData

@@ -2585,7 +2585,7 @@ namespace KYS
         /// <summary>
         /// ESC 키 처리
         /// </summary>
-        private void LateUpdate()
+        /*private void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -2601,7 +2601,7 @@ namespace KYS
                     }
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// 현재 UI가 닫을 수 없는지 확인
