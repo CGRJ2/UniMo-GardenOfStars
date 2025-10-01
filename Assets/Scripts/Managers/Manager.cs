@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using KYS;
-using GooglePlayGames;
 
 public static class Manager
 {
@@ -26,9 +25,6 @@ public static class Manager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initailize()
     {
-        // Google Play Games 초기화 (다른 매니저들보다 먼저)
-        InitializePlayGames();
-        
         GameManager.CreateInstance();
         FirebaseManager.CreateInstance();
         PoolManager.CreateInstance();
@@ -43,16 +39,6 @@ public static class Manager
         CameraManager.CreateInstance();
         AdManager.CreateInstance();
         DialogueManager.CreateInstance();
-    }
-    
-    private static void InitializePlayGames()
-    {
-        // Google Play Games 서비스 활성화
-        PlayGamesPlatform.Activate();
-        
-        // 디버그 로그 활성화 (개발 중에만)
-        PlayGamesPlatform.DebugLogEnabled = true;
-        
-        Debug.Log("[Manager] Google Play Games 초기화 완료");
+
     }
 }
