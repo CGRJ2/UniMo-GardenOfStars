@@ -7,9 +7,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
+    [SerializeField] private Button _popupPanel;
+
     private FirebaseApp _app;
     public FirebaseApp App => _app;
 
@@ -32,6 +35,15 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private void Awake()
     {
         InitFirebase();
+        _popupPanel.onClick.AddListener(OnPopUpClick);
+    }
+
+    private void OnPopUpClick()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene("TitleScene");
+
+        _isNetworkDisconected = false;
     }
 
     private void InitFirebase()
@@ -92,13 +104,20 @@ public class FirebaseManager : Singleton<FirebaseManager>
         if (_isNetworkDisconected) return;
         _isNetworkDisconected = true;
 
-        Manager.ui.ShowMessagePopUpAsync("인터넷 연결을 다시 확인해주세요.", () =>
+        if(SceneManager.GetActiveScene().name == "TitleScene")
         {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene("TitleScene");
+            _popupPanel.gameObject.SetActive(true);
+        }
+        else
+        {
+            Manager.ui.ShowMessagePopUpWithKeyAsync("ui_network_disconnected_message", () =>
+            {
+                SceneManager.sceneLoaded += OnSceneLoaded;
+                SceneManager.LoadScene("TitleScene");
 
-            _isNetworkDisconected = false;
-        });
+                _isNetworkDisconected = false;
+            });
+        }
     }
 
     public void InitUserData()
