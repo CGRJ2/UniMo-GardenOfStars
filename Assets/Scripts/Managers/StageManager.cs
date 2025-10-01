@@ -104,12 +104,13 @@ public class StageManager : MonoBehaviour
         
         bool allQuestCleared = true;
 
+        
         for (int i = 0; i < npc.QuestList.List.Count; i++)
         {
             //if (Manager.data.Quest.Values[value.QuestId].)
             var value = npc.QuestList.List[i];
 
-            if (value.QuestState.Value != 3) // 클리어된 퀘스트가 아니라면
+            if (value.QuestState.Value != 3) // 클리어 후 대화 완료된 퀘스트가 아니라면
             {
                 npc.CurrentQuestID.Value = value.QuestId;
                 Debug.LogWarning($"CurrentQuestID 설정됨: {value.QuestId}");
@@ -125,6 +126,8 @@ public class StageManager : MonoBehaviour
             Debug.LogWarning($"현재 스테이지 내의 모든 퀘스트를 완료하여 마지막 퀘스트ID가 설정됨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
         }
 
+        
+
         // 플레이어로 카메라 맞춰주기
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;
 
@@ -135,7 +138,7 @@ public class StageManager : MonoBehaviour
         if (_StageID == "Tutorial") return;
         var questList = npc.QuestList.List;
         // 마지막 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
-        if (questList[questList.Count - 1].State == GameQuest.QuestState.Completed)
+        if (questList[questList.Count - 1].State == GameQuest.QuestState.TalkEnd)
         {
             double diffTime = GetStageAutoEarnTime(_StageID);
             if (diffTime > _AutoRewardMinTime)
@@ -146,6 +149,12 @@ public class StageManager : MonoBehaviour
                 {
                     // 보상 팝업 닫힐 때 기본 보상 지급 & 시간 체크 루틴 실행
                     StartCoroutine(OfflineRewardInitAfterPopupClose(popup.gameObject));
+
+                    // 완료 퀘스트 체크
+                    bool questCleared;
+                    Debug.LogError("퀘스트 완료 체크 01");
+
+                    Manager.quest.CheckCurQuestCleared(out questCleared);
                 });
             }
             else
@@ -153,7 +162,21 @@ public class StageManager : MonoBehaviour
                 //Debug.LogError("보상 팝업 안열고 그냥 진행");
                 // 보상 팝업 없이 바로 시간 체크 루틴 실행
                 OfflineRewardInited();
+
+                // 완료 퀘스트 체크
+                bool questCleared;
+                Debug.LogError("퀘스트 완료 체크 02");
+
+                Manager.quest.CheckCurQuestCleared(out questCleared);
             }
+        }
+        else
+        {
+            // 완료 퀘스트 체크
+            bool questCleared;
+            Debug.LogError("퀘스트 완료 체크 03");
+
+            Manager.quest.CheckCurQuestCleared(out questCleared);
         }
     }
 
@@ -256,7 +279,7 @@ public class StageManager : MonoBehaviour
 
         float rewardPercent = Mathf.Clamp01((int)GetStageAutoEarnTime(_stageID) / _AutoRewardMaxTime);    // 최대보상 => 2시간
 
-        int finalReward = (int)(fullReward * rewardPercent) * 100;
+        int finalReward = (int)(fullReward * rewardPercent);
 
         //Debug.LogWarning($"방치 시간:{GetStageAutoEarnTime(_stageID)}, 보상 퍼센트: {rewardPercent}, 최종 보상: {finalReward}");
 

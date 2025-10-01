@@ -1074,6 +1074,8 @@ public class TutorialManager : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.P))
         {
+            StopAllCoroutines();
+
             Manager.firebase.UserData.TutorialSequence.Value = 11;
 
             foreach (var kvp in Manager.data.Stage.Values)
