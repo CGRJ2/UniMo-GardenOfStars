@@ -43,6 +43,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene("TitleScene");
 
+        _popupPanel.gameObject.SetActive(false);
+
         _isNetworkDisconected = false;
     }
 
