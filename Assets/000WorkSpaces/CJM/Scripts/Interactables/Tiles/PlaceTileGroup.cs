@@ -32,7 +32,7 @@ public class PlaceTileGroup : MonoBehaviour
             return false;
         }
 
-        if (questList.List[_TargetQuestIndex - 1].State == QuestState.Completed) return true;
+        if (questList.List[_TargetQuestIndex - 1].State == QuestState.TalkEnd) return true;
         else return false;
     }
 }
