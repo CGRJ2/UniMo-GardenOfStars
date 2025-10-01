@@ -364,11 +364,11 @@ public class TutorialManager : MonoBehaviour
             Debug.LogWarning("팝업 열었을 때 부동산 방향 화살표 발판 보여주기");
             arrows[3].SetActive(true);
 
-            // 퀘스트 발판 활성화
-            tutorialNPC.ShowQuestTiles();
-
             // 부동산 강조 효과 실행
             PlayHighLightFX(Manager.buildings.buildingSeller.transform);
+
+            // 퀘스트 발판 활성화
+            tutorialNPC.ShowQuestTiles();
         });
     }
 
