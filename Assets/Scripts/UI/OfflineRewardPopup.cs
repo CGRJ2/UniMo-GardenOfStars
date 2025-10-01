@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KYS;
@@ -59,9 +59,9 @@ public class OfflineRewardPopup : BaseUI
 
 
         double diffSeconds = StageManager.Instance.GetStageAutoEarnTime();
-        float hours = (float)diffSeconds / 3600f;              // ÃÊ ¡æ ½Ã°£ º¯È¯
-
-        // ½Ã°£
-        tmp_RewardDescriptionText.text = $"´©Àû½Ã°£: ¾à {hours.ToString("0.0")}h, ´©Àûº¸»ó:{reward}";
+        float hours = (float)diffSeconds / 3600f;              // ì´ˆ â†’ ì‹œê°„ ë³€í™˜
+        //rewarddescriptiontext
+        // ì‹œê°„
+        tmp_RewardDescriptionText.text = GetLocalizedText("rewarddescriptiontext", $"ëˆ„ì ì‹œê°„: ì•½ {hours.ToString("0.0")}h, ëˆ„ì ë³´ìƒ: {reward}", hours.ToString("0.0"), reward);
     }
 }
