@@ -293,7 +293,7 @@ namespace KYS
                 // 해당 건물이 설치되어 있다면 개수 ++
                 if (buildingID == tileData.BuildingID.Value) count++;
             }
-            Debug.LogError($"[PropertyContent] BuildingConuntUpdate - 현재 설치된 {buildingID} 건물 개수: {count}");
+            //Debug.LogError($"[PropertyContent] BuildingConuntUpdate - 현재 설치된 {buildingID} 건물 개수: {count}");
             RunBuildingCountText.text = $"X{count.ToString("D2")}";
         }
 
