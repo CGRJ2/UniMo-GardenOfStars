@@ -179,6 +179,7 @@ public class QuestManager : Singleton<QuestManager>
                         }
                     }
                 }
+                break;
             }
             // 마지막 스테이지가 완료되었다
             else if (i == questList.Count - 1)

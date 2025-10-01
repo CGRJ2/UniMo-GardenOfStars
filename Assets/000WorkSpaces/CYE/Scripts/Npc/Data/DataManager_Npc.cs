@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -68,7 +68,7 @@ public partial class DataManager
                 }
                 else
                 {
-                    Debug.LogError($"[{npc.NpcID}]�� Ű:[{spritePath_Default}] �� �ش��ϴ� ��������Ʈ ����");
+                    Debug.LogError($"[{npc.NpcID}] Sprite경로:[{spritePath_Default}] Addressable주소에 해당 NPC의 Sprite가 없습니다");
                 }
                 return npc;
             });

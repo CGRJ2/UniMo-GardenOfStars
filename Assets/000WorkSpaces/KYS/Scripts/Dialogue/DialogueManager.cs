@@ -327,8 +327,8 @@ namespace KYS
             }
 
             // 선택한 선택지 저장
-            currentDialogueData.ChoiceSelected.Value = choiceIndex;
-            currentDialogueData.IsCompleted.Value = true;
+            //currentDialogueData.ChoiceSelected.Value = choiceIndex;
+            //currentDialogueData.IsCompleted.Value = true;
 
             OnChoiceSelected?.Invoke(currentDialogueData, choiceIndex);
 
@@ -359,7 +359,7 @@ namespace KYS
 
             if (currentDialogueData != null)
             {
-                currentDialogueData.IsCompleted.Value = true;
+                //currentDialogueData.IsCompleted.Value = true;
                 OnDialogueCompleted?.Invoke(currentDialogueData);
             }
 
