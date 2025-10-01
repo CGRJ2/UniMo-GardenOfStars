@@ -20,6 +20,7 @@ public class TitleManager : MonoBehaviour
 
     private void Start()
     {
+        Manager.firebase.StartNetworkCoroutine();
         StartCoroutine(DownloadingCoroutine());
         if(_testBtn != null)
         {

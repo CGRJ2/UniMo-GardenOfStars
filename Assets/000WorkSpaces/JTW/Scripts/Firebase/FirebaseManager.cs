@@ -92,7 +92,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         string userPath;
 
-        if(_auth.CurrentUser == null)
+        if (_auth.CurrentUser == null)
         {
             userPath = $"UserData/testUser1234";
         }
@@ -104,7 +104,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if(task.IsCanceled || task.IsFaulted)
+            if (task.IsCanceled || task.IsFaulted)
             {
                 NetworkDisconnected();
                 return;
@@ -144,7 +144,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
         });
         return true;
     }
-    
+
     public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
     {
         if (!isInit)
@@ -190,7 +190,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
             return false;
         }
-        
+
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
@@ -273,9 +273,57 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         DataSnapshot data = _rootDataSnapshot.Child(path);
 
-        if(!data.Exists || !data.HasChildren) return true;
+        if (!data.Exists || !data.HasChildren) return true;
 
         count = (int)data.ChildrenCount;
         return false;
+    }
+
+    private WaitForSeconds _pingDelay = new WaitForSeconds(5f);
+    private Coroutine _pingCoroutine;
+
+    public void StartNetworkCoroutine()
+    {
+        if (_pingCoroutine != null)
+        {
+            StopCoroutine(_pingCoroutine);
+            _pingCoroutine = null;
+        }
+
+        _pingCoroutine = StartCoroutine(NetworkCoroutine());
+    }
+
+    private IEnumerator NetworkCoroutine()
+    {
+        while (true)
+        {
+            Ping ping = new Ping("8.8.8.8");
+            float startTime = Time.time;
+            float timeout = 5f;
+
+            while (!ping.isDone)
+            {
+                if (Time.time - startTime > timeout)
+                {
+                    NetworkDisconnected();
+                    Debug.Log("네트워크 연결 안됨 (Ping Timeout)");
+                    yield break;
+                }
+                yield return null;
+            }
+
+            if (ping.time >= 0)
+            {
+                Debug.Log($"네트워크 연결됨 (Ping {ping.time}ms)");
+            }
+            else
+            {
+                NetworkDisconnected();
+                Debug.Log("네트워크 연결 실패");
+                yield break;
+            }
+
+            yield return _pingDelay;
+        }
     }
 }
