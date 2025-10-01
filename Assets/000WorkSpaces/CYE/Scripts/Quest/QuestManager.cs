@@ -148,9 +148,10 @@ public class QuestManager : Singleton<QuestManager>
                 break;
         }
         Debug.Log($"[QuestManager] {Manager.firebase.UserData.Player.Money}");
+        
+        CurrentQuest.QuestState.Value = 3; // TalkEnd
 
         MoveToNextQuest();
-        CurrentQuest.QuestState.Value = 3; // TalkEnd
         Manager.dialogue.OnDialogueCompleted -= SetNextQuestAfterDialogEnd;
     }
 
