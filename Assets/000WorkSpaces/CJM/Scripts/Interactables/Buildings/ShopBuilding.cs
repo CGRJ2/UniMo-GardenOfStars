@@ -28,7 +28,9 @@ public class ShopBuilding : BuildingInstance
     {
         // 플레이어 손에 있는 재료가 퀘스트 조건에 포함되는지 체크
         IngrediantInstance instanceProd;
-        if (characterRD.IngrediantStack.TryPeek(out instanceProd))
+        CharaterRuntimeData characterRD_cach;
+        characterRD_cach = characterRD;
+        if (characterRD_cach.IngrediantStack.TryPeek(out instanceProd))
         {
             // 건물(재료)라면 => 건물 구매 가격에 다시 판매
             if (instanceProd is Item_Building building)
@@ -37,7 +39,7 @@ public class ShopBuilding : BuildingInstance
                 string curStageID = Manager.firebase.UserData.CurStage.Value;
                 long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
 
-                IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+                IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>
                 {
                     // 판매 완료
@@ -56,11 +58,11 @@ public class ShopBuilding : BuildingInstance
                 int soldItemCount = 0;
                 long price = instanceProd.Data.Price;
 
-                while (characterRD.IngrediantStack.Count > 0)
+                while (characterRD_cach.IngrediantStack.Count > 0)
                 {
-                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+                    IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
 
-                    if (characterRD.IngrediantStack.Count > 0)
+                    if (characterRD_cach.IngrediantStack.Count > 0)
                     {
                         popedProd.MoveToTargetAndShrink(attachPoint);
                     }
