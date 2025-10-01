@@ -15,6 +15,8 @@ public class GameManager : Singleton<GameManager>
 
     public ObservableProperty<float> downloadProgress = new();
 
+    private Coroutine _fetchCoroutine;
+
     private void Awake() => Init();
 
     void Init()
@@ -22,10 +24,12 @@ public class GameManager : Singleton<GameManager>
         base.SingletonInit();
         Application.targetFrameRate = 60;
 
-        StartCoroutine(Fetch());
+        _fetchCoroutine = StartCoroutine(Fetch());
     }
 
     #region Addressable Assets Storage 동기화 체크
+
+
 
     public IEnumerator Fetch()
     {
@@ -35,6 +39,7 @@ public class GameManager : Singleton<GameManager>
 
         if (checkHandle.Status == AsyncOperationStatus.Failed)
         {
+            SafeRelease(ref checkHandle);
             yield break;
         }
 
@@ -48,6 +53,8 @@ public class GameManager : Singleton<GameManager>
 
             if (updateCatalogHandle.Status == AsyncOperationStatus.Failed)
             {
+                SafeRelease(ref checkHandle);
+                SafeRelease(ref updateCatalogHandle);
                 yield break;
             }
 
