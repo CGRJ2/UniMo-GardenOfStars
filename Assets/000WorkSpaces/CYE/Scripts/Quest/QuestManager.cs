@@ -1,5 +1,4 @@
 ﻿// Custom
-using GameNpc;
 using GameQuest;
 using KYS;
 // System 
@@ -42,7 +41,7 @@ public class QuestManager : Singleton<QuestManager>
         Manager.firebase.UserData.CurStageData.Npc.NpcID.Value = npcId;
 
         // 현재 스테이지의 NPC가 보유한 퀘스트 데이터
-        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcId);
+        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcId).OrderBy(i => i.Value.QuestOrder);
         foreach (var questDataKVP in curStageQuestDatas)
         {
             // 퀘스트 데이터 초기화
