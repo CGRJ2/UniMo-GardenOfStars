@@ -52,9 +52,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
                 OnFirebaseInit?.Invoke();
 
-                // 테스트를 원활하게 하기위해 일단 실행
-                // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
+#if UNITY_EDITOR
                 InitUserData();
+#endif
 
                 IsFirebaseInit = true;
             }
