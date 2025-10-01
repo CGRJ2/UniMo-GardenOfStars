@@ -77,7 +77,6 @@ public class AutoLoginController : MonoBehaviour
             {
                 if (task.IsCanceled || task.IsFaulted)
                 {
-                    Manager.firebase.NetworkDisconnected();
                     return;
                 }
 

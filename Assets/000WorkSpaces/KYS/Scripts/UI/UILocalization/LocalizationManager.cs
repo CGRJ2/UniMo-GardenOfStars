@@ -115,6 +115,86 @@ namespace KYS
                     { SystemLanguage.Portuguese, "Sair\nPara teste" },
                     { SystemLanguage.Russian, "Выйти\nДля тестирования" }
                 }
+            },
+            {
+                "ui_network_disconnected_message",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "인터넷 연결을 다시 확인해주세요." },
+                    { SystemLanguage.English, "Please check your internet connection." },
+                    { SystemLanguage.Japanese, "インターネット接続を確認してください。" },
+                    { SystemLanguage.Chinese, "请检查您的网络连接。" },
+                    { SystemLanguage.French, "Veuillez vérifier votre connexion Internet." },
+                    { SystemLanguage.German, "Bitte überprüfen Sie Ihre Internetverbindung." },
+                    { SystemLanguage.Spanish, "Por favor, verifique su conexión a Internet." },
+                    { SystemLanguage.Italian, "Si prega di controllare la connessione Internet." },
+                    { SystemLanguage.Portuguese, "Por favor, verifique sua conexão com a Internet." },
+                    { SystemLanguage.Russian, "Пожалуйста, проверьте подключение к Интернету." }
+                }
+            },
+            {
+                "ui_account_linking_start",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결을 시작합니다..." },
+                    { SystemLanguage.English, "Starting account linking..." },
+                    { SystemLanguage.Japanese, "アカウント連携を開始しています..." },
+                    { SystemLanguage.Chinese, "正在开始账户关联..." },
+                    { SystemLanguage.French, "Début de la liaison de compte..." },
+                    { SystemLanguage.German, "Kontoverknüpfung wird gestartet..." },
+                    { SystemLanguage.Spanish, "Iniciando vinculación de cuenta..." },
+                    { SystemLanguage.Italian, "Avvio collegamento account..." },
+                    { SystemLanguage.Portuguese, "Iniciando vinculação de conta..." },
+                    { SystemLanguage.Russian, "Начинаем связывание аккаунта..." }
+                }
+            },
+            {
+                "ui_account_linking_success",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결이 완료되었습니다." },
+                    { SystemLanguage.English, "Account linking completed successfully." },
+                    { SystemLanguage.Japanese, "アカウント連携が完了しました。" },
+                    { SystemLanguage.Chinese, "账户关联已成功完成。" },
+                    { SystemLanguage.French, "Liaison de compte terminée avec succès." },
+                    { SystemLanguage.German, "Kontoverknüpfung erfolgreich abgeschlossen." },
+                    { SystemLanguage.Spanish, "Vinculación de cuenta completada exitosamente." },
+                    { SystemLanguage.Italian, "Collegamento account completato con successo." },
+                    { SystemLanguage.Portuguese, "Vinculação de conta concluída com sucesso." },
+                    { SystemLanguage.Russian, "Связывание аккаунта успешно завершено." }
+                }
+            },
+            {
+                "ui_account_linking_error",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "계정 연결 중 오류가 발생했습니다." },
+                    { SystemLanguage.English, "An error occurred during account linking." },
+                    { SystemLanguage.Japanese, "アカウント連携中にエラーが発生しました。" },
+                    { SystemLanguage.Chinese, "账户关联过程中发生错误。" },
+                    { SystemLanguage.French, "Une erreur s'est produite lors de la liaison de compte." },
+                    { SystemLanguage.German, "Ein Fehler ist bei der Kontoverknüpfung aufgetreten." },
+                    { SystemLanguage.Spanish, "Ocurrió un error durante la vinculación de cuenta." },
+                    { SystemLanguage.Italian, "Si è verificato un errore durante il collegamento dell'account." },
+                    { SystemLanguage.Portuguese, "Ocorreu um erro durante a vinculação da conta." },
+                    { SystemLanguage.Russian, "Произошла ошибка при связывании аккаунта." }
+                }
+            },
+            {
+                "ui_account_already_linked",
+                new Dictionary<SystemLanguage, string>
+                {
+                    { SystemLanguage.Korean, "이미 계정이 연결되어 있습니다." },
+                    { SystemLanguage.English, "Account is already linked." },
+                    { SystemLanguage.Japanese, "アカウントは既に連携されています。" },
+                    { SystemLanguage.Chinese, "账户已经关联。" },
+                    { SystemLanguage.French, "Le compte est déjà lié." },
+                    { SystemLanguage.German, "Konto ist bereits verknüpft." },
+                    { SystemLanguage.Spanish, "La cuenta ya está vinculada." },
+                    { SystemLanguage.Italian, "L'account è già collegato." },
+                    { SystemLanguage.Portuguese, "A conta já está vinculada." },
+                    { SystemLanguage.Russian, "Аккаунт уже связан." }
+                }
             }
         };
 

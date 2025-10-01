@@ -35,7 +35,6 @@ public class GameManager : Singleton<GameManager>
 
         if (checkHandle.Status == AsyncOperationStatus.Failed)
         {
-            Manager.firebase.NetworkDisconnected();
             yield break;
         }
 
@@ -49,7 +48,6 @@ public class GameManager : Singleton<GameManager>
 
             if (updateCatalogHandle.Status == AsyncOperationStatus.Failed)
             {
-                Manager.firebase.NetworkDisconnected();
                 yield break;
             }
 
@@ -72,7 +70,6 @@ public class GameManager : Singleton<GameManager>
             yield return sizeCheckHandle;
             if (sizeCheckHandle.Status == AsyncOperationStatus.Failed)
             {
-                Manager.firebase.NetworkDisconnected();
                 yield break;
             }
             Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
@@ -100,7 +97,6 @@ public class GameManager : Singleton<GameManager>
                 if (downloadHandle.Status == AsyncOperationStatus.Failed)
                 {
                     inDownloading = false;
-                    Manager.firebase.NetworkDisconnected();
                     yield break;
                 }
             }

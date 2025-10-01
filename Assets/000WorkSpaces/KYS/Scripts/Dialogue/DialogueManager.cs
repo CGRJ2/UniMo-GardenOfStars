@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
 using GameQuest;
+using UnityEngine.SceneManagement;
 
 namespace KYS
 {
@@ -42,6 +43,8 @@ namespace KYS
             { 
                 ////Debug.Log("[DialogueManager] 초기화 완료"); 
             }
+
+            SceneManager.sceneLoaded += (scene, mode) => OnDialogueCompleted = null;
         }
 
 
