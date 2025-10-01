@@ -248,7 +248,7 @@ public class SettingPopUp : BaseUI
     /// </summary>
     private void ShowMessagePopUp(string message)
     {
-        Manager.ui.ShowTutorialPopUpAsync(message);
+        Manager.ui.ShowMessagePopUpAsync(message);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class SettingPopUp : BaseUI
     /// </summary>
     private void ShowMessagePopUpWithKey(string localizationKey, string fallbackMessage = null)
     {
-        Manager.ui.ShowTutorialPopUpWithKeyAsync(localizationKey, null);
+        Manager.ui.ShowMessagePopUpWithKeyAsync(localizationKey, null);
     }
 
 

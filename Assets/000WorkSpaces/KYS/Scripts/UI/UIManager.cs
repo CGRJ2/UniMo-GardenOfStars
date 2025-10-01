@@ -2632,6 +2632,12 @@ namespace KYS
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+
+            // 씬 이름이 "TitleScene"인지 확인
+            if (scene.name == "TitleScene")
+            {
+                HideHUDUI<HUDAllPanel>();
+            }
             // 씬 전환 시 모든 UI 정리
             CleanAllUI();
         }
