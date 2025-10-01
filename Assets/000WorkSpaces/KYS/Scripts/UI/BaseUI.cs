@@ -509,9 +509,7 @@ namespace KYS
         {
             if (ownBackdrop == null) return;
 
-            // 튜토리얼 단계에서는 기본적으로 Backdrop 클릭 비활성화, 단 allowBackdropClickInTutorial이 true면 허용
-            bool isTutorialStage = Manager.firebase?.UserData?.CurStage?.Value == "Tutorial";
-            bool canCloseWithBackdropInTutorial = canCloseWithBackdrop && (!isTutorialStage || allowBackdropClickInTutorial);
+            bool canCloseWithBackdropInTutorial = canCloseWithBackdrop;
 
             // Backdrop 클릭 가능 여부 설정
             ownBackdrop.SetBackdropClickable(canCloseWithBackdropInTutorial);
@@ -534,14 +532,6 @@ namespace KYS
             }
             else
             {
-                if (isTutorialStage && !allowBackdropClickInTutorial)
-                {
-                    //Debug.Log($"[BaseUI] {gameObject.name}은 튜토리얼 단계에서 Backdrop 클릭으로 닫을 수 없습니다.");
-                }
-                else
-                {
-                    //Debug.Log($"[BaseUI] {gameObject.name}은 Backdrop 클릭으로 닫을 수 없습니다.");
-                }
             }
         }
 

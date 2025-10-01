@@ -77,12 +77,18 @@ public class FirebaseManager : Singleton<FirebaseManager>
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private bool _isNetworkDisconected;
     public void NetworkDisconnected()
     {
+        if (_isNetworkDisconected) return;
+        _isNetworkDisconected = true;
+
         Manager.ui.ShowMessagePopUpAsync("인터넷 연결을 다시 확인해주세요.", () =>
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.LoadScene("TitleScene");
+
+            _isNetworkDisconected = false;
         });
     }
 
@@ -190,14 +196,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
             return false;
         }
-
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
     {
         _database.RootReference.Child(path).ChildAdded += func;
     }
-
 
     public void SaveData(string path, object value)
     {
@@ -295,6 +299,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
     private IEnumerator NetworkCoroutine()
     {
+        yield return _pingDelay;
+
         while (true)
         {
             Ping ping = new Ping("8.8.8.8");
