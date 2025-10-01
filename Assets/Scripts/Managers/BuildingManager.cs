@@ -25,17 +25,6 @@ public class BuildingManager : Singleton<BuildingManager>
         base.SingletonInit();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            /*foreach(var kvp in biPlacementDataDic[Manager.game.curStageId])
-            {
-                Debug.Log($"건물ID:{kvp.Value.buildingId} & 좌표:{kvp.Key}");
-            }*/
-        }
-    }
-
     #region 건물 인스턴스 생성/제거 시, 현재 스테이지의 건물 배치 데이터 업데이트
     public void AddBiTransformData(Transform biTransform, string buildingId)
     {

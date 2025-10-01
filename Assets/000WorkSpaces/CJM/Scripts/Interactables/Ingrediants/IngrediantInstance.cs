@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -251,10 +252,19 @@ public class IngrediantInstance : PooledObject
         float eased = baseCurve.Evaluate(t);
         eased = Mathf.Lerp(1f - order01, 1f, eased);
 
-        Vector3 dirToTargetPos = (transform.position - Manager.player.PlayerObj.transform.position).normalized;
+        Vector3 dirToTargetPos;
 
-        // 보간
-        transform.position = Vector3.Lerp(transform.position, targetPos, eased);
+        if(ownerCharacterRD is PlayerRunTimeData)
+        {
+            dirToTargetPos = (transform.position - Manager.player.PlayerObj.transform.position).normalized;
+        }
+        else
+        {
+            dirToTargetPos = (transform.position - ownerCharacterRD.ProdsAttachPoint.parent.position).normalized;
+        }
+
+            // 보간
+            transform.position = Vector3.Lerp(transform.position, targetPos, eased);
 
         Quaternion lookAtDir = Quaternion.LookRotation(Vector3.forward, dirToTargetPos.normalized);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookAtDir, eased);

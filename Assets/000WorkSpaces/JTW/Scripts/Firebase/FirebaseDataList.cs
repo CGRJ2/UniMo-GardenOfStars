@@ -3,7 +3,9 @@ using Firebase.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -21,7 +23,7 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
     public List<T> List { 
         get
         {
-            return _list;
+            return _list.OrderBy(item => item.Id).ToList();
         } 
     }
 
@@ -58,6 +60,11 @@ public class FirebaseDataList<T> : FirebaseData where T : FirebaseData
         Manager.firebase.SaveData($"{Path}/{Id}", true);
         ListInitCount++;
         _keyList.Add(Id);
+    }
+
+    public void AddListItem(T item)
+    {
+        _list.Add(item);
     }
 
     public T Get(string id)

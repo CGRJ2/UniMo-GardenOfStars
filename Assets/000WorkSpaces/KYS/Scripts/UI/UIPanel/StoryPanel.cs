@@ -2764,6 +2764,11 @@ namespace KYS
         {
             if (upgradeButton != null)
             {
+                if (visible && TutorialManager.Instance != null)
+                {
+                    BlockAllImages(new() { "PlayerUpgradeButton" });
+                }
+
                 upgradeButton.SetActive(visible);
                 isUpgradeButtonVisible = visible;
                 currentUpgradeButtonNodeId = nodeId;
@@ -2981,6 +2986,40 @@ namespace KYS
         /// </summary>
         public bool IsSkipMode => isSkipMode;
 
+        #endregion
+        
+        #region 스킵 기능 제어
+        
+        /// <summary>
+        /// 스킵 기능 비활성화
+        /// </summary>
+        public void DisableSkipMode()
+        {
+            // 현재 스킵 모드가 활성화되어 있으면 중지
+            if (isSkipMode)
+            {
+                StopSkipMode();
+            }
+            
+            // 스킵 버튼 비활성화
+            if (skipButton != null)
+            {
+                skipButton.interactable = false;
+            }
+        }
+        
+        /// <summary>
+        /// 스킵 기능 활성화
+        /// </summary>
+        public void EnableSkipMode()
+        {
+            // 스킵 버튼 활성화
+            if (skipButton != null)
+            {
+                skipButton.interactable = true;
+            }
+        }
+        
         #endregion
 
         #endregion

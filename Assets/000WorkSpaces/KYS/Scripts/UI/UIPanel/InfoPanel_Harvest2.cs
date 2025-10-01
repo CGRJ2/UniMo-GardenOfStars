@@ -115,7 +115,7 @@ public class InfoPanel_Harvest2 : BaseUI
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
             tmp_AfterUpProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime + 1]}";
 
-            if (curMoney > data.Stat_ProdTime.cost[curLevel_ProdTime])
+            if (curMoney >= data.Stat_ProdTime.cost[curLevel_ProdTime])
             {
                 btn_ProdTimeUpgrade.interactable = true;
             }

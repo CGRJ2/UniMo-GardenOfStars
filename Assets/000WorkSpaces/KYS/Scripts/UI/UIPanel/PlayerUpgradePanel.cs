@@ -42,6 +42,11 @@ namespace KYS
         {
             base.Awake();
 
+            if(TutorialManager.Instance != null)
+            {
+                BlockAllImages(new() { "UpgradeButton" });
+            }
+
             SetupButtons();
             UpdateUI();
 

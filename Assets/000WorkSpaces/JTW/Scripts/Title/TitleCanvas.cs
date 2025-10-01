@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
@@ -9,6 +11,8 @@ using UnityEngine.UI;
 
 public class TitleCanvas : KYS.BaseUI
 {
+    private TextMeshProUGUI tapScreen => GetUI<TextMeshProUGUI>("TapScreenText");
+
     protected override void Awake()
     {
         base.Awake();
@@ -17,6 +21,7 @@ public class TitleCanvas : KYS.BaseUI
 
     private void OnEnable()
     {
+        tapScreen.text = GetLocalizedText("ui_titlescene_touch_screen");
         GetEvent("TitlePanel").Click += OnClick;
         Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
     }

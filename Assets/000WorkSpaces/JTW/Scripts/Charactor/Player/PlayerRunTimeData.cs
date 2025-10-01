@@ -7,6 +7,8 @@ public class PlayerRunTimeData : CharaterRuntimeData
     public Vector3 Direction;
     public InteractableBase CurWorkStation;
 
+    public InteractableBase CurPlace;
+
     public override int GetMaxCapacity()
     {
         return Manager.player.Data.MaxCapacity;

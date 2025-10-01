@@ -52,21 +52,21 @@ namespace KYS
         public Sprite NpcSprite => GetNpcSpriteDirect();
 
         // Firebase에서 관리하는 동적 데이터
-        public FirebaseProperty<bool> IsCompleted; // 대화 완료 여부
-        public FirebaseProperty<int> ChoiceSelected; // 선택한 선택지 인덱스
-        public FirebaseProperty<long> LastPlayedTime; // 마지막 재생 시간
+        // public FirebaseProperty<bool> IsCompleted; // 대화 완료 여부
+        // public FirebaseProperty<int> ChoiceSelected; // 선택한 선택지 인덱스
+        // public FirebaseProperty<long> LastPlayedTime; // 마지막 재생 시간
 
         public DialogueData(string id, string parentPath = null) : base(id, parentPath)
         {
-            IsCompleted = new FirebaseProperty<bool>("IsCompleted", Path);
-            ChoiceSelected = new FirebaseProperty<int>("ChoiceSelected", Path);
-            LastPlayedTime = new FirebaseProperty<long>("LastPlayedTime", Path);
+            // IsCompleted = new FirebaseProperty<bool>("IsCompleted", Path);
+            // ChoiceSelected = new FirebaseProperty<int>("ChoiceSelected", Path);
+            // LastPlayedTime = new FirebaseProperty<long>("LastPlayedTime", Path);
         }
 
         /// <summary>
         /// 대화 노드가 완료되었는지 확인
         /// </summary>
-        public bool IsDialogueCompleted => IsCompleted.Value;
+        // public bool IsDialogueCompleted => IsCompleted.Value;
 
         /// <summary>
         /// 선택지가 있는 노드인지 확인

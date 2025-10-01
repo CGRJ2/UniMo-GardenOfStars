@@ -96,8 +96,7 @@ public class BuildingInstance : InteractableBase
         if (characterRuntimeData is PlayerRunTimeData)
         {
             // 튜토리얼 시퀀스 5 이하에서는 표기 안뜸
-            if (Manager.firebase.UserData.CurStage.Value == "Tutorial" &&
-                Manager.firebase.UserData.TutorialSequence.Value < 5) return;
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial") return;
 
             if (activatePopUI != null)
             {

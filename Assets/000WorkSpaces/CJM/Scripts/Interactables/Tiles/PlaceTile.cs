@@ -115,6 +115,7 @@ public class PlaceTile : InteractableBase
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             yield return null;
+            PlayerRunTimeData data = (PlayerRunTimeData)characterRD;
 
             // 작업 영역 밖으로 나가는 경우
             if (characterRD == null)
@@ -128,8 +129,17 @@ public class PlaceTile : InteractableBase
             {
                 progressBar.gameObject.SetActive(false);
                 progressedTime = 0; // 진행도 초기화
+                data.CurPlace = null;
+                if (_FX_Construct != null)
+                {
+                    _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+                    _FX_Construct = null;
+                }
                 continue;
             }
+
+            if (data.CurPlace != null && data.CurPlace != this) continue;
+            data.CurPlace = this;
 
             // 재가동 시, 사운드 이펙트 실행
             if (progressedTime == 0)
@@ -144,7 +154,6 @@ public class PlaceTile : InteractableBase
             if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
             else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
 
-
             // 작업 시작 시, 진행도 표기
             progressBar.gameObject.SetActive(true);
 
@@ -153,6 +162,7 @@ public class PlaceTile : InteractableBase
             // 설치가 완료된 경우
             if (installingTime < progressedTime)
             {
+                data.CurPlace = null;
                 CompleteTask(); // 결과물 생성
                 progressedTime = 0; // 진행도 초기화
                 break;

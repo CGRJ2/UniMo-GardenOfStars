@@ -1,16 +1,23 @@
-using GoogleMobileAds.Api;
+ï»¿using GoogleMobileAds.Api;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AdManager : Singleton<AdManager>
 {
-    public static event Action<float,AdPosition> OnBannerHeightChanged;
+    public static event Action<float, AdPosition> OnBannerHeightChanged;
 
-    
 
+    [SerializeField] private float bannerRefreshInterval = 60f; // ë°°ë„ˆ ê´‘ê³  ë¦¬í”„ë ˆì‹œ ê°„ê²© (ì´ˆ)
+    private bool isBannerRefreshing = false;
+    // ë¦¬í”„ë ˆì‹œ ì¤‘ë³µ ë°©ì§€ í”Œë˜ê·¸ (íŠ¸ë£¨ì¼ê²½ìš° ì¤‘ë³µì‹¤í–‰ì•ˆë˜ê³  ë¦¬í”„ë ˆì‰¬ ì¤‘ì„ì„ ì˜ë¯¸)
+    [SerializeField] private float rewardedRefreshInterval = 3500f; // ë³´ìƒí˜• ê´‘ê³  ë¦¬í”„ë ˆì‹œ ê°„ê²© (ì´ˆ)
+    private bool isRefreshingRewardedAd = false;
+    private float lastRewardedLoadTime;
+    private bool showrewardchack =true;
     private InterstitialAd interstitialAd;
     private RewardedAd rewardedAd;
     private BannerView bannerView;
@@ -18,21 +25,21 @@ public class AdManager : Singleton<AdManager>
     private bool isShowingAd = false;
 
 
-    [Header("±¤°í ID")]
-    [SerializeField] private string interstitialID; 
+    [Header("ê´‘ê³  ID")]
+    [SerializeField] private string interstitialID;
     [SerializeField] private string rewardedID;
     [SerializeField] private string bannerID;
-    [SerializeField] private string appopenId; //°³¹ßÁßÁö
+    [SerializeField] private string appopenId; //ê°œë°œì¤‘ì§€
 
 
-    [Header("¹è³Ê±¤°í Á¶Á¤")]
+    [Header("ë°°ë„ˆê´‘ê³  ì¡°ì •")]
     [SerializeField] public BannerSize bannerSize = BannerSize.BANNER;
     [SerializeField] private BannerPosition bannerPosition = BannerPosition.Bottom;
 
     // Start is called before the first frame update
     private void Awake()
     {
-       Init();
+        Init();
     }
     void Init()
     {
@@ -47,11 +54,14 @@ public class AdManager : Singleton<AdManager>
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
         yield return new WaitUntil(() => Manager.firebase.UserData.AdRemoved.IsInit);
 
+        Manager.firebase.UserDataProperty.Subscribe(data => data.AdRemoved.Subscribe(ApplyBannerState));
         Manager.firebase.UserData.AdRemoved.Subscribe(ApplyBannerState);
         ApplyBannerState(Manager.firebase.UserData.AdRemoved.Value);
+        if (!isRefreshingRewardedAd) StartCoroutine(AutoRefreshRewardedAd());
+
     }
 
-    
+
     void Start()
     {
         MobileAds.Initialize(initStatus =>
@@ -69,12 +79,12 @@ public class AdManager : Singleton<AdManager>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError("¾Û ¿­±â ±¤°í ·Îµù ½ÇÆĞ: " + error);
+                Debug.LogError("ì•± ì—´ê¸° ê´‘ê³  ë¡œë”© ì‹¤íŒ¨: " + error);
                 return;
             }
 
             appOpenAd = ad;
-            Debug.Log("¾Û ¿­±â ±¤°í ·Îµù ¿Ï·á");
+            Debug.Log("ì•± ì—´ê¸° ê´‘ê³  ë¡œë”© ì™„ë£Œ");
         });
 
     }
@@ -86,12 +96,12 @@ public class AdManager : Singleton<AdManager>
     }
     IEnumerator WaitAndReloadAd()
     {
-        yield return new WaitForSeconds(1.5f); // ±¤°í ±æÀÌ¿¡ µû¶ó Á¶Á¤
+        yield return new WaitForSeconds(1.5f); // ê´‘ê³  ê¸¸ì´ì— ë”°ë¼ ì¡°ì •
         isShowingAd = false;
         LoadAppOpenAd();
     }
 
-    // Àü¸é ±¤°í
+    // ì „ë©´ ê´‘ê³ 
     public void LoadInterstitialAd()
     {
         interstitialAd?.Destroy();
@@ -100,7 +110,7 @@ public class AdManager : Singleton<AdManager>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError("Àü¸é ±¤°í ·Îµù ½ÇÆĞ: " + error);
+                Debug.LogError("ì „ë©´ ê´‘ê³  ë¡œë”© ì‹¤íŒ¨: " + error);
                 return;
             }
             interstitialAd = ad;
@@ -112,56 +122,73 @@ public class AdManager : Singleton<AdManager>
         if (interstitialAd != null && interstitialAd.CanShowAd())
             interstitialAd.Show();
         else
-            Debug.Log("Àü¸é ±¤°í ÁØºñ ¾ÈµÊ");
+            Debug.Log("ì „ë©´ ê´‘ê³  ì¤€ë¹„ ì•ˆë¨");
     }
 
-    // º¸»óÇü ±¤°í
+    // ë³´ìƒí˜• ê´‘ê³ 
     public void LoadRewardedAd()
     {
+        lastRewardedLoadTime = Time.time; //ê´‘ê³  ë¡œë”© ì‹œì  ì €ì¥.
         var request = new AdRequest();
         RewardedAd.Load(rewardedID, request, (RewardedAd ad, LoadAdError error) =>
         {
             if (error != null || ad == null)
             {
-                Debug.LogError("º¸»óÇü ±¤°í ·Îµù ½ÇÆĞ: " + error);
+                Debug.LogError("ë³´ìƒí˜• ê´‘ê³  ë¡œë”© ì‹¤íŒ¨: " + error);
                 return;
             }
 
             rewardedAd = ad;
             rewardedAd.OnAdFullScreenContentClosed += LoadRewardedAd;
-            Debug.Log("º¸»óÇü ±¤°í ·Îµù ¿Ï·á");
+            Debug.Log("ë³´ìƒí˜• ê´‘ê³  ë¡œë”© ì™„ë£Œ");
         });
 
     }
 
-    public void ShowRewardedAd(System.Action onReward)
+    public async void ShowRewardedAd(System.Action onReward)
     {
-        if (rewardedAd != null && rewardedAd.CanShowAd())
+        if (showrewardchack)
         {
-            rewardedAd.Show((Reward reward) =>
+
+            if (rewardedAd != null && rewardedAd.CanShowAd())
             {
-                Debug.Log($"º¸»ó Áö±Ş! ¾î¶²°É{reward.Type},¾ó¸¸Å­ {reward.Amount}");
-                onReward?.Invoke();
-            });
-        }
-        else
-        {
-            Debug.Log("º¸»óÇü ±¤°í ÁØºñ ¾ÈµÊ");
+                rewardedAd.Show((Reward reward) =>
+                {
+                    Debug.Log($"ë³´ìƒ ì§€ê¸‰! ì–´ë–¤ê±¸{reward.Type},ì–¼ë§Œí¼ {reward.Amount}");
+                    onReward?.Invoke();
+                });
+            }
+            else
+            {
+                Debug.Log("ë³´ìƒí˜• ê´‘ê³  ì¤€ë¹„ ì•ˆë¨");
+                LoadRewardedAd();
+                showrewardchack = false;
+                await Task.Delay(5000);
+                if (rewardedAd != null && rewardedAd.CanShowAd())
+                {
+                    rewardedAd.Show((Reward reward) =>
+                    {
+                        Debug.Log($"ë³´ìƒ ì§€ê¸‰! ì–´ë–¤ê±¸{reward.Type},ì–¼ë§Œí¼ {reward.Amount}");
+                        onReward?.Invoke();
+                    });
+                }
+                showrewardchack = true;
+            }
         }
     }
-    private void Update()
+    /*private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             LoadBannerAd();
         }
-        if(Input.GetKeyDown(KeyCode.B))
-            {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
             HideBannerAd();
         }
-    }
+    }*/
 
-    // ¹è³Ê ±¤°í
+    // ë°°ë„ˆ ê´‘ê³ 
     public void LoadBannerAd()
     {
         float dpi = Screen.dpi;
@@ -174,15 +201,15 @@ public class AdManager : Singleton<AdManager>
 
         bannerView = new BannerView(bannerID, selectedSize, selectedPosition);
         bannerView.LoadAd(new AdRequest());
-        // ±¤°í ³ôÀÌ ÀÌº¥Æ® ¹ßÇà
-       // int bannerHeightPx = selectedSize.Height;
+        // ê´‘ê³  ë†’ì´ ì´ë²¤íŠ¸ ë°œí–‰
+        // int bannerHeightPx = selectedSize.Height;
         //OnBannerHeightChanged?.Invoke(selectedSize.Height,selectedPosition);
         StartCoroutine(NotifyBannerHeightDelayed(selectedPosition));
     }
 
     IEnumerator NotifyBannerHeightDelayed(AdPosition position)
     {
-        yield return new WaitForSeconds(0.5f); // ±¤°í ·Îµù ½Ã°£ È®º¸
+        yield return new WaitForSeconds(0.5f); // ê´‘ê³  ë¡œë”© ì‹œê°„ í™•ë³´
         float height = bannerView?.GetHeightInPixels() ?? 0;
         Debug.Log($"[AdManager] Banner Height: {height}");
         OnBannerHeightChanged?.Invoke(height, position);
@@ -191,12 +218,13 @@ public class AdManager : Singleton<AdManager>
 
     public void HideBannerAd()
     {
-        bannerView?.Hide();
-        OnBannerHeightChanged?.Invoke(0, GetAdPosition(bannerPosition)); // ±¤°í ¼û±è ¡æ UI º¹¿ø
+        bannerView?.Destroy(); //ê´‘ê³  íŒŒê´´
+        //bannerView?.Hide(); //ìˆ¨ê¸°ê³  ìˆì—ˆì§€ë§Œ íŒŒê´´ë¡œ ë³€ê²½.
+        OnBannerHeightChanged?.Invoke(0, GetAdPosition(bannerPosition)); // ê´‘ê³  ìˆ¨ê¹€ â†’ UI ë³µì›
 
     }
 
-    // ¿É¼Ç: »çÀÌÁî ¼±ÅÃ
+    // ì˜µì…˜: ì‚¬ì´ì¦ˆ ì„ íƒ
 
     private AdSize GetAdSize(BannerSize size)
     {
@@ -212,7 +240,7 @@ public class AdManager : Singleton<AdManager>
             default: return AdSize.Banner;
         }
     }
-    // ¿É¼Ç: À§Ä¡ ¼±ÅÃ
+    // ì˜µì…˜: ìœ„ì¹˜ ì„ íƒ
     private AdPosition GetAdPosition(BannerPosition position)
     {
         switch (position)
@@ -233,25 +261,66 @@ public class AdManager : Singleton<AdManager>
         if (adRemoved)
         {
             HideBannerAd();
-            Debug.Log("±¤°í Á¦°Å »óÅÂ Àû¿ëµÊ");
-            // ±¤°í Á¦°Å ui ºñ È°¼ºÈ­
+            Debug.Log("ê´‘ê³  ì œê±° ìƒíƒœ ì ìš©ë¨");
+            // ê´‘ê³  ì œê±° ui ë¹„ í™œì„±í™”
             //noadsbutton.interactable = false;
-            //noadsbutton.GetComponentInChildren<TextMeshProUGUI>().text = "±¸¸Å¿Ï·á";
-            GameObject.Find("±¤°íÁ¦°Å¹öÆ°(ÀÓ½Ã)").GetComponent<Button>().interactable =false;
-            GameObject.Find("±¤°íÁ¦°Å¹öÆ°(ÀÓ½Ã)").GetComponentInChildren<TextMeshProUGUI>().text = "±¸¸Å¿Ï·á";
+            //noadsbutton.GetComponentInChildren<TextMeshProUGUI>().text = "êµ¬ë§¤ì™„ë£Œ";
 
         }
         else
         {
-           
+
             if (GameObject.Find($"{bannerSize}(Clone)") == null)
             {
                 LoadBannerAd();
-                Debug.Log("±¤°í Ç¥½Ã »óÅÂ Àû¿ëµÊ");
+                Debug.Log("ê´‘ê³  í‘œì‹œ ìƒíƒœ ì ìš©ë¨");
             }
             else
             {
-                Debug.Log("±¤°í°¡ ÀÌ¹Ì Ç¥½ÃÁßÀÔ´Ï´Ù.");
+                Debug.Log("ê´‘ê³ ê°€ ì´ë¯¸ í‘œì‹œì¤‘ì…ë‹ˆë‹¤.");
+            }
+            if (!isBannerRefreshing)
+            {
+                StartCoroutine(AutoRefreshBanner());
+                isBannerRefreshing = true;
+
+            }
+        }
+    }
+    IEnumerator AutoRefreshBanner()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(bannerRefreshInterval);
+
+            if (Manager.firebase.UserData.AdRemoved.Value)
+            {
+                Debug.Log("ê´‘ê³  ì œê±° ìƒíƒœì´ë¯€ë¡œ ë°°ë„ˆ ë¦¬í”„ë ˆì‹œ ì¤‘ë‹¨");
+                isBannerRefreshing = false;
+                yield break; // ì½”ë£¨í‹´ ì¢…ë£Œ
+
+            }
+
+            bannerView?.Destroy(); // ê¸°ì¡´ ê´‘ê³  ì œê±°
+            LoadBannerAd();        // ìƒˆ ê´‘ê³  ë¡œë”©
+            Debug.Log("ë°°ë„ˆ ê´‘ê³  ë¦¬í”„ë ˆì‹œë¨");
+        }
+    }
+    private IEnumerator AutoRefreshRewardedAd() //ë³´ìƒí˜• ê´‘ê³  ë¦¬í”„ë ˆì‰¬
+    {
+        isRefreshingRewardedAd = true;
+
+        while (true)
+        {
+            yield return new WaitForSeconds(60f); // 1ë¶„ë§ˆë‹¤ ì²´í¬
+
+            float timeSinceLastLoad = Time.time - lastRewardedLoadTime;
+
+            if (rewardedAd == null || !rewardedAd.CanShowAd() || timeSinceLastLoad >= rewardedRefreshInterval)
+            {
+                LoadRewardedAd();
+                lastRewardedLoadTime = Time.time;
+                Debug.Log("ë³´ìƒí˜• ê´‘ê³  ìë™ ë¦¬í”„ë ˆì‹œë¨");
             }
         }
     }
