@@ -121,7 +121,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
 
@@ -151,7 +150,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
 
@@ -169,7 +167,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
             {
                 if (task.IsCanceled || task.IsFaulted)
                 {
-                    NetworkDisconnected();
                     return;
                 }
 
@@ -218,7 +215,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
@@ -260,7 +256,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
@@ -272,7 +267,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
