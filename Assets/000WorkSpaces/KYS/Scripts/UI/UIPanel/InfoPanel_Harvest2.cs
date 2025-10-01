@@ -82,6 +82,9 @@ public class InfoPanel_Harvest2 : BaseUI
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
+
+        // SFX 추가
+        Manager.Audio.SfxPlay("SFX_Money", transform);
     }
 
     public void SetUpgradeData(HarvestBD harvest)

@@ -91,6 +91,9 @@ public class InfoPanel_Manufacture2 : BaseUI
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
+
+        // SFX 추가
+        Manager.Audio.SfxPlay("SFX_Money", transform);
     }
 
     void UpgradeCapacity()
@@ -106,6 +109,9 @@ public class InfoPanel_Manufacture2 : BaseUI
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
+
+        // SFX 추가
+        Manager.Audio.SfxPlay("SFX_Money", transform);
     }
 
     public void SetUpgradeData(ManufactureBD manufacture)
