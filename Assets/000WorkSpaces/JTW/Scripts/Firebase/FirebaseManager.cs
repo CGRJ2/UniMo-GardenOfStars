@@ -65,7 +65,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _app = null;
                 _auth = null;
                 _database = null;
-                NetworkDisconnected();
             }
         });
     }
@@ -76,6 +75,16 @@ public class FirebaseManager : Singleton<FirebaseManager>
         StartCoroutine(Manager.game.Fetch());
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            NetworkDisconnected();
+        }
+    }
+#endif
 
     private bool _isNetworkDisconected;
     public void NetworkDisconnected()
