@@ -1,3 +1,4 @@
+using Firebase.Analytics;
 using KYS;
 using System;
 using System.Collections;
@@ -27,18 +28,23 @@ namespace GameQuest
         // `Step 클리어` 시, ProgressdIndex += 1, 램프 불빛 하나 추가, 보상 지급
         // `Content 클리어` 시, ProgressdIndex = 0, 해당 발판 `완료` 표기, 다른 퀘스트들 클리어 여부 판단,
 
+        public FirebaseProperty<long> QC_StartTime;
+
+
         public bool IsContentClear => ProgressdIndex.Value > StepIndexForClearContent;
 
         public QuestContentProgressData(string id, string parentPath = null) : base(id, parentPath)
         {
             ProgressdProdsCount = new FirebaseProperty<int>("ProgressdCount", Path);
             ProgressdIndex = new FirebaseProperty<int>("ProgressIndex", Path);
+            QC_StartTime = new FirebaseProperty<long>("QC_StartTime", Path);
 
             ProgressdIndex.Subscribe(CheckContentClear);
             ProgressdProdsCount.Subscribe(CheckStepClear);
-
+            
             InitList.Add(ProgressdIndex);
             InitList.Add(ProgressdProdsCount);
+            InitList.Add(QC_StartTime);
         }
 
         void CheckContentClear(int progressIndex)
@@ -47,6 +53,13 @@ namespace GameQuest
             if (StepIndexForClearContent < progressIndex)
             {
                 Debug.LogWarning($"QC(id:{Id}) 클리어");
+                var questContent = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.Get(Id);
+                double clearTime = DateTime.UtcNow.Second - questContent.QC_StartTime.Value;
+
+                FirebaseAnalytics.LogEvent($"{QuestId}_{Id}_clear",
+                    new Parameter("clear_time", clearTime),
+                    new Parameter("money", Manager.firebase.UserData.Player.Money.Value)
+                    );
 
                 // 클리어 SFX 실행 
                 // Manager.Audio.SfxPlay("SFX_QuestClear", Manager.player.PlayerObj.transform);
