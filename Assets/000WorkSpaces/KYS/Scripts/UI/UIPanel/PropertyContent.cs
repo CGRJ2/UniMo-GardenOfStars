@@ -319,7 +319,7 @@ namespace KYS
                 if (currentBuildingData is HarvestBD harvestBD)
                 {
                     // 수확형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((popup) =>
                     {
                         if (popup != null)
                         {
@@ -330,7 +330,7 @@ namespace KYS
                 else if (currentBuildingData is ManufactureBD manufactureBD)
                 {
                     // 제조형 건물 업그레이드 패널 열기
-                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture2>((popup) =>
+                    Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((popup) =>
                     {
                         if (popup != null)
                         {

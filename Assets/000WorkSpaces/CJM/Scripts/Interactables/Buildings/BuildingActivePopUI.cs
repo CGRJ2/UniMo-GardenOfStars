@@ -38,7 +38,7 @@ public class BuildingActivePopUI : MonoBehaviour
         var existingPopups = Manager.ui.GetUIsByLayer(UILayerType.Popup);
         foreach (var Popup in existingPopups)
         {
-            if (Popup is InfoPanel_Harvest2)
+            if (Popup is InfoPanel_Harvest)
             {
                 //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                 return;
@@ -46,7 +46,7 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPopUpAsync<InfoPanel_Harvest2>((Popup) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Harvest>((Popup) =>
         {
             if (Popup != null)
             {
@@ -73,7 +73,7 @@ public class BuildingActivePopUI : MonoBehaviour
         var existingPopups = Manager.ui.GetUIsByLayer(UILayerType.Popup);
         foreach (var Popup in existingPopups)
         {
-            if (Popup is InfoPanel_Manufacture2)
+            if (Popup is InfoPanel_Manufacture)
             {
                 //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                 return;
@@ -81,7 +81,7 @@ public class BuildingActivePopUI : MonoBehaviour
         }
 
         // 업그레이드 패널 열기
-        Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture2>((Popup) =>
+        Manager.ui.ShowPopUpAsync<InfoPanel_Manufacture>((Popup) =>
         {
             if (Popup != null)
             {
