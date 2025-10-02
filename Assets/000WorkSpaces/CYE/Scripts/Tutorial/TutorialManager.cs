@@ -1098,6 +1098,7 @@ public class TutorialManager : MonoBehaviour
 
         // 플레이어 조작 활성화
         Manager.player.IsControl = true;
+        Firebase.Analytics.FirebaseAnalytics.LogEvent("tutorial_clear");
     }
 
 

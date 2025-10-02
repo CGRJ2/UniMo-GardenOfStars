@@ -178,6 +178,7 @@ public class QuestManager : Singleton<QuestManager>
                         if (kvp.Value.Id == Manager.firebase.UserData.CurStage.Value)
                         {
                             Manager.firebase.UserData.StageList.Add(kvp.Value.NextStageId);
+                            Firebase.Analytics.FirebaseAnalytics.LogEvent($"{kvp.Value.NextStageId}_clear");
                             break;
                         }
                     }

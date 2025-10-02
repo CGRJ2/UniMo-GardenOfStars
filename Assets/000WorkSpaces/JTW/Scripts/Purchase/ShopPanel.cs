@@ -60,6 +60,7 @@ public class ShopPanel : KYS.BaseUI
 
     public void OnOrderConfirmed(ConfirmedOrder order)
     {
+        Firebase.Analytics.FirebaseAnalytics.LogEvent("buy_in_game_purchase");
         IsInPurchase = false;
     }
 

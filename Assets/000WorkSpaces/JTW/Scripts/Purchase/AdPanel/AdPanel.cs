@@ -111,6 +111,7 @@ public abstract class AdPanel : KYS.BaseUI
                 _completeImage.gameObject.SetActive(true);
             }
             Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
+            Firebase.Analytics.FirebaseAnalytics.LogEvent("get_ad_reward");
         });
     }
 
