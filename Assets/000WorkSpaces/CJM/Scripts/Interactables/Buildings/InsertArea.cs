@@ -40,12 +40,13 @@ public class InsertArea : InteractableBase, IWorkStation
             }
 
             // 플레이어 손에 재료가 있는지 체크
-            IngrediantInstance poppedProd;
-            if (character.IngrediantStack.TryPop(out poppedProd))
+            IngrediantInstance peekedProd;
+            if (character.IngrediantStack.TryPeek(out peekedProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
-                if (poppedProd.Data.ID == ownerInstance.originData.RequireProdID)
+                if (peekedProd.Data.ID == ownerInstance.originData.RequireProdID)
                 {
+                    IngrediantInstance poppedProd = character.IngrediantStack.Pop();
                     poppedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);
                     ownerInstance.ingrediantStack.Push(poppedProd);
                 }
@@ -65,12 +66,12 @@ public class InsertArea : InteractableBase, IWorkStation
     {
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
-        
+
         IngrediantInstance peekedProd;
         if (characterRD.IngrediantStack.TryPeek(out peekedProd))
         {
             if (peekedProd is Item_Building) return;
-            
+
             else StartCoroutine(AutoStacking());
         }
     }
