@@ -152,9 +152,10 @@ public class StageManager : MonoBehaviour
                     // 보상 팝업 닫힐 때 기본 보상 지급 & 시간 체크 루틴 실행
                     StartCoroutine(OfflineRewardInitAfterPopupClose(popup.gameObject));
 
+                    // 마지막 퀘스트 완료된 상태면 체크 안해도 됨
                     // 완료 퀘스트 체크
-                    bool questCleared;
-                    Manager.quest.CheckCurQuestCleared(out questCleared);
+                    /*bool questCleared;
+                    Manager.quest.CheckCurQuestCleared(out questCleared);*/
                 });
             }
             else
@@ -163,9 +164,10 @@ public class StageManager : MonoBehaviour
                 // 보상 팝업 없이 바로 시간 체크 루틴 실행
                 OfflineRewardInited();
 
+                // 마지막 퀘스트 완료된 상태면 체크 안해도 됨
                 // 완료 퀘스트 체크
-                bool questCleared;
-                Manager.quest.CheckCurQuestCleared(out questCleared);
+                /*bool questCleared;
+                Manager.quest.CheckCurQuestCleared(out questCleared);*/
             }
         }
         else
