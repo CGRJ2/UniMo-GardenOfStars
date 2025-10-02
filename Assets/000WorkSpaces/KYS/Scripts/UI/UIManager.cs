@@ -1725,6 +1725,7 @@ namespace KYS
             
             // 씬 전환 중 Addressable 시스템 안정성을 위한 대기
             yield return new WaitForSeconds(0.1f);
+            yield return new WaitUntil(() => Manager.game.initialized);
 
             // LoadingScreen 프리팹을 직접 로드
             string[] possibleKeys = {
