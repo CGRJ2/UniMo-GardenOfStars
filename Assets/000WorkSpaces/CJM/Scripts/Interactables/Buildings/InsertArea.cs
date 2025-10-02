@@ -6,7 +6,7 @@ public class InsertArea : InteractableBase, IWorkStation
     [HideInInspector] public ManufactureBuilding ownerInstance;
 
     public bool isWorkable
-    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.Capacity; }}
+    { get { return ownerInstance.ingrediantStack.Count < ownerInstance.Capacity; } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -66,7 +66,13 @@ public class InsertArea : InteractableBase, IWorkStation
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
         
-        StartCoroutine(AutoStacking());
+        IngrediantInstance peekedProd;
+        if (characterRD.IngrediantStack.TryPeek(out peekedProd))
+        {
+            if (peekedProd is Item_Building) return;
+            
+            else StartCoroutine(AutoStacking());
+        }
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
