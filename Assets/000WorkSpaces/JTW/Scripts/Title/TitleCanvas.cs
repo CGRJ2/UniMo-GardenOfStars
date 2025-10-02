@@ -23,13 +23,22 @@ public class TitleCanvas : KYS.BaseUI
     {
         tapScreen.text = GetLocalizedText("ui_titlescene_touch_screen");
         GetEvent("TitlePanel").Click += OnClick;
-        Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
+
+        StartCoroutine(WaitUserDataInit());
     }
 
     private void OnDisable()
     {
         GetEvent("TitlePanel").Click -= OnClick;
         Manager.firebase.UserData.StageList.OnAdded.RemoveListener(GoTutorialScene);
+    }
+
+    private IEnumerator WaitUserDataInit()
+    {
+        yield return new WaitUntil(() => Manager.firebase.UserData != null);
+        yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+
+        Manager.firebase.UserData.StageList.OnAdded.AddListener(GoTutorialScene);
     }
 
     private void OnClick(PointerEventData data)
