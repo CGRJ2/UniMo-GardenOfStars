@@ -21,9 +21,6 @@ public class BuildingInstance : InteractableBase
     {
         base.OnDisableAdditionalActions();
 
-        if (_OriginData != null)
-            Manager.buildings?.RemoveBiTransformData(transform);
-
         if (activatePopUI != null)
             activatePopUI.gameObject.SetActive(false);
     }
@@ -31,8 +28,8 @@ public class BuildingInstance : InteractableBase
     public void CheckUpgradable()
     {
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(_OriginData.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
-        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
         int curMoney = Manager.player.Data.Money.Value;
 
         // 생산형 건물일 때

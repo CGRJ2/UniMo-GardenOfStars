@@ -73,7 +73,7 @@ public class BuildingActivePopUI : MonoBehaviour
         var existingPopups = Manager.ui.GetUIsByLayer(UILayerType.Popup);
         foreach (var Popup in existingPopups)
         {
-            if (Popup is InfoPanel_Manufacture)
+            if (Popup is InfoPanel_Manufacture2)
             {
                 //Debug.Log("[HUDAllPanel] 이미 TitlePanel이 열려있습니다. 중복 호출 무시");
                 return;

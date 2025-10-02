@@ -58,6 +58,8 @@ public class InfoPanel_Harvest2 : BaseUI
         }
     }
 
+    bool upgradableBtnFlag;
+
     public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
         Manager.buildings.upgradeEvent += OnUpgradeEvent;
@@ -71,20 +73,35 @@ public class InfoPanel_Harvest2 : BaseUI
 
     void UpgradeProdTime()
     {
-        // 돈 차감
-        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        if (!upgradableBtnFlag) return;
+        
+        // 플래그 닫기(중복 실행 방지)
+        upgradableBtnFlag = false;
 
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
+
+        // SFX 추가
+        Manager.Audio.SfxPlay("SFX_Money", transform);
+
+        // 돈 차감
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
+        upgradeData.Level_ProdTime.Subscribe(UpgradeBtnFlag);
+        upgradeData.Level_ProdTime.Value += 1;
+    }
+
+    void UpgradeBtnFlag(int value)
+    {
+        // 플래그 열기
+        upgradableBtnFlag = true;
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
 
-        // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        upgradeData.Level_ProdTime.Unsubscribe(UpgradeBtnFlag);
     }
 
     public void SetUpgradeData(HarvestBD harvest)
@@ -95,7 +112,7 @@ public class InfoPanel_Harvest2 : BaseUI
         int curMoney = Manager.player.Data.Money.Value;
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
 
         // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);

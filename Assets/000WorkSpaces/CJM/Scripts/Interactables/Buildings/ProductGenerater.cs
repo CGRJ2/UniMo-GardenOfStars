@@ -17,7 +17,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
         get
         {
             UpgradeData upgradeData = Manager.buildings.GetUpgradeData(originData.ID);
-            int level = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+            int level = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
 
             return originData.Stat_ProdTime.Values[level];
         }

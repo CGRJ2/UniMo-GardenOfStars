@@ -62,6 +62,9 @@ public class StageManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
         Debug.LogWarning("QuestList Inited");
 
+
+        yield return new WaitUntil(() => Manager.player.PlayerObj != null);
+        yield return new WaitUntil(() => Manager.camera.cam_PlayerFocus != null);
         Init();
 
         // 기다렸다 배너 광고 띄우기
@@ -126,8 +129,6 @@ public class StageManager : MonoBehaviour
             npc.CurrentQuestID.Value = npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId;
             Debug.LogWarning($"현재 스테이지 내의 모든 퀘스트를 완료하여 마지막 퀘스트ID가 설정됨. CurrentQuestID: {npc.QuestList.List[npc.QuestList.List.Count - 1].QuestId}");
         }
-
-        
 
         // 플레이어로 카메라 맞춰주기
         Manager.camera.cam_PlayerFocus.Follow = Manager.player.PlayerObj.transform;

@@ -38,15 +38,14 @@ public class InsertArea : InteractableBase, IWorkStation
             }
 
             // 플레이어 손에 재료가 있는지 체크
-            IngrediantInstance instanceProd;
-            if (characterRD.IngrediantStack.TryPeek(out instanceProd))
+            IngrediantInstance poppedProd;
+            if (characterRD.IngrediantStack.TryPop(out poppedProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
-                if (instanceProd.Data.ID == ownerInstance.originData.RequireProdID)
+                if (poppedProd.Data.ID == ownerInstance.originData.RequireProdID)
                 {
-                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-                    popedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);
-                    ownerInstance.ingrediantStack.Push(instanceProd);
+                    poppedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);
+                    ownerInstance.ingrediantStack.Push(poppedProd);
                 }
 
                 // 다음 투입까지 딜레이 시간 설정
