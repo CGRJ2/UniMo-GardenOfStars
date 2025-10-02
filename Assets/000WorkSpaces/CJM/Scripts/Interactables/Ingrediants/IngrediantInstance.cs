@@ -83,6 +83,7 @@ public class IngrediantInstance : PooledObject
 
     public void Despawn()
     {
+        transform.localScale = new Vector3(1, 1, 1);
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
     }
 
@@ -247,7 +248,7 @@ public class IngrediantInstance : PooledObject
         Quaternion targetRot = wobbleParent.rotation;
 
         float order01 = Mathf.Clamp01((float)myOrder / 11f); // 최대 스택 가능 개수 나눠주기
-        float t = Time.fixedDeltaTime * moveSpeed;
+        float t = Time.deltaTime * moveSpeed;
         // 커브 적용
         float eased = baseCurve.Evaluate(t);
         eased = Mathf.Lerp(1f - order01, 1f, eased);
