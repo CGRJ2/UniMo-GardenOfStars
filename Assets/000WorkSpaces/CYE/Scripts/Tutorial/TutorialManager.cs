@@ -622,7 +622,7 @@ public class TutorialManager : MonoBehaviour
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(buildingID);
 
-        yield return new WaitUntil(() => upgradeData.level_ProdTime > 0); // 생산시간 업그레이드 한 번 했을 때 진행
+        yield return new WaitUntil(() => upgradeData.Level_ProdTime.Value > 0); // 생산시간 업그레이드 한 번 했을 때 진행
 
         // 업그레이드 패널 닫기
         Manager.ui.CloseAllPanels();

@@ -1,22 +1,16 @@
 ﻿using KYS;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using System.Collections.Generic;
-
-public class InfoPanel_Manufacture2 : BaseUI
+public class InfoPanel_Harvest : BaseUI
 {
-    ManufactureBD targetBD;
+    HarvestBD targetBD;
 
     [Header("건물 정보")]
     [SerializeField] TMP_Text tmp_Name;
     [SerializeField] TMP_Text tmp_Description;
 
-    [Header("투입 재료 정보")]
-    [SerializeField] TMP_Text tmp_RequireName;
-    [SerializeField] Image image_Require;
-    
     [Header("생산 재료 정보")]
     [SerializeField] TMP_Text tmp_ProdName;
     [SerializeField] Image image_Prod;
@@ -28,30 +22,20 @@ public class InfoPanel_Manufacture2 : BaseUI
     [Header("생산 속도 업그레이드 비용")]
     [SerializeField] TMP_Text tmp_ProdTimeUpCost;
 
-    [Header("최대 투입 개수 스탯")]
-    [SerializeField] TMP_Text tmp_CurCapacity;
-    [SerializeField] TMP_Text tmp_AfterUpCapacity;
-
-    [Header("최대 투입 개수 업그레이드 비용")]
-    [SerializeField] TMP_Text tmp_CapacityUpCost;
-
     [Header("업그레이드 버튼")]
     [SerializeField] Button btn_ProdTimeUpgrade;
-    [SerializeField] Button btn_CapacityUpgrade;
 
     [Header("패널 닫기 버튼")]
     [SerializeField] Button btn_Close;
 
     [Header("레벨 표시 Block 컨테이너")]
-    [SerializeField] Transform prodTimeBlockContainer;  // 생산 속도 레벨 블록 컨테이너
-    [SerializeField] Transform capacityBlockContainer;  // 최대 투입 개수 레벨 블록 컨테이너
+    [SerializeField] Transform blockContainer;
 
     [Header("LevelBlock 프리팹")]
     [SerializeField] GameObject levelBlockPrefab;
 
     // Block 관리용 리스트
-    private List<GameObject> prodTimeBlockList = new List<GameObject>();  // 생산 속도 블록 리스트
-    private List<GameObject> capacityBlockList = new List<GameObject>();  // 최대 투입 개수 블록 리스트
+    private List<GameObject> blockList = new List<GameObject>();
 
     protected override void Awake()
     {
@@ -63,16 +47,21 @@ public class InfoPanel_Manufacture2 : BaseUI
         }
 
         Init();
+
+        if (TutorialManager.Instance != null)
+        {
+            BlockAllImages(new() { "UpGradeButton1" });
+            TutorialManager.Instance.overlayPanel_BiPanelUpgrade.SetActive(false);
+            TutorialManager.Instance.overlayPanel_InfoPopUpgradeBtn.SetActive(true);
+        }
     }
 
-    public void Init()  // 초기화를 어디서 해줘야 할까요?
+    bool upgradeBtnBlockFlag;
+
+    public void Init()
     {
-        Manager.buildings.upgradeEvent += OnUpgradeEvent;
-
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
-        btn_CapacityUpgrade.onClick.AddListener(UpgradeCapacity);
         btn_Close.onClick.AddListener(Close);
-
         // 언어 변경 이벤트 구독
         BuildingLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
         IngrediantLocalizationHelper.SubscribeToLanguageChanged(OnLanguageChanged);
@@ -80,71 +69,69 @@ public class InfoPanel_Manufacture2 : BaseUI
 
     void UpgradeProdTime()
     {
-        // 돈 차감
-        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+        if (upgradeBtnBlockFlag) return;
+        
+        // 플래그 닫기(중복 실행 방지)
+        upgradeBtnBlockFlag = true;
 
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
+
+        // SFX 추가
+        Manager.Audio.SfxPlay("SFX_Money");
+
+        // 돈 차감
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 1);
+        upgradeData.Level_ProdTime.Subscribe(UpgradeBtnFlag);
+        upgradeData.Level_ProdTime.Value += 1;
+    }
+
+    void UpgradeBtnFlag(int value)
+    {
+        // 플래그 열기
+        upgradeBtnBlockFlag = false;
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
 
-        // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
-    }
-
-    void UpgradeCapacity()
-    {
-        // 돈 차감
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
-        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
-
-        Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
-
-        // 업그레이드 스탯 적용
-        Manager.buildings.UpdateUpgradedData(targetBD.ID, 0, 1);
-
-        // 패널 정보 업데이트
-        SetUpgradeData(targetBD);
-
-        // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
+        upgradeData.Level_ProdTime.Unsubscribe(UpgradeBtnFlag);
     }
 
-    public void SetUpgradeData(ManufactureBD manufacture)
+    public void SetUpgradeData(HarvestBD harvest)
     {
-        ManufactureBD data = manufacture;
+        HarvestBD data = harvest;
         targetBD = data;
 
         int curMoney = Manager.player.Data.Money.Value;
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
-        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
 
         // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
 
-        // 투입 재료 정보
-        tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(data.RequireProdID);
-        image_Require.sprite = Manager.data.Ingrediant[data.RequireProdID].Sprite;
-
-        // 생산 재료 정보
+        // 새 방법 (0918 최재민)
         tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
         image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
 
-        // 생산 속도 업그레이드 정보
+        // 어드레서블로 불러올 필요가 없어짐 (0918 최재민)
+        //Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>
+        //{
+        //    tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
+        //    image_Prod.sprite = prodData.Result.Sprite;
+        //};
+
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
         {
             tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.cost[curLevel_ProdTime]}";
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
             tmp_AfterUpProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime + 1]}";
 
-            if (curMoney > data.Stat_ProdTime.cost[curLevel_ProdTime])
+            if (curMoney >= data.Stat_ProdTime.cost[curLevel_ProdTime])
             {
                 btn_ProdTimeUpgrade.interactable = true;
             }
@@ -164,44 +151,14 @@ public class InfoPanel_Manufacture2 : BaseUI
             btn_ProdTimeUpgrade.interactable = false;
         }
 
-        // 최대 투입 개수 업그레이드 정보
-        if (curLevel_Capacity < data.Stat_Capacity.MaxLevel)
-        {
-            tmp_CapacityUpCost.text = $"{data.Stat_Capacity.cost[curLevel_Capacity]}";
-            tmp_CurCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity]}";
-            tmp_AfterUpCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity + 1]}";
-
-            if (curMoney > data.Stat_Capacity.cost[curLevel_Capacity])
-            {
-                btn_CapacityUpgrade.interactable = true;
-            }
-            else
-            {
-                btn_CapacityUpgrade.interactable = false;
-            }
-        }
-        else
-        {
-            Debug.Log("최대 투입 개수가 최대 단계입니다");
-            tmp_CurCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity]}";
-            tmp_AfterUpCapacity.text = Manager.localization.GetText("MaxLevelReached");
-
-            tmp_CapacityUpCost.text = Manager.localization.GetText("MaxLevel");
-
-            btn_CapacityUpgrade.interactable = false;
-        }
-
-        // LevelBlock들 업데이트 (생산 속도와 최대 투입 개수 레벨에 따른 시각적 상태 표시)
-        UpdateProdTimeBlockLevels(curLevel_ProdTime, data.Stat_ProdTime.MaxLevel);
-        UpdateCapacityBlockLevels(curLevel_Capacity, data.Stat_Capacity.MaxLevel);
+        // LevelBlock들 업데이트 (레벨에 따른 시각적 상태 표시)
+        UpdateBlockLevels(curLevel_ProdTime, data.Stat_ProdTime.MaxLevel);
     }
-
     void OnUpgradeEvent(int value)
     {
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
     }
-
     private void Close()
     {
         Manager.Audio.SfxPlay("SFX_ButtonClickBack");
@@ -215,8 +172,7 @@ public class InfoPanel_Manufacture2 : BaseUI
         IngrediantLocalizationHelper.UnsubscribeFromLanguageChanged(OnLanguageChanged);
         
         // LevelBlock들 정리
-        ClearProdTimeBlocks();
-        ClearCapacityBlocks();
+        ClearBlocks();
     }
 
     /// <summary>
@@ -229,78 +185,46 @@ public class InfoPanel_Manufacture2 : BaseUI
             // 건물 정보 다시 로드
             tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(targetBD.ID);
             tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(targetBD.ID);
-            
-            // 재료 정보 다시 로드
-            tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.RequireProdID);
             tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(targetBD.ProductID);
         }
     }
 
     /// <summary>
-    /// 생산 속도 Block 레벨 표시 업데이트
+    /// Block 레벨 표시 업데이트
     /// </summary>
-    private void UpdateProdTimeBlockLevels(int currentLevel, int maxLevel)
+    private void UpdateBlockLevels(int currentLevel, int maxLevel)
     {
-        Debug.Log($"[InfoPanel_Manufacture2] 생산 속도 LevelBlock 업데이트 시작 - 현재 레벨: {currentLevel}, 최대 레벨: {maxLevel}");
+        Debug.Log($"[InfoPanel_Harvest2] LevelBlock 업데이트 시작 - 현재 레벨: {currentLevel}, 최대 레벨: {maxLevel}");
         
         // 기존 Block들 제거
-        ClearProdTimeBlocks();
+        ClearBlocks();
 
         // 최대 레벨만큼 LevelBlock 생성
         for (int i = 0; i < maxLevel; i++)
         {
-            GameObject block = CreateBlock(i, currentLevel, prodTimeBlockContainer);
+            GameObject block = CreateBlock(i, currentLevel);
             if (block != null)
             {
-                prodTimeBlockList.Add(block);
+                blockList.Add(block);
             }
         }
         
-        Debug.Log($"[InfoPanel_Manufacture2] 생산 속도 LevelBlock 업데이트 완료 - 총 {prodTimeBlockList.Count}개 블록 생성");
-    }
-
-    /// <summary>
-    /// 최대 투입 개수 Block 레벨 표시 업데이트
-    /// </summary>
-    private void UpdateCapacityBlockLevels(int currentLevel, int maxLevel)
-    {
-        Debug.Log($"[InfoPanel_Manufacture2] 최대 투입 개수 LevelBlock 업데이트 시작 - 현재 레벨: {currentLevel}, 최대 레벨: {maxLevel}");
-        
-        // 기존 Block들 제거
-        ClearCapacityBlocks();
-
-        // 최대 레벨만큼 LevelBlock 생성
-        for (int i = 0; i < maxLevel; i++)
-        {
-            GameObject block = CreateBlock(i, currentLevel, capacityBlockContainer);
-            if (block != null)
-            {
-                capacityBlockList.Add(block);
-            }
-        }
-        
-        Debug.Log($"[InfoPanel_Manufacture2] 최대 투입 개수 LevelBlock 업데이트 완료 - 총 {capacityBlockList.Count}개 블록 생성");
+        Debug.Log($"[InfoPanel_Harvest2] LevelBlock 업데이트 완료 - 총 {blockList.Count}개 블록 생성");
     }
 
     /// <summary>
     /// LevelBlock 생성
     /// </summary>
-    private GameObject CreateBlock(int blockIndex, int currentLevel, Transform container)
+    private GameObject CreateBlock(int blockIndex, int currentLevel)
     {
         if (levelBlockPrefab == null)
         {
-            Debug.LogError("[InfoPanel_Manufacture2] LevelBlock 프리팹이 설정되지 않았습니다!");
-            return null;
-        }
-
-        if (container == null)
-        {
-            Debug.LogError("[InfoPanel_Manufacture2] Block 컨테이너가 설정되지 않았습니다!");
+            Debug.LogError("[InfoPanel_Harvest2] LevelBlock 프리팹이 설정되지 않았습니다!");
             return null;
         }
 
         // 프리팹으로 LevelBlock 생성
-        GameObject instantiatedBlock = Instantiate(levelBlockPrefab, container);
+        GameObject instantiatedBlock = Instantiate(levelBlockPrefab, blockContainer);
         
         // Block 위치 설정 (Grid 형태)
         SetBlockPosition(instantiatedBlock, blockIndex);
@@ -308,10 +232,11 @@ public class InfoPanel_Manufacture2 : BaseUI
         // Block 상태 설정
         SetBlockState(instantiatedBlock, blockIndex, currentLevel);
         
-        Debug.Log($"[InfoPanel_Manufacture2] LevelBlock 생성 완료 - Index: {blockIndex}, CurrentLevel: {currentLevel}");
+        Debug.Log($"[InfoPanel_Harvest2] LevelBlock 생성 완료 - Index: {blockIndex}, CurrentLevel: {currentLevel}");
         
         return instantiatedBlock;
     }
+
 
     /// <summary>
     /// LevelBlock 위치 설정 (Grid 형태)
@@ -320,7 +245,7 @@ public class InfoPanel_Manufacture2 : BaseUI
     {
         RectTransform rectTransform = block.GetComponent<RectTransform>();
         
-        // Grid 설정 (2열)
+        // Grid 설정 (3열)
         int columns = 2;
         int row = blockIndex / columns;
         int col = blockIndex % columns;
@@ -347,7 +272,7 @@ public class InfoPanel_Manufacture2 : BaseUI
 
         if (emptyImage == null || currentImage == null || completedImage == null)
         {
-            Debug.LogWarning($"[InfoPanel_Manufacture2] LevelBlock {blockIndex}에서 이미지 컴포넌트를 찾을 수 없습니다.");
+            Debug.LogWarning($"[InfoPanel_Harvest2] LevelBlock {blockIndex}에서 이미지 컴포넌트를 찾을 수 없습니다.");
             return;
         }
 
@@ -361,49 +286,35 @@ public class InfoPanel_Manufacture2 : BaseUI
         {
             // 업그레이드된 레벨 (완료된 레벨)
             completedImage.gameObject.SetActive(true);
-            Debug.Log($"[InfoPanel_Manufacture2] LevelBlock {blockIndex}: CompletedImage 활성화 (업그레이드 완료)");
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: CompletedImage 활성화 (업그레이드 완료)");
         }
         else if (blockIndex == currentLevel)
         {
             // 현재 레벨 (다음 업그레이드 대상)
             currentImage.gameObject.SetActive(true);
-            Debug.Log($"[InfoPanel_Manufacture2] LevelBlock {blockIndex}: CurrentImage 활성화 (현재 레벨)");
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: CurrentImage 활성화 (현재 레벨)");
         }
         else
         {
             // 업그레이드가 안된 레벨 (빈 레벨)
             emptyImage.gameObject.SetActive(true);
-            Debug.Log($"[InfoPanel_Manufacture2] LevelBlock {blockIndex}: EmptyImage 활성화 (미완성 레벨)");
+            Debug.Log($"[InfoPanel_Harvest2] LevelBlock {blockIndex}: EmptyImage 활성화 (미완성 레벨)");
         }
     }
 
     /// <summary>
-    /// 기존 생산 속도 LevelBlock들 제거
+    /// 기존 LevelBlock들 제거
     /// </summary>
-    private void ClearProdTimeBlocks()
+    private void ClearBlocks()
     {
-        foreach (GameObject block in prodTimeBlockList)
+        foreach (GameObject block in blockList)
         {
             if (block != null)
             {
                 DestroyImmediate(block);
             }
         }
-        prodTimeBlockList.Clear();
+        blockList.Clear();
     }
 
-    /// <summary>
-    /// 기존 최대 투입 개수 LevelBlock들 제거
-    /// </summary>
-    private void ClearCapacityBlocks()
-    {
-        foreach (GameObject block in capacityBlockList)
-        {
-            if (block != null)
-            {
-                DestroyImmediate(block);
-            }
-        }
-        capacityBlockList.Clear();
-    }
 }

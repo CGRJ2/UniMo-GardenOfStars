@@ -21,7 +21,12 @@ public class InsertArea : InteractableBase, IWorkStation
 
     IEnumerator AutoStacking()
     {
-        while (characterRD != null)
+        // 건물 투입 영역 반지름
+        float r = GetComponent<SphereCollider>().radius;
+        var character = characterRD;
+        float distance = (character.transform.position - transform.position).magnitude;
+
+        while (r >= distance)
         {
             bool isStackable = false;
 
@@ -38,15 +43,14 @@ public class InsertArea : InteractableBase, IWorkStation
             }
 
             // 플레이어 손에 재료가 있는지 체크
-            IngrediantInstance instanceProd;
-            if (characterRD.IngrediantStack.TryPeek(out instanceProd))
+            IngrediantInstance poppedProd;
+            if (character.IngrediantStack.TryPop(out poppedProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
-                if (instanceProd.Data.ID == ownerInstance.originData.RequireProdID)
+                if (poppedProd.Data.ID == ownerInstance.originData.RequireProdID)
                 {
-                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
-                    popedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);
-                    ownerInstance.ingrediantStack.Push(instanceProd);
+                    poppedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);
+                    ownerInstance.ingrediantStack.Push(poppedProd);
                 }
 
                 // 다음 투입까지 딜레이 시간 설정
@@ -64,8 +68,13 @@ public class InsertArea : InteractableBase, IWorkStation
     {
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
-
+        
         StartCoroutine(AutoStacking());
+    }
+
+    public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Enter_PersonalTask(characterRuntimeData);
     }
 
 
