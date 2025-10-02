@@ -136,6 +136,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             userPath = $"UserData/{_auth.CurrentUser.UserId}";
             Debug.LogWarning($"현재 UserId : {_auth.CurrentUser.UserId}");
+            Firebase.Analytics.FirebaseAnalytics.SetUserId(_auth.CurrentUser.UserId);
         }
 
         _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
