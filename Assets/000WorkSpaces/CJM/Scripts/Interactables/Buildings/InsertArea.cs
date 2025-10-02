@@ -21,12 +21,9 @@ public class InsertArea : InteractableBase, IWorkStation
 
     IEnumerator AutoStacking()
     {
-        // 건물 투입 영역 반지름
-        float r = GetComponent<SphereCollider>().radius;
         var character = characterRD;
-        float distance = (character.transform.position - transform.position).magnitude;
 
-        while (r >= distance)
+        while (isWorkable && character.IngrediantStack.Count > 0)
         {
             bool isStackable = false;
 
