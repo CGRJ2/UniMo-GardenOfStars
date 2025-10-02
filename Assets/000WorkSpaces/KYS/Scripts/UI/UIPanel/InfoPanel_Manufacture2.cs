@@ -69,8 +69,6 @@ public class InfoPanel_Manufacture2 : BaseUI
 
     public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
-        Manager.buildings.upgradeEvent += OnUpgradeEvent;
-
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_CapacityUpgrade.onClick.AddListener(UpgradeCapacity);
         btn_Close.onClick.AddListener(Close);
@@ -91,7 +89,7 @@ public class InfoPanel_Manufacture2 : BaseUI
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
 
         // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
+        Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
@@ -113,7 +111,7 @@ public class InfoPanel_Manufacture2 : BaseUI
         int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
 
         // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
+        Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];

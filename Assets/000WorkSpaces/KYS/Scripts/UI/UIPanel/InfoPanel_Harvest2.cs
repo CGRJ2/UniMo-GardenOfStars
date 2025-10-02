@@ -59,10 +59,8 @@ public class InfoPanel_Harvest2 : BaseUI
 
     bool upgradeBtnBlockFlag;
 
-    public void Init()  // 초기화를 어디서 해줘야 할까요?
+    public void Init()
     {
-        Manager.buildings.upgradeEvent += OnUpgradeEvent;
-
         btn_ProdTimeUpgrade.onClick.AddListener(UpgradeProdTime);
         btn_Close.onClick.AddListener(Close);
         // 언어 변경 이벤트 구독
@@ -81,7 +79,7 @@ public class InfoPanel_Harvest2 : BaseUI
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
 
         // SFX 추가
-        Manager.Audio.SfxPlay("SFX_Money", transform);
+        Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
         Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];

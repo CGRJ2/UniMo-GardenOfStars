@@ -1,10 +1,6 @@
-﻿using Cinemachine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Events;
 
 // 건물 데이터를 여기서 관리해야할듯 (업그레이드 상태, 위치정보, <<< 이걸 또 스테이지 별로 나눠야함)
 
@@ -14,7 +10,6 @@ public class BuildingManager : Singleton<BuildingManager>
 
     public BuildingSeller buildingSeller;
     public WorkerManageBuilding workerBuilding;
-    public UnityAction<int> upgradeEvent;
 
     // 건물 구매 시, 건축모드 On / 설치 시, 건축모드 Off
     public Action<bool, string> BuildModEvent;
@@ -66,26 +61,15 @@ public class UpgradeData : FirebaseData
     public FirebaseProperty<int> Level_ProdTime;
     public FirebaseProperty<int> Level_Capacity;
 
-    //public int level_ProdTime => Level_ProdTime.Value;
-    //public int level_Capacity => Level_Capacity.Value;
-
     public UpgradeData(string id, string parentPath = null) : base(id, parentPath)
     {
         Level_ProdTime = new FirebaseProperty<int>("Level_ProdTime", Path);
 
-        Level_ProdTime.Subscribe((value) => Manager.buildings.upgradeEvent?.Invoke(value));
         InitList.Add(Level_ProdTime);
 
         Level_Capacity = new FirebaseProperty<int>("Level_Capacity", Path);
-        Level_Capacity.Subscribe((value) => Manager.buildings.upgradeEvent?.Invoke(value));
         InitList.Add(Level_Capacity);
     }
-
-    /*public void Upgrade(int statProdTimeAdd, int statCapacityAdd = 0)
-    {
-        Level_ProdTime.Value += statProdTimeAdd;
-        Level_Capacity.Value += statCapacityAdd;
-    }*/
 }
 
 
