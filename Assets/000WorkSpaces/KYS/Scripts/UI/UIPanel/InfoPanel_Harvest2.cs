@@ -17,7 +17,6 @@ public class InfoPanel_Harvest2 : BaseUI
     [SerializeField] Image image_Prod;
 
     [Header("생산 속도 스탯")]
-    //[SerializeField] TMP_Text tmp_ProdTimeLevel;
     [SerializeField] TMP_Text tmp_CurProdTime;
     [SerializeField] TMP_Text tmp_AfterUpProdTime;
 
@@ -58,7 +57,7 @@ public class InfoPanel_Harvest2 : BaseUI
         }
     }
 
-    bool upgradableBtnFlag;
+    bool upgradeBtnBlockFlag;
 
     public void Init()  // 초기화를 어디서 해줘야 할까요?
     {
@@ -73,10 +72,10 @@ public class InfoPanel_Harvest2 : BaseUI
 
     void UpgradeProdTime()
     {
-        if (!upgradableBtnFlag) return;
+        if (upgradeBtnBlockFlag) return;
         
         // 플래그 닫기(중복 실행 방지)
-        upgradableBtnFlag = false;
+        upgradeBtnBlockFlag = true;
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
@@ -95,7 +94,7 @@ public class InfoPanel_Harvest2 : BaseUI
     void UpgradeBtnFlag(int value)
     {
         // 플래그 열기
-        upgradableBtnFlag = true;
+        upgradeBtnBlockFlag = false;
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);

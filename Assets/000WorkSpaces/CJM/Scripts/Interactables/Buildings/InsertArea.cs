@@ -21,7 +21,12 @@ public class InsertArea : InteractableBase, IWorkStation
 
     IEnumerator AutoStacking()
     {
-        while (characterRD != null)
+        // 건물 투입 영역 반지름
+        float r = GetComponent<SphereCollider>().radius;
+        var character = characterRD;
+        float distance = (character.transform.position - transform.position).magnitude;
+
+        while (r >= distance)
         {
             bool isStackable = false;
 
@@ -39,7 +44,7 @@ public class InsertArea : InteractableBase, IWorkStation
 
             // 플레이어 손에 재료가 있는지 체크
             IngrediantInstance poppedProd;
-            if (characterRD.IngrediantStack.TryPop(out poppedProd))
+            if (character.IngrediantStack.TryPop(out poppedProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
                 if (poppedProd.Data.ID == ownerInstance.originData.RequireProdID)
@@ -63,8 +68,13 @@ public class InsertArea : InteractableBase, IWorkStation
     {
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
-
+        
         StartCoroutine(AutoStacking());
+    }
+
+    public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Enter_PersonalTask(characterRuntimeData);
     }
 
 

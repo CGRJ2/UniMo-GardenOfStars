@@ -155,10 +155,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 4
+  moveSpeed: 8
   animator: {fileID: 0}
   state:
     _value: 0
+  defaultForm: {fileID: 0}
+  harvestedForm: {fileID: 0}
   buildingId: b10011_Tuto
 --- !u!1 &5134441974041724252
 GameObject:

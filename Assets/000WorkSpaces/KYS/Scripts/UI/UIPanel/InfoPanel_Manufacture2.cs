@@ -53,7 +53,7 @@ public class InfoPanel_Manufacture2 : BaseUI
     private List<GameObject> prodTimeBlockList = new List<GameObject>();  // 생산 속도 블록 리스트
     private List<GameObject> capacityBlockList = new List<GameObject>();  // 최대 투입 개수 블록 리스트
 
-    bool upgradableBtnFlag;
+    bool upgradeBtnBlockFlag;
 
     protected override void Awake()
     {
@@ -82,10 +82,10 @@ public class InfoPanel_Manufacture2 : BaseUI
 
     void UpgradeProdTime()
     {
-        if (!upgradableBtnFlag) return;
+        if (upgradeBtnBlockFlag) return;
         
         // 플래그 닫기(중복 실행 방지)
-        upgradableBtnFlag = false;
+        upgradeBtnBlockFlag = true;
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
@@ -104,10 +104,10 @@ public class InfoPanel_Manufacture2 : BaseUI
 
     void UpgradeCapacity()
     {
-        if (!upgradableBtnFlag) return;
+        if (upgradeBtnBlockFlag) return;
 
         // 플래그 닫기(중복 실행 방지)
-        upgradableBtnFlag = false;
+        upgradeBtnBlockFlag = true;
 
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(targetBD.ID);
         int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
@@ -126,7 +126,7 @@ public class InfoPanel_Manufacture2 : BaseUI
     void UpgradeBtnFlag(int value)
     {
         // 플래그 열기
-        upgradableBtnFlag = true;
+        upgradeBtnBlockFlag = false;
 
         // 패널 정보 업데이트
         SetUpgradeData(targetBD);
