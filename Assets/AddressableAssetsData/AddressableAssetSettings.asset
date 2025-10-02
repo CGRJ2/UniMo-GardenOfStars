@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 782de149ffa1b1c45949fcd6f49e2a11
   m_currentHash:
     serializedVersion: 2
-    Hash: 89d0b3fe14de06812eba03ededfd3e2b
+    Hash: c196deb2af061c220b77a70c93c9b130
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -69,6 +69,20 @@ MonoBehaviour:
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 68474517789a1974ab836f5108e3f794
         m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+      - m_Id: 818b2fb4477ba394a8da5c799013415a
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 87e823bd97b6a7448bb71882b69cfc20
+        m_Value: ServerData/[BuildTarget]
+      - m_Id: ddc7d01757f90a6498bcb15221225ee9
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+    - m_InheritedParent: 
+      m_Id: 389eafd34b59b84478c4d76e5d223806
+      m_ProfileName: InternalTest
+      m_Values:
+      - m_Id: 2b12dbcf33f4ac144933eae921a05d53
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: 68474517789a1974ab836f5108e3f794
+        m_Value: https://storage.googleapis.com/unimo_gardenofstars_addressableassets/Temp
       - m_Id: 818b2fb4477ba394a8da5c799013415a
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 87e823bd97b6a7448bb71882b69cfc20
