@@ -56,15 +56,8 @@ public class StageManager : MonoBehaviour
 
         Debug.LogWarning("Npc Inited");
 
-
         Manager.quest.CurStageQuestDataInit();
 
-
-        string npcId = Manager.data.Stage.Values[Manager.firebase.UserData.CurStage.Value].NpcID;
-        var curStageQuestDatas = Manager.data.Quest.Values.Where(item => item.Value.NpcId == npcId).OrderBy(i => i.Value.QuestOrder);
-        int count = curStageQuestDatas.Count();
-
-        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.Count >= count);
         yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.Npc.QuestList.IsInit);
         Debug.LogWarning("QuestList Inited");
 

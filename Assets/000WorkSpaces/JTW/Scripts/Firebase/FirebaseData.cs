@@ -16,7 +16,7 @@ public abstract class FirebaseData : IUsableId
     protected bool IsInitSelf;
     public bool IsInit { get
         {
-            bool result = InitList.Count == 0 ? IsInitSelf : InitList.All(data => data.IsInit) && ListInitCount <= InitList.Count;
+            bool result = InitList.Count == 0 && ListInitCount == 0 ? IsInitSelf : InitList.All(data => data.IsInit) && ListInitCount <= InitList.Count;
 
             if(result == false)
             {
