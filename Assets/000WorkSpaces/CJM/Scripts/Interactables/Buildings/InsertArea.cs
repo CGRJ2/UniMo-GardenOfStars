@@ -19,11 +19,14 @@ public class InsertArea : InteractableBase, IWorkStation
         Manager.buildings.workStatinLists.insertAreas.Add(this);
     }
 
-    IEnumerator AutoStacking()
+    IEnumerator AutoStacking(bool isPlayer = false)
     {
-        var character = characterRD;
+        CharaterRuntimeData character;
 
-        while (isWorkable && character.IngrediantStack.Count > 0)
+        if (isPlayer) character = personalTaskOwner;
+        else character = characterRD;
+
+        while (isPlayer ? personalTaskOwner != null : isWorkable && character.IngrediantStack.Count > 0)
         {
             bool isStackable = false;
 
@@ -67,18 +70,31 @@ public class InsertArea : InteractableBase, IWorkStation
         base.Enter(characterRuntimeData);
         //Debug.Log($"건물재료삽입영역({buildingInstance.name}): 즉발형 상호작용 실행");
 
-        IngrediantInstance peekedProd;
-        if (characterRD.IngrediantStack.TryPeek(out peekedProd))
+        if (characterRuntimeData is WorkerRuntimeData)
         {
-            if (peekedProd is Item_Building) return;
+            IngrediantInstance peekedProd;
+            if (characterRD.IngrediantStack.TryPeek(out peekedProd))
+            {
+                if (peekedProd is Item_Building) return;
 
-            else StartCoroutine(AutoStacking());
+                else StartCoroutine(AutoStacking());
+            }
         }
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter_PersonalTask(characterRuntimeData);
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            IngrediantInstance peekedProd;
+            if (characterRD.IngrediantStack.TryPeek(out peekedProd))
+            {
+                if (peekedProd is Item_Building) return;
+
+                else StartCoroutine(AutoStacking(true));
+            }
+        }
     }
 
 
