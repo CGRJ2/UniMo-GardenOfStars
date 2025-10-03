@@ -119,8 +119,40 @@ namespace KYS
         /// </summary>
         private async System.Threading.Tasks.Task InitializeAddressableCanvases()
         {
+
+
             try
             {
+                // Loading Canvas 로드 (가장 앞에 렌더링)
+                // 첫 씬에 미리 배치된 LoadingCanvas를 찾아서 사용
+                Canvas[] existingLoadingCanvases = FindObjectsOfType<Canvas>();
+                bool hasExistingLoadingCanvas = false;
+
+                foreach (Canvas canvas in existingLoadingCanvases)
+                {
+                    if (canvas.name.Contains("Loading") || canvas.name.Contains("loading"))
+                    {
+                        hasExistingLoadingCanvas = true;
+                        loadingCanvas = canvas;
+
+                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
+                        loadingCanvas.sortingOrder = 40;
+
+                        //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
+
+                        // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
+                        DontDestroyOnLoad(canvas.gameObject);
+                        //Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
+                        break;
+                    }
+                }
+
+                while (!Manager.game.initialized)
+                {
+                    await Task.Yield();
+                }
+
+
                 // HUD Canvas 로드 (가장 뒤에 렌더링)
                 if (hudCanvasReference != null && hudCanvasReference.RuntimeKeyIsValid())
                 {
@@ -155,29 +187,7 @@ namespace KYS
                     DontDestroyOnLoad(popupHandle.Result);
                 }
 
-                // Loading Canvas 로드 (가장 앞에 렌더링)
-                // 첫 씬에 미리 배치된 LoadingCanvas를 찾아서 사용
-                Canvas[] existingLoadingCanvases = FindObjectsOfType<Canvas>();
-                bool hasExistingLoadingCanvas = false;
                 
-                foreach (Canvas canvas in existingLoadingCanvases)
-                {
-                    if (canvas.name.Contains("Loading") || canvas.name.Contains("loading"))
-                    {
-                        hasExistingLoadingCanvas = true;
-                        loadingCanvas = canvas;
-                        
-                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
-                        loadingCanvas.sortingOrder = 40;
-                        
-                        //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
-                        
-                        // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
-                        DontDestroyOnLoad(canvas.gameObject);
-                        //Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
-                        break;
-                    }
-                }
 
                 if (!hasExistingLoadingCanvas)
                 {
@@ -2793,7 +2803,11 @@ namespace KYS
         /// </summary>
         public async System.Threading.Tasks.Task<T> CreateHUDAsync<T>(string addressableKey) where T : BaseUI
         {
-            
+            while (!Manager.game.initialized)
+            {
+                await Task.Yield(); // 프레임 넘기기
+            }
+
             if (hudCanvas == null)
             {
                 Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");
