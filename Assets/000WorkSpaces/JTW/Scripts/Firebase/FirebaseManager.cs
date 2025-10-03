@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -336,8 +337,8 @@ public class FirebaseManager : Singleton<FirebaseManager>
             {
                 if (Time.time - startTime > timeout)
                 {
-                    NetworkDisconnected();
-                    Debug.Log("네트워크 연결 안됨 (Ping Timeout)");
+                    StartCoroutine(NetworkCheckCoroutine());
+                    Debug.Log("ping 연결 안됨 (Ping Timeout)");
                     yield break;
                 }
                 yield return null;
@@ -345,16 +346,34 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
             if (ping.time >= 0)
             {
-                Debug.Log($"네트워크 연결됨 (Ping {ping.time}ms)");
+                Debug.Log("ping 연결 확인");
             }
             else
             {
-                NetworkDisconnected();
-                Debug.Log("네트워크 연결 실패");
+                StartCoroutine(NetworkCheckCoroutine());
+                Debug.Log("ping 연결 실패");
                 yield break;
             }
 
             yield return _pingDelay;
         }
+    }
+
+    private IEnumerator NetworkCheckCoroutine()
+    {
+        UnityWebRequest www = UnityWebRequest.Head("https://storage.googleapis.com/unimo_gardenofstars_addressableassets/ping.txt");
+
+        www.timeout = 5;
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            Debug.LogWarning("게임 서버 연결 확인됨");
+            StartCoroutine(NetworkCoroutine());
+            yield break;
+        }
+
+        Debug.LogWarning("게임 서버 연결 실패 1");
+        NetworkDisconnected();
     }
 }
