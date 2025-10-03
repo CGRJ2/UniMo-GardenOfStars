@@ -355,6 +355,13 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 yield break;
             }
 
+            if (Manager.game.isDownloadFailed)
+            {
+                Debug.LogWarning("게임 서버 연결 실패");
+                NetworkDisconnected();
+                yield break;
+            }
+
             yield return _pingDelay;
         }
     }

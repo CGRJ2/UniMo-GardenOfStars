@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
     //임시
     public bool initialized { get; private set; }
     public bool inDownloading { get; private set; }
+    public bool isDownloadFailed { get; private set; }
 
     public ObservableProperty<float> downloadProgress = new();
 
@@ -33,6 +34,7 @@ public class GameManager : Singleton<GameManager>
 
     public IEnumerator Fetch()
     {
+        isDownloadFailed = false;
         yield return Addressables.InitializeAsync(true);
         var checkHandle = Addressables.CheckForCatalogUpdates(false);  // 변경된 카탈로그 ID들
         yield return checkHandle;
@@ -40,6 +42,7 @@ public class GameManager : Singleton<GameManager>
         if (checkHandle.Status == AsyncOperationStatus.Failed)
         {
             SafeRelease(ref checkHandle);
+            isDownloadFailed = true;
             yield break;
         }
 
@@ -55,6 +58,7 @@ public class GameManager : Singleton<GameManager>
             {
                 SafeRelease(ref checkHandle);
                 SafeRelease(ref updateCatalogHandle);
+                isDownloadFailed = true;
                 yield break;
             }
 
@@ -77,6 +81,7 @@ public class GameManager : Singleton<GameManager>
             yield return sizeCheckHandle;
             if (sizeCheckHandle.Status == AsyncOperationStatus.Failed)
             {
+                isDownloadFailed = true;
                 yield break;
             }
             Debug.Log($"다운로드사이즈 어싱크{sizeCheckHandle.Result}");
@@ -104,6 +109,7 @@ public class GameManager : Singleton<GameManager>
                 if (downloadHandle.Status == AsyncOperationStatus.Failed)
                 {
                     inDownloading = false;
+                    isDownloadFailed = true;
                     yield break;
                 }
             }
