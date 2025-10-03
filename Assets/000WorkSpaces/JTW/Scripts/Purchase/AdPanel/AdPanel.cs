@@ -25,12 +25,14 @@ public abstract class AdPanel : KYS.BaseUI
         _adButton.onClick.AddListener(OnClick);
 
         Manager.firebase.UserData.DailyAdList.OnAdded.AddListener(InitInfo);
+        Manager.firebase.UserData.DailyAdList.OnAdded.AddListener(SaveTime);
 
         DailyAdData data = Manager.firebase.UserData.DailyAdList.Get(_adPanelId);
 
         if (data == null)
         {
             Manager.firebase.UserData.DailyAdList.Add(_adPanelId);
+
             return;
         }
 
@@ -49,16 +51,19 @@ public abstract class AdPanel : KYS.BaseUI
             InitInfo(Manager.firebase.UserData.DailyAdList.Get(_adPanelId));
         }
 
-        var update = new Dictionary<string, object>();
-        update["LastTime"] = Firebase.Database.ServerValue.Timestamp;
+        data.LastTime.SaveCurTime();
+    }
 
-        Manager.firebase.Database.RootReference.Child(Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Path).UpdateChildrenAsync(update);
+    private void SaveTime(DailyAdData data)
+    {
+        data.LastTime.SaveCurTime();
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         Manager.firebase.UserData.DailyAdList.OnAdded.RemoveListener(InitInfo);
+        Manager.firebase.UserData.DailyAdList.OnAdded.RemoveListener(SaveTime);
     }
 
     private void InitInfo(DailyAdData data)
