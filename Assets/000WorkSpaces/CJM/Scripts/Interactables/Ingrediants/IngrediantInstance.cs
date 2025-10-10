@@ -83,6 +83,7 @@ public class IngrediantInstance : PooledObject
 
     public void Despawn()
     {
+        transform.SetParent(null);
         transform.localScale = new Vector3(1, 1, 1);
         ParentPool.ReturnPooledObj(gameObject); // 이 방법으로 디스폰
     }
@@ -150,7 +151,7 @@ public class IngrediantInstance : PooledObject
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
             // 도착 스냅
-            if (dist < 0.01f)
+            if (dist < 0.05f)
             {
                 transform.position = targetPos;
                 transform.rotation = targetRot; // ← 마지막에 정확히 맞춰주기
@@ -160,8 +161,6 @@ public class IngrediantInstance : PooledObject
                 // 출렁 모션을 위한 필드
                 if (ownerCharacterRD != null)
                     SetupWobbleParent(targetAttachTransform, stackOrder);
-
-                
 
                 break;
             }
@@ -200,7 +199,7 @@ public class IngrediantInstance : PooledObject
             transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
 
             // 도착 스냅
-            if (dist < 0.01f)
+            if (dist < 0.05f)
             {
                 transform.position = targetPos;
                 transform.rotation = targetRot; // ← 마지막에 정확히 맞춰주기
