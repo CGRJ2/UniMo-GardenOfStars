@@ -26,7 +26,7 @@ namespace KYS
         
         [Header("Behavior Settings")]
         [Tooltip("최초 실행 시 시스템 언어 대신 기본 언어를 우선 적용할지 여부")]
-        [SerializeField] private bool preferDefaultOnFirstRun = true;
+        [SerializeField] private bool preferDefaultOnFirstRun = false;
 
         #endregion
 
@@ -280,12 +280,6 @@ namespace KYS
                 {
                     currentLanguage = savedLang;
                     ////Debug.Log($"[LocalizationManager] 저장된 언어 적용: {currentLanguage}");
-                }
-                else if (preferDefaultOnFirstRun)
-                {
-                    // 최초 실행 시 기본 언어 우선
-                    currentLanguage = defaultLanguage;
-                    //Debug.Log($"[LocalizationManager] 저장된 언어 없음 → 기본 언어 적용: {currentLanguage}");
                 }
                 else
                 {
