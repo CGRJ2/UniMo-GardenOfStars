@@ -18,7 +18,7 @@ public partial class DataManager
     private const string _dialogueDataTableURL = "https://docs.google.com/spreadsheets/d/1WYUtLt6DeDwyz0qJYcoNi3cWAWHa2qb7pwhpDcIl62U/export?format=csv&gid=800218594";
 
     // Addressable 에셋 주소
-    private const string _dialogueAddress = "DialogueData_CSV_Example";
+    private const string _dialogueAddress = "DialogueData_CSV";
 
     public DataTableParser<DialogueDataCsv> Dialogue;
 

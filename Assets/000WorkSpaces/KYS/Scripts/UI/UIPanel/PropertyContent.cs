@@ -249,7 +249,7 @@ namespace KYS
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
                 // 재료(생산품) 이름, 스프라이트
                 SwitchAfrterBuyModeHarvestMode();
-                ProdNameText.text = Manager.data.Ingrediant.Values[harvestBD.ProductID].Name_KR;
+                ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantName(harvestBD.ProductID);
                 image_Prod.sprite = Manager.data.Ingrediant.Values[harvestBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용
@@ -264,9 +264,9 @@ namespace KYS
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
 
                 SwitchAfrterBuyModeManufactureMode();
-                MaterialsNameText.text = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Name_KR;
+                MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantName(manufactureBD.RequireProdID);
                 image_Material.sprite = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Sprite;
-                ProdNameText.text = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Name_KR;
+                ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantName(manufactureBD.ProductID);
                 image_Prod.sprite = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용

@@ -11,36 +11,13 @@ namespace KYS
     {
         /// <summary>
         /// 재료 ID로 번역된 이름을 가져옵니다
+        /// 확장 가능한 다국어 지원 방식
         /// </summary>
         /// <param name="ingrediantID">재료 ID</param>
         /// <returns>현재 언어에 맞는 재료 이름</returns>
         public static string GetIngrediantName(string ingrediantID)
         {
-            Debug.Log($"[IngrediantLocalizationHelper] GetIngrediantName 호출: {ingrediantID}");
-            
-            // 1. DataManager를 통한 번역 시도 (BuildingLocalizationHelper와 동일한 패턴)
-            if (Manager.data != null)
-            {
-                SystemLanguage currentLanguage = LocalizationManager.Instance?.CurrentLanguage ?? SystemLanguage.Korean;
-                Debug.Log($"[IngrediantLocalizationHelper] 현재 언어: {currentLanguage}");
-                
-                string dataManagerName = Manager.data.GetIngrediantLocalizedName(ingrediantID, currentLanguage);
-                Debug.Log($"[IngrediantLocalizationHelper] DataManager 결과: {dataManagerName}");
-                
-                if (!string.IsNullOrEmpty(dataManagerName) && dataManagerName != ingrediantID)
-                {
-                    Debug.Log($"[IngrediantLocalizationHelper] 번역 성공: {ingrediantID} -> {dataManagerName}");
-                    return dataManagerName;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[IngrediantLocalizationHelper] Manager.data가 null입니다.");
-            }
-
-            // 2. 폴백: 재료 ID 반환
-            Debug.LogWarning($"[IngrediantLocalizationHelper] 재료 '{ingrediantID}'의 번역을 찾을 수 없습니다.");
-            return ingrediantID;
+            return ExtensibleLocalizationHelper.GetIngrediantName(ingrediantID);
         }
 
         /// <summary>

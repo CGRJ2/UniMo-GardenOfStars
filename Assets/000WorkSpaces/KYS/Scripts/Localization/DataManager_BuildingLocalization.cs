@@ -67,24 +67,27 @@ public partial class DataManager
     /// </summary>
     public string GetBuildingLocalizedName(string buildingID, SystemLanguage language = SystemLanguage.Korean)
     {
-        //Debug.Log($"[DataManager] GetBuildingLocalizedName 호출: {buildingID}, 언어: {language}");
-        
-        if (BuildingLocalization?.Values == null)
+        // 건물 데이터에서 직접 번역 정보 가져오기
+        if (Building?.Values != null)
         {
-            Debug.LogWarning("[DataManager] Building Localization 데이터가 로드되지 않았습니다.");
-            return buildingID; // 폴백
+            if (Building.Values.TryGetValue(buildingID, out BuildingData buildingData))
+            {
+                string result = language == SystemLanguage.Korean ? buildingData.Name_KR : buildingData.Name_EN;
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
+            }
         }
 
-        //Debug.Log($"[DataManager] BuildingLocalization 데이터 로드됨: {BuildingLocalization.Values.Count}개");
-        
-        // 사용 가능한 건물 ID들 출력
-        //Debug.Log($"[DataManager] 사용 가능한 건물 ID들: {string.Join(", ", BuildingLocalization.Values.Keys)}");
-
-        if (BuildingLocalization.Values.TryGetValue(buildingID, out BuildingLocalizationDataCsv data))
+        // 기존 BuildingLocalization 데이터 폴백 (호환성 유지)
+        if (BuildingLocalization?.Values != null)
         {
-            string result = language == SystemLanguage.Korean ? data.NameKorean : data.NameEnglish;
-            //Debug.Log($"[DataManager] 번역 성공: {buildingID} -> {result}");
-            return result;
+            if (BuildingLocalization.Values.TryGetValue(buildingID, out BuildingLocalizationDataCsv data))
+            {
+                string result = language == SystemLanguage.Korean ? data.NameKorean : data.NameEnglish;
+                return result;
+            }
         }
 
         Debug.LogWarning($"[DataManager] 건물 ID '{buildingID}'에 대한 번역 데이터를 찾을 수 없습니다.");
@@ -96,15 +99,26 @@ public partial class DataManager
     /// </summary>
     public string GetBuildingLocalizedDescription(string buildingID, SystemLanguage language = SystemLanguage.Korean)
     {
-        if (BuildingLocalization?.Values == null)
+        // 건물 데이터에서 직접 번역 정보 가져오기
+        if (Building?.Values != null)
         {
-            Debug.LogWarning("[DataManager] Building Localization 데이터가 로드되지 않았습니다.");
-            return ""; // 폴백
+            if (Building.Values.TryGetValue(buildingID, out BuildingData buildingData))
+            {
+                string result = language == SystemLanguage.Korean ? buildingData.Description_KR : buildingData.Description_EN;
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
+            }
         }
 
-        if (BuildingLocalization.Values.TryGetValue(buildingID, out BuildingLocalizationDataCsv data))
+        // 기존 BuildingLocalization 데이터 폴백 (호환성 유지)
+        if (BuildingLocalization?.Values != null)
         {
-            return language == SystemLanguage.Korean ? data.DescriptionKorean : data.DescriptionEnglish;
+            if (BuildingLocalization.Values.TryGetValue(buildingID, out BuildingLocalizationDataCsv data))
+            {
+                return language == SystemLanguage.Korean ? data.DescriptionKorean : data.DescriptionEnglish;
+            }
         }
 
         Debug.LogWarning($"[DataManager] 건물 ID '{buildingID}'에 대한 번역 데이터를 찾을 수 없습니다.");
