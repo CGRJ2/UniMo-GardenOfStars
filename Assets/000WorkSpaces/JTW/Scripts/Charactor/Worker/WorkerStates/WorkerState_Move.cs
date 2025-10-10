@@ -48,7 +48,7 @@ public class WorkerState_Move : WorkerStateBase
         {
             StateMachine.ChangeState(WorkerStates.Idle);
         }
-        else if (_navAgent.remainingDistance < 0.01f && !_isRePath)
+        else if (_navAgent.remainingDistance < 0.01f && !_isRePath && !_navAgent.pathPending)
         {
             StateMachine.ChangeState(WorkerStates.Work);
         }
