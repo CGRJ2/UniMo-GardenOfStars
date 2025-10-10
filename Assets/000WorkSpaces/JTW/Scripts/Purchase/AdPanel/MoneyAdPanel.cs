@@ -11,15 +11,15 @@ public class MoneyAdPanel : AdPanel
 
         if(count < 2)
         {
-            Manager.player.Data.Money.Value += 250;
+            Manager.player.Data.Money.Value += 500;
         }
         else if(count < 3)
         {
-            Manager.player.Data.Money.Value += 300;
+            Manager.player.Data.Money.Value += 1000;
         }
         else
         {
-            Manager.player.Data.Money.Value += 360;
+            Manager.player.Data.Money.Value += 2000;
         }
     }
 }

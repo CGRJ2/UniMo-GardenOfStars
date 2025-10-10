@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public abstract class AdPanel : KYS.BaseUI
 {
     [SerializeField] private string _adPanelId;
+    [SerializeField] private int _maxAdCount = 5;
 
     private Button _adButton => GetUI<Button>("AdButton");
 
@@ -70,9 +71,9 @@ public abstract class AdPanel : KYS.BaseUI
     {
         if (data.Id != _adPanelId) return;
 
-        _countText.text = $"{data.Count.Value}/2";
+        _countText.text = $"{data.Count.Value}/{_maxAdCount}";
 
-        if(data.Count.Value < 2)
+        if(data.Count.Value < _maxAdCount)
         {
         }
         else
@@ -86,18 +87,18 @@ public abstract class AdPanel : KYS.BaseUI
     {
         _bangMarkImage.gameObject.SetActive(true);
         _completeImage.gameObject.SetActive(false);
-        _countText.text = $"0/2";
+        _countText.text = $"0/{_maxAdCount}";
     }
 
     private void OnClick()
     {
-        if (Data.Count.IsInUpdate || Data.Count.Value >= 2) return;
+        if (Data.Count.IsInUpdate || Data.Count.Value >= _maxAdCount) return;
 
         if (Manager.firebase.UserData.AdRemoved.Value)
         {
             GetReward();
-            _countText.text = $"{Data.Count.Value + 1}/2";
-            if (Data.Count.Value + 1 >= 2)
+            _countText.text = $"{Data.Count.Value + 1}/{_maxAdCount}";
+            if (Data.Count.Value + 1 >= _maxAdCount)
             {
                 _bangMarkImage.gameObject.SetActive(false);
                 _completeImage.gameObject.SetActive(true);
@@ -109,8 +110,8 @@ public abstract class AdPanel : KYS.BaseUI
         Manager.ad.ShowRewardedAd(() =>
         {
             GetReward();
-            _countText.text = $"{Data.Count.Value + 1}/2";
-            if(Data.Count.Value + 1 >= 2)
+            _countText.text = $"{Data.Count.Value + 1}/{_maxAdCount}";
+            if(Data.Count.Value + 1 >= _maxAdCount)
             {
                 _bangMarkImage.gameObject.SetActive(false);
                 _completeImage.gameObject.SetActive(true);
