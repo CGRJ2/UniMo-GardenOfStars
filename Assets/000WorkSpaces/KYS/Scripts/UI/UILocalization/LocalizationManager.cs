@@ -591,6 +591,93 @@ namespace KYS
         }
 
         /// <summary>
+        /// 건물 이름 번역 가져오기 (LocalizationManager 통합)
+        /// </summary>
+        /// <param name="buildingID">건물 ID</param>
+        /// <returns>번역된 건물 이름</returns>
+        public string GetBuildingName(string buildingID)
+        {
+            if (string.IsNullOrEmpty(buildingID))
+                return string.Empty;
+
+            string localizationKey = $"building_{buildingID}_name";
+            string result = GetText(localizationKey);
+            
+            // 번역이 실패했으면 건물 데이터에서 직접 가져오기
+            if (result == localizationKey && Manager.data?.Building?.Values != null)
+            {
+                if (Manager.data.Building.Values.TryGetValue(buildingID, out BuildingData buildingData))
+                {
+                    result = currentLanguage == SystemLanguage.Korean ? buildingData.Name_KR : buildingData.Name_EN;
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        return result;
+                    }
+                }
+            }
+            
+            return result == localizationKey ? buildingID : result;
+        }
+
+        /// <summary>
+        /// 건물 설명 번역 가져오기 (LocalizationManager 통합)
+        /// </summary>
+        /// <param name="buildingID">건물 ID</param>
+        /// <returns>번역된 건물 설명</returns>
+        public string GetBuildingDescription(string buildingID)
+        {
+            if (string.IsNullOrEmpty(buildingID))
+                return string.Empty;
+
+            string localizationKey = $"building_{buildingID}_description";
+            string result = GetText(localizationKey);
+            
+            // 번역이 실패했으면 건물 데이터에서 직접 가져오기
+            if (result == localizationKey && Manager.data?.Building?.Values != null)
+            {
+                if (Manager.data.Building.Values.TryGetValue(buildingID, out BuildingData buildingData))
+                {
+                    result = currentLanguage == SystemLanguage.Korean ? buildingData.Description_KR : buildingData.Description_EN;
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        return result;
+                    }
+                }
+            }
+            
+            return result == localizationKey ? string.Empty : result;
+        }
+
+        /// <summary>
+        /// 재료 이름 번역 가져오기 (LocalizationManager 통합)
+        /// </summary>
+        /// <param name="ingrediantID">재료 ID</param>
+        /// <returns>번역된 재료 이름</returns>
+        public string GetIngrediantName(string ingrediantID)
+        {
+            if (string.IsNullOrEmpty(ingrediantID))
+                return string.Empty;
+
+            string localizationKey = $"ingrediant_{ingrediantID}_name";
+            string result = GetText(localizationKey);
+            
+            // 번역이 실패했으면 재료 데이터에서 직접 가져오기
+            if (result == localizationKey && Manager.data?.Ingrediant?.Values != null)
+            {
+                if (Manager.data.Ingrediant.Values.TryGetValue(ingrediantID, out IngrediantData ingrediantData))
+                {
+                    result = currentLanguage == SystemLanguage.Korean ? ingrediantData.Name_KR : ingrediantData.Name_EN;
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        return result;
+                    }
+                }
+            }
+            
+            return result == localizationKey ? ingrediantID : result;
+        }
+
+        /// <summary>
         /// 인덱스로 언어 가져오기
         /// </summary>
         public SystemLanguage GetLanguageByIndex(int index)

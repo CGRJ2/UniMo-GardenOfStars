@@ -69,16 +69,27 @@ public partial class DataManager
     /// </summary>
     public string GetIngrediantLocalizedName(string ingrediantID, SystemLanguage language = SystemLanguage.Korean)
     {
-        if (IngrediantLocalization?.Values == null)
+        // 재료 데이터에서 직접 번역 정보 가져오기
+        if (Ingrediant?.Values != null)
         {
-            Debug.LogWarning("[DataManager] Ingrediant Localization 데이터가 로드되지 않았습니다.");
-            return ingrediantID; // 폴백
+            if (Ingrediant.Values.TryGetValue(ingrediantID, out IngrediantData ingrediantData))
+            {
+                string result = language == SystemLanguage.Korean ? ingrediantData.Name_KR : ingrediantData.Name_EN;
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
+            }
         }
 
-        if (IngrediantLocalization.Values.TryGetValue(ingrediantID, out IngrediantLocalizationDataCsv data))
+        // 기존 IngrediantLocalization 데이터 폴백 (호환성 유지)
+        if (IngrediantLocalization?.Values != null)
         {
-            string result = language == SystemLanguage.Korean ? data.NameKorean : data.NameEnglish;
-            return result;
+            if (IngrediantLocalization.Values.TryGetValue(ingrediantID, out IngrediantLocalizationDataCsv data))
+            {
+                string result = language == SystemLanguage.Korean ? data.NameKorean : data.NameEnglish;
+                return result;
+            }
         }
 
         Debug.LogWarning($"[DataManager] 재료 ID '{ingrediantID}'에 대한 번역 데이터를 찾을 수 없습니다.");
