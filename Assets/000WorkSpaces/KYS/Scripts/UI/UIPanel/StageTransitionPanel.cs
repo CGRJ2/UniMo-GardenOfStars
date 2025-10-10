@@ -317,6 +317,8 @@ namespace KYS
 
         private void OnInputBegan(Vector2 position)
         {
+            if (isSnapping) return;
+
             isDragging = true;
             lastTouchPos = position;
 
@@ -333,6 +335,7 @@ namespace KYS
 
         private void OnInputMoved(Vector2 position)
         {
+            if (isSnapping) return;
             if (!isDragging) return;
 
             Vector2 vector1 = _startTouchPostion - (Vector2)wheelParent.position;
@@ -359,6 +362,7 @@ namespace KYS
 
         private void OnInputEnded(Vector2 position)
         {
+            if (isSnapping) return;
             if (!isDragging) return;
 
             isDragging = false;
@@ -425,7 +429,6 @@ namespace KYS
             Debug.Log($"스냅 완료: 최종 각도 {currentRotation:F1}°");
 
             UpdateSelectedStage();
-            isSnapping = false;
         }
 
         private float CalculateSnapAngle(float currentAngle)
@@ -574,7 +577,16 @@ namespace KYS
                 // 잠긴 스테이지인 경우 이름에 잠금 표시 추가
                 if (!isUnlocked)
                 {
-                    stageName += " [잠김]";
+                    bool isRealUnlocked = Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+
+                    if (!isRealUnlocked)
+                    {
+                        stageName += " [잠김]";
+                    }
+                    else
+                    {
+                        stageName += " [준비중]";
+                    }
                 }
 
                 stageNameText.text = stageName;
@@ -618,6 +630,7 @@ namespace KYS
                     {
                         Debug.Log("이미 해당 스테이지에 위치함");
                         // 현재 위치라도 패널은 닫기
+                        Manager.Audio.BgmPlay(Manager.firebase.UserData.CurStage.Value, 0.5f);
                         Manager.ui.ClosePanel();
                         return;
                     }
@@ -703,6 +716,7 @@ namespace KYS
         {
             // 로딩 화면 표시 (필요한 경우)
             // ShowLoadingScreen();
+            Manager.ui.ShowUltraSimpleLoadingScreen(1);
 
             Manager.Audio.SfxPlay("Portal");
             var handle = Addressables.LoadSceneAsync("StageScene");
@@ -750,7 +764,10 @@ namespace KYS
         /// </summary>
         private bool IsStageUnlocked(int stageIndex)
         {
-            return Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+            bool isUnlocked = Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
+            bool isReleased = Manager.data.Stage.Values[zodiacStages[stageIndex].stageId].IsRelease;
+
+            return isUnlocked && isReleased;
         }
 
         /// <summary>
@@ -883,6 +900,8 @@ namespace KYS
                     selectedImage.color = selectedColor;
                     selectedTransform.localScale = Vector3.one * selectedScale;
                     selectedTransform.position = originalPositions[stageIndex] + new Vector3(0, selectedYOffset, 0);
+
+                    isSnapping = false;
                 }
             }
         }

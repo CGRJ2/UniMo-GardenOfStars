@@ -28,20 +28,28 @@ public class ShopBuilding : BuildingInstance
     {
         // 플레이어 손에 있는 재료가 퀘스트 조건에 포함되는지 체크
         IngrediantInstance instanceProd;
-        if (characterRD.IngrediantStack.TryPeek(out instanceProd))
+        CharaterRuntimeData characterRD_cach;
+        characterRD_cach = characterRD;
+        if (characterRD_cach.IngrediantStack.TryPeek(out instanceProd))
         {
             // 건물(재료)라면 => 건물 구매 가격에 다시 판매
             if (instanceProd is Item_Building building)
             {
-                long price = Manager.data.Building[building.buildingId].Cost;
-                IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+                // 스테이지 배수 연산
+                string curStageID = Manager.firebase.UserData.CurStage.Value;
+                long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+
+                IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>
                 {
                     // 판매 완료
-                    CaculateSoldResult(price);
+                    CaculateSoldResult(price, 1, true);
 
                     // 구매한 건물 ID => DB에서 초기화
                     Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
+
+                    // 건축모드 비활성화
+                    Manager.buildings.BuildModEvent?.Invoke(false, null);
                 });
             }
             // 일반 재료라면 계산식을 통해 판매 ///// 흥정 수치 계산식에 포함해야됨. 어떤 식으로 할건가요?
@@ -50,11 +58,11 @@ public class ShopBuilding : BuildingInstance
                 int soldItemCount = 0;
                 long price = instanceProd.Data.Price;
 
-                while (characterRD.IngrediantStack.Count > 0)
+                while (characterRD_cach.IngrediantStack.Count > 0)
                 {
-                    IngrediantInstance popedProd = characterRD.IngrediantStack.Pop();
+                    IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
 
-                    if (characterRD.IngrediantStack.Count > 0)
+                    if (characterRD_cach.IngrediantStack.Count > 0)
                     {
                         popedProd.MoveToTargetAndShrink(attachPoint);
                     }
@@ -76,11 +84,22 @@ public class ShopBuilding : BuildingInstance
         }
     }
 
-    void CaculateSoldResult(long price, int soldItemCount = 1)
+    void CaculateSoldResult(long price, int soldItemCount = 1, bool isBuilding = false)
     {
-        // 전부 투입 완료 된 후 정산 & UI활성화
-        tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";
-        Manager.player.Data.Money.Value += soldItemCount * (int)price; //long으로 해야하는지? 일단 기획에서 요구한 건 long임
+        if (isBuilding)
+        {
+            // 건물 판매는 흥정레벨 반영 안됨
+            tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$";
+            Manager.player.Data.Money.Value += (int)(soldItemCount * price);
+        }
+        else
+        {
+            float negoValue = Manager.firebase.UserData.Player.Nego;
+
+            // 전부 투입 완료 된 후 정산 & UI활성화
+            tmp_soldPrice.text = $" {price}($) x {soldItemCount} = {soldItemCount * price}$ + {soldItemCount * price * negoValue / 100f }$(흥정레벨 보너스 {negoValue}%)";
+            Manager.player.Data.Money.Value += (int)(soldItemCount * price * (100f + negoValue) / 100f); //long으로 해야하는지? 일단 기획에서 요구한 건 long임
+        }
 
         // 정산 SFX 실행
         Manager.Audio.SfxPlay("SFX_Money", transform);

@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
-    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
+    //public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
+    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound && 
+        ((isOperating && calculatedProduceTime < 2f) || !isOperating)); } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
     public bool GetReserveState() { return isReserved; }
@@ -21,8 +23,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
     float curCharacterProdSpeed;
 
-    float calculatedPrepareTime => (ownerInstance.prepareTime * ownerInstance.ProdTime) / curCharacterProdSpeed;
-    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.prepareTime)) / curCharacterProdSpeed;
+    float calculatedPrepareTime => (ownerInstance.originData.PrefareTimeRate * ownerInstance.ProdTime) / curCharacterProdSpeed;
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.originData.PrefareTimeRate)) / curCharacterProdSpeed;
 
 
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
@@ -69,6 +71,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             // 작업 준비 진행 중에, 영역 내에서 움직인 경우
             if (curWorker.IsMove.Value)
             {
+                curWorker.IsWork.Value = false;
                 prepareProgressedTime = 0; // 진행도 초기화
                 prepareProgressBar.gameObject.SetActive(false);
                 continue;
@@ -83,8 +86,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
                 continue;
             }
             
-            // 쌓여있는 재료가 있을때만 실행
-            if (ownerInstance.ingrediantStack.Count > 0)
+            // 쌓여있는 재료가 필요 개수 이상 만큼 있을때만 실행
+            if (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound)
             {
                 curWorker.IsWork.Value = true;
                 // 준비 시작 시, 진행도 표기
@@ -169,7 +172,10 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         ownerInstance.prodsArea.ProdsCount.Value += 1;
 
         // 재료 소모
-        ownerInstance.ingrediantStack.Pop().Despawn();
+        for (int i = 0; i < ownerInstance.originData.RequireProdCound; i++)
+        {
+            ownerInstance.ingrediantStack.Pop().Despawn();
+        }
     }
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
@@ -178,6 +184,11 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
         if (curWorker == null)
         {
+            if(characterRuntimeData is PlayerRunTimeData data)
+            {
+                data.CurWorkStation = this;
+            }
+
             StartCoroutine(PrepareTask());
         }
     }

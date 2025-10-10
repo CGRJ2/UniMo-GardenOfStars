@@ -8,16 +8,26 @@ public class PlaceTile : InteractableBase
     [SerializeField] CanvasGroup activatedView;
     [SerializeField] CanvasGroup deactivatedView;
     public string tileId => gameObject.name;
-
-    [SerializeField] float installingTime;
-    [SerializeField] float progressedTime;
+    float progressedTime;
     [SerializeField] Transform attachPoint;
 
-    [Header("상태 디버그용")]
-    [SerializeField] PlaceTileState state;
+    [Header("설치 시간")]
+    [SerializeField] float installingTime;
+
+    [Header("설치 가능 건물 제한")]
+    [SerializeField] string buildableID;
+    
+    [Header("기본 건물 여부 (스테이지 첫 진입 시, 건물을 기본으로 설치해둘 것인지)")]
+    [SerializeField] bool isDefaultBuilding;
+
+    PlaceTileState state;
+
+    // 건물 설치 FX 효과
+    ObjectPool _Pool_FX_Construct;
+    GameObject _FX_Construct;
 
 
-    string ownedBuildingID;
+    [HideInInspector] public PlaceTileGroup _parentGroup;
 
     private void Awake()
     {
@@ -59,6 +69,9 @@ public class PlaceTile : InteractableBase
         if (placeTileData == null)
         {
             Manager.firebase.UserData.CurStageData.PlaceTileList.Add(tileId);
+
+            if (isDefaultBuilding)
+                StartCoroutine(DefaultBuildingFirstInit());
         }
         else
         {
@@ -73,14 +86,36 @@ public class PlaceTile : InteractableBase
                 };
             }
         }
+
+        // FX 불러온 후, 풀로 반환 (없으면 풀 생성)
+        Addressables.LoadAssetAsync<GameObject>("FX/Constructing.prefab").Completed += task =>
+        {
+            _Pool_FX_Construct = Manager.pool.GetPoolBundle(task.Result, 1).instancePool;
+        };
     }
 
+    IEnumerator DefaultBuildingFirstInit()
+    {
+        // 첫 초기화인데, 기본 건물이라면.
+        string curStageID = Manager.firebase.UserData.CurStage.Value;
+        string[] buildingIDs = Manager.data.Stage.Values[curStageID].GetBuildingIdList();
+        yield return new WaitUntil(() => Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId) != null);
 
+        // 해당 스테이지 DB에 첫번째 건물 넣어주기
+        Manager.firebase.UserData.CurStageData.PlaceTileList.Get(tileId).BuildingID.Value = buildingIDs[0];
+
+        // 인스턴스도 생성
+        Addressables.LoadAssetAsync<GameObject>(buildingIDs[0]).Completed += task =>
+        {
+            GameObject buildingObject = Instantiate(task.Result, transform.position, transform.rotation);
+        };
+    }
     IEnumerator ProgressingTask()
     {
         while (characterRD != null) // 영역 안에 있을 때 진행
         {
             yield return null;
+            PlayerRunTimeData data = (PlayerRunTimeData)characterRD;
 
             // 작업 영역 밖으로 나가는 경우
             if (characterRD == null)
@@ -94,14 +129,16 @@ public class PlaceTile : InteractableBase
             {
                 progressBar.gameObject.SetActive(false);
                 progressedTime = 0; // 진행도 초기화
+                data.CurPlace = null;
+                if (_FX_Construct != null)
+                {
+                    _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+                    _FX_Construct = null;
+                }
                 continue;
             }
 
-            // 재가동 시, 사운드 이펙트 실행
-            if (progressedTime == 0)
-            {
-                Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
-            }
+            if (data.CurPlace != null && data.CurPlace != this) continue;
 
             IngrediantInstance ownedBuilding;
             characterRD.IngrediantStack.TryPeek(out ownedBuilding);
@@ -109,6 +146,14 @@ public class PlaceTile : InteractableBase
             if (ownedBuilding == null) { continue; } // 손에 든 재료가 없을 때
             else { if (!(ownedBuilding is Item_Building)) continue; } // <- 손에 든 재료가 건물이 아닐 때
 
+            data.CurPlace = this;
+
+            // 재가동 시, 사운드 이펙트 실행
+            if (progressedTime == 0)
+            {
+                Manager.Audio.SfxPlayLoop("Contruct", "SFX_ManufactureBuilding", transform);
+                _FX_Construct = _Pool_FX_Construct.DisposePooledObj(transform.position, transform.rotation);
+            }
 
             // 작업 시작 시, 진행도 표기
             progressBar.gameObject.SetActive(true);
@@ -118,6 +163,7 @@ public class PlaceTile : InteractableBase
             // 설치가 완료된 경우
             if (installingTime < progressedTime)
             {
+                data.CurPlace = null;
                 CompleteTask(); // 결과물 생성
                 progressedTime = 0; // 진행도 초기화
                 break;
@@ -152,10 +198,14 @@ public class PlaceTile : InteractableBase
             Manager.firebase.UserData.CurStageData.PurchasedBuildingID.Value = "";
 
             // 건축모드 비활성화
-            Manager.buildings.BuildModEvent?.Invoke(false);
+            Manager.buildings.BuildModEvent?.Invoke(false, null);
 
             // 설치 SFX 종료
             Manager.Audio.SfxStopLoop("Contruct", 0.5f);
+
+            // 설치 FX 효과 비활성화
+            _Pool_FX_Construct.ReturnPooledObj(_FX_Construct);
+
         });
 
 
@@ -165,10 +215,6 @@ public class PlaceTile : InteractableBase
             TutorialManager.Instance.SequenceEnd(); // 시퀀스03 종료(저장)
         }
     }
-
-
-
-
 
     public override void Enter_PersonalTask(CharaterRuntimeData characterRuntimeData)
     {
@@ -191,10 +237,16 @@ public class PlaceTile : InteractableBase
             Manager.buildings.BuildModEvent -= OnBuildModChanged;
     }
 
-    public void OnBuildModChanged(bool isBuildMod)
+    public void OnBuildModChanged(bool isBuildMod, string buildingID)
     {
         if (isBuildMod)
         {
+            // 해당 건물의 그룹이 언락된 상태가 아니라면 return
+            if (!_parentGroup.IsUnlocked()) return;
+
+            // 해당 건물이 타겟이 아니라면 return
+            if (buildableID != buildingID) return;
+
             if (string.IsNullOrEmpty(GetBuildingID()))
                 state = PlaceTileState.Activated;
             else
@@ -242,11 +294,15 @@ public class PlaceTile : InteractableBase
 
 }
 
+public enum TileType
+{
+    All, Harvest, Manufacture
+}
+
 public enum PlaceTileState
 {
     Deactivated, Activated, Constructed
 }
-
 public class PlaceTileData : FirebaseData
 {
     public FirebaseProperty<string> BuildingID;

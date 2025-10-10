@@ -10,6 +10,8 @@ public class DataTableParser<T> where T : IUsableId
     [SerializeField] Dictionary<string, T> values;
     public Dictionary<string, T> Values { get { return values; } }
 
+    public bool IsInit;
+
     public DataTableParser(Func<string[], Dictionary<string, int>, T> Parse)
     {
         this.Parse = Parse;
@@ -51,8 +53,12 @@ public class DataTableParser<T> where T : IUsableId
 
             if (value == null || string.IsNullOrEmpty(value.GetId())) continue;
 
+            if (values.ContainsKey(value.GetId())) continue;
+
             values.Add(value.GetId(), value);
         }
+
+        IsInit = true;
 
         return true;
     }

@@ -119,8 +119,40 @@ namespace KYS
         /// </summary>
         private async System.Threading.Tasks.Task InitializeAddressableCanvases()
         {
+
+
             try
             {
+                // Loading Canvas 로드 (가장 앞에 렌더링)
+                // 첫 씬에 미리 배치된 LoadingCanvas를 찾아서 사용
+                Canvas[] existingLoadingCanvases = FindObjectsOfType<Canvas>();
+                bool hasExistingLoadingCanvas = false;
+
+                foreach (Canvas canvas in existingLoadingCanvases)
+                {
+                    if (canvas.name.Contains("Loading") || canvas.name.Contains("loading"))
+                    {
+                        hasExistingLoadingCanvas = true;
+                        loadingCanvas = canvas;
+
+                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
+                        loadingCanvas.sortingOrder = 40;
+
+                        //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
+
+                        // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
+                        DontDestroyOnLoad(canvas.gameObject);
+                        //Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
+                        break;
+                    }
+                }
+
+                while (!Manager.game.initialized)
+                {
+                    await Task.Yield();
+                }
+
+
                 // HUD Canvas 로드 (가장 뒤에 렌더링)
                 if (hudCanvasReference != null && hudCanvasReference.RuntimeKeyIsValid())
                 {
@@ -155,29 +187,7 @@ namespace KYS
                     DontDestroyOnLoad(popupHandle.Result);
                 }
 
-                // Loading Canvas 로드 (가장 앞에 렌더링)
-                // 첫 씬에 미리 배치된 LoadingCanvas를 찾아서 사용
-                Canvas[] existingLoadingCanvases = FindObjectsOfType<Canvas>();
-                bool hasExistingLoadingCanvas = false;
                 
-                foreach (Canvas canvas in existingLoadingCanvases)
-                {
-                    if (canvas.name.Contains("Loading") || canvas.name.Contains("loading"))
-                    {
-                        hasExistingLoadingCanvas = true;
-                        loadingCanvas = canvas;
-                        
-                        // LoadingCanvas의 SortOrder를 설정 (가장 앞에 렌더링)
-                        loadingCanvas.sortingOrder = 40;
-                        
-                        //Debug.Log($"[UIManager] 첫 씬의 기존 LoadingCanvas 발견하여 사용: {canvas.name} (SortingOrder: {canvas.sortingOrder})");
-                        
-                        // 기존 LoadingCanvas를 DontDestroyOnLoad에 올림
-                        DontDestroyOnLoad(canvas.gameObject);
-                        //Debug.Log($"[UIManager] 기존 LoadingCanvas를 DontDestroyOnLoad에 등록: {canvas.name}");
-                        break;
-                    }
-                }
 
                 if (!hasExistingLoadingCanvas)
                 {
@@ -755,8 +765,8 @@ namespace KYS
                     break;
             }
 
-            // LoadingCanvas는 SafeAreaPanel 사용하지 않음
-            if (layerType == UILayerType.Loading)
+            // LoadingCanvas와 PopupCanvas는 SafeAreaPanel 사용하지 않음
+            if (layerType == UILayerType.Loading || layerType == UILayerType.Popup)
             {
                 return targetTransform;
             }
@@ -811,6 +821,40 @@ namespace KYS
             }
 
             return targetTransform;
+        }
+
+        /// <summary>
+        /// Panel Canvas의 배경색 변경
+        /// </summary>
+        public void SetPanelBackgroundColor(Color color)
+        {
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundColor(panelCanvas, color);
+            }
+        }
+        
+
+        /// <summary>
+        /// 씬의 모든 SafeAreaPanel 강제 업데이트
+        /// </summary>
+        public void ForceUpdateAllSafeAreaPanelsInScene()
+        {
+            if (safeAreaManager != null)
+            {
+                safeAreaManager.ForceUpdateAllSafeAreaPanelsInScene();
+            }
+        }
+
+        /// <summary>
+        /// Panel Canvas의 배경 표시/숨김
+        /// </summary>
+        public void SetPanelBackgroundVisible(bool visible)
+        {
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, visible);
+            }
         }
 
         /// <summary>
@@ -948,6 +992,12 @@ namespace KYS
             RegisterUI(panel);
             panel.Show();
 
+            // Panel이 열릴 때 BackgroundPanel 활성화
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, true);
+            }
+
             //Debug.Log($"[UIManager] 패널 열기 완료: {panel.name}");
             DebugStackStatus();
             
@@ -994,6 +1044,14 @@ namespace KYS
                     }
 
                     previousPanel.Show();
+                }
+            }
+            else
+            {
+                // Panel 스택이 비어있으면 BackgroundPanel 비활성화
+                if (panelCanvas != null && safeAreaManager != null)
+                {
+                    safeAreaManager.SetBackgroundVisible(panelCanvas, false);
                 }
             }
 
@@ -1380,7 +1438,7 @@ namespace KYS
                 // LoadingCanvas의 SortOrder를 가장 높게 설정 (다른 모든 UI 위에 표시)
                 loadingCanvas.sortingOrder = 40;
                 
-                Debug.Log($"LoadingCanvas 활성화됨 (SortOrder: {loadingCanvas.sortingOrder})");
+                //Debug.Log($"LoadingCanvas 활성화됨 (SortOrder: {loadingCanvas.sortingOrder})");
                 
                 // LoadingCanvas의 모든 자식 요소들 비활성화 (배경 이미지만 남김)
                 var allChildren = loadingCanvas.GetComponentsInChildren<Transform>(true);
@@ -1394,7 +1452,7 @@ namespace KYS
                             (child.GetComponent<Image>() != null && child.GetComponent<Image>().type == UnityEngine.UI.Image.Type.Filled))
                         {
                             child.gameObject.SetActive(false);
-                            Debug.Log($"비활성화된 요소: {child.name}");
+                            //Debug.Log($"비활성화된 요소: {child.name}");
                         }
                     }
                 }
@@ -1608,7 +1666,7 @@ namespace KYS
         /// </summary>
         private IEnumerator ShowLoadingScreenCoroutine(string message)
         {
-            Debug.Log($"[UIManager] ShowLoadingScreenCoroutine 시작 - 메시지: {message}");
+            //Debug.Log($"[UIManager] ShowLoadingScreenCoroutine 시작 - 메시지: {message}");
             
             // 이미 LoadingScreen이 활성화되어 있다면 초기화 후 메시지 업데이트
             if (loadingScreenInstance != null && loadingScreenInstance.gameObject.activeInHierarchy)
@@ -1633,7 +1691,7 @@ namespace KYS
             // LoadingScreen이 성공적으로 생성되었다면 활성화
             if (loadingScreenInstance != null)
             {
-                Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료 - 활성화 시작");
+                //Debug.Log("[UIManager] LoadingScreen 인스턴스 생성 완료 - 활성화 시작");
                 
                 // 활성화 (Initialize 전에 활성화해야 함)
                 loadingScreenInstance.gameObject.SetActive(true);
@@ -1641,7 +1699,7 @@ namespace KYS
                 // 초기화가 필요하다면 초기화
                 if (!isLoadingScreenInitialized)
                 {
-                    Debug.Log("[UIManager] LoadingScreen 초기화 실행");
+                    //Debug.Log("[UIManager] LoadingScreen 초기화 실행");
                     loadingScreenInstance.Initialize();
                     isLoadingScreenInitialized = true;
                 }
@@ -1660,7 +1718,7 @@ namespace KYS
 
                 // Show 애니메이션 시작
                 loadingScreenInstance.Show();
-                Debug.Log("[UIManager] LoadingScreen 활성화 완료");
+                //Debug.Log("[UIManager] LoadingScreen 활성화 완료");
             }
             else
             {
@@ -1677,6 +1735,7 @@ namespace KYS
             
             // 씬 전환 중 Addressable 시스템 안정성을 위한 대기
             yield return new WaitForSeconds(0.1f);
+            yield return new WaitUntil(() => Manager.game.initialized);
 
             // LoadingScreen 프리팹을 직접 로드
             string[] possibleKeys = {
@@ -2537,7 +2596,7 @@ namespace KYS
         /// <summary>
         /// ESC 키 처리
         /// </summary>
-        private void LateUpdate()
+        /*private void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -2553,7 +2612,7 @@ namespace KYS
                     }
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// 현재 UI가 닫을 수 없는지 확인
@@ -2584,6 +2643,12 @@ namespace KYS
         /// </summary>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+
+            // 씬 이름이 "TitleScene"인지 확인
+            if (scene.name == "TitleScene")
+            {
+                HideHUDUI<HUDAllPanel>();
+            }
             // 씬 전환 시 모든 UI 정리
             CleanAllUI();
         }
@@ -2600,6 +2665,12 @@ namespace KYS
             while (panelStack.Count > 0)
             {
                 ClosePanel();
+            }
+            
+            // 모든 패널이 닫혔으므로 BackgroundPanel 비활성화
+            if (panelCanvas != null && safeAreaManager != null)
+            {
+                safeAreaManager.SetBackgroundVisible(panelCanvas, false);
             }
         }
 
@@ -2732,7 +2803,11 @@ namespace KYS
         /// </summary>
         public async System.Threading.Tasks.Task<T> CreateHUDAsync<T>(string addressableKey) where T : BaseUI
         {
-            
+            while (!Manager.game.initialized)
+            {
+                await Task.Yield(); // 프레임 넘기기
+            }
+
             if (hudCanvas == null)
             {
                 Debug.LogError("[UIManager] HUD Canvas가 초기화되지 않았습니다.");

@@ -248,7 +248,7 @@ public class SettingPopUp : BaseUI
     /// </summary>
     private void ShowMessagePopUp(string message)
     {
-        Manager.ui.ShowTutorialPopUpAsync(message);
+        Manager.ui.ShowMessagePopUpAsync(message);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class SettingPopUp : BaseUI
     /// </summary>
     private void ShowMessagePopUpWithKey(string localizationKey, string fallbackMessage = null)
     {
-        Manager.ui.ShowTutorialPopUpWithKeyAsync(localizationKey, null);
+        Manager.ui.ShowMessagePopUpWithKeyAsync(localizationKey, null);
     }
 
 
@@ -433,6 +433,14 @@ public class SettingPopUp : BaseUI
         {
             SFXSlider.onValueChanged.RemoveAllListeners();
             SFXSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+            
+            // SFX 슬라이더에 PointerHandler 추가하여 손가락을 띄면 효과음 재생
+            var pointerHandler = SFXSlider.GetComponent<PointerHandler>();
+            if (pointerHandler == null)
+            {
+                pointerHandler = SFXSlider.gameObject.AddComponent<PointerHandler>();
+            }
+            pointerHandler.Up += OnSFXSliderPointerUp;
         }
         else
         {
@@ -479,6 +487,19 @@ public class SettingPopUp : BaseUI
             AudioManager.Instance.SfxVolume = value;
             SaveSettings();
             Debug.Log($"[SettingPopUp] SFX 볼륨 변경: {value:F2}");
+        }
+    }
+
+    /// <summary>
+    /// SFX 슬라이더에서 손가락을 띄면 효과음 재생
+    /// </summary>
+    private void OnSFXSliderPointerUp(PointerEventData eventData)
+    {
+        // SFX 볼륨이 0이 아니고 AudioManager가 있을 때만 효과음 재생
+        if (SFXSlider != null && SFXSlider.value > 0 && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SfxPlay("SFX_Money");
+            Debug.Log("[SettingPopUp] SFX 슬라이더 효과음 재생");
         }
     }
 
@@ -581,6 +602,21 @@ public class SettingPopUp : BaseUI
         // PlayerPrefs.Save()는 성능상 자주 호출하지 않음
         // 앱 종료 시나 중요한 시점에만 호출
         PlayerPrefs.Save();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        
+        // SFX 슬라이더 PointerHandler 이벤트 정리
+        if (SFXSlider != null)
+        {
+            var pointerHandler = SFXSlider.GetComponent<PointerHandler>();
+            if (pointerHandler != null)
+            {
+                pointerHandler.Up -= OnSFXSliderPointerUp;
+            }
+        }
     }
 
     /// <summary>

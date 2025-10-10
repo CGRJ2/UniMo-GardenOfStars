@@ -1,3 +1,4 @@
+ï»¿using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +14,17 @@ public class NpcInteractAreaUI : MonoBehaviour
 
     public void StartConversation()
     {
+        // íŠœí† ë¦¬ì–¼ ì”¬ì´ë¼ë©´
+        if (TutorialManager.Instance != null)
+        {
+            StartCoroutine(TutorialManager.Instance.Sequence09_NormalTalkButtonClick());
+            return;
+        }
+
         var stageID = Manager.firebase.UserData.CurStage.Value;
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        
-        // Äù½ºÆ®°¡ Å¬¸®¾î »óÅÂ¶ó¸é
+
+        // í€˜ìŠ¤íŠ¸ê°€ í´ë¦¬ì–´ ìƒíƒœë¼ë©´
         if (npc.CurQuestData.QuestState.Value == 3)
         {
             Manager.dialogue.StartDialogueWithPanel(npc.NpcID.Value, stageID, $"Normal_{npc.NpcID.Value}_{npc.CurrentQuestID.Value}_Clear");

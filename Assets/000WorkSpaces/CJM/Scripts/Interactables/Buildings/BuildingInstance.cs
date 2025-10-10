@@ -21,9 +21,6 @@ public class BuildingInstance : InteractableBase
     {
         base.OnDisableAdditionalActions();
 
-        if (_OriginData != null)
-            Manager.buildings?.RemoveBiTransformData(transform);
-
         if (activatePopUI != null)
             activatePopUI.gameObject.SetActive(false);
     }
@@ -31,8 +28,8 @@ public class BuildingInstance : InteractableBase
     public void CheckUpgradable()
     {
         UpgradeData upgradeData = Manager.buildings.GetUpgradeData(_OriginData.ID);
-        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.level_ProdTime;
-        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.level_Capacity;
+        int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
+        int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
         int curMoney = Manager.player.Data.Money.Value;
 
         // 생산형 건물일 때
@@ -95,6 +92,9 @@ public class BuildingInstance : InteractableBase
         // 상호작용한 주체가 플레이어라면 (플레이어 한정)
         if (characterRuntimeData is PlayerRunTimeData)
         {
+            // 튜토리얼 시퀀스 5 이하에서는 표기 안뜸
+            if (Manager.firebase.UserData.CurStage.Value == "Tutorial") return;
+
             if (activatePopUI != null)
             {
                 // for test

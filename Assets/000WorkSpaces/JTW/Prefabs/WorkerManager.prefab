@@ -46,10 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _workerPrefab: {fileID: 6093669597428345217, guid: 005e24360d3c49d48ad875d0baf16e9d, type: 3}
   _assignDelay: 3
-  _stunDelay: 7
-  workStatinLists:
-    insertAreas: []
-    workAreas: []
-    workAreas_SwitchType: []
-    prodsAreas: []
-    productGeneraters: []
+  _stunDelay: 120
+  _workerLayer:
+    serializedVersion: 2
+    m_Bits: 64

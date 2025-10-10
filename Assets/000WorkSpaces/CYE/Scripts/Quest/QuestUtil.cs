@@ -10,7 +10,7 @@ namespace GameQuest
     public enum QuestState
     {
         // 수락전, 진행중, 완료됨
-        BeforeStart = 1, InProgress, Completed
+        BeforeStart = 1, Completed, TalkEnd
     }
     
     public enum QuestProgressState

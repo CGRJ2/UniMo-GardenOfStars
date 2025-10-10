@@ -5,6 +5,9 @@ using UnityEngine;
 public class ManufactureBuilding : BuildingInstance
 {
     [HideInInspector] public ManufactureBD originData;
+    [Header("일꾼이 바라볼 위치")]
+    [SerializeField] private Transform _viewPoint;
+    public Transform viewPoint { get => _viewPoint ?? transform; }
 
     [Header("재료를 쌓아놓을 위치")]
     public Transform attachPoint;
@@ -15,17 +18,13 @@ public class ManufactureBuilding : BuildingInstance
     [HideInInspector]
     public float progressedTime = 0f;   // 현재 진행도
 
-    [Header("투입 영역 객체")]
-    public InsertArea insertArea;
-    [Header("작업 영역 객체")]
-    public WorkArea workArea;
-    public WorkArea_SwitchType workArea_SwitchType;
-    [Header("회수 영역 객체")]
-    public ProdsArea prodsArea;
-
-    [Header("작업 준비 시간")]
-    public float prepareTime = 0.85f;
-
+    //[Header("투입 영역 객체")]
+    [HideInInspector] public InsertArea insertArea;
+    //[Header("작업 영역 객체")]
+    [HideInInspector] public WorkArea workArea;
+    [HideInInspector] public WorkArea_SwitchType workArea_SwitchType;
+    //[Header("회수 영역 객체")]
+    [HideInInspector] public ProdsArea prodsArea;
 
     public Stack<IngrediantInstance> ingrediantStack = new();
     //public Stack<IngrediantInstance> prodsStack = new();  // 회수영역을 스택처럼 표현할 때 사용하는걸로
@@ -35,7 +34,7 @@ public class ManufactureBuilding : BuildingInstance
         get
         {
             UpgradeData upgradeData = Manager.buildings.GetUpgradeData(originData.ID);
-            int level = upgradeData == null ? 0 : upgradeData.level_ProdTime;
+            int level = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
             return originData.Stat_ProdTime.Values[level];
         }
     }
@@ -45,7 +44,7 @@ public class ManufactureBuilding : BuildingInstance
         get
         {
             UpgradeData upgradeData = Manager.buildings.GetUpgradeData(originData.ID);
-            int level = upgradeData == null ? 0 : upgradeData.level_Capacity;
+            int level = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
             return originData.Stat_Capacity.Values[level];
         }
     }
@@ -57,8 +56,13 @@ public class ManufactureBuilding : BuildingInstance
         base.Init();
 
         if (_OriginData is ManufactureBD mfBD) originData = mfBD;
-        activatePopUI.Init(this);
 
+        activatePopUI ??= GetComponentInChildren<BuildingActivePopUI>();
+        insertArea ??= GetComponentInChildren<InsertArea>();
+        workArea_SwitchType = GetComponentInChildren<WorkArea_SwitchType>();
+        prodsArea ??= GetComponentInChildren<ProdsArea>();
+
+        activatePopUI.Init(this);
         insertArea.Init(this);
         workArea?.Init(this);
         workArea_SwitchType?.Init(this);

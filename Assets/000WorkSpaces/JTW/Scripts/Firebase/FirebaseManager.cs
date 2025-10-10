@@ -6,10 +6,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class FirebaseManager : Singleton<FirebaseManager>
 {
+    [SerializeField] private Button _popupPanel;
+
     private FirebaseApp _app;
     public FirebaseApp App => _app;
 
@@ -19,7 +23,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private FirebaseDatabase _database;
     public FirebaseDatabase Database => _database;
 
-    public UserData UserData;
+    public ObservableProperty<UserData> UserDataProperty = new();
+
+    public UserData UserData => UserDataProperty.Value;
     private DataSnapshot _rootDataSnapshot;
     private bool _isUserDataInit;
 
@@ -30,6 +36,17 @@ public class FirebaseManager : Singleton<FirebaseManager>
     private void Awake()
     {
         InitFirebase();
+        _popupPanel.onClick.AddListener(OnPopUpClick);
+    }
+
+    private void OnPopUpClick()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene("TitleScene");
+
+        _popupPanel.gameObject.SetActive(false);
+
+        _isNetworkDisconected = false;
     }
 
     private void InitFirebase()
@@ -50,9 +67,9 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
                 OnFirebaseInit?.Invoke();
 
-                // 테스트를 원활하게 하기위해 일단 실행
-                // 추후에 게임이 완성에 가까우면 뺄 수도 있음.
+#if UNITY_EDITOR
                 InitUserData();
+#endif
 
                 IsFirebaseInit = true;
             }
@@ -63,7 +80,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
                 _app = null;
                 _auth = null;
                 _database = null;
-                NetworkDisconnected();
             }
         });
     }
@@ -75,13 +91,36 @@ public class FirebaseManager : Singleton<FirebaseManager>
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            NetworkDisconnected();
+        }
+    }
+#endif
+
+    private bool _isNetworkDisconected;
     public void NetworkDisconnected()
     {
-        Manager.ui.ShowMessagePopUpAsync("인터넷 연결을 다시 확인해주세요.", () =>
+        if (_isNetworkDisconected) return;
+        _isNetworkDisconected = true;
+
+        if(SceneManager.GetActiveScene().name == "TitleScene")
         {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene("TitleScene");
-        });
+            _popupPanel.gameObject.SetActive(true);
+        }
+        else
+        {
+            Manager.ui.ShowMessagePopUpWithKeyAsync("ui_network_disconnected_message", () =>
+            {
+                SceneManager.sceneLoaded += OnSceneLoaded;
+                SceneManager.LoadScene("TitleScene");
+
+                _isNetworkDisconected = false;
+            });
+        }
     }
 
     public void InitUserData()
@@ -90,7 +129,7 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         string userPath;
 
-        if(_auth.CurrentUser == null)
+        if (_auth.CurrentUser == null)
         {
             userPath = $"UserData/testUser1234";
         }
@@ -98,19 +137,19 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             userPath = $"UserData/{_auth.CurrentUser.UserId}";
             Debug.LogWarning($"현재 UserId : {_auth.CurrentUser.UserId}");
+            Firebase.Analytics.FirebaseAnalytics.SetUserId(_auth.CurrentUser.UserId);
         }
 
         _database.RootReference.GetValueAsync().ContinueWithOnMainThread(task =>
         {
-            if(task.IsCanceled || task.IsFaulted)
+            if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
 
             _rootDataSnapshot = task.Result;
 
-            UserData = new UserData(userPath, "");
+            UserDataProperty.Value = new UserData(userPath, "");
 
             StartCoroutine(CheckUserDataInit());
         });
@@ -124,7 +163,24 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         _isUserDataInit = true;
     }
-    
+
+    public bool SetTimeDataEvent<T>(string id, string path, string parentPath, EventHandler<ValueChangedEventArgs> func)
+    {
+        var update = new Dictionary<string, object>();
+        update[id] = ServerValue.Timestamp;
+
+        Manager.firebase.Database.RootReference.Child(parentPath).UpdateChildrenAsync(update).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                return;
+            }
+
+            _database.RootReference.Child(path).ValueChanged += func;
+        });
+        return true;
+    }
+
     public bool SetDataEvent<T>(string path, EventHandler<ValueChangedEventArgs> func, T setValue, bool isInit, out T value)
     {
         if (!isInit)
@@ -134,7 +190,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
             {
                 if (task.IsCanceled || task.IsFaulted)
                 {
-                    NetworkDisconnected();
                     return;
                 }
 
@@ -170,7 +225,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
             return false;
         }
-        
     }
 
     public void SetDataListEvent(string path, EventHandler<ChildChangedEventArgs> func)
@@ -178,14 +232,12 @@ public class FirebaseManager : Singleton<FirebaseManager>
         _database.RootReference.Child(path).ChildAdded += func;
     }
 
-
     public void SaveData(string path, object value)
     {
         _database.RootReference.Child(path).SetValueAsync(value).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
@@ -227,7 +279,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
@@ -239,7 +290,6 @@ public class FirebaseManager : Singleton<FirebaseManager>
         {
             if (task.IsCanceled || task.IsFaulted)
             {
-                NetworkDisconnected();
                 return;
             }
         });
@@ -253,9 +303,84 @@ public class FirebaseManager : Singleton<FirebaseManager>
 
         DataSnapshot data = _rootDataSnapshot.Child(path);
 
-        if(!data.Exists || !data.HasChildren) return true;
+        if (!data.Exists || !data.HasChildren) return true;
 
         count = (int)data.ChildrenCount;
         return false;
+    }
+
+    private WaitForSeconds _pingDelay = new WaitForSeconds(5f);
+    private Coroutine _pingCoroutine;
+
+    public void StartNetworkCoroutine()
+    {
+        if (_pingCoroutine != null)
+        {
+            StopCoroutine(_pingCoroutine);
+            _pingCoroutine = null;
+        }
+
+        _pingCoroutine = StartCoroutine(NetworkCoroutine());
+    }
+
+    private IEnumerator NetworkCoroutine()
+    {
+        yield return _pingDelay;
+
+        while (true)
+        {
+            Ping ping = new Ping("8.8.8.8");
+            float startTime = Time.time;
+            float timeout = 5f;
+
+            while (!ping.isDone)
+            {
+                if (Time.time - startTime > timeout)
+                {
+                    StartCoroutine(NetworkCheckCoroutine());
+                    Debug.Log("ping 연결 안됨 (Ping Timeout)");
+                    yield break;
+                }
+                yield return null;
+            }
+
+            if (ping.time >= 0)
+            {
+                Debug.Log("ping 연결 확인");
+            }
+            else
+            {
+                StartCoroutine(NetworkCheckCoroutine());
+                Debug.Log("ping 연결 실패");
+                yield break;
+            }
+
+            if (Manager.game.isDownloadFailed)
+            {
+                Debug.LogWarning("게임 서버 연결 실패");
+                NetworkDisconnected();
+                yield break;
+            }
+
+            yield return _pingDelay;
+        }
+    }
+
+    private IEnumerator NetworkCheckCoroutine()
+    {
+        UnityWebRequest www = UnityWebRequest.Head("https://storage.googleapis.com/unimo_gardenofstars_addressableassets/ping.txt");
+
+        www.timeout = 5;
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            Debug.LogWarning("게임 서버 연결 확인됨");
+            StartCoroutine(NetworkCoroutine());
+            yield break;
+        }
+
+        Debug.LogWarning("게임 서버 연결 실패 1");
+        NetworkDisconnected();
     }
 }

@@ -56,6 +56,8 @@ public partial class DataManager
                 dialogue.DialogueText_Korea = GetFieldValue(words, dict, "DialogueText_Korea");
                 dialogue.DialogueText_English = GetFieldValue(words, dict, "DialogueText_English");
                 dialogue.NextNodeId = GetFieldValue(words, dict, "NextNodeId");
+                dialogue.NextNodeIdAfterClear = GetFieldValue(words, dict, "NextNodeIdAfterClear");
+                dialogue.NextNodeIdCondition = GetFieldValue(words, dict, "NextNodeIdCondition");
                 dialogue.ChoiceText1 = GetFieldValue(words, dict, "ChoiceText1");
                 dialogue.ChoiceText1_Korea = GetFieldValue(words, dict, "ChoiceText1_Korea");
                 dialogue.ChoiceText1_English = GetFieldValue(words, dict, "ChoiceText1_English");
@@ -72,6 +74,9 @@ public partial class DataManager
                 dialogue.ChoiceText4_Korea = GetFieldValue(words, dict, "ChoiceText4_Korea");
                 dialogue.ChoiceText4_English = GetFieldValue(words, dict, "ChoiceText4_English");
                 dialogue.ChoiceNext4 = GetFieldValue(words, dict, "ChoiceNext4");
+                dialogue.Choice2Condition = GetFieldValue(words, dict, "Choice2Condition");
+                dialogue.Choice3Condition = GetFieldValue(words, dict, "Choice3Condition");
+                dialogue.Choice4Condition = GetFieldValue(words, dict, "Choice4Condition");
                 dialogue.CharacterImage = GetFieldValue(words, dict, "CharacterImage");
                 dialogue.CharacterImagePosition = GetFieldValue(words, dict, "CharacterImagePosition");
                 dialogue.UseTypingEffect = GetFieldValue(words, dict, "UseTypingEffect");

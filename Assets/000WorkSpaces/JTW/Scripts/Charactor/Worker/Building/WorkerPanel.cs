@@ -27,11 +27,16 @@ public class WorkerPanel : KYS.BaseUI
     private TextMeshProUGUI _runWorkerCostText;
     private TextMeshProUGUI _runUnlockContentText;
     private Image _runWorkerImage;
-    
+    private Image _premiumBG;
+    private Image _runWorkerCostIcon;
+    private Image _runWorkerPremiumCostIcon;
+    private Image _runPremiumIcon;
+
 
     // 버튼들
     private Button _upgradeBtn;
     private Button _buyBtn;
+    private Button _premiumBuyButton;
 
     public WorkerData Worker => Manager.firebase?.UserData?.CurStageData?.WorkerList?.Get(_workerKey);
     private string _workerKey;
@@ -40,7 +45,7 @@ public class WorkerPanel : KYS.BaseUI
     private int _employCost;
     private int _employBMCost;
 
-    private int QuestOrder => Manager.data.WorkerEmployCost.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"].QuestOrder;
+    private int QuestOrder => Manager.data.WorkerEmployCost.Values[_workerKey].QuestOrder;
 
     private bool _isBMCost;
 
@@ -62,6 +67,12 @@ public class WorkerPanel : KYS.BaseUI
         // 버튼들 초기화
         _upgradeBtn = GetUI<Button>("UpgradeButton");
         _buyBtn = GetUI<Button>("BuyButton");
+        _premiumBuyButton = GetUI<Button>("PremiumBuyButton");
+
+        _premiumBG = GetUI<Image>("PremiumWorkerImageBG");
+        _runWorkerCostIcon = GetUI<Image>("RunWorkerCostIcon");
+        _runWorkerPremiumCostIcon = GetUI<Image>("RunPremiumWorkerCostIcon");
+        _runPremiumIcon = GetUI<Image>("PremiumIcon");
 
         // 디버그: 버튼 초기화 확인
         Debug.Log($"[WorkerPanel] _upgradeBtn: {_upgradeBtn != null}");
@@ -70,6 +81,7 @@ public class WorkerPanel : KYS.BaseUI
         // 버튼 이벤트 등록
         if (_upgradeBtn != null) _upgradeBtn.onClick.AddListener(OnUpgradeClick);
         if (_buyBtn != null) _buyBtn.onClick.AddListener(OnBuyClick);
+        _premiumBuyButton.onClick.AddListener(OnBuyClick);
     }
 
     public void Init(string key, WorkerUpgradePresenter presenter)
@@ -92,49 +104,44 @@ public class WorkerPanel : KYS.BaseUI
 
     private void UpdateWorkerData()
     {
-        // 워커 기본 데이터 가져오기
-        if (Manager.data?.Worker?.Values == null || !Manager.data.Worker.Values.ContainsKey(_workerKey))
-        {
-            Debug.LogWarning($"[WorkerPanel] 워커 데이터를 찾을 수 없습니다. 키: {_workerKey}");
-            return;
-        }
-
-        WorkerDataCsv _workerData = Manager.data.Worker.Values[_workerKey];
-        CharacterDataCsv _characterData = Manager.data.Character.Values[$"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}"];
+        CharacterDataCsv characterData = Manager.data.Character.Values[_workerKey];
+        WorkerDataCsv workerData = Manager.data.Worker.Values[characterData.StatusId];
 
         // 워커 이름 설정
         if (_runWorkerNameText != null)
         {
-            _runWorkerNameText.text = _characterData.Name_Kr;
+            _runWorkerNameText.text = characterData.Name;
         }
 
         //// 워커 이미지 설정
-        if (_runWorkerImage != null && _characterData.Sprite != null)
+        if (_runWorkerImage != null && characterData.Sprite != null)
         {
-            _runWorkerImage.sprite = _characterData.Sprite;
+            _runWorkerImage.sprite = characterData.Sprite;
         }
 
         // 워커 등급 설정
         var runWorkerRankText = GetUI<TextMeshProUGUI>("RunRankText");
         if (runWorkerRankText != null)
         {
-            _runRankText.text = ((CharacterRanks)_workerData.Rank).ToString();
+            _runRankText.text = ((CharacterRanks)workerData.Rank).ToString();
         }
         
         // 고용 비용 설정
         if (Manager.data?.WorkerEmployCost?.Values != null)
         {
-            string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
+            _employCost = Manager.data.WorkerEmployCost.Values[_workerKey].Cost;
+            _employBMCost = Manager.data.WorkerEmployCost.Values[_workerKey].BMCost;
 
-            _employCost = Manager.data.WorkerEmployCost.Values[key].Cost;
-            _employBMCost = Manager.data.WorkerEmployCost.Values[key].BMCost;
-
-            
             if (_runWorkerCostText != null)
             {
                 if (_employCost == -1)
                 {
                     _isBMCost = true;
+                    _premiumBG.gameObject.SetActive(true);
+                    _runWorkerCostIcon.gameObject.SetActive(false);
+                    _runWorkerPremiumCostIcon.gameObject.SetActive(true);
+                    _premiumBuyButton.gameObject.SetActive(true);
+                    _runPremiumIcon.gameObject.SetActive(true);
                     _runWorkerCostText.text = _employBMCost.ToString();
                 }
                 else
@@ -149,8 +156,7 @@ public class WorkerPanel : KYS.BaseUI
     {
         _state = state;
 
-        string key = $"{_workerKey}_{Manager.firebase.UserData.CurStage.Value}";
-        CharacterDataCsv chracterData = Manager.data.Character.Values[key];
+        CharacterDataCsv chracterData = Manager.data.Character.Values[_workerKey];
 
         // 모든 패널 비활성화
         if (_upgradeButton != null) _upgradeButton.SetActive(false);
@@ -161,12 +167,12 @@ public class WorkerPanel : KYS.BaseUI
         switch (state)
         {
             case WorkerPanelStates.Upgrade:
-                _runWorkerNameText.text = chracterData.GetName();
+                _runWorkerNameText.text = chracterData.Name;
                 if (_upgradeButton != null) _upgradeButton.SetActive(true);
                 break;
                 
             case WorkerPanelStates.Purchase:
-                _runWorkerNameText.text = chracterData.GetName();
+                _runWorkerNameText.text = chracterData.Name;
                 if (_beforeHireScreen != null) _beforeHireScreen.SetActive(true);
                 break;
                 

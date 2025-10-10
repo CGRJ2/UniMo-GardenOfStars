@@ -1,4 +1,4 @@
-using GameQuest;
+ï»¿using GameQuest;
 using System;
 using System.Collections;
 using TMPro;
@@ -10,7 +10,7 @@ public class QuestRequireTile : InteractableBase
 {
     public Action RequirementCompleteAction;
 
-    public QuestContentProgressData QC_Data; // <= ÇöÀç Äù½ºÆ® Á¶°Ç Áß ÇÏ³ª ÇÒ´çÇØÁÖ±â
+    public QuestContentProgressData QC_Data; // <= í˜„ì¬ í€˜ìŠ¤íŠ¸ ì¡°ê±´ ì¤‘ í•˜ë‚˜ í• ë‹¹í•´ì£¼ê¸°
     [SerializeField] Transform attachPoint;
     [SerializeField] float insertDelayTime = 0.1f;
 
@@ -31,7 +31,7 @@ public class QuestRequireTile : InteractableBase
 
     public void SetUp()
     {
-        // ½ºÅÜ ·¥ÇÁ ÃÊ±âÈ­
+        // ìŠ¤í… ë¨í”„ ì´ˆê¸°í™”
         for (int i = 0; i < lamps.Length; i++)
         {
             if (i > QC_Data.StepIndexForClearContent)
@@ -45,11 +45,17 @@ public class QuestRequireTile : InteractableBase
             }
         }
 
-        // µî·Ï ÈÄ ¾÷µ¥ÀÌÆ® 1È¸ ½ÇÇà
+        // QC ì§„í–‰ë„ê°€ ì—†ë‹¤ë©´ => Analytics í€˜ìŠ¤íŠ¸ Content ì‹œì‘ ë“±ë¡ (í€˜ìŠ¤íŠ¸ ì‹œì‘ / í€˜ìŠ¤íŠ¸ ë°œíŒ ì‹œì‘)
+        if (QC_Data.ProgressdIndex.Value == 0 && QC_Data.ProgressdProdsCount.Value == 0)
+        {
+            QC_Data.QC_StartTime.Value = DateTime.UtcNow.Second;
+        }
+
+        // ë“±ë¡ í›„ ì—…ë°ì´íŠ¸ 1íšŒ ì‹¤í–‰
         UpdateLampView(QC_Data.ProgressdIndex.Value);
         UpdateTileView(QC_Data.ProgressdProdsCount.Value);
 
-        // ¾÷µ¥ÀÌÆ® ÇÔ¼ö ÀÌº¥Æ® µî·Ï
+        // ì—…ë°ì´íŠ¸ í•¨ìˆ˜ ì´ë²¤íŠ¸ ë“±ë¡
         QC_Data.ProgressdProdsCount.Subscribe(UpdateTileView);
         QC_Data.ProgressdIndex.Subscribe(UpdateLampView);
     }
@@ -68,7 +74,7 @@ public class QuestRequireTile : InteractableBase
 
     public void UpdateTileView(int progressdProdsCount)
     {
-        Debug.Log("¹ßÆÇ »óÅÂ ¾÷µ¥ÀÌÆ®");
+        Debug.Log("ë°œíŒ ìƒíƒœ ì—…ë°ì´íŠ¸");
 
         if (QC_Data.IsContentClear)
         {
@@ -82,7 +88,7 @@ public class QuestRequireTile : InteractableBase
 
             tmp_Count.text = $"{progressdProdsCount}/{QC_Data.CurrentTargetCount}";
 
-            // ÀÌ¹Ì Àç·á µ¥ÀÌÅÍ°¡ ÀÖ´Âµ¥, ÇöÀç Á¶°ÇÀÇ Àç·á µ¥ÀÌÅÍ¿Í °°´Ù¸é => ºÒ·¯¿ÀÁö ¾Ê¾Æµµ µÊ. return;
+            // ì´ë¯¸ ì¬ë£Œ ë°ì´í„°ê°€ ìˆëŠ”ë°, í˜„ì¬ ì¡°ê±´ì˜ ì¬ë£Œ ë°ì´í„°ì™€ ê°™ë‹¤ë©´ => ë¶ˆëŸ¬ì˜¤ì§€ ì•Šì•„ë„ ë¨. return;
             if (ingrediantData != null)
             {
                 if (ingrediantData.ID == QC_Data.ContentTargetId)
@@ -101,21 +107,21 @@ public class QuestRequireTile : InteractableBase
     {
         while (characterRD != null)
         {
-            // ÇÃ·¹ÀÌ¾î ¼Õ¿¡ ÀÖ´Â Àç·á°¡ Äù½ºÆ® Á¶°Ç¿¡ Æ÷ÇÔµÇ´ÂÁö Ã¼Å©
+            // í”Œë ˆì´ì–´ ì†ì— ìˆëŠ” ì¬ë£Œê°€ í€˜ìŠ¤íŠ¸ ì¡°ê±´ì— í¬í•¨ë˜ëŠ”ì§€ ì²´í¬
             IngrediantInstance instanceProd;
             if (characterRD.IngrediantStack.TryPeek(out instanceProd))
             {
-                // Äù½ºÆ® Á¶°ÇÀÌ ÇÒ´çµÇÁö ¾ÊÀº ¹ßÆÇÀÌ¶ó¸é
-                if (QC_Data == null) { Debug.LogError("ÇØ´ç Äù½ºÆ® ¹ßÆÇ¿¡ Äù½ºÆ® Á¶°Ç µ¥ÀÌÅÍ°¡ ÇÒ´çµÇÁö ¾ÊÀ½"); break; }
+                // í€˜ìŠ¤íŠ¸ ì¡°ê±´ì´ í• ë‹¹ë˜ì§€ ì•Šì€ ë°œíŒì´ë¼ë©´
+                if (QC_Data == null) { Debug.LogError("í•´ë‹¹ í€˜ìŠ¤íŠ¸ ë°œíŒì— í€˜ìŠ¤íŠ¸ ì¡°ê±´ ë°ì´í„°ê°€ í• ë‹¹ë˜ì§€ ì•ŠìŒ"); break; }
 
-                // ¼Õ¿¡ ÀÖ´Â Àç·á°¡ Äù½ºÆ® Á¶°ÇÀÌ ¾Æ´Ï¸é || Äù½ºÆ®°¡ ÀÌ¹Ì ¿Ï·áµÈ »óÈ²ÀÌ¸é
+                // ì†ì— ìˆëŠ” ì¬ë£Œê°€ í€˜ìŠ¤íŠ¸ ì¡°ê±´ì´ ì•„ë‹ˆë©´ || í€˜ìŠ¤íŠ¸ê°€ ì´ë¯¸ ì™„ë£Œëœ ìƒí™©ì´ë©´
                 if (instanceProd.Data.ID != QC_Data.ContentTargetId || QC_Data.IsContentClear)
                 {
-                    break;  // »óÈ£ÀÛ¿ë Ãë¼Ò
+                    break;  // ìƒí˜¸ì‘ìš© ì·¨ì†Œ
                 }
 
 
-                // ÇöÀç ÁøÇàµµ¿¡ °³¼ö Ãß°¡
+                // í˜„ì¬ ì§„í–‰ë„ì— ê°œìˆ˜ ì¶”ê°€
                 if (QC_Data.ProgressdProdsCount.Value < QC_Data.CurrentTargetCount)
                 {
                     QC_Data.ProgressdProdsCount.Value += 1;
@@ -125,16 +131,17 @@ public class QuestRequireTile : InteractableBase
 
                     });
                 }
-                else // ÇÊ¿ä Àç·á ¼ö·®¸¸Å­ ´Ù ³ÖÀ¸¸é Á¶°Ç ¿Ï·áÃ³¸® ÈÄ Á¤Áö
+                else // í•„ìš” ì¬ë£Œ ìˆ˜ëŸ‰ë§Œí¼ ë‹¤ ë„£ìœ¼ë©´ ì¡°ê±´ ì™„ë£Œì²˜ë¦¬ í›„ ì •ì§€
                 {
                     break;
                 }
 
-                // ´ÙÀ½ ÅõÀÔ±îÁö µô·¹ÀÌ ½Ã°£ ¼³Á¤
+                // ë‹¤ìŒ íˆ¬ì…ê¹Œì§€ ë”œë ˆì´ ì‹œê°„ ì„¤ì •
                 yield return new WaitForSeconds(insertDelayTime);
+                yield return new WaitUntil(() => QC_Data.ProgressdProdsCount.IsInUpdate == false);
 
             }
-            // ÇÃ·¹ÀÌ¾î ¼Õ¿¡ Àç·á°¡ ¾øÀ¸¸é ¹Ù·Î return
+            // í”Œë ˆì´ì–´ ì†ì— ì¬ë£Œê°€ ì—†ìœ¼ë©´ ë°”ë¡œ return
             else
             {
                 yield return null;
@@ -147,7 +154,7 @@ public class QuestRequireTile : InteractableBase
         base.Enter_PersonalTask(characterRuntimeData);
         if (characterRuntimeData is PlayerRunTimeData)
         {
-            //Debug.LogError("Å¸ÀÏ µé¾î¿È");
+            //Debug.LogError("íƒ€ì¼ ë“¤ì–´ì˜´");
             StartCoroutine(AutoInserting());
         }
     }

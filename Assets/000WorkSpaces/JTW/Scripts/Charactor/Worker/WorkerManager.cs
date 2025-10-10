@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WorkerManager : MonoBehaviour
 {
     [SerializeField] private GameObject _workerPrefab;
     [SerializeField] private float _assignDelay = 3f;
-    [SerializeField] private float _stunDelay = 10f;
+    [SerializeField] private float _stunDelay = 120f;
+
+    [SerializeField] private LayerMask _workerLayer;
 
     private List<WorkerRuntimeData> _workerList = new List<WorkerRuntimeData>();
     private List<WorkerRuntimeData> _availableWorkerList = new List<WorkerRuntimeData>();
@@ -28,10 +31,11 @@ public class WorkerManager : MonoBehaviour
         yield return new WaitUntil(() => Manager.firebase.IsFirebaseInit);
         yield return new WaitUntil(() => Manager.data.Worker != null);
         yield return new WaitUntil(() => Manager.firebase.UserData != null);
-        yield return new WaitForSeconds(1f);
         yield return new WaitUntil(() => Manager.firebase.UserData.IsInit);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(() => Manager.buildings.workerBuilding != null);
 
-        foreach (string key in Manager.data.Worker.Values.Keys.ToList())
+        foreach (string key in Manager.data.Character.Values.Keys.ToList())
         {
             WorkerData worker = Manager.firebase.UserData.CurStageData.WorkerList.Get(key);
 
@@ -40,12 +44,28 @@ public class WorkerManager : MonoBehaviour
             InstantiateWorker(worker);
         }
 
-        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InstantiateWorker);
+        StartCoroutine(StunAllWorker());
+
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.AddListener(InitWorker);
+    }
+
+    private IEnumerator StunAllWorker()
+    {
+        foreach (WorkerRuntimeData worker in _workerList)
+        {
+            yield return new WaitUntil(() => worker.WorkerPresenter.IsInit);
+            worker.WorkerController.Stun();
+        }
     }
 
     private void OnDestroy()
     {
-        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InstantiateWorker);
+        Manager.firebase.UserData.CurStageData.WorkerList.OnAdded.RemoveListener(InitWorker);
+    }
+
+    private void InitWorker(WorkerData worker)
+    {
+        InstantiateWorker(worker);
     }
 
     // 반환값이 true면 worker를 availableWorker에서 제외하는 등의 로직 실행.
@@ -194,7 +214,49 @@ public class WorkerManager : MonoBehaviour
 
     public void InstantiateWorker(WorkerData data)
     {
-        WorkerRuntimeData worker = Instantiate(_workerPrefab).GetComponent<WorkerRuntimeData>();
+        Vector3 spawnPos;
+
+        if(data.PositionX.Value == 0 && data.PositionZ.Value == 0)
+        {
+            spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+        }
+        else
+        {
+            spawnPos = new Vector3(data.PositionX.Value, 0, data.PositionZ.Value);
+        }
+        bool isCanSpawn = false;
+        int count = 0;
+
+        while (!isCanSpawn)
+        {
+            if(count > 100)
+            {
+                spawnPos = Manager.buildings.workerBuilding.GetSpawnPos();
+                break;
+            }
+
+            count++;
+            if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hitTemp, 0.5f, NavMesh.AllAreas) && !Physics.CheckSphere(spawnPos, 0.5f, _workerLayer))
+            {
+                isCanSpawn = true;
+            }
+            else
+            {
+                Vector3 temp = Random.insideUnitSphere;
+                temp.y = 0;
+                temp = temp.normalized;
+
+                spawnPos += temp;
+
+                if(NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                {
+                    spawnPos = hit.position;
+                }
+            }
+        }
+
+
+        WorkerRuntimeData worker = Instantiate(_workerPrefab, spawnPos, Quaternion.identity).GetComponent<WorkerRuntimeData>();
 
         worker.SetWorkerManager(this);
         worker.SetWorkerData(data);
@@ -224,7 +286,7 @@ public class WorkerManager : MonoBehaviour
             if (Manager.firebase.UserData.TutorialSequence.Value < 6) return;
 
             // 상호작용 발판 비활성화
-            Manager.buildings.workerBuilding.HideWaitingTile();
+            // Manager.buildings.workerBuilding.HideWaitingTile();
 
             // 일꾼 포커싱 카메라에 맞춰주기
             TutorialManager.Instance.cameras_TutoCutScene[5].Follow = worker.transform;
@@ -233,6 +295,7 @@ public class WorkerManager : MonoBehaviour
             if (Manager.firebase.UserData.TutorialSequence.Value == 6)
             {
                 TutorialManager.Instance.SequenceEnd(); // 시퀀스06 종료
+                TutorialManager.Instance.overlayPanel_HRPanelBtn.SetActive(false);
                 Manager.ui.ClosePanel();
             }
         }
