@@ -1442,7 +1442,7 @@ namespace KYS
         #region Money Formatting Utilities
 
         /// <summary>
-        /// 돈을 단위별로 포맷팅 (1000 -> 1K, 1000000 -> 1M, 1000000000 -> 1B)
+        /// 돈을 단위별로 포맷팅 (1000 -> 1K, 1000000 -> 1M, 1000000000 -> 1B, 1000000000000 -> 1T)
         /// </summary>
         /// <param name="amount">포맷팅할 금액</param>
         /// <param name="showDecimals">소수점 표시 여부 (기본값: false)</param>
@@ -1463,7 +1463,7 @@ namespace KYS
                 // 1K 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000.0).ToString("F3") + " K";
+                    return (amount / 1000.0).ToString("F2") + " K";
                 }
                 else
                 {
@@ -1475,23 +1475,35 @@ namespace KYS
                 // 1M 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000000.0).ToString("F3") + " M";
+                    return (amount / 1000000.0).ToString("F1") + " M";
                 }
                 else
                 {
                     return (amount / 1000000) + " M";
                 }
             }
-            else
+            else if (amount < 1000000000000)
             {
                 // 1B 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000000000.0).ToString("F3") + " B";
+                    return (amount / 1000000000.0).ToString("F1") + " B";
                 }
                 else
                 {
                     return (amount / 1000000000) + " B";
+                }
+            }
+            else
+            {
+                // 1T 단위
+                if (showDecimals)
+                {
+                    return (amount / 1000000000000.0).ToString("F1") + " T";
+                }
+                else
+                {
+                    return (amount / 1000000000000) + " T";
                 }
             }
         }
