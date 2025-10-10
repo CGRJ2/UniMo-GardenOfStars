@@ -120,6 +120,7 @@ public abstract class AdPanel : KYS.BaseUI
             return;
         }
 
+        DailyAdData data = Data;
         Manager.ad.ShowRewardedAd(() =>
         {
             _countText.text = $"{data.Count.Value + 1}/{_maxAdCount}";
