@@ -143,7 +143,7 @@ namespace KYS
             if (runMoneyButtonText != null)
             {
                 // BaseUI의 돈 포맷팅 사용 (소수점 없음)
-                runMoneyButtonText.text = FormatMoney(amount, false);
+                runMoneyButtonText.text = FormatMoney(amount, true);
             }
         }
 
@@ -152,7 +152,7 @@ namespace KYS
             if (runGemButtonText != null)
             {
                 // BaseUI의 돈 포맷팅 사용 (소수점 없음)
-                runGemButtonText.text = FormatMoney(amount, false);
+                runGemButtonText.text = FormatMoney(amount, true);
             }
         }
 

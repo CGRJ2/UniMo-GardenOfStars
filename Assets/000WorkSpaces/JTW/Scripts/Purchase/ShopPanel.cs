@@ -217,7 +217,7 @@ public class ShopPanel : KYS.BaseUI
         if (moneyText != null)
         {
             // BaseUI의 돈 포맷팅 사용 (소수점 없음)
-            moneyText.text = FormatMoney(amount, false);
+            moneyText.text = FormatMoney(amount, true);
         }
     }
 
@@ -227,7 +227,7 @@ public class ShopPanel : KYS.BaseUI
         if (gemText != null)
         {
             // BaseUI의 돈 포맷팅 사용 (소수점 없음)
-            gemText.text = FormatMoney(amount, false);
+            gemText.text = FormatMoney(amount, true);
         }
     }
 
