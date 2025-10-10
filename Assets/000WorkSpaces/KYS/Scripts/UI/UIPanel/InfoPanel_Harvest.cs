@@ -10,6 +10,8 @@ public class InfoPanel_Harvest : BaseUI
     [Header("건물 정보")]
     [SerializeField] TMP_Text tmp_Name;
     [SerializeField] TMP_Text tmp_Description;
+    [SerializeField] Image image_Building;
+
 
     [Header("생산 재료 정보")]
     [SerializeField] TMP_Text tmp_ProdName;
@@ -81,7 +83,7 @@ public class InfoPanel_Harvest : BaseUI
         Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
-        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.Cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
         upgradeData.Level_ProdTime.Subscribe(UpgradeBtnFlag);
@@ -113,6 +115,7 @@ public class InfoPanel_Harvest : BaseUI
         // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
+        image_Building.sprite = Manager.data.Building.Values[data.ID].Sprite;
 
         // 새 방법 (0918 최재민)
         tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
@@ -127,11 +130,11 @@ public class InfoPanel_Harvest : BaseUI
 
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
         {
-            tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.cost[curLevel_ProdTime]}";
+            tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.Cost[curLevel_ProdTime]}";
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
             tmp_AfterUpProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime + 1]}";
 
-            if (curMoney >= data.Stat_ProdTime.cost[curLevel_ProdTime])
+            if (curMoney >= data.Stat_ProdTime.Cost[curLevel_ProdTime])
             {
                 btn_ProdTimeUpgrade.interactable = true;
             }

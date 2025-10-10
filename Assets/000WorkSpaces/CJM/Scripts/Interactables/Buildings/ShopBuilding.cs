@@ -37,7 +37,7 @@ public class ShopBuilding : BuildingInstance
             {
                 // 스테이지 배수 연산
                 string curStageID = Manager.firebase.UserData.CurStage.Value;
-                long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+                long price = Manager.data.Building.Values[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
 
                 IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>

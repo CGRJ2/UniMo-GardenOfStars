@@ -54,8 +54,7 @@ public class ManufactureBuilding : BuildingInstance
     public override void Init()
     {
         base.Init();
-
-        if (_OriginData is ManufactureBD mfBD) originData = mfBD;
+        if (Manager.data.Building.Values[ID] is ManufactureBD mfBD) originData = mfBD;
 
         activatePopUI ??= GetComponentInChildren<BuildingActivePopUI>();
         insertArea ??= GetComponentInChildren<InsertArea>();

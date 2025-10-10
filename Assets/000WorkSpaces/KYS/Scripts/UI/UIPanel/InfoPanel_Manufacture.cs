@@ -11,6 +11,7 @@ public class InfoPanel_Manufacture : BaseUI
     [Header("건물 정보")]
     [SerializeField] TMP_Text tmp_Name;
     [SerializeField] TMP_Text tmp_Description;
+    [SerializeField] Image image_Building;
 
     [Header("투입 재료 정보")]
     [SerializeField] TMP_Text tmp_RequireName;
@@ -91,7 +92,7 @@ public class InfoPanel_Manufacture : BaseUI
         Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
-        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.cost[curLevel_ProdTime];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_ProdTime.Cost[curLevel_ProdTime];
 
         // 업그레이드 스탯 적용
         upgradeData.Level_ProdTime.Subscribe(UpgradeBtnFlag);
@@ -113,7 +114,7 @@ public class InfoPanel_Manufacture : BaseUI
         Manager.Audio.SfxPlay("SFX_Money");
 
         // 돈 차감
-        Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.cost[curLevel_Capacity];
+        Manager.player.Data.Money.Value -= (int)targetBD.Stat_Capacity.Cost[curLevel_Capacity];
 
         // 업그레이드 스탯 적용
         upgradeData.Level_Capacity.Subscribe(UpgradeBtnFlag);
@@ -147,6 +148,7 @@ public class InfoPanel_Manufacture : BaseUI
         // 기존 LocalizationManager와 DataManager를 활용한 번역 시스템 사용
         tmp_Name.text = BuildingLocalizationHelper.GetBuildingName(data.ID);
         tmp_Description.text = BuildingLocalizationHelper.GetBuildingDescription(data.ID);
+        image_Building.sprite = Manager.data.Building.Values[data.ID].Sprite;
 
         // 투입 재료 정보
         tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(data.RequireProdID);
@@ -159,11 +161,11 @@ public class InfoPanel_Manufacture : BaseUI
         // 생산 속도 업그레이드 정보
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)
         {
-            tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.cost[curLevel_ProdTime]}";
+            tmp_ProdTimeUpCost.text = $"{data.Stat_ProdTime.Cost[curLevel_ProdTime]}";
             tmp_CurProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime]}";
             tmp_AfterUpProdTime.text = $"{data.Stat_ProdTime.Values[curLevel_ProdTime + 1]}";
 
-            if (curMoney > data.Stat_ProdTime.cost[curLevel_ProdTime])
+            if (curMoney > data.Stat_ProdTime.Cost[curLevel_ProdTime])
             {
                 btn_ProdTimeUpgrade.interactable = true;
             }
@@ -186,11 +188,11 @@ public class InfoPanel_Manufacture : BaseUI
         // 최대 투입 개수 업그레이드 정보
         if (curLevel_Capacity < data.Stat_Capacity.MaxLevel)
         {
-            tmp_CapacityUpCost.text = $"{data.Stat_Capacity.cost[curLevel_Capacity]}";
+            tmp_CapacityUpCost.text = $"{data.Stat_Capacity.Cost[curLevel_Capacity]}";
             tmp_CurCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity]}";
             tmp_AfterUpCapacity.text = $"{data.Stat_Capacity.Values[curLevel_Capacity + 1]}";
 
-            if (curMoney > data.Stat_Capacity.cost[curLevel_Capacity])
+            if (curMoney > data.Stat_Capacity.Cost[curLevel_Capacity])
             {
                 btn_CapacityUpgrade.interactable = true;
             }

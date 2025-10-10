@@ -111,7 +111,7 @@ namespace KYS
                 // 건물 정보 슬롯 생성 (중복 생성 방지)
                 if (!contentInstances.ContainsKey(id))
                 {
-                    BuildingData bd = Manager.data.Building[id];
+                    BuildingData bd = Manager.data.Building.Values[id];
                     UpgradeData upgradeData = Manager.firebase.UserData.BuildingUpgradeList.Get(id);
 
                     PropertyContent content = Instantiate(contentPrefab, contentParent).GetComponent<PropertyContent>();

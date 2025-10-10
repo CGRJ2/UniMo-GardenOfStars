@@ -76,23 +76,7 @@ public class UpgradeData : FirebaseData
 
 public partial class DataManager
 {
-    public Dictionary<string, BuildingData> Building = new();
     public Dictionary<string, IngrediantData> Ingrediant = new();
-
-    public void BuildingDataInitRoutine()
-    {
-        Addressables.LoadAssetsAsync<BuildingData>("Data", null, true).Completed += task =>
-        {
-            foreach(var data in task.Result)
-            {
-                if (Building.ContainsKey(data.ID)) continue;
-                else
-                {
-                    Building.Add(data.ID, data);
-                }
-            }
-        };
-    }
 
     public void IngrediantDataInitRoutine()
     {

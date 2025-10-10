@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class WorkArea_SwitchType : InteractableBase, IWorkStation
 {
     //public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count > 0); } }
-    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound && 
+    public bool isWorkable { get { return (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCount && 
         ((isOperating && calculatedProduceTime < 2f) || !isOperating)); } }
     public bool isReserved;
     public bool GetWorkableState() { return isWorkable; }
@@ -23,8 +23,8 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
 
     float curCharacterProdSpeed;
 
-    float calculatedPrepareTime => (ownerInstance.originData.PrefareTimeRate * ownerInstance.ProdTime) / curCharacterProdSpeed;
-    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.originData.PrefareTimeRate)) / curCharacterProdSpeed;
+    float calculatedPrepareTime => (ownerInstance.originData.PrepareTimeRate * ownerInstance.ProdTime) / curCharacterProdSpeed;
+    float calculatedProduceTime => (ownerInstance.ProdTime * (1 - ownerInstance.originData.PrepareTimeRate)) / curCharacterProdSpeed;
 
 
     float prepareProgressedTime = 0f;   // 준비 단계 진행도
@@ -87,7 +87,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
             }
             
             // 쌓여있는 재료가 필요 개수 이상 만큼 있을때만 실행
-            if (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCound)
+            if (ownerInstance.ingrediantStack.Count >= ownerInstance.originData.RequireProdCount)
             {
                 curWorker.IsWork.Value = true;
                 // 준비 시작 시, 진행도 표기
@@ -172,7 +172,7 @@ public class WorkArea_SwitchType : InteractableBase, IWorkStation
         ownerInstance.prodsArea.ProdsCount.Value += 1;
 
         // 재료 소모
-        for (int i = 0; i < ownerInstance.originData.RequireProdCound; i++)
+        for (int i = 0; i < ownerInstance.originData.RequireProdCount; i++)
         {
             ownerInstance.ingrediantStack.Pop().Despawn();
         }
