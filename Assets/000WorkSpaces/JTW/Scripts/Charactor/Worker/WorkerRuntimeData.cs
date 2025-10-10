@@ -80,6 +80,11 @@ public class WorkerRuntimeData : CharaterRuntimeData
             data.MoveSpeedLv.Value = 6;
             data.MaxCapacityLv.Value = 6;
         }
+        else if(data.Rank == 3 && data.MoveSpeedLv.Value == 1)
+        {
+            data.MoveSpeedLv.Value = 3;
+            data.MaxCapacityLv.Value = 2;
+        }
     }
 
     public void SetWorkstation(IWorkStation workstation)
