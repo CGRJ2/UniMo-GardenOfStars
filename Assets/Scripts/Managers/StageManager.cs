@@ -190,10 +190,10 @@ public class StageManager : MonoBehaviour
         string finalProdID = "";
         foreach (var value in Manager.firebase.UserData.CurStageData.PlaceTileList.List)
         {
-            if (!Manager.data.Building.ContainsKey(value.BuildingID.Value)) continue;
+            if (!Manager.data.Building.Values.ContainsKey(value.BuildingID.Value)) continue;
 
             // 작업형 건물의 가장 높은 ID의 재료를 반환하도록
-            if (Manager.data.Building[value.BuildingID.Value] is ManufactureBD bd)
+            if (Manager.data.Building.Values[value.BuildingID.Value] is ManufactureBD bd)
             {
                 int result = finalProdID.CompareTo(bd.ProductID);
 

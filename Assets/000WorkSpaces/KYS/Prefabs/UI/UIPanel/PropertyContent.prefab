@@ -3391,6 +3391,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 0
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 0
@@ -3405,6 +3406,7 @@ MonoBehaviour:
   enableAutoLocalization: 1
   autoLocalizeKeys: []
   buildingTextName: RunBuildingNameText
+  image_building: BuildingImage
   buildBuyButtonName: BuyButton
   firstBuyButtonName: FirstBuyButton
   costTextName: RunBuildingCostText
@@ -3419,7 +3421,7 @@ MonoBehaviour:
   runUnlockContentName: RunUnlockContentText
   UpgradeButtonName: UpgradeButton
   UpgradeButtonTextName: UpgradeButtonText
-  buildingName: 
+  RunBuilidingCountTextName: RunBuildingCountText
 --- !u!225 &8736260846785020328
 CanvasGroup:
   m_ObjectHideFlags: 0

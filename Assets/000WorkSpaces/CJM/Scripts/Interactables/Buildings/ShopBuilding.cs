@@ -37,7 +37,7 @@ public class ShopBuilding : BuildingInstance
             {
                 // 스테이지 배수 연산
                 string curStageID = Manager.firebase.UserData.CurStage.Value;
-                long price = Manager.data.Building[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+                long price = Manager.data.Building.Values[building.buildingId].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
 
                 IngrediantInstance popedProd = characterRD_cach.IngrediantStack.Pop();
                 popedProd.MoveToTargetAndShrink(attachPoint, () =>
@@ -56,7 +56,7 @@ public class ShopBuilding : BuildingInstance
             else
             {
                 int soldItemCount = 0;
-                long price = instanceProd.Data.Price;
+                float price = Manager.data.Ingrediant.Values[instanceProd.ID].Price;
 
                 while (characterRD_cach.IngrediantStack.Count > 0)
                 {
@@ -84,7 +84,7 @@ public class ShopBuilding : BuildingInstance
         }
     }
 
-    void CaculateSoldResult(long price, int soldItemCount = 1, bool isBuilding = false)
+    void CaculateSoldResult(float price, int soldItemCount = 1, bool isBuilding = false)
     {
         if (isBuilding)
         {

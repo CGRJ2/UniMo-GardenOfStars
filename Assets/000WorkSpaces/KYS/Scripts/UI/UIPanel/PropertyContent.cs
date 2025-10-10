@@ -9,6 +9,7 @@ namespace KYS
     {
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string buildingTextName = "RunBuildingNameText";
+        [SerializeField] private string image_building = "BuildingImage";
         [SerializeField] private string buildBuyButtonName = "BuyButton";
         [SerializeField] private string firstBuyButtonName = "FirstBuyButton";
         [SerializeField] private string costTextName = "RunBuildingCostText";
@@ -35,6 +36,7 @@ namespace KYS
         private TextMeshProUGUI MaterialsNameText => GetUI<TextMeshProUGUI>(RunMaterials);
         private TextMeshProUGUI ProdNameText => GetUI<TextMeshProUGUI>(RunProdName);
         private TextMeshProUGUI runUnlockContentNameText => GetUI<TextMeshProUGUI>(runUnlockContentName);
+        private Image image_Building => GetUI<Image>(image_building);
         private Image image_Material => GetUI<Image>(image_MaterialName);
         private Image image_Prod => GetUI<Image>(image_ProdName);
         //private TextMeshProUGUI levelText => GetUI<TextMeshProUGUI>(levelTextName);
@@ -126,7 +128,7 @@ namespace KYS
             int curMoney = Manager.player.Data.Money.Value;
             // 스테이지 배수 연산
             string curStageID = Manager.firebase.UserData.CurStage.Value; 
-            int cost = Manager.data.Building[buildingID].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
+            int cost = Manager.data.Building.Values[buildingID].Cost * Manager.data.Stage.Values[curStageID].StageInflationRate;
 
             Debug.LogWarning($"CurMoney:{curMoney}, cost:{cost}");
             if (cost <= curMoney)
@@ -239,18 +241,16 @@ namespace KYS
             buildingCost = buildingData.Cost * Manager.data.Stage.Values[curStageID].StageInflationRate; // 스테이지 배수 연산
             currentBuildingData = buildingData; // 건물 데이터 저장
             BuildingCountUpdate();
+            image_Building.sprite = Manager.data.Building.Values[buildingID].Sprite;
+
             if (buildingData is HarvestBD harvestBD)
             {
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
                 // 재료(생산품) 이름, 스프라이트
-                Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
-                {
-                    SwitchAfrterBuyModeHarvestMode();
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-                    image_Prod.sprite = prodData.Result.Sprite;
-                };
-
+                SwitchAfrterBuyModeHarvestMode();
+                ProdNameText.text = Manager.data.Ingrediant.Values[harvestBD.ProductID].Name_KR;
+                image_Prod.sprite = Manager.data.Ingrediant.Values[harvestBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용
                 if (upgradeData != null)
@@ -263,17 +263,11 @@ namespace KYS
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
 
-                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
-                {
-                    SwitchAfrterBuyModeManufactureMode();
-                    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
-                    image_Material.sprite = requireData.Result.Sprite;
-                };
-                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
-                {
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-                    image_Prod.sprite = prodData.Result.Sprite;
-                };
+                SwitchAfrterBuyModeManufactureMode();
+                MaterialsNameText.text = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Name_KR;
+                image_Material.sprite = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Sprite;
+                ProdNameText.text = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Name_KR;
+                image_Prod.sprite = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용
                 if (upgradeData != null)
@@ -311,7 +305,7 @@ namespace KYS
 
         private void OnUpgradeClicked()
         {
-            Debug.LogWarning($"[PropertyContent] OnUpgradeClicked 실행 - currentBuildingData: {currentBuildingData?.Name}");
+            Debug.LogWarning($"[PropertyContent] OnUpgradeClicked 실행 - currentBuildingData: {currentBuildingData?.Name_KR}");
 
             // 저장된 BuildingData 타입에 따라 적절한 패널 열기
             if (currentBuildingData != null)

@@ -60,7 +60,7 @@ public class ProdsArea : InteractableBase, IWorkStation
         IngrediantInstance instanceProd;
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
-            if (instanceProd.Data.ID != ownerInstance.originData.ProductID) return;
+            if (instanceProd.ID != ownerInstance.originData.ProductID) return;
             if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 
