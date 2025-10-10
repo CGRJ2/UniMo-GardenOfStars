@@ -152,11 +152,11 @@ public class InfoPanel_Manufacture : BaseUI
 
         // 투입 재료 정보
         tmp_RequireName.text = IngrediantLocalizationHelper.GetIngrediantText(data.RequireProdID);
-        image_Require.sprite = Manager.data.Ingrediant[data.RequireProdID].Sprite;
+        image_Require.sprite = Manager.data.Ingrediant.Values[data.RequireProdID].Sprite;
 
         // 생산 재료 정보
         tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
-        image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
+        image_Prod.sprite = Manager.data.Ingrediant.Values[data.ProductID].Sprite;
 
         // 생산 속도 업그레이드 정보
         if (curLevel_ProdTime < data.Stat_ProdTime.MaxLevel)

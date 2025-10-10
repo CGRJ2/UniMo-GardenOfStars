@@ -119,7 +119,7 @@ public class InfoPanel_Harvest : BaseUI
 
         // 새 방법 (0918 최재민)
         tmp_ProdName.text = IngrediantLocalizationHelper.GetIngrediantText(data.ProductID);
-        image_Prod.sprite = Manager.data.Ingrediant[data.ProductID].Sprite;
+        image_Prod.sprite = Manager.data.Ingrediant.Values[data.ProductID].Sprite;
 
         // 어드레서블로 불러올 필요가 없어짐 (0918 최재민)
         //Addressables.LoadAssetAsync<IngrediantData>(data.ProductID).Completed += prodData =>

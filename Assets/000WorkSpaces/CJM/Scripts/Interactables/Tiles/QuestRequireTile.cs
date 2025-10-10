@@ -97,7 +97,7 @@ public class QuestRequireTile : InteractableBase
                 }
             }
 
-            ingrediantData = Manager.data.Ingrediant[QC_Data.ContentTargetId];
+            ingrediantData = Manager.data.Ingrediant.Values[QC_Data.ContentTargetId];
             image_Ingrediant.sprite = ingrediantData.Sprite;
         }
 
@@ -115,7 +115,7 @@ public class QuestRequireTile : InteractableBase
                 if (QC_Data == null) { Debug.LogError("해당 퀘스트 발판에 퀘스트 조건 데이터가 할당되지 않음"); break; }
 
                 // 손에 있는 재료가 퀘스트 조건이 아니면 || 퀘스트가 이미 완료된 상황이면
-                if (instanceProd.Data == null || instanceProd.Data.ID != QC_Data.ContentTargetId || QC_Data.IsContentClear)
+                if (instanceProd.ID != QC_Data.ContentTargetId || QC_Data.IsContentClear)
                 {
                     break;  // 상호작용 취소
                 }

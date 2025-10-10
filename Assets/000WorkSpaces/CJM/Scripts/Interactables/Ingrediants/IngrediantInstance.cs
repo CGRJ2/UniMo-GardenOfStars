@@ -2,13 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class IngrediantInstance : PooledObject
 {
-    [field: SerializeField] public IngrediantData Data { get; private set; }
+    //[field: SerializeField] public IngrediantData Data { get; private set; }
+    public string ID;
     [SerializeField] float absorbAcceleration = 3f;
     [SerializeField] Vector3 stackOffset;
 

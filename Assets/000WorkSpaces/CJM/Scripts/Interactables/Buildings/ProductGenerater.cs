@@ -145,8 +145,7 @@ public class ProductGenerater : InteractableBase, IWorkStation
         if (characterRD.IngrediantStack.TryPeek(out instanceProd))
         {
             if (instanceProd == null) return;
-            if (instanceProd.Data == null) return;
-            if (instanceProd.Data.ID != _SpawnedProduct.Data.ID) return;
+            if (instanceProd.ID != _SpawnedProduct.ID) return;
             if (characterRD.IngrediantStack.Count >= characterRD.GetMaxCapacity()) return;
         }
 

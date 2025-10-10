@@ -71,25 +71,3 @@ public class UpgradeData : FirebaseData
         InitList.Add(Level_Capacity);
     }
 }
-
-
-
-public partial class DataManager
-{
-    public Dictionary<string, IngrediantData> Ingrediant = new();
-
-    public void IngrediantDataInitRoutine()
-    {
-        Addressables.LoadAssetsAsync<IngrediantData>("Data", null, true).Completed += task =>
-        {
-            foreach (var data in task.Result)
-            {
-                if (Ingrediant.ContainsKey(data.ID)) continue;
-                else
-                {
-                    Ingrediant.Add(data.ID, data);
-                }
-            }
-        };
-    }
-}

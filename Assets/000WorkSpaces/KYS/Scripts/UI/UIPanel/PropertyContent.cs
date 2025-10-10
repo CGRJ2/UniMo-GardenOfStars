@@ -248,13 +248,9 @@ namespace KYS
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
                 // 재료(생산품) 이름, 스프라이트
-                Addressables.LoadAssetAsync<IngrediantData>(harvestBD.ProductID).Completed += prodData =>
-                {
-                    SwitchAfrterBuyModeHarvestMode();
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-                    image_Prod.sprite = prodData.Result.Sprite;
-                };
-
+                SwitchAfrterBuyModeHarvestMode();
+                ProdNameText.text = Manager.data.Ingrediant.Values[harvestBD.ProductID].Name_KR;
+                image_Prod.sprite = Manager.data.Ingrediant.Values[harvestBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용
                 if (upgradeData != null)
@@ -267,17 +263,11 @@ namespace KYS
                 // BuildingLocalizationHelper를 사용하여 건물 이름 번역
                 buildingText.text = BuildingLocalizationHelper.GetBuildingName(buildingData.ID);
 
-                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.RequireProdID).Completed += requireData =>
-                {
-                    SwitchAfrterBuyModeManufactureMode();
-                    MaterialsNameText.text = IngrediantLocalizationHelper.GetIngrediantText(requireData.Result.ID);
-                    image_Material.sprite = requireData.Result.Sprite;
-                };
-                Addressables.LoadAssetAsync<IngrediantData>(manufactureBD.ProductID).Completed += prodData =>
-                {
-                    ProdNameText.text = IngrediantLocalizationHelper.GetIngrediantText(prodData.Result.ID);
-                    image_Prod.sprite = prodData.Result.Sprite;
-                };
+                SwitchAfrterBuyModeManufactureMode();
+                MaterialsNameText.text = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Name_KR;
+                image_Material.sprite = Manager.data.Ingrediant.Values[manufactureBD.RequireProdID].Sprite;
+                ProdNameText.text = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Name_KR;
+                image_Prod.sprite = Manager.data.Ingrediant.Values[manufactureBD.ProductID].Sprite;
 
                 //업그레이드 데이터를 받아올 때 적용
                 if (upgradeData != null)
