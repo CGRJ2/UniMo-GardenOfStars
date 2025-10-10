@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 public class StageManager : MonoBehaviour
 {
@@ -104,10 +102,10 @@ public class StageManager : MonoBehaviour
 
         // 현재 스테이지의 Npc에서, 진행중인 퀘스트 ID 등록
         var npc = Manager.firebase.UserData.CurStageData.Npc;
-        
+
         bool allQuestCleared = true;
 
-        
+
         for (int i = 0; i < npc.QuestList.List.Count; i++)
         {
             //if (Manager.data.Quest.Values[value.QuestId].)
@@ -138,8 +136,10 @@ public class StageManager : MonoBehaviour
         // 오프라인 보상 팝업 여부
         if (_StageID == "Tutorial") return;
         var questList = npc.QuestList.List;
-        // 마지막 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
-        if (questList[questList.Count - 1].State == GameQuest.QuestState.TalkEnd)
+
+        // 타겟 퀘스트까지 클리어된 상태라면 오프라인 보상 체크
+        int stageClearTargetQuestIndex = Manager.data.Stage.Values[Manager.firebase.UserData.CurStage.Value].RequiredQuestIndex - 1;
+        if (questList[stageClearTargetQuestIndex].State == GameQuest.QuestState.TalkEnd)
         {
             double diffTime = GetStageAutoEarnTime(_StageID);
             if (diffTime > _AutoRewardMinTime)
@@ -255,7 +255,7 @@ public class StageManager : MonoBehaviour
     {
         string _stageID;
         if (targetStageID == null)
-             _stageID = _StageID;
+            _stageID = _StageID;
         else
             _stageID = targetStageID;
 
@@ -269,7 +269,7 @@ public class StageManager : MonoBehaviour
 
         return finalReward;
     }
-    
+
 
     private IEnumerator ExitTimeCheckRoutine()
     {
@@ -331,7 +331,7 @@ public class StageManager : MonoBehaviour
         Manager.player.IsControl = true;
         Manager.camera.cam_PlayerFocus.Priority = 11;
         Manager.camera.cam_NpcFocus.Priority = 10;
-        
+
         // 대화 상태 정리 (패널 닫기 전에)
         if (Manager.dialogue != null && Manager.dialogue.IsDialogueActive)
         {
@@ -347,7 +347,7 @@ public class StageManager : MonoBehaviour
             {
                 var stageList = Manager.firebase.UserData.StageList.List;
                 bool isStageDataInited = stageList.Any(s => s.Id == kvp.Value.NextStageId);
-                
+
                 // 열어줄 StageID 데이터가 이미 있으면 Add 안함
                 if (!isStageDataInited)
                 {
