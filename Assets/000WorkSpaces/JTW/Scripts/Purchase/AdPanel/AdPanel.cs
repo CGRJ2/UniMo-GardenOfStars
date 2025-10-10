@@ -19,6 +19,8 @@ public abstract class AdPanel : KYS.BaseUI
 
     private DailyAdData Data => Manager.firebase.UserData.DailyAdList.Get(_adPanelId);
 
+    private bool _isMax;
+
     protected override void Awake()
     {
         base.Awake();
@@ -53,6 +55,16 @@ public abstract class AdPanel : KYS.BaseUI
         }
 
         data.LastTime.SaveCurTime();
+    }
+
+    private void Update()
+    {
+        if (_isMax)
+        {
+            _isMax = false;
+            _bangMarkImage.gameObject.SetActive(false);
+            _completeImage.gameObject.SetActive(true);
+        }
     }
 
     private void SaveTime(DailyAdData data)
@@ -93,6 +105,7 @@ public abstract class AdPanel : KYS.BaseUI
     private void OnClick()
     {
         if (Data.Count.IsInUpdate || Data.Count.Value >= _maxAdCount) return;
+        if (_isMax) return;
 
         if (Manager.firebase.UserData.AdRemoved.Value)
         {
@@ -109,15 +122,15 @@ public abstract class AdPanel : KYS.BaseUI
 
         Manager.ad.ShowRewardedAd(() =>
         {
-            GetReward();
-            _countText.text = $"{Data.Count.Value + 1}/{_maxAdCount}";
-            if(Data.Count.Value + 1 >= _maxAdCount)
+            _countText.text = $"{data.Count.Value + 1}/{_maxAdCount}";
+
+            if (data.Count.Value + 1 >= _maxAdCount)
             {
-                _bangMarkImage.gameObject.SetActive(false);
-                _completeImage.gameObject.SetActive(true);
+                _isMax = true;
             }
-            Manager.firebase.UserData.DailyAdList.Get(_adPanelId).Count.Value++;
+            data.Count.Value++;
             Firebase.Analytics.FirebaseAnalytics.LogEvent("get_ad_reward");
+            GetReward();
         });
     }
 
