@@ -92,7 +92,7 @@ public class WorkerManager : MonoBehaviour
             {
                 if (!insert.GetWorkableState() || insert.GetReserveState()) continue;
 
-                if (insert.ownerInstance.originData.RequireProdID != worker.IngrediantStack.Peek().Data.ID) continue;
+                if (insert.ownerInstance.originData.RequireProdID != worker.IngrediantStack.Peek().ID) continue;
 
                 float distance = Vector3.Distance(worker.transform.position, insert.transform.position);
 
@@ -153,7 +153,7 @@ public class WorkerManager : MonoBehaviour
             if (!CanInsert(prod.ownerInstance.originData.ProductID)) continue;
 
             if (!(worker.IngrediantStack.Count == 0
-                || prod.ownerInstance.originData.ProductID == worker.IngrediantStack.Peek().Data.ID)) continue;
+                || prod.ownerInstance.originData.ProductID == worker.IngrediantStack.Peek().ID)) continue;
 
             float distance = Vector3.Distance(worker.transform.position, prod.transform.position);
 
@@ -176,10 +176,10 @@ public class WorkerManager : MonoBehaviour
         {
             if (!gene.GetWorkableState() || gene.GetReserveState()) continue;
 
-            if (!CanInsert(gene._SpawnedProduct.Data.ID)) continue;
+            if (!CanInsert(gene._SpawnedProduct.ID)) continue;
 
             if (!(worker.IngrediantStack.Count == 0 
-                || gene._SpawnedProduct.Data.ID == worker.IngrediantStack.Peek().Data.ID)) continue;
+                || gene._SpawnedProduct.ID == worker.IngrediantStack.Peek().ID)) continue;
 
             float distance = Vector3.Distance(worker.transform.position, gene.transform.position);
 

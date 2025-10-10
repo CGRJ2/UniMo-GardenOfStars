@@ -47,7 +47,7 @@ public class InsertArea : InteractableBase, IWorkStation
             if (character.IngrediantStack.TryPeek(out peekedProd))
             {
                 // 맨 위의 재료와 투입 가능 재료가 같은 종류일 때 넣어주기
-                if (peekedProd.Data.ID == ownerInstance.originData.RequireProdID)
+                if (peekedProd.ID == ownerInstance.originData.RequireProdID)
                 {
                     IngrediantInstance poppedProd = character.IngrediantStack.Pop();
                     poppedProd.AttachToTarget(ownerInstance.attachPoint, ownerInstance.ingrediantStack.Count);

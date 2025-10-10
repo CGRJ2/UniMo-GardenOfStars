@@ -2,7 +2,8 @@
 
 public class BuildingInstance : InteractableBase
 {
-    [SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
+    //[SerializeField] protected BuildingData _OriginData;           // CSV or Sheet로 변경 예정
+    [SerializeField] protected string ID;
     [SerializeField] protected BuildingActivePopUI activatePopUI;
 
     public virtual void Init()
@@ -27,19 +28,19 @@ public class BuildingInstance : InteractableBase
 
     public void CheckUpgradable()
     {
-        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(_OriginData.ID);
+        UpgradeData upgradeData = Manager.buildings.GetUpgradeData(ID);
         int curLevel_ProdTime = upgradeData == null ? 0 : upgradeData.Level_ProdTime.Value;
         int curLevel_Capacity = upgradeData == null ? 0 : upgradeData.Level_Capacity.Value;
         int curMoney = Manager.player.Data.Money.Value;
 
         // 생산형 건물일 때
-        if (_OriginData is HarvestBD harvest)
+        if (Manager.data.Building.Values[ID] is HarvestBD harvest)
         {
             bool upgradable = false;
 
             if (harvest.Stat_ProdTime.MaxLevel > curLevel_ProdTime)
             {
-                if (curMoney > harvest.Stat_ProdTime.cost[curLevel_ProdTime])
+                if (curMoney > harvest.Stat_ProdTime.Cost[curLevel_ProdTime])
                     upgradable = true;
             }
 
@@ -54,18 +55,18 @@ public class BuildingInstance : InteractableBase
                 activatePopUI.ActiveInfoBtnView();
             }
         }
-        else if (_OriginData is ManufactureBD mnfct)
+        else if (Manager.data.Building.Values[ID] is ManufactureBD mnfct)
         {
             bool upgradable = false;
             // 두 스탯 중 업그레이드 비용이 충족될 때
             if (mnfct.Stat_Capacity.MaxLevel > curLevel_Capacity)
             {
-                if (curMoney > mnfct.Stat_Capacity.cost[curLevel_Capacity])
+                if (curMoney > mnfct.Stat_Capacity.Cost[curLevel_Capacity])
                     upgradable = true;
             }
             if (mnfct.Stat_ProdTime.MaxLevel > curLevel_ProdTime)
             {
-                if (curMoney > mnfct.Stat_ProdTime.cost[curLevel_ProdTime])
+                if (curMoney > mnfct.Stat_ProdTime.Cost[curLevel_ProdTime])
                     upgradable = true;
             }
             Debug.Log($"{curMoney}, {curLevel_Capacity}, {curLevel_ProdTime}");
@@ -98,7 +99,7 @@ public class BuildingInstance : InteractableBase
             if (activatePopUI != null)
             {
                 // for test
-                if(_OriginData!=null)
+                if(string.IsNullOrEmpty(ID))
                     CheckUpgradable();
 
                 activatePopUI.gameObject.SetActive(true);  // 기본 상호작용 팝업 활성화 (존재 한다면)

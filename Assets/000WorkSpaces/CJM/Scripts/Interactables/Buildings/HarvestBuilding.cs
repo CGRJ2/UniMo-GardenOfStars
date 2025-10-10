@@ -17,7 +17,7 @@ public class HarvestBuilding : BuildingInstance
     {
         base.Init();
 
-        if (_OriginData is HarvestBD harvestBD) originData = harvestBD;
+        if (Manager.data.Building.Values[ID] is HarvestBD harvestBD) originData = harvestBD;
 
         activatePopUI.Init(this);
 
