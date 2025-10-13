@@ -15,6 +15,8 @@ namespace GameNpc
         [SerializeField] Mesh[] npcMeshList;
 
         [SerializeField] private Transform _focusPopUpCanvas;
+
+        [SerializeField] private ParticleSystem _questClearParticle;
         void Awake()
         {
             // 타이틀씬에서 시작 시
@@ -102,6 +104,11 @@ namespace GameNpc
             Manager.camera.cam_NpcFocus.Follow = transform;
         }
 
+        private void ClearParticlePlay()
+        {
+            _questClearParticle.gameObject.SetActive(true);
+        }
+
         public void UpdateQuestData(string questID = null)
         {
             Debug.LogWarning($"퀘스트 발판 업데이트(현재 퀘스트ID : {Manager.npc.CurStageNpc.CurrentQuestID.Value})");
@@ -114,6 +121,7 @@ namespace GameNpc
                 requireTiles[i].gameObject.SetActive(true);
 
                 requireTiles[i].QC_Data = QCDataList[i];
+                requireTiles[i].QC_Data.QcCleared += ClearParticlePlay;
                 requireTiles[i].SetUp();
             }
             if (QCDataList.Count < requireTiles.Length)

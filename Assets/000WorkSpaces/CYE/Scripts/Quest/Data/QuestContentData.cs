@@ -30,6 +30,8 @@ namespace GameQuest
 
         public FirebaseProperty<long> QC_StartTime;
 
+        public Action QcCleared;
+
 
         public bool IsContentClear => ProgressdIndex.Value > StepIndexForClearContent;
 
@@ -52,6 +54,8 @@ namespace GameQuest
             // 현재 Content 클리어 시 (모든 Step 클리어 완료)
             if (StepIndexForClearContent < progressIndex)
             {
+                QcCleared?.Invoke();
+
                 Debug.LogWarning($"QC(id:{Id}) 클리어");
                 var questContent = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.QuestContentList.Get(Id);
                 double clearTime = DateTime.UtcNow.Second - questContent.QC_StartTime.Value;

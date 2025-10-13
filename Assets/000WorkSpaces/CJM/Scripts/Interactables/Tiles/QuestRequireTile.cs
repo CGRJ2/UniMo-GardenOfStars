@@ -22,6 +22,8 @@ public class QuestRequireTile : InteractableBase
     [SerializeField] Transform lampParent;
     Lamp_QuestContent[] lamps;
 
+    [SerializeField] ParticleSystem _clearParticle;
+
     private IngrediantData ingrediantData;
 
     private void Awake()
@@ -58,6 +60,14 @@ public class QuestRequireTile : InteractableBase
         // 업데이트 함수 이벤트 등록
         QC_Data.ProgressdProdsCount.Subscribe(UpdateTileView);
         QC_Data.ProgressdIndex.Subscribe(UpdateLampView);
+        QC_Data.ProgressdIndex.Subscribe(PlayClearParticle);
+    }
+
+    private void PlayClearParticle(int progressIndex)
+    {
+        if (progressIndex == 0) return;
+
+        _clearParticle.gameObject.SetActive(true);
     }
 
     public void UpdateLampView(int progressIndex)
