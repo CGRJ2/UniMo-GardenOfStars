@@ -1463,11 +1463,11 @@ namespace KYS
                 // 1K 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000.0).ToString("F2") + " K";
+                    return Mathf.Floor(amount / 1000.0f * 100) / 100 + " K";
                 }
                 else
                 {
-                    return (amount / 1000) + " K";
+                    return Mathf.Floor(amount / 1000) + " K";
                 }
             }
             else if (amount < 1000000000)
@@ -1475,11 +1475,11 @@ namespace KYS
                 // 1M 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000000.0).ToString("F1") + " M";
+                    return Mathf.Floor(amount / 1000000.0f * 10) / 10 + " M";
                 }
                 else
                 {
-                    return (amount / 1000000) + " M";
+                    return Mathf.Floor(amount / 1000000) + " M";
                 }
             }
             else if (amount < 1000000000000)
@@ -1487,11 +1487,11 @@ namespace KYS
                 // 1B 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000000000.0).ToString("F1") + " B";
+                    return Mathf.Floor(amount / 1000000000.0f * 10) / 10 + " B";
                 }
                 else
                 {
-                    return (amount / 1000000000) + " B";
+                    return Mathf.Floor(amount / 1000000000) + " B";
                 }
             }
             else
@@ -1499,11 +1499,11 @@ namespace KYS
                 // 1T 단위
                 if (showDecimals)
                 {
-                    return (amount / 1000000000000.0).ToString("F1") + " T";
+                    return Mathf.Floor(amount / 1000000000000.0f * 10) / 10 + " T";
                 }
                 else
                 {
-                    return (amount / 1000000000000) + " T";
+                    return Mathf.Floor(amount / 1000000000000) + " T";
                 }
             }
         }
