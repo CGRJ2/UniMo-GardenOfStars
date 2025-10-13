@@ -108,6 +108,19 @@ namespace KYS
 
             foreach (string id in buildingIDs)
             {
+                if(TutorialManager.Instance != null)
+                {
+                    if(Manager.firebase.UserData.TutorialSequence.Value == 2)
+                    {
+                        if (id == "b10011_Tuto") continue;
+                    }
+
+                    if (Manager.firebase.UserData.TutorialSequence.Value == 5)
+                    {
+                        if (id == "b10111") continue;
+                    }
+                }
+
                 // 건물 정보 슬롯 생성 (중복 생성 방지)
                 if (!contentInstances.ContainsKey(id))
                 {

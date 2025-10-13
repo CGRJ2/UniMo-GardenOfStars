@@ -34,7 +34,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] float _Cut01_InteractTutoPopWaitTime;
 
     [Header("튜토리얼 #1 설정")]
-    [SerializeField] ProdsArea prodsArea;
+    [SerializeField] HarvestBuilding prodsArea;
 
     [Header("튜토리얼 #2 설정")]
     public GameObject overlayPanel_BiPanelBuy;
@@ -301,7 +301,7 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator Sequence01_CutScene()
     {
-        yield return new WaitUntil(() => prodsArea.pool != null);
+        //yield return new WaitUntil(() => prodsArea.pool != null);
         var userData = Manager.firebase.UserData;
         yield return new WaitUntil(() => userData.IsInit);
         yield return new WaitUntil(() => userData.CurStageData.IsInit);
@@ -322,7 +322,7 @@ public class TutorialManager : MonoBehaviour
         ////////////////////////////////////////////////////
 
         // 목표 수량만큼 생산물 미리 설정(퀘스트 진행중이었다면 진행중인 양 빼고 넣어두기)
-        prodsArea.ProdsCount.Value = currentQuest.QuestContentList.List[0].CurrentTargetCount - currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value;
+        //prodsArea.ProdsCount.Value = currentQuest.QuestContentList.List[0].CurrentTargetCount - currentQuest.QuestContentList.List[0].ProgressdProdsCount.Value;
 
         cameras_TutoCutScene[2].Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
@@ -474,7 +474,7 @@ public class TutorialManager : MonoBehaviour
     IEnumerator Sequence04_CutScene01()
     {
         // 공터 포커스 카메라 컷씬 진행(수확형 건물이 설치된 공터 포커싱)
-        cameras_TutoCutScene[3].Priority = 11;
+        cameras_TutoCutScene[2].Priority = 11;
         Manager.camera.cam_PlayerFocus.Priority = 10;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
@@ -494,8 +494,8 @@ public class TutorialManager : MonoBehaviour
     IEnumerator Sequence04_CutScene02()
     {
         // 작업형 건물 포커스 카메라 컷씬 진행
-        cameras_TutoCutScene[3].Priority = 10;
-        cameras_TutoCutScene[2].Priority = 11;
+        cameras_TutoCutScene[2].Priority = 10;
+        cameras_TutoCutScene[3].Priority = 11;
         yield return new WaitUntil(() => cineBrain.IsBlending);
         yield return new WaitUntil(() => !cineBrain.IsBlending);
 
@@ -515,7 +515,7 @@ public class TutorialManager : MonoBehaviour
         }, (msg) =>
         {
             Debug.LogWarning("팝업 열었을 때, 작업형 건물이 빛나는 효과 실행");
-            PlayHighLightFX(prodsArea.ownerInstance.transform);
+            PlayHighLightFX(prodsArea.transform);
 
             tutorialNPC.ShowQuestTiles();
             tutorialNPC.UpdateQuestData();
@@ -541,7 +541,7 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator Sequence05()
     {
-        yield return new WaitUntil(() => prodsArea.pool != null);
+        //yield return new WaitUntil(() => prodsArea.pool != null);
         var userData = Manager.firebase.UserData;
         yield return new WaitUntil(() => userData.IsInit);
         yield return new WaitUntil(() => userData.CurStageData.IsInit);
