@@ -2968,7 +2968,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3003692124016960292}
-  - {fileID: 708395282251979971}
   - {fileID: 1668748592973942603}
   - {fileID: 7887481552794590584}
   - {fileID: 2550560810488852187}
@@ -2983,6 +2982,7 @@ RectTransform:
   - {fileID: 3188681837173517878}
   - {fileID: 7045619379776797096}
   - {fileID: 5587188208388715490}
+  - {fileID: 708395282251979971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3062,6 +3062,7 @@ MonoBehaviour:
   hideEase: 26
   canCloseWithESC: 0
   canCloseWithBackdrop: 1
+  allowBackdropClickInTutorial: 0
   hidePreviousUI: 0
   disablePreviousUI: 0
   createBackdropForPopup: 1
@@ -3900,7 +3901,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 583, y: 100}
+  m_SizeDelta: {x: 633, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7272258681016799849
 MonoBehaviour:

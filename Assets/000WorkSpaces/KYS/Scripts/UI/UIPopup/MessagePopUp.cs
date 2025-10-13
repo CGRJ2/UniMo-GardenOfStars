@@ -10,13 +10,14 @@ namespace KYS
 
         [Header("UI Element Names (BaseUI GetUI<T>() 사용)")]
         [SerializeField] private string messageTextName = "MessageText";
-        
+        [SerializeField] private string closeButtonName = "CloseButton";
         [Header("Close Settings")]
         [SerializeField] private bool canCloseWithPanelClick = true; // 패널 클릭으로 닫기 가능 여부
 
         #region UI Element References (동적 참조)
         // UI 요소 참조 (GetUI<T>() 메서드로 동적 참조)
         private TextMeshProUGUI messageText => GetUI<TextMeshProUGUI>(messageTextName);
+        private Button closeButton => GetUI<Button>(closeButtonName);
         #endregion
 
         // 로컬라이제이션 키 관리
@@ -100,6 +101,7 @@ namespace KYS
         private void ClosePopup()
         {
             OnClosed?.Invoke();
+            Manager.Audio.SfxPlay("SFX_ButtonClickBack");
             Manager.ui.ClosePopup(); 
         }
 
