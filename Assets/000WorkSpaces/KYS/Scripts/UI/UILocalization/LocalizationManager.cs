@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using TMPro;
+using System.Threading.Tasks;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -248,6 +250,9 @@ namespace KYS
         private async void Awake()
         {
             SingletonInit();
+
+
+
             await InitializeLocalization();
         }
 
@@ -315,7 +320,11 @@ namespace KYS
             try
             {
                 ////Debug.Log("[LocalizationManager] Addressable에서 CSV 파일 로드 시작");
-                
+                while (!Manager.game.initialized)
+                {
+                    await Task.Yield();
+                }
+
                 csvHandle = Addressables.LoadAssetAsync<TextAsset>(LANGUAGE_DATA_ADDRESSABLE_KEY);
                 TextAsset csvFile = await csvHandle.Task;
                 
