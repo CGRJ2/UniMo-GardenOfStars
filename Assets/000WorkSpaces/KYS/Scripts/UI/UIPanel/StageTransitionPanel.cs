@@ -568,25 +568,21 @@ namespace KYS
 
             ZodiacStageData currentStageData = zodiacStages[stageIndex];
 
-            // 스테이지 이름 업데이트 (12성좌 이름 사용)
+            // 스테이지 이름 업데이트 (현재 언어에 맞게 로컬라이즈)
             if (stageNameText != null)
             {
-                string stageName = currentStageData.stageName;
+                var stageCsv = Manager.data.Stage.Values[currentStageData.stageId];
+                var currentLanguage = Manager.localization?.CurrentLanguage ?? SystemLanguage.Korean;
+                string stageName = currentLanguage == SystemLanguage.Korean ? stageCsv.Name_KR : stageCsv.Name_En;
                 bool isUnlocked = IsStageUnlocked(stageIndex);
 
-                // 잠긴 스테이지인 경우 이름에 잠금 표시 추가
+                // 잠긴/준비중 표기: 줄바꿈 + 로컬라이즈 적용
                 if (!isUnlocked)
                 {
                     bool isRealUnlocked = Manager.firebase.UserData.StageList.Get(zodiacStages[stageIndex].stageId) != null;
-
-                    if (!isRealUnlocked)
-                    {
-                        stageName += " [잠김]";
-                    }
-                    else
-                    {
-                        stageName += " [준비중]";
-                    }
+                    string statusKey = isRealUnlocked ? "ui_stage_coming_soon" : "ui_stage_locked";
+                    string status = GetLocalizedText(statusKey);
+                    stageName = stageName + "\n[" + status + "]";
                 }
 
                 stageNameText.text = stageName;
