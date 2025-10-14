@@ -220,7 +220,7 @@ namespace KYS
         /// </summary>
         private void ShowMessagePopUp(string message)
         {
-            Manager.ui.ShowTutorialPopUpAsync(message);
+            Manager.ui.ShowMessagePopUpAsync(message);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace KYS
         /// </summary>
         private void ShowMessagePopUpWithKey(string localizationKey)
         {
-            Manager.ui.ShowTutorialPopUpWithKeyAsync(localizationKey);
+            Manager.ui.ShowMessagePopUpWithKeyAsync(localizationKey);
         }
 
         /// <summary>

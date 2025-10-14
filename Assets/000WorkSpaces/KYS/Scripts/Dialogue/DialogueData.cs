@@ -122,7 +122,7 @@ namespace KYS
         }
 
         /// <summary>
-        /// 현재 언어에 맞는 Speaker 이름 반환 (동적 언어 지원)
+        /// 현재 언어에 맞는 Speaker 이름 반환 (동적 언어 지원 + 플레이어 캐릭터 동적 변경)
         /// </summary>
         public string GetLocalizedSpeaker(SystemLanguage language = SystemLanguage.Korean)
         {
@@ -135,13 +135,15 @@ namespace KYS
             // 빈 값이나 기본값("이름") 체크
             if (!string.IsNullOrEmpty(localizedSpeaker) && localizedSpeaker != "이름" && localizedSpeaker != "Name")
             {
-                return localizedSpeaker;
+                // 플레이어 캐릭터 이름으로 동적 변경
+                return GetDynamicPlayerCharacterName(localizedSpeaker, language);
             }
 
             // 2. 기본 Speaker 반환 (빈 값이나 기본값 체크)
             if (!string.IsNullOrEmpty(csvData.Speaker) && csvData.Speaker != "이름" && csvData.Speaker != "Name")
             {
-                return csvData.Speaker;
+                // 플레이어 캐릭터 이름으로 동적 변경
+                return GetDynamicPlayerCharacterName(csvData.Speaker, language);
             }
 
             // 3. 모두 기본값이면 빈 문자열 반환
@@ -149,7 +151,75 @@ namespace KYS
         }
 
         /// <summary>
-        /// 현재 언어에 맞는 대화 텍스트 반환 (동적 언어 지원)
+        /// 플레이어 캐릭터 이름으로 동적 변경 (리비 → 현재 선택된 캐릭터)
+        /// </summary>
+        private string GetDynamicPlayerCharacterName(string originalName, SystemLanguage language)
+        {
+            // 리비 관련 이름인지 확인
+            if (IsRibbyName(originalName))
+            {
+                // 현재 선택된 플레이어 캐릭터 이름 가져오기
+                string currentCharacterName = GetCurrentPlayerCharacterName(language);
+                if (!string.IsNullOrEmpty(currentCharacterName))
+                {
+                    Debug.Log($"[DialogueData] 캐릭터 이름 동적 변경: '{originalName}' → '{currentCharacterName}'");
+                    return currentCharacterName;
+                }
+            }
+            
+            return originalName;
+        }
+
+        /// <summary>
+        /// 리비 관련 이름인지 확인
+        /// </summary>
+        private bool IsRibbyName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            
+            string lowerName = name.ToLower();
+            return lowerName.Contains("리비") || lowerName.Contains("ribby") || 
+                   lowerName == "이름" || lowerName == "name" ||
+                   lowerName.Contains("player") || lowerName.Contains("플레이어");
+        }
+
+        /// <summary>
+        /// 현재 선택된 플레이어 캐릭터 이름 가져오기
+        /// </summary>
+        private string GetCurrentPlayerCharacterName(SystemLanguage language)
+        {
+            try
+            {
+                // 현재 선택된 캐릭터 스킨 ID 가져오기
+                string currentSkinId = Manager.player.Data.CharacterSkinId.Value;
+                
+                // 캐릭터 스킨 데이터에서 이름 가져오기
+                if (Manager.data.CharacterSkin.Values.ContainsKey(currentSkinId))
+                {
+                    var characterSkinData = Manager.data.CharacterSkin.Values[currentSkinId];
+                    
+                    // 언어에 맞는 이름 반환
+                    if (language == SystemLanguage.Korean)
+                    {
+                        return characterSkinData.Name_Kr;
+                    }
+                    else
+                    {
+                        return characterSkinData.Name_En;
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[DialogueData] 플레이어 캐릭터 이름 가져오기 실패: {e.Message}");
+            }
+            
+            // 실패 시 기본값 반환
+            return language == SystemLanguage.Korean ? "리비" : "Ribby";
+        }
+
+        /// <summary>
+        /// 현재 언어에 맞는 대화 텍스트 반환 (동적 언어 지원 + 플레이어 이름 마커 치환)
         /// </summary>
         public string GetLocalizedDialogueText(SystemLanguage language = SystemLanguage.Korean)
         {
@@ -159,7 +229,8 @@ namespace KYS
             string localizedText = GetLocalizedTextByLanguage(csvData, "DialogueText", language);
             if (!string.IsNullOrEmpty(localizedText))
             {
-                return localizedText;
+                // 플레이어 이름 마커 치환
+                return ReplacePlayerNameMarkers(localizedText, language);
             }
 
             // 2. 기본 텍스트가 대화키인지 확인
@@ -169,8 +240,27 @@ namespace KYS
                 return string.Empty;
             }
 
-            // 3. 실제 대사인 경우 반환
-            return csvData.DialogueText;
+            // 3. 실제 대사인 경우 플레이어 이름 마커 치환 후 반환
+            return ReplacePlayerNameMarkers(csvData.DialogueText, language);
+        }
+
+        /// <summary>
+        /// 대화 텍스트에서 플레이어 이름 마커를 현재 캐릭터 이름으로 치환
+        /// </summary>
+        private string ReplacePlayerNameMarkers(string text, SystemLanguage language)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+
+            // 현재 플레이어 캐릭터 이름 가져오기
+            string currentPlayerName = GetCurrentPlayerCharacterName(language);
+            
+            // 마커만 치환 (일반 "리비" 텍스트는 그대로 유지)
+            string result = text;
+            result = result.Replace("{PLAYER_NAME}", currentPlayerName);
+            result = result.Replace("{PLAYER_NAME_KR}", GetCurrentPlayerCharacterName(SystemLanguage.Korean));
+            result = result.Replace("{PLAYER_NAME_EN}", GetCurrentPlayerCharacterName(SystemLanguage.English));
+
+            return result;
         }
         
         /// <summary>
