@@ -20,8 +20,11 @@ public class SettingPopUp : BaseUI
     [SerializeField] private string logoutButtonName = "LogoutButton";
     [SerializeField] private string logoutButtonText = "LogoutButtonText";
     [SerializeField] private string accountButtonName = "AccountButton";
+	[SerializeField] private string accountButtonTextName = "AccountButtonText";
     [SerializeField] private string supportButtonName = "SupportButton";
     [SerializeField] private string emergencyEscapeButtonName = "EmergencyEscapeButton";
+	[SerializeField] private string bangIconName = "BangIcon"; // 연동 알림 아이콘 이름
+    [SerializeField] private Color linkedAccountButtonColor = new Color(0x72/255f, 1f, 0x6B/255f, 1f); // #72FF6B
     private SystemLanguage selectedLanguage;
     private Dictionary<SystemLanguage, float> languageCompleteness = new Dictionary<SystemLanguage, float>();
 
@@ -60,6 +63,11 @@ public class SettingPopUp : BaseUI
     private Button AccountButton => GetUI<Button>(accountButtonName);
     private Button SupportButton => GetUI<Button>(supportButtonName);
     private Button EmergencyEscapeButton => GetUI<Button>(emergencyEscapeButtonName);
+	private Image AccountButtonBackground => GetUI<Image>(accountButtonName);
+	private TextMeshProUGUI AccountButtonText => GetUI<TextMeshProUGUI>(accountButtonTextName);
+	private GameObject BangIcon => GetUI<Image>(bangIconName) != null ? GetUI<Image>(bangIconName).gameObject : null;
+
+	private Color? _defaultAccountButtonColor;
 
     public override string[] GetAutoLocalizeKeys()
     {
@@ -81,6 +89,32 @@ public class SettingPopUp : BaseUI
         LoadSettings(); // 설정값을 먼저 로드
         SetupVolumeControls(); // 볼륨 컨트롤 설정 (로드 후)
         SetupVibrationToggle(); // 진동 토글 설정 (로드 후)
+		UpdateAccountLinkUI(); // 계정 연동 상태에 따른 UI 갱신
+    }
+
+    private void OnEnable()
+    {
+        UpdateAccountLinkUI(); // 활성화 시점에 UI 동기화
+        
+        // 언어 변경 이벤트 구독
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        // 언어 변경 이벤트 구독 해제
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+        }
+    }
+
+    private void OnLanguageChanged(SystemLanguage newLanguage)
+    {
+        UpdateAccountLinkUI(); // 언어 변경 시 UI 갱신
     }
 
 
@@ -116,10 +150,7 @@ public class SettingPopUp : BaseUI
         {
             Debug.LogError($"[TitlePanel] 확인 버튼 이벤트 설정 실패: {closeButtonName}");
         }
-        if (!Manager.firebase.Auth.CurrentUser.IsAnonymous)
-        {
-            LogoutButton.gameObject.SetActive(false);
-        }
+        // 로그아웃 버튼은 UpdateAccountLinkUI()에서 관리
 
         var accountEventHandler = GetEventWithSFX(accountButtonName, "SFX_ButtonClick");
         if (LogoutButton != null)
@@ -232,6 +263,7 @@ public class SettingPopUp : BaseUI
             if (linkController.IsLinked)
             {
                 ShowMessagePopUpWithKey("account_linking_success");
+				UpdateAccountLinkUI(); // 연동 성공 시 UI 즉시 갱신
                 yield break;
             }
             
@@ -242,6 +274,45 @@ public class SettingPopUp : BaseUI
         // 타임아웃 시 오류 메시지 표시
         ShowMessagePopUpWithKey("account_linking_error");
     }
+
+	private bool IsGoogleAccountLinked()
+	{
+        try
+        {
+            if (Manager.firebase?.Auth?.CurrentUser != null)
+            {
+                if (!Manager.firebase.Auth.CurrentUser.IsAnonymous) return true; // 익명 아님이면 연동으로 간주
+            }
+            var controller = Object.FindObjectOfType<LinkPlayGamesController>();
+            if (controller != null && controller.IsLinked) return true; // 컨트롤러 기준 연동
+        }
+        catch { }
+		return false;
+	}
+
+	private void UpdateAccountLinkUI()
+	{
+		bool linked = IsGoogleAccountLinked();
+		if (AccountButtonBackground != null)
+		{
+			if (_defaultAccountButtonColor == null) _defaultAccountButtonColor = Color.white; // 기본색은 #FFFFFF
+			AccountButtonBackground.color = linked ? linkedAccountButtonColor : _defaultAccountButtonColor.Value; // 색 적용
+		}
+		if (BangIcon != null)
+		{
+			BangIcon.SetActive(!linked); // 연동이면 비활성화
+		}
+		if (AccountButton != null)
+		{
+			AccountButton.interactable = !linked; // 연동이면 버튼 비활성화
+		}
+		if (AccountButtonText != null)
+		{
+			string key = linked ? "ui_google_linked" : "ui_google_link";
+			AccountButtonText.text = GetLocalizedText(key);
+		}
+		// 로그아웃 버튼은 항상 표시 (연동 상태와 관계없이)
+	}
 
     /// <summary>
     /// 메시지 팝업 표시 (간단한 알림용)
