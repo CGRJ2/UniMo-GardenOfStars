@@ -49,6 +49,18 @@ public class QuestManager : Singleton<QuestManager>
             if (questData == null)
             {
                 CurrentQuestList.Add(questDataKVP.Key);
+                continue;
+            }
+
+            var QCParsedData = Manager.data.QuestContent.Values.Where(item => item.Value.QuestId == questData.Id);
+
+            foreach (var QCDataKVP in QCParsedData)
+            {
+                var data = CurrentQuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Get(QCDataKVP.Value.Id);
+                if (data == null)
+                {
+                    CurrentQuestList.Get(QCDataKVP.Value.QuestId).QuestContentList.Add(QCDataKVP.Value.Id);
+                }
             }
         }
     }
