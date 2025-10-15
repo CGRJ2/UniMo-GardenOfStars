@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: it10133
   absorbAcceleration: 30
-  stackOffset: {x: 0, y: 0.15, z: 0}
+  stackOffset: {x: 0, y: 0.2, z: 0}
   baseCurve:
     serializedVersion: 2
     m_Curve:
@@ -63,8 +63,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
