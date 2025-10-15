@@ -41,6 +41,11 @@ public class ProductGenerater : InteractableBase, IWorkStation
         _CultivateRoutine = StartCoroutine(CultivateRoutine());
 
         Manager.buildings.workStatinLists.productGeneraters.Add(this);
+
+        // 생산된 재료는 항상 정면을 바라보도록 각도 조정
+        Vector3 targetRot = transform.eulerAngles;
+        targetRot.y = transform.rotation.eulerAngles.y - transform.root.rotation.eulerAngles.y;
+        transform.eulerAngles = targetRot;
     }
 
     protected override void OnDisableAdditionalActions()
