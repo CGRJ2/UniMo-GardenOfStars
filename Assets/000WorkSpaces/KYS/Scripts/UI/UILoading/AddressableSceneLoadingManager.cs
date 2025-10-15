@@ -21,7 +21,7 @@ namespace KYS
         }
 
 
-    
+
 
 
         [ContextMenu("대화 시스템 로드 테스트 tutorial_scn001")]
@@ -196,10 +196,10 @@ namespace KYS
             {
                 string currentQuestId = Manager.firebase.UserData.CurStageData.Npc.CurQuestData.Id;
                 int questIndex = ExtractQuestNumber(currentQuestId);
-                
+
                 Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 ID: {currentQuestId}");
                 Debug.Log($"[AddressableSceneLoadingManager] 현재 퀘스트 인덱스: {questIndex}");
-                
+
                 // 스테이지 정보도 함께 출력
                 if (Manager.firebase.UserData.CurStageData != null)
                 {
@@ -217,7 +217,7 @@ namespace KYS
         {
             if (string.IsNullOrEmpty(questId))
                 return 0;
-                
+
             string numberPart = questId.Replace("quest", "").TrimStart('0');
             return int.TryParse(numberPart, out int number) ? number : 0;
         }
@@ -241,7 +241,7 @@ namespace KYS
             }
 
             Debug.Log($"[AddressableSceneLoadingManager] 퀘스트 '{currentQuest.Id}' 즉시 클리어!");
-            
+
             // 퀘스트의 모든 Content를 클리어 상태로 설정
             if (currentQuest.QuestContentList != null && currentQuest.QuestContentList.List != null)
             {
@@ -266,11 +266,11 @@ namespace KYS
                     }
                 }
             }
-            
+
             // 퀘스트 클리어 체크를 수동으로 실행
             bool isCleared;
             Manager.quest.CheckCurQuestCleared(out isCleared);
-            
+
             if (isCleared)
             {
                 Debug.Log("[AddressableSceneLoadingManager] 퀘스트 클리어 완료!");
@@ -298,7 +298,7 @@ namespace KYS
             }
 
             Debug.Log($"[AddressableSceneLoadingManager] {questList.List.Count}개 퀘스트 즉시 클리어!");
-            
+
             foreach (var quest in questList.List)
             {
                 // 퀘스트의 모든 Content를 클리어 상태로 설정
@@ -321,14 +321,14 @@ namespace KYS
                         }
                     }
                 }
-                
+
                 Debug.Log($"  - 퀘스트 '{quest.Id}' Content 클리어 완료");
             }
-            
+
             // 현재 퀘스트 클리어 체크를 수동으로 실행
             bool isCleared;
             Manager.quest.CheckCurQuestCleared(out isCleared);
-            
+
             if (isCleared)
             {
                 Debug.Log("[AddressableSceneLoadingManager] 모든 퀘스트 클리어 완료!");
@@ -343,9 +343,16 @@ namespace KYS
         public void CheckWaitingRewardsTranslation()
         {
 
-Manager.ui.ShowPopUpAsync<OfflineRewardPopup>();
+            Manager.ui.ShowPopUpAsync<OfflineRewardPopup>();
         }
 
         #endregion
+
+        [ContextMenu("서비스종료 알림")]
+        private void FinishMessage()
+        {
+            Manager.ui.ShowMessagePopUpWithKeyAsync("msg_announce_service_termination");
+
+        }
     }
 }
