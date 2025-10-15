@@ -139,10 +139,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   personalTaskOwner: {fileID: 0}
-  _OriginData: {fileID: 11400000, guid: f2e263b161c9dc349906e5a2be6fec9d, type: 2}
+  ID: 
   activatePopUI: {fileID: 5372201530693290587}
   prodsParentTransform: {fileID: 3806669960653268016}
-  originData: {fileID: 0}
 --- !u!1001 &548820693208099927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -753,6 +752,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3987622286522991943}
     m_Modifications:
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.504
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.47
+      objectReference: {fileID: 0}
     - target: {fileID: 2526233575424071485, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_Layer
       value: 0
@@ -761,6 +768,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 3987622286522991943}
+    - target: {fileID: 3876375218698449959, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3968596940770780674, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_Name
       value: Canvas_BuildingInfoButton

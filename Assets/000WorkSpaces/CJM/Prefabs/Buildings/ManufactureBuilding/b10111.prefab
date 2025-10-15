@@ -1212,6 +1212,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3811945880089545882}
     m_Modifications:
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.614
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 332060812269812240, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2526233575424071485, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_Layer
       value: 0
@@ -1220,6 +1252,18 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 3811945880089545882}
+    - target: {fileID: 2616342851355937078, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: screenSpaceOffset.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616342851355937078, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: screenSpaceOffset.y
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 3876375218698449959, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3968596940770780674, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_Name
       value: Canvas_BuildingInfoButton
@@ -1230,7 +1274,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3968596940770780674, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9187366140091255833, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_Pivot.x
@@ -1282,15 +1326,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9187366140091255833, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9187366140091255833, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9187366140091255833, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9187366140091255833, guid: b4960a14ef4af234fa0765d581361cbb, type: 3}
       propertyPath: m_AnchoredPosition.x
