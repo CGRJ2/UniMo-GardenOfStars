@@ -274,8 +274,8 @@ public class PlaceTile : InteractableBase
                 break;
 
             case PlaceTileState.Constructed: // 건설모드 On && 건설 불가능 영역
-                activatedView.gameObject.SetActive(false);
-                deactivatedView.gameObject.SetActive(true);
+                //activatedView.gameObject.SetActive(false);
+                //deactivatedView.gameObject.SetActive(true);
                 break;
 
             default: break;

@@ -28,7 +28,9 @@ public class ManufactureBuilding : BuildingInstance
 
     public Stack<IngrediantInstance> ingrediantStack = new();
     //public Stack<IngrediantInstance> prodsStack = new();  // 회수영역을 스택처럼 표현할 때 사용하는걸로
-    
+
+    [SerializeField] GameObject _ProdAreaShowing;
+
     public float ProdTime // 현재 업그레이드 단계에 따른 [생산 속도]
     {
         get
@@ -66,5 +68,37 @@ public class ManufactureBuilding : BuildingInstance
         workArea?.Init(this);
         workArea_SwitchType?.Init(this);
         prodsArea.Init(this);
+    }
+
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Enter(characterRuntimeData);
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            if (workArea_SwitchType.isWorkable)
+                _ProdAreaShowing.SetActive(true);
+        }
+    }
+
+    public override void Exit(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Exit(characterRuntimeData);
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            _ProdAreaShowing.SetActive(false);
+        }
+    }
+
+    public override void Stay(CharaterRuntimeData characterRuntimeData)
+    {
+        base.Stay(characterRuntimeData);
+
+        if (characterRuntimeData is PlayerRunTimeData)
+        {
+            if (workArea_SwitchType.isWorkable)
+                _ProdAreaShowing.SetActive(true);
+            else
+                _ProdAreaShowing.SetActive(false);
+        }
     }
 }

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1887094683892901115
+--- !u!1001 &8551097048023285458
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,23 +10,35 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2479264027781393390, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_Name
-      value: PlaceTile (10131)
+      value: PlaceTile (b10133)
       objectReference: {fileID: 0}
     - target: {fileID: 3230826838984781879, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: buildableID
-      value: b10131
+      value: b10133
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 95eec5bc2f990fe4a885976b6d61d20e, type: 3}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.4999999
+      value: 4.499999
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalScale.z
-      value: 4.5
+      value: 4.499999
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalPosition.x
@@ -67,10 +79,6 @@ PrefabInstance:
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
