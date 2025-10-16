@@ -10,11 +10,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2479264027781393390, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_Name
-      value: PlaceTile(b10122)
+      value: PlaceTile (b10122)
       objectReference: {fileID: 0}
     - target: {fileID: 3230826838984781879, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: buildableID
       value: b10122
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0f89a5348bb1e1d41884c52e820c8557, type: 3}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5344889510824290971, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_LocalScale.x
@@ -71,6 +87,10 @@ PrefabInstance:
     - target: {fileID: 7072822709684886781, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778879498488544514, guid: 389c4ac94c8406743933c303fd63a644, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 37
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

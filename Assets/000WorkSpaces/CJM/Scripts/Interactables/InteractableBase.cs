@@ -33,6 +33,12 @@ public class InteractableBase : MonoBehaviour
         }
     }
 
+
+    public virtual void Stay(CharaterRuntimeData characterRuntimeData)
+    {
+
+    }
+
     protected virtual void OnDisableAdditionalActions() { }
 
     public void OnDisable()
@@ -76,6 +82,8 @@ public class InteractableBase : MonoBehaviour
                     Enter_PersonalTask(_CharacterRD);
             }
         }
+
+        Stay(_CharacterRD);
     }
 
     private void OnTriggerExit(Collider other)

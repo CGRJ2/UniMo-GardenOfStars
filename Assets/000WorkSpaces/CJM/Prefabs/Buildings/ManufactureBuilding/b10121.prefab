@@ -271,7 +271,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &90177104126049081
 Transform:
   m_ObjectHideFlags: 0
@@ -420,6 +420,7 @@ MonoBehaviour:
   workArea: {fileID: 0}
   workArea_SwitchType: {fileID: 0}
   prodsArea: {fileID: 0}
+  _ProdAreaShowing: {fileID: 3271666191265611102}
 --- !u!1 &4938766781026013625
 GameObject:
   m_ObjectHideFlags: 0
