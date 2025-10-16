@@ -70,7 +70,7 @@ public class ManufactureBuilding : BuildingInstance
         prodsArea.Init(this);
     }
 
-    /*public override void Enter(CharaterRuntimeData characterRuntimeData)
+    public override void Enter(CharaterRuntimeData characterRuntimeData)
     {
         base.Enter(characterRuntimeData);
         if (characterRuntimeData is PlayerRunTimeData)
@@ -87,7 +87,7 @@ public class ManufactureBuilding : BuildingInstance
         {
             _ProdAreaShowing.SetActive(false);
         }
-    }*/
+    }
 
     public override void Stay(CharaterRuntimeData characterRuntimeData)
     {
